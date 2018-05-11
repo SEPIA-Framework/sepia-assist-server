@@ -10,7 +10,7 @@ import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interpreters.ResponseHandler;
 import net.b07z.sepia.server.assist.interviews.AbstractInterview;
 import net.b07z.sepia.server.assist.interviews.InterviewResult;
-import net.b07z.sepia.server.assist.interviews.Interview_Interface;
+import net.b07z.sepia.server.assist.interviews.InterviewInterface;
 import net.b07z.sepia.server.assist.parameters.ParameterConfig;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.ConfigTestServer;
@@ -56,7 +56,7 @@ public class Test_Interviews {
 		System.out.println("");
 		
 		//Interview class
-		Interview_Interface assistant = new AbstractInterview(); //new FlightSearch();
+		InterviewInterface assistant = new AbstractInterview(); //new FlightSearch();
 		assistant.setCommand(CMD.FLIGHTS);
 		
 		//Interview info
@@ -119,7 +119,7 @@ public class Test_Interviews {
 		System.out.println("");
 		
 		//Interview class
-		Interview_Interface assistant = new AbstractInterview(); //new FlightSearch();
+		InterviewInterface assistant = new AbstractInterview(); //new FlightSearch();
 		assistant.setCommand(CMD.WEATHER);
 		
 		//Interview info
@@ -160,7 +160,7 @@ public class Test_Interviews {
 		System.out.println("");
 		
 		//Interview class
-		Interview_Interface assistant = new AbstractInterview(); //new FlightSearch();
+		InterviewInterface assistant = new AbstractInterview(); //new FlightSearch();
 		assistant.setCommand(CMD.FASHION);
 		
 		//Interview info

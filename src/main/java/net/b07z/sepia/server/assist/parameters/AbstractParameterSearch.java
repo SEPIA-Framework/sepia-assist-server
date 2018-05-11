@@ -2,6 +2,7 @@ package net.b07z.sepia.server.assist.parameters;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
@@ -30,7 +31,7 @@ public class AbstractParameterSearch {
 	
 	//input
 	NluInput nluInput;
-	HashMap<String, String> preCheckedParameters;		//to avoid multiple runs of the same scripts you can pass this down to all the methods
+	Map<String, String> preCheckedParameters;		//to avoid multiple runs of the same scripts you can pass this down to all the methods
 	
 	//output
 	int score;
@@ -41,7 +42,7 @@ public class AbstractParameterSearch {
 	 * @param nluInput - input from NLU
 	 * @param preCheckedParameters - a map of parameters that have been checked before to avoid redundant checks. This is the simple map, parameters can also use the NLU_Input parameter store.
 	 */
-	public AbstractParameterSearch setup(NluInput nluInput, HashMap<String, String> preCheckedParameters){
+	public AbstractParameterSearch setup(NluInput nluInput, Map<String, String> preCheckedParameters){
 		this.nluInput = nluInput;
 		this.preCheckedParameters = preCheckedParameters;
 		this.score = 0;
@@ -73,8 +74,8 @@ public class AbstractParameterSearch {
 	/**
 	 * Extract the parameters and return map. Any found parameters will also be added to the preCheckedParameters map.
 	 */
-	public HashMap<String, String> getParameters(){
-		HashMap<String, String> pv = new HashMap<>();
+	public Map<String, String> getParameters(){
+		Map<String, String> pv = new HashMap<>();
 		String thisText = nluInput.text; 		//extra normalization required?
 		Parameter_Handler paramHandler;
 				

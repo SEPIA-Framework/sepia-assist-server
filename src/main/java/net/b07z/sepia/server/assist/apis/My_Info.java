@@ -70,7 +70,7 @@ public class My_Info implements ApiInterface{
 		if (code != 0){
 			//build answer - server communication error
 			api.answer = Config.answers.getAnswer(NLU_result, "my_info_0a");
-			api.answer_clean = Converters.removeHTML(api.answer);
+			api.answerClean = Converters.removeHTML(api.answer);
 		}
 		//continue
 		else{
@@ -96,7 +96,7 @@ public class My_Info implements ApiInterface{
 				if ((info+type).length() > element_limit || map.size() >= list_limit){
 					//build answer - element or list is too big
 					api.answer = Config.answers.getAnswer(NLU_result, "my_info_0b");
-					api.answer_clean = Converters.removeHTML(api.answer);
+					api.answerClean = Converters.removeHTML(api.answer);
 				}
 				//add stuff
 				else{
@@ -110,11 +110,11 @@ public class My_Info implements ApiInterface{
 					if (code == 0){
 						//build answer - all fine I've added stuff
 						api.answer = Config.answers.getAnswer(NLU_result, "my_info_1b", type, info);
-						api.answer_clean = Converters.removeHTML(api.answer);
+						api.answerClean = Converters.removeHTML(api.answer);
 					}else{
 						//build answer - server communication error
 						api.answer = Config.answers.getAnswer(NLU_result, "my_info_0a");
-						api.answer_clean = Converters.removeHTML(api.answer);
+						api.answerClean = Converters.removeHTML(api.answer);
 					}
 				}
 			}
@@ -128,27 +128,27 @@ public class My_Info implements ApiInterface{
 						info = (String) item.get("item");
 						//build answer - your x is y
 						api.answer = Config.answers.getAnswer(NLU_result, "my_info_1d", type, info);
-						api.answer_clean = Converters.removeHTML(api.answer);
+						api.answerClean = Converters.removeHTML(api.answer);
 					}else{
 						//build answer - I have no idea
 						api.answer = Config.answers.getAnswer(NLU_result, "my_info_1e");
-						api.answer_clean = Converters.removeHTML(api.answer);
+						api.answerClean = Converters.removeHTML(api.answer);
 					}
 					
 				//show it
 				}else{
 					//build answer - ok let me open it
 					api.answer = Config.answers.getAnswer(NLU_result, "my_info_1a");
-					api.answer_clean = Converters.removeHTML(api.answer);
+					api.answerClean = Converters.removeHTML(api.answer);
 					
 					//convert result
 					JSONObject list_obj = new JSONObject();
 					JSON.add(list_obj, "data", Converters.mapStrStr2Json(map));
 							
 					//build action - for apps indicate direct triggering of info view
-					api.actionInfo_add_action(ACTIONS.OPEN_LIST);
-					api.actionInfo_put_info("info", listKey);
-					api.actionInfo_put_info("content", list_obj);
+					api.addAction(ACTIONS.OPEN_LIST);
+					api.putActionInfo("info", listKey);
+					api.putActionInfo("content", list_obj);
 					api.hasAction = true;
 				}
 			}
@@ -162,11 +162,11 @@ public class My_Info implements ApiInterface{
 				if (code == 0){
 					//build answer - removed it
 					api.answer = Config.answers.getAnswer(NLU_result, "my_info_1c", type);
-					api.answer_clean = Converters.removeHTML(api.answer);
+					api.answerClean = Converters.removeHTML(api.answer);
 				}else{
 					//build answer - server communication error
 					api.answer = Config.answers.getAnswer(NLU_result, "my_info_0a");
-					api.answer_clean = Converters.removeHTML(api.answer);
+					api.answerClean = Converters.removeHTML(api.answer);
 				}
 			}
 		}
@@ -177,7 +177,7 @@ public class My_Info implements ApiInterface{
 		//you can put extras in api.more as you need ...
 		
 		//finally build the API_Result
-		ApiResult result = api.build_API_result();
+		ApiResult result = api.buildApiResult();
 		
 		return result;
 	}	

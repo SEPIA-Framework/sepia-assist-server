@@ -16,7 +16,7 @@ import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interpreters.NluKeywordAnalyzerDE;
 import net.b07z.sepia.server.assist.interviews.AbstractInterview;
 import net.b07z.sepia.server.assist.interviews.InterviewResult;
-import net.b07z.sepia.server.assist.interviews.Interview_Interface;
+import net.b07z.sepia.server.assist.interviews.InterviewInterface;
 import net.b07z.sepia.server.assist.interviews.NoResult;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.ConfigServices;

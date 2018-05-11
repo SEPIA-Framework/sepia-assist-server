@@ -139,7 +139,7 @@ public class Location_Mapsearch implements ApiInterface{
 		
 		//get answer
 		api.answer = Config.answers.getAnswer(NLU_result, "location_1a", end_to_say);
-		api.answer_clean = Converters.removeHTML(api.answer);
+		api.answerClean = Converters.removeHTML(api.answer);
 		
 		//make action: browser url call
 		String googleMapsURL = "";
@@ -210,7 +210,7 @@ public class Location_Mapsearch implements ApiInterface{
 		api.status = "success";		//kind of success ^^
 				
 		//finally build the API_Result
-		ApiResult result = api.build_API_result();
+		ApiResult result = api.buildApiResult();
 				
 		//return result_JSON.toJSONString();
 		return result;

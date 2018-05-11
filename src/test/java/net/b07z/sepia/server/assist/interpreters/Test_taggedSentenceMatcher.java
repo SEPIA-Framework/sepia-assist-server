@@ -12,7 +12,7 @@ import net.b07z.sepia.server.assist.apis.ApiInterface;
 import net.b07z.sepia.server.assist.interviews.AbstractInterview;
 import net.b07z.sepia.server.assist.interviews.InterviewResult;
 import net.b07z.sepia.server.assist.interviews.InterviewServicesMap;
-import net.b07z.sepia.server.assist.interviews.Interview_Interface;
+import net.b07z.sepia.server.assist.interviews.InterviewInterface;
 import net.b07z.sepia.server.assist.server.ConfigServices;
 import net.b07z.sepia.server.assist.server.ConfigTestServer;
 import net.b07z.sepia.server.assist.server.Start;
@@ -90,7 +90,7 @@ public class Test_taggedSentenceMatcher {
 		//ParameterConfig.setup();
 		ArrayList<ApiInterface> services = ConfigServices.getCustomOrSystemServices(input, user, result.getCommand());
 		if (!services.isEmpty()){
-			Interview_Interface interview = new AbstractInterview();
+			InterviewInterface interview = new AbstractInterview();
 			interview.setCommand(result.getCommand());
 			interview.setServices(services);
 			InterviewResult iResult = interview.getMissingParameters(result); 		//<- overwrites old parameters

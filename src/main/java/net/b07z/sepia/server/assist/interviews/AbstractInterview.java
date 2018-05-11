@@ -1,6 +1,6 @@
 package net.b07z.sepia.server.assist.interviews;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import org.json.simple.JSONArray;
@@ -26,18 +26,18 @@ import net.b07z.sepia.server.core.tools.JSON;
  * @author Florian Quirin
  *
  */
-public class AbstractInterview implements Interview_Interface{
+public class AbstractInterview implements InterviewInterface{
 		
 	//info
-	String command;							//command connected to this interview
-	ArrayList<ApiInterface> services;		//the services used (order matters!)
+	String command;						//command connected to this interview
+	List<ApiInterface> services;		//the services used (order matters!)
 		
 	@Override
 	public void setCommand(String command) {
 		this.command = command;
 	}
 	@Override
-	public void setServices(ArrayList<ApiInterface> services){
+	public void setServices(List<ApiInterface> services){
 		this.services = services;
 	}
 	
@@ -112,7 +112,7 @@ public class AbstractInterview implements Interview_Interface{
 		if (gotEmptyOptionals){
 			int i = -1;
 			if (iInfo.listOfRequiredChoices != null && !iInfo.listOfRequiredChoices.isEmpty()){
-				for (ArrayList<Parameter> reqChoices : iInfo.listOfRequiredChoices){
+				for (List<Parameter> reqChoices : iInfo.listOfRequiredChoices){
 					i++;
 					if (reqChoices == null || reqChoices.isEmpty()){
 						continue;
@@ -189,7 +189,7 @@ public class AbstractInterview implements Interview_Interface{
 		Interview assistant = new Interview(interviewResult);
 				
 		//get single service results
-		ArrayList<ApiResult> results = assistant.getServiceResults(iInfo.getServices());
+		List<ApiResult> results = assistant.getServiceResults(iInfo.getServices());
 		
 		//LEGACY SUPPORT: if service is tagged as 'stand-alone' simply take the result
 		if ((results.size() == 1) && results.get(0).getApiInfo().worksStandalone){
@@ -198,7 +198,7 @@ public class AbstractInterview implements Interview_Interface{
 		}
 		
 		//build result - cards are collected from services, answer(s) (parameters) too, the rest is build here 
-		API servicesResult = new API(assistant.nlu_result);
+		API servicesResult = new API(assistant.nluResult);
 		String status = "";
 		String customAnswer = "";
 		JSONArray cards = new JSONArray();
@@ -228,7 +228,7 @@ public class AbstractInterview implements Interview_Interface{
 						}
 						return question;
 					}else{
-						Debugger.println("AbstractInterview - used status 'incomplete' without setting incomplete parameter! CMD: " + assistant.nlu_result.getCommand(), 3);
+						Debugger.println("AbstractInterview - used status 'incomplete' without setting incomplete parameter! CMD: " + assistant.nluResult.getCommand(), 3);
 					}
 				}
 				customAnswer = r.getCustomAnswerWorkpiece();
@@ -254,7 +254,7 @@ public class AbstractInterview implements Interview_Interface{
 		
 		// - Answer and resultInfo
 		//resultInfo
-		servicesResult.resultInfo_addAll(resultInfo);
+		servicesResult.resultInfoAddAll(resultInfo);
 		//answer:
 		String ansTag;
 		if (!customAnswer.isEmpty()){
@@ -272,23 +272,23 @@ public class AbstractInterview implements Interview_Interface{
 			ansTag = ansTag.replaceFirst("^<silent>", "").trim();
 		}
 		if (!ansTag.isEmpty()){
-			ArrayList<String> ansParams = iInfo.getAnswerParameters();
+			List<String> ansParams = iInfo.getAnswerParameters();
 			Object[] aps = new Object[ansParams.size()];
 			for (int i=0; i<aps.length; i++){
-				aps[i] = servicesResult.resultInfo_get(ansParams.get(i));
+				aps[i] = servicesResult.resultInfoGet(ansParams.get(i));
 			}
-			servicesResult.answer = Config.answers.getAnswer(assistant.nlu_result, ansTag, aps);
+			servicesResult.answer = Config.answers.getAnswer(assistant.nluResult, ansTag, aps);
 			if (isSilent){
-				servicesResult.answer_clean = "<silent>";
+				servicesResult.answerClean = "<silent>";
 			}else{
-				servicesResult.answer_clean = Converters.removeHTML(servicesResult.answer);
+				servicesResult.answerClean = Converters.removeHTML(servicesResult.answer);
 			}
 			//clean HTML-answer of vocalSmilies
 			servicesResult.answer = AnswerTools.cleanHtmlAnswer(servicesResult.answer);
 		}else{
 			//no answer
 			servicesResult.answer = "";
-			servicesResult.answer_clean = "";
+			servicesResult.answerClean = "";
 		}
 
 		// - Action
@@ -309,7 +309,7 @@ public class AbstractInterview implements Interview_Interface{
 		servicesResult.removeParameter(PARAMETERS.FINAL); 		//TODO: replace with "all" tag?
 		
 		//finally build the meta API_Result
-		ApiResult result = servicesResult.build_API_result();
+		ApiResult result = servicesResult.buildApiResult();
 				
 		//System.out.println("INTERVIEW-MODULE RESULT: " + result.getResultJSON()); 					//debug
 		return result;

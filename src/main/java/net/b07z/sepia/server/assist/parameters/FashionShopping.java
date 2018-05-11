@@ -2,6 +2,7 @@ package net.b07z.sepia.server.assist.parameters;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
@@ -17,13 +18,13 @@ public class FashionShopping {
 	
 	//input
 	NluInput nluInput;
-	HashMap<String, String> preCheckedParameters;		//to avoid multiple runs of the same scripts you can pass this down to all the methods
+	Map<String, String> preCheckedParameters;		//to avoid multiple runs of the same scripts you can pass this down to all the methods
 	
 	//output
 	int score;
 	ArrayList<String> guesses; 	//any parameter that could not be double-checked can be tried to "guess" and it's name should be tracked here then
 	
-	public FashionShopping setup(NluInput nluInput, HashMap<String, String> preCheckedParameters){
+	public FashionShopping setup(NluInput nluInput, Map<String, String> preCheckedParameters){
 		this.nluInput = nluInput;
 		this.preCheckedParameters = preCheckedParameters;
 		this.score = 0;
@@ -39,8 +40,8 @@ public class FashionShopping {
 		return guesses;
 	}
 	
-	public HashMap<String, String> getParameters(){
-		HashMap<String, String> pv = preCheckedParameters;
+	public Map<String, String> getParameters(){
+		Map<String, String> pv = preCheckedParameters;
 		if (pv == null){
 			pv = new HashMap<>();
 		}

@@ -51,7 +51,7 @@ public class TV_Program_Default implements ApiInterface{
 		
 		//make answer - if more than one direct answer choose randomly
 		api.answer = Config.answers.getAnswer(NLU_result, "tv_program_1a", channel, time);
-		api.answer_clean = Converters.removeHTML(api.answer);
+		api.answerClean = Converters.removeHTML(api.answer);
 		
 		//make action: browser url call
 		String call_url = "";
@@ -75,12 +75,12 @@ public class TV_Program_Default implements ApiInterface{
 		}
 		
 		//actions:
-		api.actionInfo_add_action(ACTIONS.OPEN_IN_APP_BROWSER);
-		api.actionInfo_put_info("url", call_url);
+		api.addAction(ACTIONS.OPEN_IN_APP_BROWSER);
+		api.putActionInfo("url", call_url);
 		
-		api.actionInfo_add_action(ACTIONS.BUTTON_IN_APP_BROWSER);
-		api.actionInfo_put_info("url", call_url); 
-		api.actionInfo_put_info("title", getButtonText(api.language));
+		api.addAction(ACTIONS.BUTTON_IN_APP_BROWSER);
+		api.putActionInfo("url", call_url); 
+		api.putActionInfo("title", getButtonText(api.language));
 		
 		api.hasAction = true;
 		
@@ -107,7 +107,7 @@ public class TV_Program_Default implements ApiInterface{
 		api.status = "success";
 				
 		//finally build the API_Result
-		ApiResult result = api.build_API_result();
+		ApiResult result = api.buildApiResult();
 				
 		//return result_JSON.toJSONString();
 		return result;

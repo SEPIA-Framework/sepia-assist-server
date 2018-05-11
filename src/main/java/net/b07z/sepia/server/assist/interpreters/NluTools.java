@@ -2,6 +2,8 @@ package net.b07z.sepia.server.assist.interpreters;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -19,8 +21,8 @@ public class NluTools {
 	 * @param cmd_sum - cmd_summary to be transformed back
 	 * @return NLU_Result
 	 */
-	public static NluResult cmd_summary_to_result(NluInput input, String cmd_sum){
-		NluResult result = cmd_summary_to_result(cmd_sum);
+	public static NluResult cmdSummaryToResult(NluInput input, String cmd_sum){
+		NluResult result = cmdSummaryToResult(cmd_sum);
 		result.setInput(input);
 		return result;
 	}
@@ -30,11 +32,11 @@ public class NluTools {
 	 * @param cmd_sum - cmd_summary to be transformed back
 	 * @return NLU_Result
 	 */
-	public static NluResult cmd_summary_to_result(String cmd_sum){
+	public static NluResult cmdSummaryToResult(String cmd_sum){
 		//initialize
-		ArrayList<String> possibleCMDs = new ArrayList<String>();
-		ArrayList<HashMap<String, String>> possibleParameters = new ArrayList<HashMap<String, String>>();
-		ArrayList<Integer> possibleScore = new ArrayList<Integer>();
+		List<String> possibleCMDs = new ArrayList<>();
+		List<Map<String, String>> possibleParameters = new ArrayList<>();
+		List<Integer> possibleScore = new ArrayList<>();
 		int bestScoreIndex = 0;
 		
 		//split string
@@ -52,7 +54,7 @@ public class NluTools {
 		//construct result
 		possibleCMDs.add(cmd);
 		possibleScore.add(1);
-		HashMap<String, String> kv = new HashMap<String, String>();
+		Map<String, String> kv = new HashMap<>();
 		for (String p : params.split(";;")){				//TODO: change this whole ";;" structure to JSON?
 			String[] e = p.split("=",2);
 			if (e.length == 2){

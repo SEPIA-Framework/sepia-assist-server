@@ -19,7 +19,6 @@ import net.b07z.sepia.server.assist.parameters.WebSearchEngine;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.core.assistant.ACTIONS;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
-import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.JSON;
 
@@ -76,7 +75,7 @@ public class Websearch_Default implements ApiInterface{
 		JSONObject searchJSON = NLU_result.getRequiredParameter(PARAMETERS.WEBSEARCH_REQUEST).getData();
 		String search = JSON.getStringOrDefault(searchJSON, InterviewData.VALUE, "");
 		String searchReduced = JSON.getStringOrDefault(searchJSON, InterviewData.VALUE_REDUCED, search);
-		api.resultInfo_add("search", search);
+		api.resultInfoPut("search", search);
 		
 		//optional
 		Parameter sectionP = NLU_result.getOptionalParameter(PARAMETERS.SEARCH_SECTION, "");
@@ -86,7 +85,7 @@ public class Websearch_Default implements ApiInterface{
 			section = (String) sectionP.getData().get(InterviewData.VALUE);
 			sectionLocal = (String) sectionP.getData().get(InterviewData.VALUE_LOCAL);
 		}
-		api.resultInfo_add("section", sectionLocal);
+		api.resultInfoPut("section", sectionLocal);
 		
 		//TODO: choose best engine or user favorite when no engine is given
 		Parameter engineP = NLU_result.getOptionalParameter(PARAMETERS.WEBSEARCH_ENGINE, "google");
@@ -96,7 +95,7 @@ public class Websearch_Default implements ApiInterface{
 		}else{
 			engine = (String) engineP.getDefaultValue();
 		}
-		api.resultInfo_add("engine", engine);
+		api.resultInfoPut("engine", engine);
 		
 		Debugger.println("cmd: websearch, search='" + search + "' with " + engine + ", section: " + sectionLocal, 2);
 		
@@ -122,8 +121,8 @@ public class Websearch_Default implements ApiInterface{
 		String engineIconUrlRnd = getResRnd[2];
 		
 		//make action: in app browser url call and button
-		api.actionInfo_add_action(ACTIONS.OPEN_IN_APP_BROWSER);
-		api.actionInfo_put_info("url", search_url);
+		api.addAction(ACTIONS.OPEN_IN_APP_BROWSER);
+		api.putActionInfo("url", search_url);
 		
 		String title1 = getButtonText(engineName, api.language);
 		//Button 1 
@@ -166,14 +165,15 @@ public class Websearch_Default implements ApiInterface{
 		//api.hasAction = true;
 		//api.hasCard = true;
 		
-		//get answer
-		api.answer = Config.answers.getAnswer(NLU_result, "websearch_1a", search);
-		api.answer_clean = Converters.removeHTML(api.answer);
+		//get answer - not required anymore, done with setStatus...
+		//api.answer = Config.answers.getAnswer(NLU_result, "websearch_1a", search);
+		//api.answerClean = Converters.removeHTML(api.answer);
 		
-		api.status = "success";
+		//status
+		api.setStatusSuccess();
 		
 		//finally build the API_Result
-		ApiResult result = api.build_API_result();
+		ApiResult result = api.buildApiResult();
 		
 		return result;
 	}

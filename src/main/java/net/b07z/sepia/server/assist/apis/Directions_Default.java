@@ -183,7 +183,7 @@ public class Directions_Default implements ApiInterface{
 		}else{
 			startToSay = ((startStreet.isEmpty())? "" : (startStreet + ", ")) + startCity;
 		}
-		api.resultInfo_add("start", startToSay);
+		api.resultInfoPut("start", startToSay);
 		
 		//end
 		String end = endJSON.get(InterviewData.LOCATION_LAT) + "," + endJSON.get(InterviewData.LOCATION_LNG);
@@ -196,7 +196,7 @@ public class Directions_Default implements ApiInterface{
 		}else{
 			endToSay = ((endStreet.isEmpty())? "" : (endStreet + ", ")) + endCity;
 		}
-		api.resultInfo_add("end", endToSay);
+		api.resultInfoPut("end", endToSay);
 		//end options
 		JSONArray optionsArray = (JSONArray) endJSON.get(InterviewData.OPTIONS);
 		boolean hasOptions = (optionsArray != null);
@@ -225,7 +225,7 @@ public class Directions_Default implements ApiInterface{
 				wpToSay = ((wpStreet.isEmpty())? "" : (wpStreet + ", ")) + wpCity;
 			}
 		}
-		api.resultInfo_add("waypoint", wpToSay);
+		api.resultInfoPut("waypoint", wpToSay);
 		
 		//Travel type
 		String travelType = "";
@@ -237,7 +237,7 @@ public class Directions_Default implements ApiInterface{
 			travelType = (String) typeP.getDefaultValue();
 			travelTypeLocal = TravelType.getLocal("<" + travelType + ">", api.language);
 		}
-		api.resultInfo_add("travelType", travelTypeLocal); 		//<- might get overwritten if request is a duraton request with undefined travelMode to avoid random travelMode 
+		api.resultInfoPut("travelType", travelTypeLocal); 		//<- might get overwritten if request is a duraton request with undefined travelMode to avoid random travelMode 
 		
 		//Travel request info
 		String travelRequestInfo = "";
@@ -277,8 +277,8 @@ public class Directions_Default implements ApiInterface{
 			}
 			
 			//set missing stuff
-			api.resultInfo_add("duration", "");
-			api.resultInfo_add("distance", "");
+			api.resultInfoPut("duration", "");
+			api.resultInfoPut("distance", "");
 			
 			//set answer
 			api.setCustomAnswer(alternatives);
@@ -287,7 +287,7 @@ public class Directions_Default implements ApiInterface{
 			api.status = "success";
 			
 			//build the API_Result
-			ApiResult result = api.build_API_result();
+			ApiResult result = api.buildApiResult();
 			return result;
 		}
 		
@@ -306,7 +306,7 @@ public class Directions_Default implements ApiInterface{
 			//e.printStackTrace();
 			
 			//build error result
-			ApiResult result = api.build_API_result();
+			ApiResult result = api.buildApiResult();
 					
 			//return result_JSON.toJSONString();
 			return result;
@@ -325,7 +325,7 @@ public class Directions_Default implements ApiInterface{
 				if (!googleTravelType.matches("(transit|bicycling|driving|walking)")){
 					googleTravelType = defaultDurationTravelType;	//use only supported for google and fix it for no input here
 					//overwrite the travelMode response
-					api.resultInfo_add("travelType", TravelType.getLocal("<" + googleTravelType + ">", api.language));
+					api.resultInfoPut("travelType", TravelType.getLocal("<" + googleTravelType + ">", api.language));
 				}
 				
 				if (wp.isEmpty()){
@@ -373,8 +373,8 @@ public class Directions_Default implements ApiInterface{
 				Debugger.println("Directions - could not get API answer for: " + start + ", " + end + ", " + wp + " - Error: " + e.getMessage(), 1);
 			}
 		}
-		api.resultInfo_add("duration", duration);
-		api.resultInfo_add("distance", distance);
+		api.resultInfoPut("duration", duration);
+		api.resultInfoPut("distance", distance);
 		
 		//what answer to use?
 		boolean isInfoAnswer = false;
@@ -410,11 +410,11 @@ public class Directions_Default implements ApiInterface{
 		//options button?
 		if (hasOptions){
 			api.overwriteParameter(SHOW_ALTERNATIVES, "true");
-			api.actionInfo_add_action(ACTIONS.BUTTON_CMD);
-			api.actionInfo_put_info("title", getLocalButtonText("<show_alternatives>", api.language));
-			api.actionInfo_put_info("info", "direct_cmd");
-			api.actionInfo_put_info("cmd", api.cmd_summary);
-			api.actionInfo_put_info("visibility", "inputHidden");
+			api.addAction(ACTIONS.BUTTON_CMD);
+			api.putActionInfo("title", getLocalButtonText("<show_alternatives>", api.language));
+			api.putActionInfo("info", "direct_cmd");
+			api.putActionInfo("cmd", api.cmdSummary);
+			api.putActionInfo("visibility", "inputHidden");
 		}
 		
 		//build cards
@@ -454,7 +454,7 @@ public class Directions_Default implements ApiInterface{
 		api.status = "success";
 		
 		//finally build the API_Result
-		ApiResult result = api.build_API_result();
+		ApiResult result = api.buildApiResult();
 				
 		//JSON.printJSONpretty(result.result_JSON); 		//debug
 		//return result_JSON.toJSONString();

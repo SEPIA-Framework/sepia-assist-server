@@ -64,7 +64,7 @@ public class FoodDelivery_Basic implements ApiInterface{
 		if (itemJSON != null){
 			foodItem = itemJSON.get(InterviewData.VALUE).toString();
 		}
-		api.resultInfo_add("food", foodItem);
+		api.resultInfoPut("food", foodItem);
 		
 		Debugger.println("cmd: food_delivery, item: " + foodItem, 2);		//debug
 		
@@ -113,7 +113,7 @@ public class FoodDelivery_Basic implements ApiInterface{
 		api.status = "success";
 		
 		//finally build the API_Result
-		ApiResult result = api.build_API_result();
+		ApiResult result = api.buildApiResult();
 				
 		//return result_JSON.toJSONString();
 		return result;

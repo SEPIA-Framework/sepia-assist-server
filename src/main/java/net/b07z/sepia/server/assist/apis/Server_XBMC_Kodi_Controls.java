@@ -168,7 +168,7 @@ public class Server_XBMC_Kodi_Controls implements ApiInterface {
 			
 		}
 		//finally build the API_Result
-		ApiResult result = api.build_API_result();
+		ApiResult result = api.buildApiResult();
 				
 		//return result_JSON.toJSONString();
 		return result;

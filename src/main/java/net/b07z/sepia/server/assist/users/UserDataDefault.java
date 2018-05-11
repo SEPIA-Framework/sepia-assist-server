@@ -210,8 +210,8 @@ public class UserDataDefault implements UserDataInterface {
 		
 		//add triggers
 		int i=0, j=0;
-		for (Entry<String, ArrayList<String>> entry : serviceInfo.customTriggerSentences.entrySet()){
-			ArrayList<String> triggers = entry.getValue();
+		for (Entry<String, List<String>> entry : serviceInfo.customTriggerSentences.entrySet()){
+			List<String> triggers = entry.getValue();
 			String language = entry.getKey();
 			//Normalizer_Interface normalizer = Config.input_normalizers_light.get(language);
 			Map<String, Object> filters = new HashMap<>();

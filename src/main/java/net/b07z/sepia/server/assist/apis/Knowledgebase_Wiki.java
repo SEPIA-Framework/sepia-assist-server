@@ -79,15 +79,15 @@ public class Knowledgebase_Wiki implements ApiInterface{
 			//check for NO SEARCH RESULT
 			if (hits.isEmpty()){
 				api.answer = Config.answers.getAnswer(NLU_result, "knowledgeB_0a", NLU_result.getParameter("search"));
-				api.answer_clean = Converters.removeHTML(api.answer);
+				api.answerClean = Converters.removeHTML(api.answer);
 				api.htmlInfo = "";
 				api.hasInfo = false;	api.hasCard = false;	
 				
-				api.actionInfo_add_action(ACTIONS.BUTTON_CMD);
-				api.actionInfo_put_info("title", "Websearch");
-				api.actionInfo_put_info("info", "direct_cmd");
-				api.actionInfo_put_info("cmd", CmdBuilder.getWebSearch(search));
-				api.actionInfo_put_info("options", JSON.make(ACTIONS.SKIP_TTS, true));
+				api.addAction(ACTIONS.BUTTON_CMD);
+				api.putActionInfo("title", "Websearch");
+				api.putActionInfo("info", "direct_cmd");
+				api.putActionInfo("cmd", CmdBuilder.getWebSearch(search));
+				api.putActionInfo("options", JSON.make(ACTIONS.SKIP_TTS, true));
 				
 				api.hasAction = true;	
 			
@@ -312,24 +312,24 @@ public class Knowledgebase_Wiki implements ApiInterface{
 						
 						//answer - in this API the text IS! the answer so we don't need an get_answer() request.
 						api.answer = wikiText_short.trim();
-						api.answer_clean = wikiText_short_clean.trim();
+						api.answerClean = wikiText_short_clean.trim();
 						
 						//button action
 						//api.actionInfo_add_action(ACTIONS.OPEN_IN_APP_BROWSER);
 						//api.actionInfo_put_info("url", wikiURL);
 
-						api.actionInfo_add_action(ACTIONS.BUTTON_IN_APP_BROWSER);
-						api.actionInfo_put_info("url", wikiURL); 
-						api.actionInfo_put_info("title", getButtonText(api.language));
+						api.addAction(ACTIONS.BUTTON_IN_APP_BROWSER);
+						api.putActionInfo("url", wikiURL); 
+						api.putActionInfo("title", getButtonText(api.language));
 						
 						//options
 						int i=0;
 						for (String t : titles){
 							if (++i > 1){	break;	}
-							api.actionInfo_add_action(ACTIONS.BUTTON_CMD);
-							api.actionInfo_put_info("title", t);
-							api.actionInfo_put_info("info", "direct_cmd");
-							api.actionInfo_put_info("cmd", CmdBuilder.getWiki(t));
+							api.addAction(ACTIONS.BUTTON_CMD);
+							api.putActionInfo("title", t);
+							api.putActionInfo("info", "direct_cmd");
+							api.putActionInfo("cmd", CmdBuilder.getWiki(t));
 						}
 						
 						api.hasAction = true;
@@ -337,21 +337,21 @@ public class Knowledgebase_Wiki implements ApiInterface{
 					}else{
 						//answer
 						api.answer = Config.answers.getAnswer(NLU_result, "knowledgeB_1a");
-						api.answer_clean = Converters.removeHTML(api.answer);
+						api.answerClean = Converters.removeHTML(api.answer);
 						
 						//URL action
-						api.actionInfo_add_action(ACTIONS.BUTTON_IN_APP_BROWSER);
-						api.actionInfo_put_info("url", wikiURL); 
-						api.actionInfo_put_info("title", getButtonText(api.language));
+						api.addAction(ACTIONS.BUTTON_IN_APP_BROWSER);
+						api.putActionInfo("url", wikiURL); 
+						api.putActionInfo("title", getButtonText(api.language));
 						
 						//options
 						int i=0;
 						for (String t : titles){
 							if (++i > 2){	break;	}
-							api.actionInfo_add_action(ACTIONS.BUTTON_CMD);
-							api.actionInfo_put_info("title", t);
-							api.actionInfo_put_info("info", "direct_cmd");
-							api.actionInfo_put_info("cmd", CmdBuilder.getWiki(t));
+							api.addAction(ACTIONS.BUTTON_CMD);
+							api.putActionInfo("title", t);
+							api.putActionInfo("info", "direct_cmd");
+							api.putActionInfo("cmd", CmdBuilder.getWiki(t));
 						}
 						
 						api.hasAction = true;
@@ -398,15 +398,15 @@ public class Knowledgebase_Wiki implements ApiInterface{
 				//no result
 				}else{
 					api.answer = Config.answers.getAnswer(NLU_result, "knowledgeB_0a", NLU_result.getParameter("search"));
-					api.answer_clean = Converters.removeHTML(api.answer);
+					api.answerClean = Converters.removeHTML(api.answer);
 					api.htmlInfo = "";
 					api.hasInfo = false;	api.hasCard = false;	
 					
-					api.actionInfo_add_action(ACTIONS.BUTTON_CMD);
-					api.actionInfo_put_info("title", "Websearch");
-					api.actionInfo_put_info("info", "direct_cmd");
-					api.actionInfo_put_info("cmd", CmdBuilder.getWebSearch(search));
-					api.actionInfo_put_info("options", JSON.make(ACTIONS.SKIP_TTS, true));
+					api.addAction(ACTIONS.BUTTON_CMD);
+					api.putActionInfo("title", "Websearch");
+					api.putActionInfo("info", "direct_cmd");
+					api.putActionInfo("cmd", CmdBuilder.getWebSearch(search));
+					api.putActionInfo("options", JSON.make(ACTIONS.SKIP_TTS, true));
 					
 					api.hasAction = true;	
 					
@@ -418,7 +418,7 @@ public class Knowledgebase_Wiki implements ApiInterface{
 		//Error / no result - error handling still needs improvement 
 		} catch (Exception e) {
 			api.answer = Config.answers.getAnswer(NLU_result, "knowledgeB_0a", NLU_result.getParameter("search"));
-			api.answer_clean = Converters.removeHTML(api.answer);
+			api.answerClean = Converters.removeHTML(api.answer);
 			api.htmlInfo = "";
 			api.hasInfo = false;	api.hasCard = false;	api.hasAction = false;
 			
@@ -429,7 +429,7 @@ public class Knowledgebase_Wiki implements ApiInterface{
 		}
 		
 		//finally build the API_Result
-		ApiResult result = api.build_API_result();
+		ApiResult result = api.buildApiResult();
 		
 		//System.out.println("WIKI RES: " + result.result_JSON.toJSONString()); 		//DEBUG
 		return result;

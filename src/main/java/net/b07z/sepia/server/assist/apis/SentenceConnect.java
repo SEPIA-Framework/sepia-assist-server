@@ -101,9 +101,9 @@ public class SentenceConnect implements ApiInterface{
 					&& !thisRes.getCommand().equals(CMD.NO_RESULT) && !thisRes.getCommand().equals(CMD.RESULT_REDIRECT)
 						){
 					//build action
-					api.actionInfo_add_action(ACTIONS.QUEUE_CMD);
-					api.actionInfo_put_info("info", "direct_cmd");
-					api.actionInfo_put_info("cmd", thisRes.cmd_summary);
+					api.addAction(ACTIONS.QUEUE_CMD);
+					api.putActionInfo("info", "direct_cmd");
+					api.putActionInfo("cmd", thisRes.cmd_summary);
 					//api.actionInfo_put_info("options", JSON.make(ACTIONS.SKIP_TTS, true));
 				}
 				//use new result for next command? TODO: I think we need some context handling here
@@ -120,7 +120,7 @@ public class SentenceConnect implements ApiInterface{
 		}
 		
 		//finally build the API_Result
-		ApiResult result = api.build_API_result();
+		ApiResult result = api.buildApiResult();
 		
 		//return result.result_JSON.toJSONString();
 		return result;

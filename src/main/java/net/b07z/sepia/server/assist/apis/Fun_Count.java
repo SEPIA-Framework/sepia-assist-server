@@ -63,7 +63,7 @@ public class Fun_Count implements ApiInterface {
 				if (res >= 3.0d){
 					//make answer
 					api.answer = Config.answers.getAnswer(NLU_result, "<direct>3! go go go!");
-					api.answer_clean = Converters.removeHTML(api.answer);
+					api.answerClean = Converters.removeHTML(api.answer);
 				}else{
 					String new_num = String.valueOf(res).replaceAll("[0]*$", "").replaceAll("\\.$", "");
 					//save new num in memory
@@ -85,7 +85,7 @@ public class Fun_Count implements ApiInterface {
 		if (d_user >= 3.0d){
 			//make answer
 			api.answer = Config.answers.getAnswer(NLU_result, "<direct>go go go!");
-			api.answer_clean = Converters.removeHTML(api.answer);
+			api.answerClean = Converters.removeHTML(api.answer);
 		
 		//else increase number but check what has been said before
 		}else{
@@ -111,7 +111,7 @@ public class Fun_Count implements ApiInterface {
 			if (res >= 3.0d){
 				//make answer
 				api.answer = Config.answers.getAnswer(NLU_result, "<direct>3! go go go!");
-				api.answer_clean = Converters.removeHTML(api.answer);
+				api.answerClean = Converters.removeHTML(api.answer);
 			}else{
 				String new_num = String.valueOf(res).replaceAll("[0]*$", "").replaceAll("\\.$", "").trim();
 				//save new num in memory
@@ -131,7 +131,7 @@ public class Fun_Count implements ApiInterface {
 		api.status = "success";		//kind of success ^^
 				
 		//finally build the API_Result
-		ApiResult result = api.build_API_result();
+		ApiResult result = api.buildApiResult();
 				
 		//return result_JSON.toJSONString();
 		return result;

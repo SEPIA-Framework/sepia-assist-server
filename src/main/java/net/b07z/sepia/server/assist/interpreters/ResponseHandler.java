@@ -50,7 +50,7 @@ public class ResponseHandler implements NluInterface{
 			response = normalizer.normalize_text(response);
 		}
 		
-		NluResult result = NluTools.cmd_summary_to_result(input, cmd_summary);
+		NluResult result = NluTools.cmdSummaryToResult(input, cmd_summary);
 		result.normalized_text = response;
 		
 		//abort?

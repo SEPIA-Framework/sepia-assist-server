@@ -28,7 +28,7 @@ public class Repeat_Last {
 			new_result = null;
 		}else{
 			//reconstruct last command
-			new_result = NluTools.cmd_summary_to_result(NLU_result.input, cmd_summary);
+			new_result = NluTools.cmdSummaryToResult(NLU_result.input, cmd_summary);
 			
 			//TODO: this is in principle not complete with a restoration of all old parameters like context, environment, mood, etc...
 		}

@@ -102,8 +102,8 @@ public class EventsManager {
 		
 		//events start
 		boolean hasButtons = false;
-		actionBuilder.actionInfo_add_action(ACTIONS.EVENTS_START);
-		actionBuilder.actionInfo_put_info("info", "dividerWithTime");
+		actionBuilder.addAction(ACTIONS.EVENTS_START);
+		actionBuilder.putActionInfo("info", "dividerWithTime");
 		//actionBuilder.actionInfo_put_info("info", "divider");
 		//actionBuilder.actionInfo_put_info("info", "quietText");
 		//actionBuilder.actionInfo_put_info("text", "Events: ");
@@ -126,7 +126,7 @@ public class EventsManager {
 			addCommandButton(actionBuilder, EventLabels.getLabel(Constants.news_common, input.language), 
 					CmdBuilder.getNews("")
 			);
-			actionBuilder.actionInfo_put_info("options", JSON.make(
+			actionBuilder.putActionInfo("options", JSON.make(
 					ACTIONS.SKIP_TTS, true,
 					ACTIONS.SHOW_VIEW, true
 			)); 
@@ -139,7 +139,7 @@ public class EventsManager {
 			addCommandButton(actionBuilder, EventLabels.getLabel(Constants.radio, input.language), 
 					CmdBuilder.getRadio("ego fm")
 			);
-			actionBuilder.actionInfo_put_info("options", JSON.make(
+			actionBuilder.putActionInfo("options", JSON.make(
 					ACTIONS.SKIP_TTS, true,
 					ACTIONS.SHOW_VIEW, true
 			));
@@ -149,7 +149,7 @@ public class EventsManager {
 			addCommandButton(actionBuilder, EventLabels.getLabel(Constants.radio_night, input.language), 
 					CmdBuilder.getRadio("night")
 			);
-			actionBuilder.actionInfo_put_info("options", JSON.make(
+			actionBuilder.putActionInfo("options", JSON.make(
 					ACTIONS.SKIP_TTS, true,
 					ACTIONS.SHOW_VIEW, true
 			));
@@ -179,12 +179,12 @@ public class EventsManager {
 					CmdBuilder.getFood("")
 			);
 			//recipe of the day (change active time to morning?)
-			actionBuilder.actionInfo_add_action(ACTIONS.BUTTON_IN_APP_BROWSER);
-			actionBuilder.actionInfo_put_info("url", "https://www.chefkoch.de/rezepte/was-koche-ich-heute/"); 
+			actionBuilder.addAction(ACTIONS.BUTTON_IN_APP_BROWSER);
+			actionBuilder.putActionInfo("url", "https://www.chefkoch.de/rezepte/was-koche-ich-heute/"); 
 			//interesting? 
 			//https://www.chefkoch.de/rezepte/zufallsrezept/
 			//https://www.chefkoch.de/rezept-des-tages.php
-			actionBuilder.actionInfo_put_info("title", EventLabels.getLabel(Constants.recipe_of_the_day, input.language));
+			actionBuilder.putActionInfo("title", EventLabels.getLabel(Constants.recipe_of_the_day, input.language));
 			hasButtons = true;
 		}
 		if (localTimeIsKnown && isWeekend && isBrunchTime){
@@ -243,7 +243,7 @@ public class EventsManager {
 		
 		//if there are no buttons remove the divider too
 		if (!hasButtons){
-			actionBuilder.actionInfo_remove_action(0);
+			actionBuilder.removeAction(0);
 		}
 
 		//next check in ...
@@ -261,12 +261,12 @@ public class EventsManager {
 	 * Add a default command-button to actions
 	 */
 	private static void addCommandButton(API actionBuilder, String title, String cmd){
-		actionBuilder.actionInfo_add_action(ACTIONS.BUTTON_CMD);
-		actionBuilder.actionInfo_put_info("title", title);
-		actionBuilder.actionInfo_put_info("info", "direct_cmd");
-		actionBuilder.actionInfo_put_info("cmd", cmd);
+		actionBuilder.addAction(ACTIONS.BUTTON_CMD);
+		actionBuilder.putActionInfo("title", title);
+		actionBuilder.putActionInfo("info", "direct_cmd");
+		actionBuilder.putActionInfo("cmd", cmd);
 		//default button options
-		actionBuilder.actionInfo_put_info("options", JSON.make(
+		actionBuilder.putActionInfo("options", JSON.make(
 				ACTIONS.SHOW_VIEW, true
 		)); 
 	}
@@ -274,11 +274,11 @@ public class EventsManager {
 	 * Add a scheduled message
 	 */
 	private static void addScheduledMessage(API actionBuilder, String eventId, long triggerDelayMS, String message){
-		actionBuilder.actionInfo_add_action(ACTIONS.SCHEDULE_MSG);
-		actionBuilder.actionInfo_put_info("info", "entertainWhileIdle");		//TODO: one could distinguish messages that are only triggered when the app is not in foreground vs. important notes etc ...
-		actionBuilder.actionInfo_put_info("eventId", eventId);
-		actionBuilder.actionInfo_put_info("triggerIn", triggerDelayMS);
-		actionBuilder.actionInfo_put_info("text", message);
+		actionBuilder.addAction(ACTIONS.SCHEDULE_MSG);
+		actionBuilder.putActionInfo("info", "entertainWhileIdle");		//TODO: one could distinguish messages that are only triggered when the app is not in foreground vs. important notes etc ...
+		actionBuilder.putActionInfo("eventId", eventId);
+		actionBuilder.putActionInfo("triggerIn", triggerDelayMS);
+		actionBuilder.putActionInfo("text", message);
 		//actionBuilder.actionInfo_put_info("options", "inputHidden");
 	}
 

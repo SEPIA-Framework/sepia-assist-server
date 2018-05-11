@@ -43,9 +43,9 @@ public class Open_Dashboard implements ApiInterface{
 		}
 		
 		//make action: dashboard call
-		api.actionInfo_add_action(ACTIONS.OPEN_DASHBOARD);
-		api.actionInfo_put_info(PARAMETERS.TYPE, type);
-		api.actionInfo_put_info(PARAMETERS.INFO, info);
+		api.addAction(ACTIONS.OPEN_DASHBOARD);
+		api.putActionInfo(PARAMETERS.TYPE, type);
+		api.putActionInfo(PARAMETERS.INFO, info);
 		api.hasAction = true;
 		
 		//get answer
@@ -58,12 +58,12 @@ public class Open_Dashboard implements ApiInterface{
 		}else{
 			api.answer = Config.answers.getAnswer(NLU_result, "dashboard_0a");
 		}
-		api.answer_clean = Converters.removeHTML(api.answer);
+		api.answerClean = Converters.removeHTML(api.answer);
 		
 		api.status = "success";
 		
 		//finally build the API_Result
-		ApiResult result = api.build_API_result();
+		ApiResult result = api.buildApiResult();
 		
 		return result;
 	}

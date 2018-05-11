@@ -89,7 +89,7 @@ public class Music_Radio_Mixed implements ApiInterface {
 				//in this case genre has to have a value
 				station = genre;
 			}
-			api.resultInfo_add("station", station);
+			api.resultInfoPut("station", station);
 			
 			//check actions first
 			if (!action.isEmpty()){
@@ -97,13 +97,13 @@ public class Music_Radio_Mixed implements ApiInterface {
 				//--SWITCH OFF RADIO--
 				if (action.equals("<" + Action.Type.off + ">") || action.equals("<" + Action.Type.pause + ">")){
 					//add action
-					api.actionInfo_add_action(ACTIONS.STOP_AUDIO_STREAM);
+					api.addAction(ACTIONS.STOP_AUDIO_STREAM);
 					api.hasAction = true;
 					
 					api.setCustomAnswer(radioOffAns);
 					api.setStatusSuccess();
 					
-					ApiResult result = api.build_API_result();
+					ApiResult result = api.buildApiResult();
 					return result;
 					//<----------- END------------
 				}
@@ -117,16 +117,16 @@ public class Music_Radio_Mixed implements ApiInterface {
 					title = station;
 				}
 				//add action
-				api.actionInfo_add_action(ACTIONS.PLAY_AUDIO_STREAM);
-				api.actionInfo_put_info("audio_url", stream);
-				api.actionInfo_put_info("audio_title", title);
+				api.addAction(ACTIONS.PLAY_AUDIO_STREAM);
+				api.putActionInfo("audio_url", stream);
+				api.putActionInfo("audio_title", title);
 				api.hasAction = true;
 				
 				String playlistURL = RadioStation.radioStationsPlaylist.get(title);
 				if (playlistURL != null && !playlistURL.isEmpty()){
-					api.actionInfo_add_action(ACTIONS.BUTTON_IN_APP_BROWSER);
-					api.actionInfo_put_info("url", playlistURL); 
-					api.actionInfo_put_info("title", "Playlist");
+					api.addAction(ACTIONS.BUTTON_IN_APP_BROWSER);
+					api.putActionInfo("url", playlistURL); 
+					api.putActionInfo("title", "Playlist");
 				}
 
 				//build card
@@ -142,7 +142,7 @@ public class Music_Radio_Mixed implements ApiInterface {
 				api.setCustomAnswer(streamResultAns);
 				api.setStatusSuccess();
 				
-				ApiResult result = api.build_API_result();
+				ApiResult result = api.buildApiResult();
 				return result;
 				//<----------- END------------
 			}
@@ -350,9 +350,9 @@ public class Music_Radio_Mixed implements ApiInterface {
 			
 			//add action
 			if (!active_stream.isEmpty()){
-				api.actionInfo_add_action(ACTIONS.PLAY_AUDIO_STREAM);
-				api.actionInfo_put_info("audio_url", active_stream);
-				api.actionInfo_put_info("audio_title", active_name);
+				api.addAction(ACTIONS.PLAY_AUDIO_STREAM);
+				api.putActionInfo("audio_url", active_stream);
+				api.putActionInfo("audio_title", active_name);
 				
 				/*
 				api.actionInfo_add_action(ACTIONS.BUTTON_CMD);
@@ -366,9 +366,9 @@ public class Music_Radio_Mixed implements ApiInterface {
 					playlistURL = RadioStation.radioStationsPlaylist.get(active_name.replaceAll(" - .*", "").trim());
 				}
 				if (playlistURL != null && !playlistURL.isEmpty()){
-					api.actionInfo_add_action(ACTIONS.BUTTON_IN_APP_BROWSER);
-					api.actionInfo_put_info("url", playlistURL); 
-					api.actionInfo_put_info("title", "Playlist");
+					api.addAction(ACTIONS.BUTTON_IN_APP_BROWSER);
+					api.putActionInfo("url", playlistURL); 
+					api.putActionInfo("title", "Playlist");
 				}
 				
 				api.hasAction = true;
@@ -382,7 +382,7 @@ public class Music_Radio_Mixed implements ApiInterface {
 		}
 		
 		//finally build the API_Result
-		ApiResult result = api.build_API_result();
+		ApiResult result = api.buildApiResult();
 		
 		//return result_JSON.toJSONString();
 		return result;

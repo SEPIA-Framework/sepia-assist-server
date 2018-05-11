@@ -1,7 +1,7 @@
 package net.b07z.sepia.server.assist.interviews;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -26,13 +26,13 @@ public class InterviewInfo {
 	private String cmd = ""; 		//what is the command that triggers this interview
 	
 	//data
-	public ArrayList<Parameter> requiredParameters; 	//parameters that are required to run the service
-	public ArrayList<Parameter> optionalParameters;		//parameters that are optional and get replaced by default or ignored if not set
-	public ArrayList<ArrayList<Parameter>> listOfRequiredChoices;	//list of list with "one of these" parameters
-	public ArrayList<String> listOfChoiceQuestions;					//list with the questions to the required choices
-	private ArrayList<ApiInterface> services; 			//services used
-	private HashMap<String, String> customAnswerMap;	//use this to add answers to your service
-	private ArrayList<String> answerParameters;			//list of parameters that are used to build the answer. The order matters!
+	public List<Parameter> requiredParameters; 		//parameters that are required to run the service
+	public List<Parameter> optionalParameters;		//parameters that are optional and get replaced by default or ignored if not set
+	public List<List<Parameter>> listOfRequiredChoices;	//list of list with "one of these" parameters
+	public List<String> listOfChoiceQuestions;					//list with the questions to the required choices
+	private List<ApiInterface> services; 			//services used
+	private Map<String, String> customAnswerMap;	//use this to add answers to your service
+	private List<String> answerParameters;			//list of parameters that are used to build the answer. The order matters!
 	
 	/**
 	 * InterviewInfo can be generated out of a command and an API_Info of a service module.
@@ -57,14 +57,14 @@ public class InterviewInfo {
 	/**
 	 * Store the services.
 	 */
-	public InterviewInfo setServices(ArrayList<ApiInterface> services){
+	public InterviewInfo setServices(List<ApiInterface> services){
 		this.services = services;
 		return this;
 	}
 	/**
 	 * Get the services.
 	 */
-	public ArrayList<ApiInterface> getServices(){
+	public List<ApiInterface> getServices(){
 		return services;
 	}
 	
@@ -100,7 +100,7 @@ public class InterviewInfo {
 	/**
 	 * Get the names of the parameters (keys) their values inside resultInfo should be used for the answer. Order is preserved.
 	 */
-	public ArrayList<String> getAnswerParameters(){
+	public List<String> getAnswerParameters(){
 		return answerParameters;
 	}
 	
@@ -148,7 +148,7 @@ public class InterviewInfo {
 		}
 		if (listOfRequiredChoices != null && !listOfRequiredChoices.isEmpty()){
 			JSONArray requiredChoices = new JSONArray();
-			for (ArrayList<Parameter> l : listOfRequiredChoices){
+			for (List<Parameter> l : listOfRequiredChoices){
 				JSONArray ja = new JSONArray();
 				for (Parameter p : l){
 					JSONObject jo = new JSONObject();

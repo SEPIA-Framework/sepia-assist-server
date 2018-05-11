@@ -117,17 +117,17 @@ public class Alarms_Basic implements ApiInterface{
 		Parameter clockP = nluResult.getOptionalParameter(PARAMETERS.CLOCK, "");
 		String dateTime = (String) clockP.getDataFieldOrDefault(InterviewData.DATE_TIME);
 		
-		api.resultInfo_add("day", dateDay);
-		api.resultInfo_add("time", dateTime.replaceFirst(":\\d\\d$", "").trim());
+		api.resultInfoPut("day", dateDay);
+		api.resultInfoPut("time", dateTime.replaceFirst(":\\d\\d$", "").trim());
 		
 		//-alarm type
 		Parameter alarmTypeP = nluResult.getOptionalParameter(PARAMETERS.ALARM_TYPE, "");
 		String alarmType = alarmTypeP.getValueAsString().replaceAll("^<|>$", "").trim();
 		String alarmTypeToSay = (String) alarmTypeP.getDataFieldOrDefault(InterviewData.VALUE_LOCAL);
 		if (!alarmTypeToSay.isEmpty()){
-			api.resultInfo_add("type", alarmTypeToSay);
+			api.resultInfoPut("type", alarmTypeToSay);
 		}else{
-			api.resultInfo_add("type", alarmType);
+			api.resultInfoPut("type", alarmType);
 		}
 		boolean isTimer = alarmType.equals(AlarmType.Type.timer.name());
 		boolean isAlarm = alarmType.equals(AlarmType.Type.alarmClock.name());
@@ -182,7 +182,7 @@ public class Alarms_Basic implements ApiInterface{
 			}else{
 				//TODO: this is a quick workaround to treat reminders and appointments as alarm clock but we need a name
 				api.setIncompleteAndAsk(PARAMETERS.ALARM_NAME, askReminderName);
-				ApiResult result = api.build_API_result();
+				ApiResult result = api.buildApiResult();
 				return result;
 			}
 		}
@@ -190,7 +190,7 @@ public class Alarms_Basic implements ApiInterface{
 			api.setStatusOkay();
 			api.setCustomAnswer(answerToDo);
 			
-			ApiResult result = api.build_API_result();
+			ApiResult result = api.buildApiResult();
 			return result;
 		}
 		
@@ -205,7 +205,7 @@ public class Alarms_Basic implements ApiInterface{
 				}else{
 					api.setIncompleteAndAsk(PARAMETERS.CLOCK, askAlarmClock);
 				}
-				ApiResult result = api.build_API_result();
+				ApiResult result = api.buildApiResult();
 				return result;
 			}
 			//note: since we split date and time here and can ask separately for time we have to add it all together in the end
@@ -244,7 +244,7 @@ public class Alarms_Basic implements ApiInterface{
 				api.setCustomAnswer(timeIsPast);
 				api.setStatusOkay();
 				
-				ApiResult result = api.build_API_result();
+				ApiResult result = api.buildApiResult();
 				return result;
 				
 			}else{
@@ -264,7 +264,7 @@ public class Alarms_Basic implements ApiInterface{
 			//server communication error?
 			if (udlList == null){
 				api.setStatusFail();
-				ApiResult result = api.build_API_result();
+				ApiResult result = api.buildApiResult();
 				return result;
 			
 			//no list result found ... create one
@@ -283,7 +283,7 @@ public class Alarms_Basic implements ApiInterface{
 					//build answer - list is too big
 					api.setStatusOkay();
 					api.setCustomAnswer(listTooLong);
-					ApiResult result = api.build_API_result();
+					ApiResult result = api.buildApiResult();
 					return result;
 				}
 			}
@@ -292,7 +292,7 @@ public class Alarms_Basic implements ApiInterface{
 			if (isTimer){			
 				//answer
 				api.setCustomAnswer(answerSetTimer);
-				api.resultInfo_add("time", DateTimeConverters.getSpeakableDuration(nluResult.language, diffDays, diffHours, diffMinutes, diffSeconds));
+				api.resultInfoPut("time", DateTimeConverters.getSpeakableDuration(nluResult.language, diffDays, diffHours, diffMinutes, diffSeconds));
 				
 				String name = "";
 				if (alarmName != null && !alarmName.isEmpty()){
@@ -315,12 +315,12 @@ public class Alarms_Basic implements ApiInterface{
 				
 				//action
 				//TODO: make action fields identical to listElements?
-				api.actionInfo_add_action(ACTIONS.TIMER);
-					api.actionInfo_put_info("info", "set");
-					api.actionInfo_put_info("targetTimeUnix", timeUnix);
-					api.actionInfo_put_info("name", name);
-					api.actionInfo_put_info("eventId", "timer-" + eventIdSuffix);
-					api.actionInfo_put_info("eleType", UserDataList.EleType.timer.name());
+				api.addAction(ACTIONS.TIMER);
+					api.putActionInfo("info", "set");
+					api.putActionInfo("targetTimeUnix", timeUnix);
+					api.putActionInfo("name", name);
+					api.putActionInfo("eventId", "timer-" + eventIdSuffix);
+					api.putActionInfo("eleType", UserDataList.EleType.timer.name());
 				
 			}else if (isAlarm){
 				String repeat = "onetime";
@@ -335,7 +335,7 @@ public class Alarms_Basic implements ApiInterface{
 				}else{
 					api.setCustomAnswer(answerSetAlarmFar);
 				}
-				api.resultInfo_add("day", speakableDay);
+				api.resultInfoPut("day", speakableDay);
 				
 				String name = "";
 				if (alarmName != null && !alarmName.isEmpty()){
@@ -361,30 +361,30 @@ public class Alarms_Basic implements ApiInterface{
 				
 				//action
 				//TODO: make action fields identical to listElements?
-				api.actionInfo_add_action(ACTIONS.ALARM);
-					api.actionInfo_put_info("info", "set");
-					api.actionInfo_put_info("targetTimeUnix", timeUnix);
-					api.actionInfo_put_info("day", speakableDay);
-					api.actionInfo_put_info("time", dateTime);
-					api.actionInfo_put_info("date", speakableDate);
-					api.actionInfo_put_info("repeat", repeat);
-					api.actionInfo_put_info("name", name);
-					api.actionInfo_put_info("eleType", UserDataList.EleType.alarm.name());
-					api.actionInfo_put_info("eventId", "alarm-" + eventIdSuffix);
+				api.addAction(ACTIONS.ALARM);
+					api.putActionInfo("info", "set");
+					api.putActionInfo("targetTimeUnix", timeUnix);
+					api.putActionInfo("day", speakableDay);
+					api.putActionInfo("time", dateTime);
+					api.putActionInfo("date", speakableDate);
+					api.putActionInfo("repeat", repeat);
+					api.putActionInfo("name", name);
+					api.putActionInfo("eleType", UserDataList.EleType.alarm.name());
+					api.putActionInfo("eventId", "alarm-" + eventIdSuffix);
 			}
 			
 			//update list
 			boolean updateSuccess = writeTimeEventsList(userData, user, activeList);
 			if (!updateSuccess){
 				api.setStatusFail();
-				ApiResult result = api.build_API_result();
+				ApiResult result = api.buildApiResult();
 				return result;
 			
 			}else{
 				api.setStatusSuccess();
 			}
 			
-			ApiResult result = api.build_API_result();
+			ApiResult result = api.buildApiResult();
 			return result;
 		
 		//SHOW
@@ -423,7 +423,7 @@ public class Alarms_Basic implements ApiInterface{
 						long diffHours = diff.get("hh");
 						long diffMinutes = diff.get("mm");
 						long diffSeconds = diff.get("ss");
-						api.resultInfo_add("time", DateTimeConverters.getSpeakableDuration(api.language, diffDays, diffHours, diffMinutes, diffSeconds));
+						api.resultInfoPut("time", DateTimeConverters.getSpeakableDuration(api.language, diffDays, diffHours, diffMinutes, diffSeconds));
 						api.setCustomAnswer(answerNextTimer);
 					}
 					
@@ -433,15 +433,15 @@ public class Alarms_Basic implements ApiInterface{
 					}else{
 						//day should be nice already
 						//String speakableDay = Tools_DateTime.getSpeakableDate(JSON.getString(nextAlarm, "day"), "yyyy.MM.dd", api.language);
-						api.resultInfo_add("time", JSON.getString(nextAlarm, "time").replaceFirst(":\\d\\d$", "").trim());
-						api.resultInfo_add("day", JSON.getString(nextAlarm, "day"));
+						api.resultInfoPut("time", JSON.getString(nextAlarm, "time").replaceFirst(":\\d\\d$", "").trim());
+						api.resultInfoPut("day", JSON.getString(nextAlarm, "day"));
 						api.setCustomAnswer(answerNextAlarm);
 					}
 				}
 				api.setStatusSuccess();
 			}
 			
-			ApiResult result = api.build_API_result();
+			ApiResult result = api.buildApiResult();
 			return result;
 		
 		//REMOVE
@@ -458,7 +458,7 @@ public class Alarms_Basic implements ApiInterface{
 				}else{
 					api.confirmActionOrParameter("do_remove", areYouSureAlarm);
 				}
-				ApiResult result = api.build_API_result();
+				ApiResult result = api.buildApiResult();
 				return result;
 			
 			}else if (confirmStatus == 1){
@@ -489,15 +489,15 @@ public class Alarms_Basic implements ApiInterface{
 						boolean updateSuccess = writeTimeEventsList(userData, user, searchResult.activeList);
 						if (!updateSuccess){
 							api.setStatusFail();
-							ApiResult result = api.build_API_result();
+							ApiResult result = api.buildApiResult();
 							return result;
 						
 						}						
 						//action
-						api.actionInfo_add_action(ACTIONS.ALARM);
-							api.actionInfo_put_info("info", "remove");
-							api.actionInfo_put_info("targetTimeUnix", JSON.getLongOrDefault(nextAlarm, "targetTimeUnix", 0));
-							api.actionInfo_put_info("eventId", JSON.getString(nextAlarm, "eventId"));
+						api.addAction(ACTIONS.ALARM);
+							api.putActionInfo("info", "remove");
+							api.putActionInfo("targetTimeUnix", JSON.getLongOrDefault(nextAlarm, "targetTimeUnix", 0));
+							api.putActionInfo("eventId", JSON.getString(nextAlarm, "eventId"));
 							
 						if (isTimer){
 							api.setCustomAnswer(answerRemoveTimers);
@@ -508,7 +508,7 @@ public class Alarms_Basic implements ApiInterface{
 					}
 				}
 				
-				ApiResult result = api.build_API_result();
+				ApiResult result = api.buildApiResult();
 				return result;
 			
 			}else{
@@ -516,7 +516,7 @@ public class Alarms_Basic implements ApiInterface{
 				api.setStatusOkay();
 				api.setCustomAnswer(okNo);
 				
-				ApiResult result = api.build_API_result();
+				ApiResult result = api.buildApiResult();
 				return result;
 			}
 		
@@ -526,7 +526,7 @@ public class Alarms_Basic implements ApiInterface{
 			Debugger.println(getClass().getName() + " - unknown action: '" + action + "', type: '" + alarmType + "' or error!", 3);
 		}
 		
-		ApiResult result = api.build_API_result();
+		ApiResult result = api.buildApiResult();
 		return result;
 	}
 	

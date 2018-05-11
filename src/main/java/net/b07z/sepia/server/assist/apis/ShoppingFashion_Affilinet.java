@@ -234,7 +234,7 @@ public class ShoppingFashion_Affilinet implements ApiInterface{
 		}
 		
 		itemToSay = itemToSay.replaceAll("\\s+", " ").trim();
-		api.resultInfo_add("item", itemToSay);
+		api.resultInfoPut("item", itemToSay);
 		
 		Debugger.println("cmd: shopping, item: " + itemToSay, 2);		//debug
 		
@@ -277,7 +277,7 @@ public class ShoppingFashion_Affilinet implements ApiInterface{
 		//check result
 		if (products.isEmpty()){
 			//build the API_Result and goodbye
-			ApiResult result = api.build_API_result(); 
+			ApiResult result = api.buildApiResult(); 
 			return result;
 		}
 		
@@ -469,7 +469,7 @@ public class ShoppingFashion_Affilinet implements ApiInterface{
 		api.status = "success";
 		
 		//finally build the API_Result
-		ApiResult result = api.build_API_result();
+		ApiResult result = api.buildApiResult();
 				
 		//return result_JSON.toJSONString();
 		return result;

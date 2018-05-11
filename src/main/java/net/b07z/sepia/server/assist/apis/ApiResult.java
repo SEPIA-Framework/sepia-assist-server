@@ -20,7 +20,7 @@ import net.b07z.sepia.server.core.tools.JSON;
 public class ApiResult {
 	
 	String answer = "";							//spoken answer (can include html code like links, spans, line break etc.)
-	String answer_clean = "";					//clean spoken answer (without html code)
+	String answerClean = "";					//clean spoken answer (without html code)
 	String htmlInfo = "";						//extended html content to answer (e.g. for info center) - TODO: implement default classes e.g. <div class="b07z_header"> or so
 	JSONArray cardInfo = new JSONArray();		//compact info for "cards"
 	JSONArray actionInfo = new JSONArray();		//action parameters send to browser (actionType: open_link/execute/open_app ..., info: ...)
@@ -38,9 +38,9 @@ public class ApiResult {
 	String context = "default";
 	int mood = -1;
 	
-	String response_type = "info";				//response type is used on client side to post info/answer question/action command
-	String input_miss = "";						//"what did I ask again?" - pass around the missing parameter, hopefully the client sends it back ^^ 
-	int dialog_stage = 0;						//dialog_stage as seen in NLU_Input (only set when modified inside API) send to client and client should send back
+	String responseType = "info";				//response type is used on client side to post info/answer question/action command
+	String inputMiss = "";						//"what did I ask again?" - pass around the missing parameter, hopefully the client sends it back ^^ 
+	int dialogStage = 0;						//dialog_stage as seen in NLU_Input (only set when modified inside API) send to client and client should send back
 	
 	//not (yet) in JSON result included:
 	String environment = "default";
@@ -62,14 +62,14 @@ public class ApiResult {
 	 * @param answer - answer the assistant can speak (can include HTML code, client needs to filter)
 	 * @param htmlInfo - extended HTML code for e.g. info center to give a nice presentation of the search result
 	 * @param hasInfo - indicates if extended HTML is available (true/false)
-	 * @param result_JSON - result as JSON object to send to client
+	 * @param resulJSON - result as JSON object to send to client
 	 */
-	public ApiResult (String status, String answer, String htmlInfo, boolean hasInfo, JSONObject result_JSON){
+	public ApiResult (String status, String answer, String htmlInfo, boolean hasInfo, JSONObject resulJSON){
 		this.status = status;
 		this.answer = answer;
 		this.htmlInfo = htmlInfo;
 		this.hasInfo = hasInfo;
-		this.result_JSON = result_JSON;
+		this.result_JSON = resulJSON;
 	}
 	/**
 	 * In addition to the basic constructor this one includes a clean answer and an additional "cards" JSON Object 
@@ -87,7 +87,7 @@ public class ApiResult {
 	public ApiResult (String status, String answer, String answer_clean, String htmlInfo, JSONArray cardInfo, boolean hasInfo, boolean hasCard){
 		this.status = status;
 		this.answer = answer;
-		this.answer_clean = answer_clean;
+		this.answerClean = answer_clean;
 		this.htmlInfo = htmlInfo;
 		this.cardInfo = cardInfo;
 		this.hasInfo = hasInfo;
@@ -121,7 +121,7 @@ public class ApiResult {
 	public ApiResult (String status, String answer, String answer_clean, String htmlInfo, JSONArray cardInfo, JSONArray actionInfo, boolean hasInfo, boolean hasCard, boolean hasAction){
 		this.status = status;
 		this.answer = answer;
-		this.answer_clean = answer_clean;
+		this.answerClean = answer_clean;
 		this.htmlInfo = htmlInfo;
 		this.cardInfo = cardInfo;
 		this.actionInfo = actionInfo;
@@ -191,7 +191,7 @@ public class ApiResult {
 	 * @return
 	 */
 	public String getAnswerStringClean(){
-		return answer_clean;
+		return answerClean;
 	}
 	
 	/**
@@ -219,13 +219,13 @@ public class ApiResult {
 	 * Get the response type of this result ("question", "info", ...).
 	 */
 	public String getResponseType(){
-		return response_type;
+		return responseType;
 	}
 	/**
 	 * Get the missing input if there is one.
 	 */
 	public String getMissingInput(){
-		return input_miss;
+		return inputMiss;
 	}
 	
 	/**

@@ -54,7 +54,7 @@ public class Events_Service implements ApiInterface{
 		}
 				
 		//build the API_Result
-		ApiResult result = api.build_API_result();
+		ApiResult result = api.buildApiResult();
 		
 		return result;
 	}

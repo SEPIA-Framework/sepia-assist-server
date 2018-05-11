@@ -2,6 +2,7 @@ package net.b07z.sepia.server.assist.interviews;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import net.b07z.sepia.server.assist.apis.ApiInterface;
@@ -41,7 +42,7 @@ public class Interview {
 	public static final String TYPE_GEOCODING = "<geocoding>"; 						 
 	
 	//
-	public NluResult nlu_result;				//keep a reference to the NLU_Result for building API_Result
+	public NluResult nluResult;				//keep a reference to the NLU_Result for building API_Result
 	public User user;							//reference to the user created by NLU_Result
 	private Set<String> finals;			//final parameters as list
 	private Set<String> dynamics;		//dynamic parameters as list. Dynamic parameters are used to add parameters to the interview handler that were previously not in required or optionals etc. ...
@@ -52,7 +53,7 @@ public class Interview {
 	 * @param NLU_result - result coming from NL-Processor
 	 */
 	public Interview(NluResult NLU_result){
-		this.nlu_result = NLU_result;
+		this.nluResult = NLU_result;
 		this.user = NLU_result.input.user;
 		//get final parameters
 		finals = new HashSet<>();
@@ -84,7 +85,7 @@ public class Interview {
 	 * @param parameter - Parameter as defined by service module or interview
 	 */
 	public String getParameterInput(Parameter parameter){
-		String input = nlu_result.getParameter(parameter.getName());
+		String input = nluResult.getParameter(parameter.getName());
 		parameter.setInput(input);
 		return input;
 	}
@@ -98,10 +99,10 @@ public class Interview {
 	 * @return API_Result to send back to client
 	 */
 	public ApiResult ask(String parameter, String question, String failMsg){
-		if (nlu_result.input.isRepeatedAnswerToParameter(parameter) < 2){
-			return AskClient.question(question, parameter, nlu_result);
+		if (nluResult.input.isRepeatedAnswerToParameter(parameter) < 2){
+			return AskClient.question(question, parameter, nluResult);
 		}else{
-			return NoResult.get(nlu_result, failMsg);
+			return NoResult.get(nluResult, failMsg);
 		}
 	}
 	/**
@@ -138,8 +139,8 @@ public class Interview {
 	 */
 	public void makeFinal(String parameter, String finalValue){
 		finals.add(parameter);
-		nlu_result.setParameter(parameter, finalValue);
-		nlu_result.setParameter(PARAMETERS.FINAL, finals.toString().replaceAll("\\s+", ""));
+		nluResult.setParameter(parameter, finalValue);
+		nluResult.setParameter(PARAMETERS.FINAL, finals.toString().replaceAll("\\s+", ""));
 	}
 	
 	/**
@@ -159,18 +160,18 @@ public class Interview {
 	 */
 	public void removeDynamic(String parameter){
 		dynamics.remove(parameter);
-		nlu_result.setParameter(PARAMETERS.DYNAMIC, dynamics.toString().replaceAll("\\s+", ""));
+		nluResult.setParameter(PARAMETERS.DYNAMIC, dynamics.toString().replaceAll("\\s+", ""));
 	}
 	
 	/**
 	 * Get all API_Results from services.
 	 * @param refList - list of services (String)
 	 */
-	public ArrayList<ApiResult> getServiceResultsFromStringList(ArrayList<String> refList){
-		ArrayList<ApiResult> res = new ArrayList<>();
+	public List<ApiResult> getServiceResultsFromStringList(List<String> refList){
+		List<ApiResult> res = new ArrayList<>();
 		for (String a : refList){
 			ApiInterface api = (ApiInterface) ClassBuilder.construct(a);
-			res.add(api.getResult(nlu_result));
+			res.add(api.getResult(nluResult));
 		}
 		return res;
 	}
@@ -178,10 +179,10 @@ public class Interview {
 	 * Get all API_Results from services.
 	 * @param apiList - list of services (API_Interface)
 	 */
-	public ArrayList<ApiResult> getServiceResults(ArrayList<ApiInterface> apiList){
-		ArrayList<ApiResult> res = new ArrayList<>();
+	public List<ApiResult> getServiceResults(List<ApiInterface> apiList){
+		List<ApiResult> res = new ArrayList<>();
 		for (ApiInterface api : apiList){
-			res.add(api.getResult(nlu_result));
+			res.add(api.getResult(nluResult));
 		}
 		return res;
 	}
@@ -199,16 +200,16 @@ public class Interview {
 		//System.out.println("handleInterviewAction - res: " + getResult); 		//debug
 		if (data[0].equals(ACTION_ADD)){
 			if (data[1].contains(TYPE_SPECIFIC_LOCATION)){
-				nlu_result.setParameter(PARAMETERS.TYPE, "addresses");
+				nluResult.setParameter(PARAMETERS.TYPE, "addresses");
 			}else if (data[1].contains(TYPE_PERSONAL_LOCATION)){
-				nlu_result.setParameter(PARAMETERS.TYPE, "favorites");
+				nluResult.setParameter(PARAMETERS.TYPE, "favorites");
 			}else if (data[1].contains(TYPE_PERSONAL_CONTACT)){
-				nlu_result.setParameter(PARAMETERS.TYPE, "contacts");
+				nluResult.setParameter(PARAMETERS.TYPE, "contacts");
 			}
-			nlu_result.setParameter(PARAMETERS.INFO, data[2]);
-			nlu_result.setParameter(PARAMETERS.REPLY, customReply);
-			nlu_result.setParameter(PARAMETERS.ACTION, "add");
-			return ConfigServices.dashboard.getResult(nlu_result);
+			nluResult.setParameter(PARAMETERS.INFO, data[2]);
+			nluResult.setParameter(PARAMETERS.REPLY, customReply);
+			nluResult.setParameter(PARAMETERS.ACTION, "add");
+			return ConfigServices.dashboard.getResult(nluResult);
 		}
 		//TODO: add more actions
 		Debugger.println("handleInterviewAction(...) is missing a handler for: " + getResult, 1);
@@ -225,22 +226,22 @@ public class Interview {
 		String[] data = getResult.split(";;");
 		if (data[0].equals(ERROR_MISSING)){
 			if (data[2] != null && data[2].equals("<user_location>")){
-				Debugger.println("NO_RESULT: " + nlu_result.input.text_raw + " - due to missing GPS", 3);		//debug
-				return NoResult.get(nlu_result, "default_miss_user_location_0a");
+				Debugger.println("NO_RESULT: " + nluResult.input.text_raw + " - due to missing GPS", 3);		//debug
+				return NoResult.get(nluResult, "default_miss_user_location_0a");
 			}else{
-				Debugger.println("NO_RESULT: " + nlu_result.input.text_raw + " - due to missing DATA", 3);		//debug
-				return NoResult.get(nlu_result, "default_miss_info_0a");
+				Debugger.println("NO_RESULT: " + nluResult.input.text_raw + " - due to missing DATA", 3);		//debug
+				return NoResult.get(nluResult, "default_miss_info_0a");
 			}
 		}else if (data[0].equals(ERROR_API_FAIL)){
 			if (data[1].equals(TYPE_GEOCODING) && data[2].matches("<user_location>|<user_home>|<user_work>")){
-				Debugger.println("NO_RESULT: " + nlu_result.input.text_raw + " - due to failed API request: " + data[1] + ";;" + data[2], 3);	//debug
-				return NoResult.get(nlu_result, "error_geo_location_personal_0a");
+				Debugger.println("NO_RESULT: " + nluResult.input.text_raw + " - due to failed API request: " + data[1] + ";;" + data[2], 3);	//debug
+				return NoResult.get(nluResult, "error_geo_location_personal_0a");
 			}else if (data[1].equals(TYPE_GEOCODING)){
-				Debugger.println("NO_RESULT: " + nlu_result.input.text_raw + " - due to failed API request: " + data[1] + ";;" + data[2], 3);	//debug
-				return NoResult.get(nlu_result, "error_geo_location_0a");
+				Debugger.println("NO_RESULT: " + nluResult.input.text_raw + " - due to failed API request: " + data[1] + ";;" + data[2], 3);	//debug
+				return NoResult.get(nluResult, "error_geo_location_0a");
 			}else{
-				Debugger.println("NO_RESULT: " + nlu_result.input.text_raw + " - due to failed API request: " + data[1] + ";;" + data[2], 3);	//debug
-				return NoResult.get(nlu_result, "error_0a");
+				Debugger.println("NO_RESULT: " + nluResult.input.text_raw + " - due to failed API request: " + data[1] + ";;" + data[2], 3);	//debug
+				return NoResult.get(nluResult, "error_0a");
 			}
 		}
 		//TODO: add more errors
@@ -272,7 +273,7 @@ public class Interview {
 		String input = p.getInput();
 		String parameter = p.getName();
 		Parameter_Handler handler = p.getHandler();
-		handler.setup(nlu_result);
+		handler.setup(nluResult);
 		
 		//return buildParameterOrComment(input, parameter, handler);
 		
@@ -295,7 +296,7 @@ public class Interview {
 				
 			//else clear and ignore
 			}else{
-				nlu_result.removeParameter(p.getName());
+				nluResult.removeParameter(p.getName());
 				return null;
 			}
 			
@@ -310,7 +311,7 @@ public class Interview {
 		//everything else can only mean complete fail now. Usually this point should never be reached.
 		}else{
 			Debugger.println("buildParameterOrComment(...) gave no result at all! Parameter: " + parameter + ", Input was: " + input, 1);
-			return NoResult.get(nlu_result);
+			return NoResult.get(nluResult);
 		}
 	}
 	/**

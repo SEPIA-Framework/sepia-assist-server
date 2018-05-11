@@ -1,6 +1,6 @@
 package net.b07z.sepia.server.assist.interviews;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import net.b07z.sepia.server.assist.apis.ApiInterface;
 import net.b07z.sepia.server.assist.apis.ApiResult;
@@ -12,7 +12,7 @@ import net.b07z.sepia.server.assist.interpreters.NluResult;
  * @author Florian Quirin
  *
  */
-public interface Interview_Interface {
+public interface InterviewInterface {
 	
 	/**
 	 * Connect command from CMD... This is necessary to load the correct services etc..
@@ -22,15 +22,15 @@ public interface Interview_Interface {
 	/**
 	 * Set services used by this interview. If this is not used the interview module tries to load them from mapping.
 	 */
-	public void setServices(ArrayList<ApiInterface> services);
+	public void setServices(List<ApiInterface> services);
 	
 	/**
 	 * Get the Interview_Result for this interview. Should interview the user until all required parameters are available.
 	 * To make life easier start every "interview" with "Interview i = new Interview(NLU_result)" and use the i.xy methods.
 	 * 
-	 * @param NLU_result - the result of the natural language processing containing all the extracted parameters and user input.
+	 * @param nluResult - the result of the natural language processing containing all the extracted parameters and user input.
 	 */
-	public InterviewResult getMissingParameters(NluResult NLU_result);
+	public InterviewResult getMissingParameters(NluResult nluResult);
 	
 	/**
 	 * Take an interview result and get the according service results.

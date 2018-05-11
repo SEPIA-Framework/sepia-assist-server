@@ -55,7 +55,7 @@ public class NluResult {
 	
 	//all NLP results are stored here:
 	List<String> possibleCMDs = new ArrayList<String>();			//make a list of possible interpretations (commands) of the text
-	List<HashMap<String, String>> possibleParameters = new ArrayList<HashMap<String, String>>();		//possible parameters of these commands
+	List<Map<String, String>> possibleParameters = new ArrayList<>();		//possible parameters of these commands
 	List<Integer> possibleScore = new ArrayList<Integer>();		//save scores to decide which one is correct/best command
 	
 	/**
@@ -82,7 +82,7 @@ public class NluResult {
 	 * @param possibleScore - scores of the identified commands (how certain is the NLP that this is the right result? values 0-1)
 	 * @param bestScoreIndex - index of the best result (highest score) 
 	 */
-	public NluResult(ArrayList<String> possibleCMDs, ArrayList<HashMap<String, String>> possibleParameters, ArrayList<Integer> possibleScore, int bestScoreIndex){
+	public NluResult(List<String> possibleCMDs, List<Map<String, String>> possibleParameters, List<Integer> possibleScore, int bestScoreIndex){
 		setBestResult(possibleCMDs, possibleParameters, possibleScore, bestScoreIndex);
 	}
 	
@@ -109,7 +109,7 @@ public class NluResult {
 	 * @param possibleScore - scores of the identified commands (how certain is the NLP that this is the right result? values 0-1)
 	 * @param bestScoreIndex - index of the best result (highest score) 
 	 */
-	public void setBestResult(ArrayList<String> possibleCMDs, ArrayList<HashMap<String, String>> possibleParameters, ArrayList<Integer> possibleScore, int bestScoreIndex){
+	public void setBestResult(List<String> possibleCMDs, List<Map<String, String>> possibleParameters, List<Integer> possibleScore, int bestScoreIndex){
 		this.possibleCMDs = possibleCMDs;
 		this.possibleParameters = possibleParameters;
 		this.possibleScore = possibleScore;

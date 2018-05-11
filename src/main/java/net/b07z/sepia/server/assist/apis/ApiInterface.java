@@ -18,15 +18,15 @@ public interface ApiInterface {
 	 * adjusted to handle non-standard output besides answer, info, card and action.<br>
 	 * To make life easier start every plug-in with "API api = new API(NLU_result)" and use the api.xy methods.
 	 * 
-	 * @param NLU_result - the result of the natural language processing containing all the extracted parameters and user input.
-	 * @return API_Result
+	 * @param nluResult - the result of the natural language processing containing all the extracted parameters and user input.
+	 * @return ApiResult
 	 */
-	public ApiResult getResult(NluResult NLU_result);
+	public ApiResult getResult(NluResult nluResult);
 	
 	/**
 	 * Get all necessary info about the service/API.
 	 * @param language - language code ("de", "en", ...)
-	 * @return API_Info
+	 * @return ApiInfo
 	 */
 	public ApiInfo getInfo(String language);
 	

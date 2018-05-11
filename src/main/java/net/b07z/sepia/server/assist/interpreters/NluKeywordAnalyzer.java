@@ -3,6 +3,8 @@ package net.b07z.sepia.server.assist.interpreters;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import net.b07z.sepia.server.assist.apis.ApiInfo;
@@ -40,7 +42,7 @@ public class NluKeywordAnalyzer implements NluInterface {
 	 * @return new index position in possibleCMDs, will be unchanged to input if custom service regEx is not found in 'text'
 	 */
 	public static int abstractRegExAnalyzer(String text, NluInput input, ApiInterface service,
-						ArrayList<String> possibleCMDs, ArrayList<Integer> possibleScore, ArrayList<HashMap<String, String>> possibleParameters,
+						List<String> possibleCMDs, List<Integer> possibleScore, List<Map<String, String>> possibleParameters,
 						int index){
 		//get service info
 		ApiInfo serviceInfo = service.getInfo(input.language);
@@ -58,8 +60,8 @@ public class NluKeywordAnalyzer implements NluInterface {
 			possibleScore.add(1 + serviceInfo.getCustomTriggerRegXscoreBoost());	index++;
 			
 			//get all parameters
-			ArrayList<Parameter> paramsList = serviceInfo.getAllParameters();
-			HashMap<String, String> pv = new HashMap<String, String>(); 		//TODO: pass this down to avoid additional checking?
+			List<Parameter> paramsList = serviceInfo.getAllParameters();
+			Map<String, String> pv = new HashMap<>(); 		//TODO: pass this down to avoid additional checking?
 			if (!paramsList.isEmpty()){
 				String[] params = new String[paramsList.size()];
 				int i = 0;
@@ -98,9 +100,9 @@ public class NluKeywordAnalyzer implements NluInterface {
 		}
 		
 		//first rough check for main keywords
-		ArrayList<String> possibleCMDs = new ArrayList<String>();		//make a list of possible interpretations of the text
-		ArrayList<HashMap<String, String>> possibleParameters = new ArrayList<HashMap<String, String>>();		//possible parameters
-		ArrayList<Integer> possibleScore = new ArrayList<Integer>();	//make scores to decide which one is correct command
+		List<String> possibleCMDs = new ArrayList<>();			//make a list of possible interpretations of the text
+		List<Map<String, String>> possibleParameters = new ArrayList<>();		//possible parameters
+		List<Integer> possibleScore = new ArrayList<>();		//make scores to decide which one is correct command
 		int index = -1;
 		
 		
@@ -121,7 +123,7 @@ public class NluKeywordAnalyzer implements NluInterface {
 		*/
 		
 		//Abstract analyzer (should come at the end because of lower priority?)
-		ArrayList<ApiInterface> services = ConfigServices.getCustomServicesList(input, input.user);
+		List<ApiInterface> services = ConfigServices.getCustomServicesList(input, input.user);
 		for (ApiInterface service : services){
 		index = abstractRegExAnalyzer(text, input, service,
 				possibleCMDs, possibleScore, possibleParameters, index);
@@ -136,7 +138,7 @@ public class NluKeywordAnalyzer implements NluInterface {
 			possibleScore.add(1);	index++;
 			possibleScore.set(index, 1000); 	//definitely this!
 			
-			HashMap<String, String> pv = new HashMap<String, String>();
+			Map<String, String> pv = new HashMap<String, String>();
 				pv.put(PARAMETERS.REPEAT_THIS, this_text);
 			possibleParameters.add(pv);
 		}	

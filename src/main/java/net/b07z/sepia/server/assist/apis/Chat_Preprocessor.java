@@ -107,8 +107,8 @@ public class Chat_Preprocessor implements ApiInterface{
 					//add help action
 					String data = Help.getSkillList(api.language);
 						
-					api.actionInfo_add_action(ACTIONS.SHOW_HTML_RESULT);
-					api.actionInfo_put_info("data", data);
+					api.addAction(ACTIONS.SHOW_HTML_RESULT);
+					api.putActionInfo("data", data);
 					api.hasAction = true;
 					
 					api.answer = Config.answers.getAnswer(NLU_result, "chat_skills_0a");
@@ -229,13 +229,13 @@ public class Chat_Preprocessor implements ApiInterface{
 		//finish:
 		
 		//get clean answer
-		api.answer_clean = Converters.removeHTML(api.answer);
+		api.answerClean = Converters.removeHTML(api.answer);
 		
 		//anything else?
 		api.context = CMD.CHAT;				//how do we handle chat contexts? Just like that and do the rest with cmd_summary?
 		
 		//finally build the API_Result
-		ApiResult result = api.build_API_result();
+		ApiResult result = api.buildApiResult();
 				
 		//return result_JSON.toJSONString();
 		return result;

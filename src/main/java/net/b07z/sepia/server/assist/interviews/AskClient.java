@@ -41,11 +41,11 @@ public class AskClient {
 		//System.out.println("Dialog stage/Last CMD rep.: " + NLU_result.input.dialog_stage + "/" + NLU_result.input.last_cmd_N);
 		
 		//make this a question
-		api.make_this_a_Question(missing_input_param); 
+		api.makeThisAQuestion(missing_input_param); 
 		
 		//get answer/question to client
 		api.answer = Config.answers.getAnswer(NLU_result, question_key, wildcards);
-		api.answer_clean = Converters.removeHTML(api.answer);
+		api.answerClean = Converters.removeHTML(api.answer);
 		//remove vocal smileys
 		api.answer = AnswerTools.cleanHtmlAnswer(api.answer);
 		
@@ -53,31 +53,31 @@ public class AskClient {
 		
 		//anything else?
 		api.context = NLU_result.context;				//the context remains the previous one
-		api.cmd_summary = NLU_result.cmd_summary;		//cmd_summary is very important here because it's needed to fuse answer and initial command later
+		api.cmdSummary = NLU_result.cmd_summary;		//cmd_summary is very important here because it's needed to fuse answer and initial command later
 		
 		//if there is a question offer abort button
-		api.actionInfo_add_action(ACTIONS.SHOW_ABORT_OPTION);
+		api.addAction(ACTIONS.SHOW_ABORT_OPTION);
 		api.hasAction = true;
 		
 		//add yes / no button if the command fits
 		if (missing_input_param.equals(PARAMETERS.YES_NO)){
 			String yes = YesNo.getLocal("<yes>", NLU_result.language);
-			api.actionInfo_add_action(ACTIONS.BUTTON_CMD);
-			api.actionInfo_put_info("title", yes);
-			api.actionInfo_put_info("info", "direct_cmd");
-			api.actionInfo_put_info("cmd", api.cmd_summary.replaceFirst(PARAMETERS.YES_NO + "=.*?;;", PARAMETERS.YES_NO + "=<yes>"));
-			api.actionInfo_put_info("visibility", "inputHidden");
+			api.addAction(ACTIONS.BUTTON_CMD);
+			api.putActionInfo("title", yes);
+			api.putActionInfo("info", "direct_cmd");
+			api.putActionInfo("cmd", api.cmdSummary.replaceFirst(PARAMETERS.YES_NO + "=.*?;;", PARAMETERS.YES_NO + "=<yes>"));
+			api.putActionInfo("visibility", "inputHidden");
 			
 			String no = YesNo.getLocal("<no>", NLU_result.language);
-			api.actionInfo_add_action(ACTIONS.BUTTON_CMD);
-			api.actionInfo_put_info("title", no);
-			api.actionInfo_put_info("info", "direct_cmd");
-			api.actionInfo_put_info("cmd", api.cmd_summary.replaceFirst(PARAMETERS.YES_NO + "=.*?;;", PARAMETERS.YES_NO + "=<no>"));
-			api.actionInfo_put_info("visibility", "inputHidden");
+			api.addAction(ACTIONS.BUTTON_CMD);
+			api.putActionInfo("title", no);
+			api.putActionInfo("info", "direct_cmd");
+			api.putActionInfo("cmd", api.cmdSummary.replaceFirst(PARAMETERS.YES_NO + "=.*?;;", PARAMETERS.YES_NO + "=<no>"));
+			api.putActionInfo("visibility", "inputHidden");
 		}
 		
 		//finally build the API_Result
-		ApiResult result = api.build_API_result();
+		ApiResult result = api.buildApiResult();
 
 		//return result_JSON.toJSONString();
 		return result;
@@ -98,7 +98,7 @@ public class AskClient {
 		
 		//get answer/question to client
 		api.answer = Config.answers.getAnswer(NLU_result, "default_ask_incaccess_0a");
-		api.answer_clean = Converters.removeHTML(api.answer);
+		api.answerClean = Converters.removeHTML(api.answer);
 		
 		//TODO: IMPLEMENT AUTHORIZATION ACTION 
 		
@@ -106,10 +106,10 @@ public class AskClient {
 		
 		//anything else?
 		api.context = NLU_result.context;				//the context remains the previous one
-		api.cmd_summary = NLU_result.cmd_summary;		//cmd_summary is very important here because it's needed to fuse answer and initial command later
+		api.cmdSummary = NLU_result.cmd_summary;		//cmd_summary is very important here because it's needed to fuse answer and initial command later
 		
 		//finally build the API_Result
-		ApiResult result = api.build_API_result();
+		ApiResult result = api.buildApiResult();
 
 		//return result_JSON.toJSONString();
 		return result;

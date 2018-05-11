@@ -138,7 +138,7 @@ public class Movies_iTunes implements ApiInterface {
 				}
 				
 				//build clean answer
-				api.answer_clean = Converters.removeHTML(api.answer);
+				api.answerClean = Converters.removeHTML(api.answer);
 				//System.out.println("answer clean: " + answer_clean);		//debug
 				
 				//is there more? - everything that changed during the evaluation (e.g. mood), was added later or is API specific can be added here
@@ -155,7 +155,7 @@ public class Movies_iTunes implements ApiInterface {
 			//no results obtained from iTunes
 			}else{
 				api.answer = Config.answers.getAnswer(NLU_result, "movies_0a", search);		//answer = "sorry, no results";
-				api.answer_clean = Converters.removeHTML(api.answer);
+				api.answerClean = Converters.removeHTML(api.answer);
 				api.htmlInfo = "";
 				api.hasInfo = false;	api.hasCard = false;	api.hasAction = false;
 				
@@ -165,7 +165,7 @@ public class Movies_iTunes implements ApiInterface {
 		//some error occurred somewhere - error handling still needs some improvement 
 		} catch (Exception e) {
 			api.answer = Config.answers.getAnswer(NLU_result, "movies_0a", NLU_result.getParameter("search"));		//answer = "sorry, no results";
-			api.answer_clean = Converters.removeHTML(api.answer);
+			api.answerClean = Converters.removeHTML(api.answer);
 			api.htmlInfo = "";
 			api.hasInfo = false;	api.hasCard = false;	api.hasAction = false;
 
@@ -173,7 +173,7 @@ public class Movies_iTunes implements ApiInterface {
 		}
 		
 		//finally build the API_Result
-		ApiResult result = api.build_API_result();
+		ApiResult result = api.buildApiResult();
 		
 		//return result_JSON.toJSONString();
 		return result;

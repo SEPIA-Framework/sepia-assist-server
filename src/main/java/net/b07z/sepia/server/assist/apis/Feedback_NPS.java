@@ -70,33 +70,33 @@ public class Feedback_NPS implements ApiInterface{
 		
 		if (yesNo.equals("yes") || skipQuestion.equals("true")){
 			//action
-			api.actionInfo_add_action(ACTIONS.FEEDBACK_NPS);
+			api.addAction(ACTIONS.FEEDBACK_NPS);
 			api.hasAction = true;
 					
 			api.status = "success";
 		}else{
 			api.status = "fail";
 			
-			api.actionInfo_add_action(ACTIONS.BUTTON_CMD);
-			api.actionInfo_put_info("title", getButtonText(api.language));
-			api.actionInfo_put_info("info", "direct_cmd");
-			api.actionInfo_put_info("cmd", CMD.FEEDBACK_NPS + ";;" + PARAMETERS.YES_NO + "=yes;;" + skipQuestionParameter + "=true");
-			api.actionInfo_put_info("visibility", "inputHidden");
+			api.addAction(ACTIONS.BUTTON_CMD);
+			api.putActionInfo("title", getButtonText(api.language));
+			api.putActionInfo("info", "direct_cmd");
+			api.putActionInfo("cmd", CMD.FEEDBACK_NPS + ";;" + PARAMETERS.YES_NO + "=yes;;" + skipQuestionParameter + "=true");
+			api.putActionInfo("visibility", "inputHidden");
 			
-			api.actionInfo_add_action(ACTIONS.SCHEDULE_CMD);
-			api.actionInfo_put_info("waitForIdle", "true");
-			api.actionInfo_put_info("idleTime", 24*1000);
-			api.actionInfo_put_info("executeIn", 5*60*60*1000);
-			api.actionInfo_put_info("info", "direct_cmd");
-			api.actionInfo_put_info("cmd", CMD.FEEDBACK_NPS + ";;");
-			api.actionInfo_put_info("visibility", "inputHidden");
-			api.actionInfo_put_info("eventId", EventsManager.ID_NPS);
-			api.actionInfo_put_info("tryMax", "2");
+			api.addAction(ACTIONS.SCHEDULE_CMD);
+			api.putActionInfo("waitForIdle", "true");
+			api.putActionInfo("idleTime", 24*1000);
+			api.putActionInfo("executeIn", 5*60*60*1000);
+			api.putActionInfo("info", "direct_cmd");
+			api.putActionInfo("cmd", CMD.FEEDBACK_NPS + ";;");
+			api.putActionInfo("visibility", "inputHidden");
+			api.putActionInfo("eventId", EventsManager.ID_NPS);
+			api.putActionInfo("tryMax", "2");
 		}
 		//System.out.println("Feedback_NPS - array: " + api.actionInfo.toJSONString());	//debug
 		
 		//finally build the API_Result
-		ApiResult result = api.build_API_result();
+		ApiResult result = api.buildApiResult();
 		
 		//return result.result_JSON.toJSONString();
 		return result;

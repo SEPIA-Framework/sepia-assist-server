@@ -92,40 +92,40 @@ public class Flights_Expedia implements ApiInterface{
 		String apiTime = DateTimeConverters.convertDateFormat(date, Config.defaultSdf, "dd.MM.yyyy");
 		String isoTime = DateTimeConverters.convertDateFormat(date, Config.defaultSdf, "yyyy-MM-dd");
 		String time_to_say = DateTimeConverters.getSpeakableDate(date, Config.defaultSdf, api.language);
-		api.resultInfo_add("date", time_to_say);
-		api.resultInfo_add("dateISO", isoTime);
-		api.resultInfo_add("dateEnd", "");
-		api.resultInfo_add("dateEndISO", "");
+		api.resultInfoPut("date", time_to_say);
+		api.resultInfoPut("dateISO", isoTime);
+		api.resultInfoPut("dateEnd", "");
+		api.resultInfoPut("dateEndISO", "");
 		
 		//LOCATION - Start
 		String apiStart = (String) startJSON.get(InterviewData.LOCATION_CITY);
 		String start_to_say = (String) startJSON.get(InterviewData.LOCATION_CITY);
-		api.resultInfo_add("start", start_to_say);
-		api.resultInfo_add("airportStart", start_to_say.substring(0, Math.min(3, start_to_say.length())).toUpperCase()); //TODO: get real
+		api.resultInfoPut("start", start_to_say);
+		api.resultInfoPut("airportStart", start_to_say.substring(0, Math.min(3, start_to_say.length())).toUpperCase()); //TODO: get real
 		
 		//LOCATION - End
 		String apiEnd = (String) endJSON.get(InterviewData.LOCATION_CITY);
 		String end_to_say = (String) endJSON.get(InterviewData.LOCATION_CITY);
-		api.resultInfo_add("end", end_to_say);
-		api.resultInfo_add("airportEnd", end_to_say.substring(0, Math.min(3, end_to_say.length())).toUpperCase());		//TODO: get real
+		api.resultInfoPut("end", end_to_say);
+		api.resultInfoPut("airportEnd", end_to_say.substring(0, Math.min(3, end_to_say.length())).toUpperCase());		//TODO: get real
 		
 		//ADULTS
 		String adultsN = adults.getDataFieldOrDefault(InterviewData.VALUE).toString();
-		api.resultInfo_add("adults", adultsN);
+		api.resultInfoPut("adults", adultsN);
 		
 		//FLIGHT TYPE
 		String apiFType = fType.getDataFieldOrDefault(InterviewData.VALUE).toString();
 		if (!apiFType.equals("oneway")){
 			apiFType = "oneway";			//force "oneway" as this is the only supported type right now
 		}
-		api.resultInfo_add("type", apiFType);
+		api.resultInfoPut("type", apiFType);
 		
 		//FLIGHT CLASS (not used right now)
 		String apiFClass = fClass.getDataFieldOrDefault(InterviewData.VALUE).toString();
 		if (!apiFClass.equals("economy")){
 			apiFClass = "economy";			//force "economy" (just to keep the form ^^)
 		}
-		api.resultInfo_add("class", apiFClass);
+		api.resultInfoPut("class", apiFClass);
 		
 		Debugger.println("cmd: flights, from " + apiStart + ", to " + apiEnd + ", at " + apiTime, 2);		//debug
 		
@@ -154,7 +154,7 @@ public class Flights_Expedia implements ApiInterface{
 		api.status = "success";
 		
 		//finally build the API_Result
-		ApiResult result = api.build_API_result();
+		ApiResult result = api.buildApiResult();
 				
 		//return result_JSON.toJSONString();
 		return result;

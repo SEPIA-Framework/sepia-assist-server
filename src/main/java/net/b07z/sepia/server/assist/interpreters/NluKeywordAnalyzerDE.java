@@ -3,6 +3,8 @@ package net.b07z.sepia.server.assist.interpreters;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import net.b07z.sepia.server.assist.apis.ApiInterface;
@@ -31,14 +33,14 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 
 	double certainty_lvl = 0.0d;		//how certain is ILA about a result
 	
-	HashMap<String, String> locations;		//store locations in text
-	HashMap<String, String> dates;			//store dates in text
-	HashMap<String, String> numbers;		//store numbers in text
-	HashMap<String, String> websearches;	//store web searches in text
-	HashMap<String, String> controls;		//store control parameters in text
-	HashMap<String, String> music_parameters;		//store music parameters in text
-	HashMap<String, String> vehicle_parameters;		//store vehicle search parameters
-	HashMap<String, String> retail_parameters;		//store retail search parameters
+	Map<String, String> locations;		//store locations in text
+	Map<String, String> dates;			//store dates in text
+	Map<String, String> numbers;		//store numbers in text
+	Map<String, String> websearches;	//store web searches in text
+	Map<String, String> controls;		//store control parameters in text
+	Map<String, String> music_parameters;		//store music parameters in text
+	Map<String, String> vehicle_parameters;		//store vehicle search parameters
+	Map<String, String> retail_parameters;		//store retail search parameters
 	
 	public NluResult interpret(NluInput input) {
 		
@@ -55,9 +57,9 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 		}
 		
 		//first rough check for main keywords
-		ArrayList<String> possibleCMDs = new ArrayList<String>();		//make a list of possible interpretations of the text
-		ArrayList<HashMap<String, String>> possibleParameters = new ArrayList<HashMap<String, String>>();		//possible parameters
-		ArrayList<Integer> possibleScore = new ArrayList<Integer>();	//make scores to decide which one is correct command
+		List<String> possibleCMDs = new ArrayList<>();		//make a list of possible interpretations of the text
+		List<Map<String, String>> possibleParameters = new ArrayList<>();		//possible parameters
+		List<Integer> possibleScore = new ArrayList<>();	//make scores to decide which one is correct command
 		int index = -1;
 
 		//some small-talk stuff
@@ -69,7 +71,7 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 			String type = "greeting";
 			possibleScore.set(index, possibleScore.get(index)+1);
 			
-			HashMap<String, String> pv = new HashMap<String, String>();
+			Map<String, String> pv = new HashMap<String, String>();
 				pv.put(PARAMETERS.TYPE, type);
 			possibleParameters.add(pv);
 		}
@@ -88,7 +90,7 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 			possibleCMDs.add(CMD.NEWS);
 			possibleScore.add(1);	index++;
 
-			HashMap<String, String> pv = new HashMap<String, String>(); 		//TODO: pass this down to avoid additional checking
+			Map<String, String> pv = new HashMap<String, String>(); 		//TODO: pass this down to avoid additional checking
 			AbstractParameterSearch aps = new AbstractParameterSearch()
 					.setParameters(PARAMETERS.NEWS_SECTION, PARAMETERS.NEWS_TYPE, PARAMETERS.SPORTS_TEAM, PARAMETERS.SPORTS_LEAGUE)
 					.setup(input, pv);
@@ -108,7 +110,7 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 			possibleCMDs.add(CMD.WEATHER);
 			possibleScore.add(1);	index++;
 
-			HashMap<String, String> pv = new HashMap<String, String>(); 		//TODO: pass this down to avoid additional checking
+			Map<String, String> pv = new HashMap<String, String>(); 		//TODO: pass this down to avoid additional checking
 			AbstractParameterSearch aps = new AbstractParameterSearch()
 					.setParameters(PARAMETERS.TIME, PARAMETERS.PLACE)
 					.setup(input, pv);
@@ -130,7 +132,7 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 			possibleCMDs.add(CMD.DIRECTIONS);
 			possibleScore.add(1);	index++;
 
-			HashMap<String, String> pv = new HashMap<String, String>(); 		//TODO: pass this down to avoid additional checking
+			Map<String, String> pv = new HashMap<String, String>(); 		//TODO: pass this down to avoid additional checking
 			AbstractParameterSearch aps = new AbstractParameterSearch()
 					.setParameters(PARAMETERS.TIME, PARAMETERS.TRAVEL_TYPE, PARAMETERS.TRAVEL_REQUEST_INFO, 
 							PARAMETERS.LOCATION_END, PARAMETERS.LOCATION_WAYPOINT, PARAMETERS.LOCATION_START)
@@ -932,7 +934,7 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 				possibleScore.set(index, possibleScore.get(index)+1);
 			}
 			
-			HashMap<String, String> pv = new HashMap<String, String>();
+			Map<String, String> pv = new HashMap<String, String>();
 				pv.put(PARAMETERS.ACTION, action);
 				pv.put(PARAMETERS.NUMBER, num);
 				pv.put(PARAMETERS.CURRENCY, currency);
@@ -947,14 +949,14 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 			possibleCMDs.add(CMD.CAR_WELCOME_UPDATE);
 			possibleScore.add(1);	index++;
 			//no parameters ... yet
-			HashMap<String, String> pv = new HashMap<String, String>();
+			Map<String, String> pv = new HashMap<>();
 			possibleParameters.add(pv);
 		}
 		
 		//----- CUSTOM SERVICES -----
 		
 		//Abstract analyzer (should come at the end because of lower priority?)
-		ArrayList<ApiInterface> customServices = ConfigServices.getCustomServicesList(input, input.user);
+		List<ApiInterface> customServices = ConfigServices.getCustomServicesList(input, input.user);
 		for (ApiInterface service : customServices){
 			index = NluKeywordAnalyzer.abstractRegExAnalyzer(text, input, service,
 					possibleCMDs, possibleScore, possibleParameters, index);
@@ -964,7 +966,7 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 		
 		//Abstract analyzer (should come at the end because of lower priority?)
 		if (Config.enableSDK){
-			ArrayList<ApiInterface> assistantServices = ConfigServices.getCustomServicesList(input, Config.getAssistantUser());
+			List<ApiInterface> assistantServices = ConfigServices.getCustomServicesList(input, Config.getAssistantUser());
 			for (ApiInterface service : assistantServices){
 				index = NluKeywordAnalyzer.abstractRegExAnalyzer(text, input, service,
 						possibleCMDs, possibleScore, possibleParameters, index);
@@ -1216,7 +1218,7 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 	 */
 	private void search_vehicle_parameters(String text, String language){
 		if (vehicle_parameters == null){
-			HashMap<String, String> map = new HashMap<>();
+			Map<String, String> map = new HashMap<>();
 			String age;
 			String price, price_t;
 			String color;
@@ -1265,7 +1267,7 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 			String age;
 			String price, price_t;
 			String color;
-			HashMap<String, String> map = new HashMap<>();
+			Map<String, String> map = new HashMap<>();
 			if (vehicle_parameters != null){
 				age = vehicle_parameters.get("vehicle_age");
 				price = vehicle_parameters.get("vehicle_price");

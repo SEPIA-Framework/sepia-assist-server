@@ -384,7 +384,7 @@ public class News_RssFeeds implements ApiInterface{
 		}else{
 			topic = sectionLocal;	//at this point "sectionLocal" should always have a value, in the worst case the default local value  
 		}
-		api.resultInfo_add("topic", topic);
+		api.resultInfoPut("topic", topic);
 		
 		Debugger.println("cmd: news, section: " + section + ", type: " + type + ", search: " + search, 2);		//debug
 		
@@ -405,25 +405,25 @@ public class News_RssFeeds implements ApiInterface{
 				//ABORT further processing with some generic data:
 				
 				String url = "http://m.sport1.de/fussball/";
-				api.actionInfo_add_action(ACTIONS.OPEN_IN_APP_BROWSER);
-				api.actionInfo_put_info("url", url);
+				api.addAction(ACTIONS.OPEN_IN_APP_BROWSER);
+				api.putActionInfo("url", url);
 				api.hasAction = true;
 				
 				//answer
 				api.setCustomAnswer(soccerResultsAns);
 				
 				//sports news button?
-				api.actionInfo_add_action(ACTIONS.BUTTON_CMD);
-				api.actionInfo_put_info("title", getLocal(NSection.sports, api.language));
-				api.actionInfo_put_info("info", "direct_cmd");
-				api.actionInfo_put_info("cmd", CmdBuilder.getNews(NSection.sports.name()));
-				api.actionInfo_put_info("options", optionsNoActions);
+				api.addAction(ACTIONS.BUTTON_CMD);
+				api.putActionInfo("title", getLocal(NSection.sports, api.language));
+				api.putActionInfo("info", "direct_cmd");
+				api.putActionInfo("cmd", CmdBuilder.getNews(NSection.sports.name()));
+				api.putActionInfo("options", optionsNoActions);
 				
 				//all clear?
 				api.status = "success";
 				
 				//build the API_Result
-				ApiResult result = api.build_API_result();
+				ApiResult result = api.buildApiResult();
 						
 				return result;
 				//END
@@ -462,8 +462,8 @@ public class News_RssFeeds implements ApiInterface{
 					url = "http://www.sport1.de/fussball/europa-league/spielplan#/";
 				}
 				
-				api.actionInfo_add_action(ACTIONS.OPEN_IN_APP_BROWSER);
-				api.actionInfo_put_info("url", url);
+				api.addAction(ACTIONS.OPEN_IN_APP_BROWSER);
+				api.putActionInfo("url", url);
 				api.hasAction = true;
 				
 				//answer
@@ -489,27 +489,27 @@ public class News_RssFeeds implements ApiInterface{
 					data += getHtmlTableEnd();
 					
 					//actions
-					api.actionInfo_add_action(ACTIONS.BUTTON_CMD);
-					api.actionInfo_put_info("title", tableLocal);
-					api.actionInfo_put_info("info", "direct_cmd");
-					api.actionInfo_put_info("cmd", CmdBuilder.getSoccerTable(sportsLeague));
-					api.actionInfo_put_info("options", optionsWithActions);
+					api.addAction(ACTIONS.BUTTON_CMD);
+					api.putActionInfo("title", tableLocal);
+					api.putActionInfo("info", "direct_cmd");
+					api.putActionInfo("cmd", CmdBuilder.getSoccerTable(sportsLeague));
+					api.putActionInfo("options", optionsWithActions);
 					
-					api.actionInfo_add_action(ACTIONS.BUTTON_CMD);
-					api.actionInfo_put_info("title", matchDayLocal);
-					api.actionInfo_put_info("info", "direct_cmd");
-					api.actionInfo_put_info("cmd", CmdBuilder.getSoccerResults(sportsLeague, sportsTeam));
-					api.actionInfo_put_info("options", optionsWithActions);
+					api.addAction(ACTIONS.BUTTON_CMD);
+					api.putActionInfo("title", matchDayLocal);
+					api.putActionInfo("info", "direct_cmd");
+					api.putActionInfo("cmd", CmdBuilder.getSoccerResults(sportsLeague, sportsTeam));
+					api.putActionInfo("options", optionsWithActions);
 					
-					api.actionInfo_add_action(ACTIONS.SHOW_HTML_RESULT);
-					api.actionInfo_put_info("data", data);
+					api.addAction(ACTIONS.SHOW_HTML_RESULT);
+					api.putActionInfo("data", data);
 					api.hasAction = true;
 					
 				}catch (Exception e){
 					Debugger.println("Soccer table - failed for team: " + sportsTeam + " - error: " + e.getMessage(), 1);
 					Debugger.printStackTrace(e, 3);
-					api.actionInfo_add_action(ACTIONS.OPEN_IN_APP_BROWSER);
-					api.actionInfo_put_info("url", urlTable);
+					api.addAction(ACTIONS.OPEN_IN_APP_BROWSER);
+					api.putActionInfo("url", urlTable);
 					api.hasAction = true;
 				}
 				//answer
@@ -555,27 +555,27 @@ public class News_RssFeeds implements ApiInterface{
 					data += getHtmlTableEndWithFooter(urlMatchDay, urlTable, tableLocal);
 					
 					//actions
-					api.actionInfo_add_action(ACTIONS.BUTTON_CMD);
-					api.actionInfo_put_info("title", tableLocal);
-					api.actionInfo_put_info("info", "direct_cmd");
-					api.actionInfo_put_info("cmd", CmdBuilder.getSoccerTable(sportsLeague));
-					api.actionInfo_put_info("options", optionsWithActions);
+					api.addAction(ACTIONS.BUTTON_CMD);
+					api.putActionInfo("title", tableLocal);
+					api.putActionInfo("info", "direct_cmd");
+					api.putActionInfo("cmd", CmdBuilder.getSoccerTable(sportsLeague));
+					api.putActionInfo("options", optionsWithActions);
 					
-					api.actionInfo_add_action(ACTIONS.BUTTON_CMD);
-					api.actionInfo_put_info("title", "Team");
-					api.actionInfo_put_info("info", "direct_cmd");
-					api.actionInfo_put_info("cmd", CmdBuilder.getSoccerResults(sportsLeague, sportsTeam));
-					api.actionInfo_put_info("options", optionsWithActions);
+					api.addAction(ACTIONS.BUTTON_CMD);
+					api.putActionInfo("title", "Team");
+					api.putActionInfo("info", "direct_cmd");
+					api.putActionInfo("cmd", CmdBuilder.getSoccerResults(sportsLeague, sportsTeam));
+					api.putActionInfo("options", optionsWithActions);
 						
-					api.actionInfo_add_action(ACTIONS.SHOW_HTML_RESULT);
-					api.actionInfo_put_info("data", data);
+					api.addAction(ACTIONS.SHOW_HTML_RESULT);
+					api.putActionInfo("data", data);
 					api.hasAction = true;
 					
 				}catch (Exception e){
 					Debugger.println("Soccer results - failed for team: " + sportsTeam + " - error: " + e.getMessage(), 1);
 					Debugger.printStackTrace(e, 3);
-					api.actionInfo_add_action(ACTIONS.OPEN_IN_APP_BROWSER);
-					api.actionInfo_put_info("url", urlMatchDay);
+					api.addAction(ACTIONS.OPEN_IN_APP_BROWSER);
+					api.putActionInfo("url", urlMatchDay);
 					api.hasAction = true;
 				}
 				//answer
@@ -597,27 +597,27 @@ public class News_RssFeeds implements ApiInterface{
 					data += getHtmlTableEndWithFooter(urlMatchDay, urlTable, tableLocal);
 						
 					//actions
-					api.actionInfo_add_action(ACTIONS.BUTTON_CMD);
-					api.actionInfo_put_info("title", tableLocal);
-					api.actionInfo_put_info("info", "direct_cmd");
-					api.actionInfo_put_info("cmd", CmdBuilder.getSoccerTable(sportsLeague));
-					api.actionInfo_put_info("options", optionsWithActions);
+					api.addAction(ACTIONS.BUTTON_CMD);
+					api.putActionInfo("title", tableLocal);
+					api.putActionInfo("info", "direct_cmd");
+					api.putActionInfo("cmd", CmdBuilder.getSoccerTable(sportsLeague));
+					api.putActionInfo("options", optionsWithActions);
 					
-					api.actionInfo_add_action(ACTIONS.BUTTON_CMD);
-					api.actionInfo_put_info("title", matchDayLocal);
-					api.actionInfo_put_info("info", "direct_cmd");
-					api.actionInfo_put_info("cmd", CmdBuilder.getSoccerResults(sportsLeague, sportsTeam));
-					api.actionInfo_put_info("options", optionsWithActions);
+					api.addAction(ACTIONS.BUTTON_CMD);
+					api.putActionInfo("title", matchDayLocal);
+					api.putActionInfo("info", "direct_cmd");
+					api.putActionInfo("cmd", CmdBuilder.getSoccerResults(sportsLeague, sportsTeam));
+					api.putActionInfo("options", optionsWithActions);
 					
-					api.actionInfo_add_action(ACTIONS.SHOW_HTML_RESULT);
-					api.actionInfo_put_info("data", data);
+					api.addAction(ACTIONS.SHOW_HTML_RESULT);
+					api.putActionInfo("data", data);
 					api.hasAction = true;
 					
 				}catch (Exception e){
 					Debugger.println("Soccer results - failed for league: " + leagueTag + " - error: " + e.getMessage(), 1);
 					Debugger.printStackTrace(e, 3);
-					api.actionInfo_add_action(ACTIONS.OPEN_IN_APP_BROWSER);
-					api.actionInfo_put_info("url", urlMatchDay);
+					api.addAction(ACTIONS.OPEN_IN_APP_BROWSER);
+					api.putActionInfo("url", urlMatchDay);
 					api.hasAction = true;
 				}
 				//answer
@@ -626,17 +626,17 @@ public class News_RssFeeds implements ApiInterface{
 			}
 			
 			//sports news button?
-			api.actionInfo_add_action(ACTIONS.BUTTON_CMD);
-			api.actionInfo_put_info("title", getLocal(NSection.sports, api.language));
-			api.actionInfo_put_info("info", "direct_cmd");
-			api.actionInfo_put_info("cmd", CmdBuilder.getNews(NSection.sports.name()));
-			api.actionInfo_put_info("options", optionsNoActions);
+			api.addAction(ACTIONS.BUTTON_CMD);
+			api.putActionInfo("title", getLocal(NSection.sports, api.language));
+			api.putActionInfo("info", "direct_cmd");
+			api.putActionInfo("cmd", CmdBuilder.getNews(NSection.sports.name()));
+			api.putActionInfo("options", optionsNoActions);
 			
 			//all clear?
 			api.status = "success";
 			
 			//build the API_Result
-			ApiResult result = api.build_API_result();
+			ApiResult result = api.buildApiResult();
 					
 			return result;
 		}
@@ -674,51 +674,51 @@ public class News_RssFeeds implements ApiInterface{
 		
 		//soccer, sports and main
 		if (section.equals(NSection.soccer.name())){
-			api.actionInfo_add_action(ACTIONS.BUTTON_CMD);
-			api.actionInfo_put_info("title", getLocal(NSection.soccer, api.language));
-			api.actionInfo_put_info("info", "direct_cmd");
-			api.actionInfo_put_info("cmd", CmdBuilder.getNews(NSection.soccer.name()));
-			api.actionInfo_put_info("options", optionsNoActions);
+			api.addAction(ACTIONS.BUTTON_CMD);
+			api.putActionInfo("title", getLocal(NSection.soccer, api.language));
+			api.putActionInfo("info", "direct_cmd");
+			api.putActionInfo("cmd", CmdBuilder.getNews(NSection.soccer.name()));
+			api.putActionInfo("options", optionsNoActions);
 			
-			api.actionInfo_add_action(ACTIONS.BUTTON_CMD);
-			api.actionInfo_put_info("title", getLocal(NSection.sports, api.language));
-			api.actionInfo_put_info("info", "direct_cmd");
-			api.actionInfo_put_info("cmd", CmdBuilder.getNews(NSection.sports.name()));
-			api.actionInfo_put_info("options", optionsNoActions);
+			api.addAction(ACTIONS.BUTTON_CMD);
+			api.putActionInfo("title", getLocal(NSection.sports, api.language));
+			api.putActionInfo("info", "direct_cmd");
+			api.putActionInfo("cmd", CmdBuilder.getNews(NSection.sports.name()));
+			api.putActionInfo("options", optionsNoActions);
 			
-			api.actionInfo_add_action(ACTIONS.BUTTON_CMD);
-			api.actionInfo_put_info("title", getLocal(NSection.main, api.language));
-			api.actionInfo_put_info("info", "direct_cmd");
-			api.actionInfo_put_info("cmd", CmdBuilder.getNews(""));
-			api.actionInfo_put_info("options", optionsNoActions);
+			api.addAction(ACTIONS.BUTTON_CMD);
+			api.putActionInfo("title", getLocal(NSection.main, api.language));
+			api.putActionInfo("info", "direct_cmd");
+			api.putActionInfo("cmd", CmdBuilder.getNews(""));
+			api.putActionInfo("options", optionsNoActions);
 		}
 		//specific and main
 		else if (!section.equals(NSection.main.name())){
-			api.actionInfo_add_action(ACTIONS.BUTTON_CMD);
-			api.actionInfo_put_info("title", getLocal("<" + section + ">", api.language));
-			api.actionInfo_put_info("info", "direct_cmd");
-			api.actionInfo_put_info("cmd", CmdBuilder.getNews(section));
-			api.actionInfo_put_info("options", optionsNoActions);
+			api.addAction(ACTIONS.BUTTON_CMD);
+			api.putActionInfo("title", getLocal("<" + section + ">", api.language));
+			api.putActionInfo("info", "direct_cmd");
+			api.putActionInfo("cmd", CmdBuilder.getNews(section));
+			api.putActionInfo("options", optionsNoActions);
 			
-			api.actionInfo_add_action(ACTIONS.BUTTON_CMD);
-			api.actionInfo_put_info("title", getLocal(NSection.main, api.language));
-			api.actionInfo_put_info("info", "direct_cmd");
-			api.actionInfo_put_info("cmd", CmdBuilder.getNews(""));
-			api.actionInfo_put_info("options", optionsNoActions);
+			api.addAction(ACTIONS.BUTTON_CMD);
+			api.putActionInfo("title", getLocal(NSection.main, api.language));
+			api.putActionInfo("info", "direct_cmd");
+			api.putActionInfo("cmd", CmdBuilder.getNews(""));
+			api.putActionInfo("options", optionsNoActions);
 		//main and random
 		}else{
-			api.actionInfo_add_action(ACTIONS.BUTTON_CMD);
-			api.actionInfo_put_info("title", getLocal(NSection.main, api.language));
-			api.actionInfo_put_info("info", "direct_cmd");
-			api.actionInfo_put_info("cmd", CmdBuilder.getNews(""));
-			api.actionInfo_put_info("options", optionsNoActions);
+			api.addAction(ACTIONS.BUTTON_CMD);
+			api.putActionInfo("title", getLocal(NSection.main, api.language));
+			api.putActionInfo("info", "direct_cmd");
+			api.putActionInfo("cmd", CmdBuilder.getNews(""));
+			api.putActionInfo("options", optionsNoActions);
 			
 			NSection rndSection = (NSection) RandomGen.listValue(specificSectionsList); //RandomGen.enumValue(NSection.class);
-			api.actionInfo_add_action(ACTIONS.BUTTON_CMD);
-			api.actionInfo_put_info("title", getLocal(rndSection, api.language));
-			api.actionInfo_put_info("info", "direct_cmd");
-			api.actionInfo_put_info("cmd", CmdBuilder.getNews(rndSection.name()));
-			api.actionInfo_put_info("options", optionsNoActions);
+			api.addAction(ACTIONS.BUTTON_CMD);
+			api.putActionInfo("title", getLocal(rndSection, api.language));
+			api.putActionInfo("info", "direct_cmd");
+			api.putActionInfo("cmd", CmdBuilder.getNews(rndSection.name()));
+			api.putActionInfo("options", optionsNoActions);
 			
 			//TODO: add a user favorite here?
 		}
@@ -727,7 +727,7 @@ public class News_RssFeeds implements ApiInterface{
 		api.status = "success";
 		
 		//finally build the API_Result
-		ApiResult result = api.build_API_result();
+		ApiResult result = api.buildApiResult();
 				
 		//System.out.println(result.result_JSON.toJSONString());
 		return result;

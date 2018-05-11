@@ -99,7 +99,7 @@ public class Hotels_Expedia implements ApiInterface{
 		
 		//get answer
 		api.answer = Config.answers.getAnswer(NLU_result, "hotels_1a", place_to_say);
-		api.answer_clean = Converters.removeHTML(api.answer);
+		api.answerClean = Converters.removeHTML(api.answer);
 		
 		//make action: browser url call
 		api.hasAction = true;
@@ -119,7 +119,7 @@ public class Hotels_Expedia implements ApiInterface{
 		if (CLIENTS.hasWebView(NLU_result.input.client_info)){
 			//api.actionInfo_add_action(ACTIONS.OPEN_URL);
 			//api.actionInfo_put_info("url", url);
-			api.actionInfo_add_action(ACTIONS.OPEN_INFO);
+			api.addAction(ACTIONS.OPEN_INFO);
 			api.hasAction = true;
 		}
 				
@@ -146,7 +146,7 @@ public class Hotels_Expedia implements ApiInterface{
 		api.status = "success";
 				
 		//finally build the API_Result
-		ApiResult result = api.build_API_result();
+		ApiResult result = api.buildApiResult();
 				
 		//return result_JSON.toJSONString();
 		return result;

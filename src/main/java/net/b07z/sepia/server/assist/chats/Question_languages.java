@@ -23,7 +23,7 @@ public class Question_languages {
 				
 		//get answer
 		api.answer = Config.answers.getAnswer(NLU_result, "chat_languages_0a");
-		api.answer_clean = Converters.removeHTML(api.answer);
+		api.answerClean = Converters.removeHTML(api.answer);
 		
 		api.status = "success";
 		
@@ -31,7 +31,7 @@ public class Question_languages {
 		api.context = CMD.CHAT;		//how do we handle chat contexts? Just like that and do the rest with cmd_summary?
 		
 		//finally build the API_Result
-		ApiResult result = api.build_API_result();
+		ApiResult result = api.buildApiResult();
 		
 		//return result_JSON.toJSONString();
 		return result;

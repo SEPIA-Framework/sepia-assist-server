@@ -111,7 +111,7 @@ public class Mobility_Qixxit implements ApiInterface {
 		
 		//make answer - if more than one direct answer choose randomly
 		api.answer = Config.answers.getAnswer(NLU_result, "mobility_1a", start_to_say, end_to_say, type, time);
-		api.answer_clean = Converters.removeHTML(api.answer);
+		api.answerClean = Converters.removeHTML(api.answer);
 		
 		//make action: browser url call
 		String call_url = "";
@@ -132,7 +132,7 @@ public class Mobility_Qixxit implements ApiInterface {
 		//deactivated:
 		//api.actionInfo_put_type(ACTIONS.OPEN_URL);
 		//api.actionInfo_put_info("url", call_url);
-		api.actionInfo_add_action(ACTIONS.OPEN_INFO);		//this is an action only used in small clients that cannot display all content simultaneously  
+		api.addAction(ACTIONS.OPEN_INFO);		//this is an action only used in small clients that cannot display all content simultaneously  
 		api.hasAction = true;
 		
 		//build card
@@ -159,7 +159,7 @@ public class Mobility_Qixxit implements ApiInterface {
 		api.status = "success";		//kind of success ^^
 				
 		//finally build the API_Result
-		ApiResult result = api.build_API_result();
+		ApiResult result = api.buildApiResult();
 				
 		//return result_JSON.toJSONString();
 		return result;

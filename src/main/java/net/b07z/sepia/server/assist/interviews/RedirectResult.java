@@ -62,9 +62,9 @@ public class RedirectResult implements ApiInterface{
 		
 		//get answer
 		api.answer = Config.answers.getAnswer(NLU_result, answer_key);		//default is "redirect_result_0a"
-		api.answer_clean = Converters.removeHTML(api.answer);
+		api.answerClean = Converters.removeHTML(api.answer);
 		
-		api.resultInfo_add("cmd", NLU_result.getCommand());
+		api.resultInfoPut("cmd", NLU_result.getCommand());
 		
 		//no result makes ILA sad :-(
 		//api.mood = Assistant.mood_decrease(api.mood);
@@ -73,10 +73,10 @@ public class RedirectResult implements ApiInterface{
 		api.context = CMD.RESULT_REDIRECT;	//do we want to reset the context here? I think we should 'cause its really a completely unknown command
 		
 		//reset input to type: question (tell the client that this is not a question anymore if it was one)
-		api.response_type = API.RESPONSE_INFO;
+		api.responseType = API.RESPONSE_INFO;
 		
 		//finally build the API_Result
-		ApiResult result = api.build_API_result();
+		ApiResult result = api.buildApiResult();
 		
 		//return result.result_JSON.toJSONString();
 		return result;

@@ -153,9 +153,9 @@ public class Lists_Basic implements ApiInterface{
 		String listSubType = JSON.getStringOrDefault(listSubTypeP.getData(), InterviewData.VALUE, "");
 		
 		if (listTypeLocal.isEmpty()){
-			api.resultInfo_add("listType", (listSubType + " " + ListType.getLocal("<list>", api.language)));
+			api.resultInfoPut("listType", (listSubType + " " + ListType.getLocal("<list>", api.language)));
 		}else{
-			api.resultInfo_add("listType", (listSubType + " " + listTypeLocal).trim());
+			api.resultInfoPut("listType", (listSubType + " " + listTypeLocal).trim());
 		}
 		
 		Parameter actionP = nluResult.getOptionalParameter(PARAMETERS.ACTION, Action.Type.show.name());
@@ -168,7 +168,7 @@ public class Lists_Basic implements ApiInterface{
 		Parameter listItemP = nluResult.getOptionalParameter(PARAMETERS.LIST_ITEM, "");
 		String listItem = (String) listItemP.getDataFieldOrDefault(InterviewData.VALUE);
 		
-		api.resultInfo_add("listItem", listItem); 	//might get overwritten later
+		api.resultInfoPut("listItem", listItem); 	//might get overwritten later
 		
 		Debugger.println("cmd: Lists, type=" + listType + ", subType=" + listSubType + ", action=" + action + ", listItem=" + listItem, 2);		//debug
 		
@@ -184,38 +184,38 @@ public class Lists_Basic implements ApiInterface{
 		if (isActionShow && missingTitle && missingIndexType){
 			//ask for item
 			api.setIncompleteAndAsk(PARAMETERS.LIST_SUBTYPE, askListTypeAgainShow);
-			ApiResult result = api.build_API_result();
+			ApiResult result = api.buildApiResult();
 			return result;
 		
 		}else if (isActionAdd && missingTitle && missingIndexType){
 			//ask for type or name
 			api.setIncompleteAndAsk(PARAMETERS.LIST_SUBTYPE, askTypeOrTitle);
-			ApiResult result = api.build_API_result();
+			ApiResult result = api.buildApiResult();
 			return result;
 		//<-------------------------------------------------------------------------------------------------------
 			
 		}else if (isActionAdd && listItem.isEmpty()){
 			//ask for item
 			api.setIncompleteAndAsk(PARAMETERS.LIST_ITEM, askItemAdd);
-			ApiResult result = api.build_API_result();
+			ApiResult result = api.buildApiResult();
 			return result;
 			
 		}else if (isActionRemove && listItem.isEmpty()){
 			//ask for item
 			api.setIncompleteAndAsk(PARAMETERS.LIST_ITEM, askItemRemove);
-			ApiResult result = api.build_API_result();
+			ApiResult result = api.buildApiResult();
 			return result;
 		
 		}else if (isActionCreate && missingTitle){
 			//ask for title
 			api.setIncompleteAndAsk(PARAMETERS.LIST_SUBTYPE, askTitleCreate);
-			ApiResult result = api.build_API_result();
+			ApiResult result = api.buildApiResult();
 			return result;
 		
 		}else if (isActionCreate && missingIndexType){
 			//ask for indexType
 			api.setIncompleteAndAsk(PARAMETERS.LIST_TYPE, askListTypeAgain);
-			ApiResult result = api.build_API_result();
+			ApiResult result = api.buildApiResult();
 			return result;
 		}
 				
@@ -231,7 +231,7 @@ public class Lists_Basic implements ApiInterface{
 		//server communication error?
 		if (udlList == null){
 			api.setStatusFail();
-			ApiResult result = api.build_API_result();
+			ApiResult result = api.buildApiResult();
 			return result;
 			
 		//no list result found ... (search can be title only, title+index or index only at this point)
@@ -245,7 +245,7 @@ public class Lists_Basic implements ApiInterface{
 					//ask for type since the "add" action also became a "create" action now
 					api.setIncompleteAndAsk(PARAMETERS.LIST_TYPE, askListTypeAgain);
 				}
-				ApiResult result = api.build_API_result();
+				ApiResult result = api.buildApiResult();
 				return result;
 			}
 		}
@@ -328,7 +328,7 @@ public class Lists_Basic implements ApiInterface{
 				}else{
 					//build answer - server communication error
 					api.setStatusFail();
-					ApiResult result = api.build_API_result();
+					ApiResult result = api.buildApiResult();
 					return result;
 				}
 			}
@@ -367,14 +367,14 @@ public class Lists_Basic implements ApiInterface{
 				}
 				items_to_say += and + items[items.length-1]; 
 			}
-			api.resultInfo_add("listItem", items_to_say); 	//overwrite initial
+			api.resultInfoPut("listItem", items_to_say); 	//overwrite initial
 			
 			//check size of list
 			if ((activeList.data.size() + items.length) >= list_limit){
 				//build answer - list is too big
 				api.setStatusOkay();
 				api.setCustomAnswer(listTooLong);
-				ApiResult result = api.build_API_result();
+				ApiResult result = api.buildApiResult();
 				return result;
 
 			//modify and save
@@ -408,7 +408,7 @@ public class Lists_Basic implements ApiInterface{
 				}else{
 					//build answer - server communication error
 					api.setStatusFail();
-					ApiResult result = api.build_API_result();
+					ApiResult result = api.buildApiResult();
 					return result;
 				}
 			}
@@ -417,7 +417,7 @@ public class Lists_Basic implements ApiInterface{
 		}else if (isActionShow){
 			//build answer - ok let me open it
 			if (udlList.isEmpty()){
-				api.resultInfo_add("listType", listSubType);
+				api.resultInfoPut("listType", listSubType);
 				api.setStatusOkay();
 				api.setCustomAnswer(listNotFound);
 			}else{
@@ -431,7 +431,7 @@ public class Lists_Basic implements ApiInterface{
 			//build answer - do it by hand
 			api.setStatusOkay();
 			if (udlList.isEmpty()){
-				api.resultInfo_add("listType", listSubType);
+				api.resultInfoPut("listType", listSubType);
 				api.setCustomAnswer(listNotFound);
 			}else{
 				api.setCustomAnswer(removeByHand);
@@ -449,8 +449,8 @@ public class Lists_Basic implements ApiInterface{
 		//ACTION and CARD
 		if (udlList != null && !udlList.isEmpty()){
 			//build action - for apps indicate direct triggering of info view
-			api.actionInfo_add_action(ACTIONS.OPEN_LIST);
-			api.actionInfo_put_info("listInfo", JSON.make("indexType", indexType, "title", title, "_id", _id));
+			api.addAction(ACTIONS.OPEN_LIST);
+			api.putActionInfo("listInfo", JSON.make("indexType", indexType, "title", title, "_id", _id));
 			api.hasAction = true;
 		
 			//make card
@@ -463,7 +463,7 @@ public class Lists_Basic implements ApiInterface{
 		}
 		
 		//finally build the API_Result
-		ApiResult result = api.build_API_result();
+		ApiResult result = api.buildApiResult();
 		
 		//System.out.println(result.getResultJSON()); 		//debug
 		return result;

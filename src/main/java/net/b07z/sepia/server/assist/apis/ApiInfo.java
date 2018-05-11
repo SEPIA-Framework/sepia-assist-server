@@ -2,6 +2,9 @@ package net.b07z.sepia.server.assist.apis;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import net.b07z.sepia.server.assist.data.Parameter;
 
 /**
@@ -59,19 +62,19 @@ public class ApiInfo {
 	
 	//data
 	public String intendedCommand;				//this service is intended to be used for this command
-	public ArrayList<Parameter> requiredParameters; 	//parameters that are required to run the service
-	public ArrayList<Parameter> optionalParameters;		//parameters that are optional and get replaced by default or ignored if not set
-	public ArrayList<ArrayList<Parameter>> listOfRequiredChoices;	//list with "one of these" parameters
-	public ArrayList<String> listOfChoiceQuestions;					//list with the questions to the required choices
+	public List<Parameter> requiredParameters; 	//parameters that are required to run the service
+	public List<Parameter> optionalParameters;		//parameters that are optional and get replaced by default or ignored if not set
+	public List<List<Parameter>> listOfRequiredChoices;	//list with "one of these" parameters
+	public List<String> listOfChoiceQuestions;					//list with the questions to the required choices
 	
 	//custom answers
-	public HashMap<String, String> customAnswerMap;		//use this to add answers to your service
-	public ArrayList<String> answerParameters;			//list of parameters that are used to build the answer. The order matters!
+	public Map<String, String> customAnswerMap;		//use this to add answers to your service
+	public List<String> answerParameters;			//list of parameters that are used to build the answer. The order matters!
 	
 	//custom trigger sentences and custom regEx - note: not in InterviewInfo (yet?)
-	public HashMap<String, String> customTriggerRegEx = new HashMap<>();
+	public Map<String, String> customTriggerRegEx = new HashMap<>();
 	public int customTriggerRegExScoreBoost = 0;
-	public HashMap<String, ArrayList<String>> customTriggerSentences = new HashMap<>();	//a list of sentences that can trigger the service sorted by language.
+	public Map<String, List<String>> customTriggerSentences = new HashMap<>();	//a list of sentences that can trigger the service sorted by language.
 	
 	/**
 	 * Build common API_Info object.
@@ -118,7 +121,7 @@ public class ApiInfo {
 	 * @param oneOfThese - array of parameters
 	 */
 	public ApiInfo getAtLeastOneOf(String modifiedQuestion, Parameter... oneOfThese){
-		ArrayList<Parameter> oneOfTheseList = new ArrayList<>();
+		List<Parameter> oneOfTheseList = new ArrayList<>();
 		for (Parameter p : oneOfThese){
 			oneOfTheseList.add(p);
 		}
@@ -133,8 +136,8 @@ public class ApiInfo {
 	/**
 	 * Get all required and optional parameters, e.g. for the NLU module (so that it knows what to look for and calculate NLU result score).
 	 */
-	public ArrayList<Parameter> getAllParameters(){
-		ArrayList<Parameter> allPs = new ArrayList<>();
+	public List<Parameter> getAllParameters(){
+		List<Parameter> allPs = new ArrayList<>();
 		allPs.addAll(requiredParameters);
 		allPs.addAll(optionalParameters);
 		return allPs;
@@ -228,7 +231,7 @@ public class ApiInfo {
 	 * @param sentence - a sample sentence
 	 */
 	public ApiInfo addCustomTriggerSentence(String sentence, String language){
-		ArrayList<String> list = customTriggerSentences.get(language);
+		List<String> list = customTriggerSentences.get(language);
 		if (list == null){
 			list = new ArrayList<>();
 			customTriggerSentences.put(language, list);

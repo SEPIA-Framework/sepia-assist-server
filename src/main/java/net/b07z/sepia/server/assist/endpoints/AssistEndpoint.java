@@ -15,7 +15,7 @@ import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interviews.Abort;
 import net.b07z.sepia.server.assist.interviews.AbstractInterview;
 import net.b07z.sepia.server.assist.interviews.InterviewResult;
-import net.b07z.sepia.server.assist.interviews.Interview_Interface;
+import net.b07z.sepia.server.assist.interviews.InterviewInterface;
 import net.b07z.sepia.server.assist.interviews.NoResult;
 import net.b07z.sepia.server.assist.interviews.Repeat_Last;
 import net.b07z.sepia.server.assist.server.Config;
@@ -145,7 +145,7 @@ public class AssistEndpoint {
 		//interview module with services
 		ArrayList<ApiInterface> services = ConfigServices.getCustomOrSystemServices(input, input.user, cmd);
 		if (!services.isEmpty()){
-			Interview_Interface interview = new AbstractInterview();
+			InterviewInterface interview = new AbstractInterview();
 			interview.setCommand(cmd);
 			interview.setServices(services);
 			InterviewResult iResult = interview.getMissingParameters(result);

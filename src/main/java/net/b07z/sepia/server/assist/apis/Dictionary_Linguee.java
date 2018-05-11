@@ -71,7 +71,7 @@ public class Dictionary_Linguee implements ApiInterface{
 			//unsupported target language
 			api.answer = Config.answers.getAnswer(NLU_result, "dict_translate_1b", search, target_lang);
 		}
-		api.answer_clean = Converters.removeHTML(api.answer);
+		api.answerClean = Converters.removeHTML(api.answer);
 		
 		//make action: browser url call
 		String call_url = "";
@@ -96,12 +96,12 @@ public class Dictionary_Linguee implements ApiInterface{
 		
 		//action - for supported languages
 		if (target_lang.matches(supported_languages)){
-			api.actionInfo_add_action(ACTIONS.OPEN_IN_APP_BROWSER);
-			api.actionInfo_put_info("url", call_url);
+			api.addAction(ACTIONS.OPEN_IN_APP_BROWSER);
+			api.putActionInfo("url", call_url);
 
-			api.actionInfo_add_action(ACTIONS.BUTTON_IN_APP_BROWSER);
-			api.actionInfo_put_info("url", call_url); 
-			api.actionInfo_put_info("title", getButtonText(api.language));
+			api.addAction(ACTIONS.BUTTON_IN_APP_BROWSER);
+			api.putActionInfo("url", call_url); 
+			api.putActionInfo("title", getButtonText(api.language));
 			
 			api.hasAction = true;
 		}
@@ -128,7 +128,7 @@ public class Dictionary_Linguee implements ApiInterface{
 		api.status = "success";
 				
 		//finally build the API_Result
-		ApiResult result = api.build_API_result();
+		ApiResult result = api.buildApiResult();
 				
 		//return result_JSON.toJSONString();
 		return result;

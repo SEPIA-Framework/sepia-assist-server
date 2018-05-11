@@ -37,7 +37,7 @@ public class ConvertResult {
 			return NoResult.get(nluResult);
 		}
 		//re-do the "interview"
-		Interview_Interface interview = new AbstractInterview();
+		InterviewInterface interview = new AbstractInterview();
 		interview.setCommand(cmd);
 		interview.setServices(services);
 		InterviewResult iResult = interview.getMissingParameters(nluResult);

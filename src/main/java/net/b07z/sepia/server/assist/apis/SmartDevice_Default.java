@@ -39,7 +39,7 @@ public class SmartDevice_Default implements ApiInterface{
 		if (NLU_result.input.last_cmd_N > 1){
 			//abort
 			api.answer = Config.answers.getAnswer(NLU_result, "control_0b");
-			api.answer_clean = Converters.removeHTML(api.answer);
+			api.answerClean = Converters.removeHTML(api.answer);
 			api.status = "success";
 		}else{
 		
@@ -92,7 +92,7 @@ public class SmartDevice_Default implements ApiInterface{
 			
 			//make answer - if more than one direct answer choose randomly
 			api.answer = Config.answers.getAnswer(NLU_result, "smartdevice_0a");
-			api.answer_clean = Converters.removeHTML(api.answer);
+			api.answerClean = Converters.removeHTML(api.answer);
 			
 			//little html response
 			api.htmlInfo = "<div><b>Smart system control: </b><br>" 
@@ -107,7 +107,7 @@ public class SmartDevice_Default implements ApiInterface{
 		}
 				
 		//finally build the API_Result
-		ApiResult result = api.build_API_result();
+		ApiResult result = api.buildApiResult();
 				
 		//return result_JSON.toJSONString();
 		return result;

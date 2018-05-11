@@ -40,12 +40,12 @@ public class Repeat_Me implements ApiInterface{
 		
 		//get answer
 		api.answer = text;
-		api.answer_clean = Converters.removeHTML(api.answer);
+		api.answerClean = Converters.removeHTML(api.answer);
 		
 		api.status = "success";
 		
 		//build the API_Result
-		ApiResult result = api.build_API_result();
+		ApiResult result = api.buildApiResult();
 		
 		//return result.result_JSON.toJSONString();
 		return result;

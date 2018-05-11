@@ -17,7 +17,7 @@ public class InterviewResult {
 	boolean isComplete = false;
 	
 	public InterviewResult(Interview interview, ApiResult apiResult){
-		this.nluResult = interview.nlu_result;
+		this.nluResult = interview.nluResult;
 		this.isComplete = interview.isFinished;
 		this.apiResult = apiResult;
 	}
@@ -25,7 +25,7 @@ public class InterviewResult {
 		this.apiResult = apiResult;
 	}
 	public InterviewResult(Interview interview){
-		this.nluResult = interview.nlu_result;
+		this.nluResult = interview.nluResult;
 		this.isComplete = interview.isFinished;
 	}
 	

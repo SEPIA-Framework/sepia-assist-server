@@ -44,21 +44,21 @@ public class NoResult {
 		
 		//get answer
 		api.answer = Config.answers.getAnswer(NLU_result, answer_key);		//default is "no_answer_0a"
-		api.answer_clean = Converters.removeHTML(api.answer);
+		api.answerClean = Converters.removeHTML(api.answer);
 		
 		//websearch action
-		api.actionInfo_add_action(ACTIONS.BUTTON_CMD);
-		api.actionInfo_put_info("title", "Websearch");
-		api.actionInfo_put_info("info", "direct_cmd");
-		api.actionInfo_put_info("cmd", CmdBuilder.getWebSearch(NLU_result.input.text_raw));
-		api.actionInfo_put_info("options", JSON.make(ACTIONS.SKIP_TTS, true));
+		api.addAction(ACTIONS.BUTTON_CMD);
+		api.putActionInfo("title", "Websearch");
+		api.putActionInfo("info", "direct_cmd");
+		api.putActionInfo("cmd", CmdBuilder.getWebSearch(NLU_result.input.text_raw));
+		api.putActionInfo("options", JSON.make(ACTIONS.SKIP_TTS, true));
 		
 		//help button
-		api.actionInfo_add_action(ACTIONS.BUTTON_HELP);
+		api.addAction(ACTIONS.BUTTON_HELP);
 		
 		//teach UI button
-		api.actionInfo_add_action(ACTIONS.BUTTON_TEACH_UI);
-		api.actionInfo_put_info("input", NLU_result.input.text_raw);
+		api.addAction(ACTIONS.BUTTON_TEACH_UI);
+		api.putActionInfo("input", NLU_result.input.text_raw);
 		
 		//no result makes ILA sad :-(
 		//api.mood = Assistant.mood_decrease(api.mood);
@@ -67,10 +67,10 @@ public class NoResult {
 		api.context = CMD.NO_RESULT;	//do we want to reset the context here? I think we should 'cause its really a completely unknown command
 		
 		//reset input to type: question (tell the client that this is not a question anymore if it was one)
-		api.response_type = API.RESPONSE_INFO;
+		api.responseType = API.RESPONSE_INFO;
 		
 		//finally build the API_Result
-		ApiResult result = api.build_API_result();
+		ApiResult result = api.buildApiResult();
 		
 		//return result.result_JSON.toJSONString();
 		return result;
