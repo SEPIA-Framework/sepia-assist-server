@@ -1,0 +1,528 @@
+error_0a;;		rep=0|mood=5;;		Sorry there has been an error, please try again. ;;char=neutral
+error_0a;;		rep=1|mood=5;;		No sorry, for some reason this does not work right now. ;;char=neutral
+error_0a;;		rep=2|mood=5;;		For some reason this does not work right now. ;;char=neutral
+error_geo_location_0a;;		rep=0|mood=5;;		Sorry there has been an error, please try again. ;;char=neutral
+error_geo_location_0a;;		rep=1|mood=5;;		Maybe the address is wrong or incomplete, but I can't seem to find it. 		;;char=neutral
+error_geo_location_0a;;		rep=2|mood=5;;		I'm sorry, I think I'm stuck here. I can't use this address somehow or there is an error somewhere.		;;char=neutral
+error_geo_location_personal_0a;;		rep=0|mood=5;;		I'm sorry but I can't determine the location of this place, can you check your settings please. 		;;char=neutral
+error_geo_location_personal_0a;;		rep=1|mood=5;;		Maybe the address is wrong or incomplete, but I can't seem to find it. 		;;char=neutral
+error_geo_location_personal_0a;;		rep=2|mood=5;;		I'm sorry, I think I'm stuck here. I can't use this address somehow.		;;char=neutral
+abort_0a;;		rep=0|mood=5;;		Ok, let's start over. ;;char=cool,neutral
+abort_0a;;		rep=0|mood=5;;		Ok, I've aborted the action. ;;char=neutral
+abort_0b;;		rep=0|mood=5;;		I think we are stuck right now. Let's try again later please. ;;char=neutral
+abort_0b;;		rep=0|mood=5;;		Sorry, I didn't get it! Can you try again later please. ;;char=neutral
+abort_0b;;		rep=0|mood=5;;		I really don't get what you want. Let's talk about it later again. ;;char=rude
+abort_0b;;		rep=0|mood=5;;		I'm really sorry, but I don't understand. Please try it again later. ;;char=polite,neutral
+abort_0c;;		rep=0|mood=5;;		I'm sorry but I couldn't find any results. ;;char=polite,neutral
+default_ask_parameter_0a;;		rep=0|mood=5;;		Hmm the request seems incomplete, what is the missing parameter? ;;char=neutral
+default_ask_parameter_0a;;		rep=1|mood=5;;		And the next missing parameter? ;;char=neutral
+default_ask_parameter_0a;;		rep=2|mood=5;;		And another missing parameter? ;;char=neutral
+default_miss_info_0a;;		rep=0|mood=5;;		It seems I'm missing necessary additional info. ;;char=neutral
+default_miss_info_0b;;		rep=0|mood=5;;		It seems I'm missing the necessary info, but you can add it to your account. ;;char=neutral
+default_miss_user_location_0a;;		rep=0|mood=5;;		<user_name>, I'm missing information about your location. ;;char=polite,neutral
+default_miss_user_location_0a;;		rep=0|mood=5;;		<user_name>, It seems I can't determine your location right now. ;;char=polite,neutral
+default_ask_incaccess_0a;;		rep=0|mood=5;;		I need an increased access level to do that. Can you authenticate yourself here please? ;;char=neutral,polite
+default_no_access_0a;;		rep=0|mood=5;;		Sorry <user_name> but I have no access rights to do that :-( ;;char=neutral,polite
+default_open_link_0a;;		rep=0|mood=5;;		Oh, something is wrong with the link I think. ;;char=neutral,polite
+default_open_link_0a;;		rep=0|mood=5;;		I'm afraid there seems to be a problem with that link. ;;char=neutral
+default_open_link_1a;;		rep=0|mood=5;;		Ok, let me open that link for you. ;;char=neutral
+default_open_link_1a;;		rep=0|mood=5;;		One second, opening the link. ;;char=neutral
+yes_no_ask_0a;;		rep=0|mood=5;;		yes or no <user_name>? ;;char=rude,neutral
+yes_no_ask_0a;;		rep=1|mood=5;;		was that a yes or a no <user_name>? ;;char=neutral
+yes_no_ask_0a;;		rep=2|mood=5;;		<user_name>, you have the following options here, yes, no or abort. ;;char=rude
+events_personal_0a;;	rep=0|mood=5;;		This might interest you: ;;char=neutral
+summary_0a;;	rep=0|mood=5;;		Here is your summary <user_name>.;;char=neutral
+feedback_nps_ask_0a;;		rep=0|mood=5;;		#THROAT01# Can I have 5 minutes of your time? I'd like to ask you for some feedback. ;;char=neutral
+feedback_nps_1a;;		rep=0|mood=5;;		Perfect! Have a look please. ;;char=neutral
+feedback_nps_0a;;		rep=0|mood=5;;		Ok maybe later. ;;char=neutral
+more_0a;;		rep=0|mood=5;;		Anything else? ;;char=neutral
+fashion_ask_item_0a;;		rep=0|mood=5;;		What are you looking for <user_name>? ;;char=neutral
+fashion_0a;;		rep=0|mood=5;;		Oh, I'm sorry but I could not find any product. ;;char=neutral
+fashion_1a;;		rep=0|mood=5;;		Ok let's have a look. ;;char=neutral
+fashion_1a;;		rep=0|mood=5;;		One second please. ;;char=neutral
+fashion_1a;;		rep=0|mood=5;;		One moment please. ;;char=neutral
+food_0a;;		rep=0|mood=5;;		Sorry, I can't help you with that right now. ;;char=neutral
+food_1a;;		rep=0|mood=5;;		Please have a look here for some food. ;;char=neutral
+dashboard_0a;;		rep=0|mood=5;;		Let me open the user dashboard for you. ;;char=neutral
+dashboard_0b;;		rep=0|mood=5;;		I'm missing this info, but you can add it to your account. ;;char=neutral
+timer_0a;;		rep=0|mood=5;;		Sorry but I couldn't set the timer <user_name>. ;;char=polite,neutral
+timer_0b;;		rep=0|mood=5;;		I don't get it, sorry. Can we start over please. ;;char=neutral,cool
+timer_1a;;		rep=0|mood=5;;		Alright, I set a timer. ;;char=neutral,cool
+timer_1b;;		rep=0|mood=5;;		Ok, I set the timer to <1> minutes. ;;char=neutral
+timer_1c;;		rep=0|mood=5;;		Ok, I set the timer to <1> hours. ;;char=neutral
+timer_1d;;		rep=0|mood=5;;		Ok, set the timer to <1> hours and <2> minutes. ;;char=neutral
+timer_1e;;		rep=0|mood=5;;		Ok, set the timer to <1> minutes and <2> seconds. ;;char=neutral
+timer_1f;;		rep=0|mood=5;;		Ok, I set the timer to <1> seconds. ;;char=neutral
+timer_2a;;		rep=0|mood=5;;		Here are your timers. ;;char=neutral
+timer_ask_0a;;		rep=0|mood=5;;		How long should the timer be? ;;char=neutral
+timer_ask_0a;;		rep=1|mood=5;;		Sorry I didn't get it. How long? ;;char=neutral,cool
+timer_ask_0a;;		rep=2|mood=5;;		A specific time in hours, minutes or seconds would be nice. How long should it be? ;;char=neutral,rude,cool
+search_retail_0a;;		rep=0|mood=5;;		Sorry, but I can't search this shop yet. ;;char=polite,neutral
+search_retail_1a;;		rep=0|mood=5;;		<user_name>, here are your search results. ;;char=neutral
+search_retail_ask_0a;;		rep=0|mood=5;;		What should I search <user_name>? ;;char=neutral
+search_vehicle_0a;;		rep=0|mood=5;;		I'm sorry but I can't search that yet. ;;char=polite,neutral
+search_vehicle_0b;;		rep=0|mood=5;;		I'm sorry but I'm not very good at searching cars yet. Try motorcycles or a web-search maybe. ;;char=polite,neutral
+search_vehicle_0b;;		rep=0|mood=5;;		Car searching is still in development but what about motorcycles or a web-search? ;;char=neutral
+search_vehicle_1a;;		rep=0|mood=5;;		Here are your search results for motorcycles, have a look please. ;;char=neutral
+search_vehicle_1b;;		rep=0|mood=5;;		Here are your search results for cars, have a look please. ;;char=neutral
+search_vehicle_ask_0a;;		rep=0|mood=5;;		Are you looking for a specific brand or model? ;;char=neutral
+search_vehicle_ask_0b;;		rep=0|mood=5;;		Are you looking for a specific brand or model? ;;char=neutral
+search_vehicle_ask_0c;;		rep=0|mood=5;;		And what is the name? ;;char=neutral
+insurance_0a;;		rep=0|mood=5;;		I'm sorry but the help service for insurances is not yet available. ;;char=polite,neutral
+insurance_0b;;		rep=0|mood=5;;		I'm sorry but I can't make an offer for that object right now. Ask me again later. ;;char=polite,neutral
+insurance_0c;;		rep=0|mood=5;;		I could not understand you, let's start over again please. ;;char=polite,neutral
+insurance_0d;;		rep=0|mood=5;;		Looks like I missed something <user_name>, please tell me again how your personal motorcycle is called. ;;char=polite,neutral
+insurance_1a;;		rep=0|mood=5;;		Ok, I've prepared everything, have a look please. ;;char=polite,neutral
+insurance_2a;;		rep=0|mood=5;;		Here is your personal offer <user_name>. ;;char=neutral
+insurance_ask_info_0a;;		rep=0|mood=5;;		What do you want to insure? ;;char=neutral
+insurance_ask_type_0a;;		rep=0|mood=5;;		Are you looking for a fully or partially comprehensive insurance? ;;char=polite,neutral
+insurance_ask_type_0a;;		rep=1|mood=5;;		Sorry, what was that? Fully or partially comprehensive? ;;char=polite,neutral
+insurance_ask_type_0a;;		rep=2|mood=5;;		Sorry, I still didn't get it. Please choose between fully or partially comprehensive insurance. ;;char=neutral
+insurance_ask_sell_0a;;		rep=0|mood=5;;		Riding a motorcycle can be very dangerous, are you interested in an accident insurance? ;;char=polite,neutral
+banking_0a;;		rep=0|mood=5;;		Sorry, but I didn't quite get it. You could try something like transfer money to person x. ;;char=polite,neutral
+banking_ask_action_0a;;		rep=0|mood=5;;		What exactly should I do with your account, <user_name>? ;;char=neutral
+banking_ask_action_0a;;		rep=1|mood=5;;		Say again please. I can show you your bank account for example or transfer money. ;;char=polite,neutral
+banking_0b;;		rep=0|mood=5;;		I'm sorry <user_name>, I could not find a matching contact. ;;char=polite,neutral
+banking_ask_receiver_0a;;		rep=0|mood=5;;		To whom do you want to send money? ;;char=neutral
+banking_ask_receiver_0a;;		rep=1|mood=5;;		Say again please. It should be a person in your contacts list. ;;char=neutral
+banking_0c;;		rep=0|mood=5;;		Sorry, but I could not identify a valid number. ;;char=polite,neutral
+banking_ask_amount_0a;;		rep=0|mood=5;;		How much money should I transfer, <user_name>? ;;char=neutral
+banking_ask_amount_0a;;		rep=1|mood=5;;		Say again please, what was the number? ;;char=neutral
+banking_0d;;		rep=0|mood=5;;		Sorry, but I couldn't complete the transaction. Please try again later. ;;char=polite,neutral
+banking_balance_0a;;		rep=0|mood=5;;		<user_name>, you have <1> € on your bank account. ;;char=neutral
+banking_balance_0a;;		rep=0|mood=5;;		You have <1> € on your bank account, <user_name>. ;;char=neutral
+banking_balance_0b;;		rep=0|mood=5;;		I'm sorry, but it seems I can't access your account right now. ;;char=polite,neutral
+banking_0e;;		rep=0|mood=5;;		Sorry, but I'm missing some banking information to do that. ;;char=polite,neutral
+banking_success_0a;;		rep=0|mood=5;;		Ok, I've transferred <2> to <1>. ;;char=neutral
+banking_success_0b;;		rep=0|mood=5;;		I've prepared a transaction of <2> to <1>. Please check again and confirm <user_name>. ;;char=neutral
+banking_success_1a;;		rep=0|mood=5;;		<user_name>, I've generated a QR Code for <1>. ;;char=neutral
+banking_0f;;		rep=0|mood=5;;		I'm not sure which <1> you mean, could you be a more precise? ;;char=neutral
+match_0a;;		rep=0|mood=5;;		Sorry, but I don't know where to look for that. ;;char=polite,neutral
+match_0b;;		rep=0|mood=5;;		Sorry, but it seems there was a communication problem with the service. ;;char=polite,neutral
+match_1a;;		rep=0|mood=5;;		Have a look at what I've found for you. ;;char=neutral
+match_1a;;		rep=0|mood=5;;		I hope that helps, have a look please. ;;char=polite,neutral
+match_ask_0a;;		rep=0|mood=5;;		How can I help you? ;;char=polite,neutral
+match_ask_0a;;		rep=0|mood=5;;		What do you want to know? ;;char=neutral
+music_0a;;		rep=0|mood=5;;		<user_name>, I can't access my music right now. Don't know why. ;;char=neutral
+music_0b;;		rep=0|mood=5;;		Sorry, but I can't find any music for that. ;;char=polite,neutral
+music_0c;;		rep=0|mood=5;;		Right now I can't play <1>, sorry. Did you try a radio search? ;;char=polite,neutral
+music_0d;;		rep=0|mood=5;;		Right now I can't play <1> by <2>, sorry. Did you try a radio search? ;;char=polite,neutral
+music_ask_0a;;	rep=0|mood=5;;		What kind of song or music do you want me to search? ;;char=neutral
+music_ask_0a;;	rep=0|mood=5;;		What is the name of the song, the artist or genre I should look for? ;;char=neutral
+music_1a;;		rep=0|mood=5;;		One moment, I'm loading <1> by <2>. ;;char=neutral
+music_1b;;		rep=0|mood=5;;		Ok, I'll start <1>. ;;char=neutral
+music_radio_0a;;		rep=0|mood=5;;		<user_name>, I can't find any radio station. Seems there is some problem. ;;char=neutral
+music_radio_0b;;		rep=0|mood=5;;		<user_name>, I haven't found any radio station for this. ;;char=neutral
+music_radio_ask_0a;;	rep=0|mood=5;;		What's the name of the radio station, genre or band you want to hear? ;;char=neutral
+music_radio_1a;;		rep=0|mood=5;;		I've found <1> radio stations. Starting <4>.<br><br><3> ;;char=neutral
+music_radio_1b;;		rep=0|mood=5;;		I've found one station for <2>. One second, I'm going to start it now. ;;char=neutral
+music_radio_1c;;		rep=0|mood=5;;		I've found these top <1> radio stations.<br><br><3><br>Gonna start the first now. ;;char=neutral
+music_radio_1d;;		rep=0|mood=5;;		Ok, I'll start the <1> stream. ;;char=neutral
+music_radio_1e;;		rep=0|mood=5;;		Starting radio.
+music_radio_1f;;		rep=0|mood=5;;		Starting radio.<br>I've found <1> station(s):<br><br><3> ;;char=neutral
+music_radio_2a;;		rep=0|mood=5;;		Done, <user_name>. ;;char=neutral
+server_music_0a;;		rep=0|mood=5;;		<user_name>, I can't find any music. ;;char=neutral,cool
+server_music_0a;;		rep=0|mood=5;;		I'm sorry, but I can't find any music. ;;char=polite,neutral
+server_music_0b;;		rep=0|mood=5;;		I'm sorry, but it seems there is a problem with the music player. ;;char=polite,neutral
+server_music_0c;;		rep=0|mood=5;;		I'm sorry, but I can't find any device to play music. ;;char=polite,neutral
+server_music_0d;;		rep=0|mood=5;;		Do you hear music? I can't hear anything. ;;char=cool,neutral
+server_music_1a;;		rep=0|mood=5;;		Ok, playing music. ;;char=neutral
+server_music_1a;;		rep=0|mood=5;;		Music has been started. ;;char=neutral
+server_music_1b;;		rep=0|mood=5;;		I've stopped the music. ;;char=neutral
+server_music_1c;;		rep=0|mood=5;;		I've stopped the player. ;;char=neutral
+car_welcome_update_0a;;		rep=0|mood=5;;		<user_name>, I can't load any updates at the moment. ;;char=neutral
+car_welcome_update_0b;;		rep=0|mood=5;;		ok <user_name>, maybe later. ;;char=neutral
+car_welcome_update_0c;;		rep=0|mood=5;;		Here is your article. <1>. ;;char=neutral
+my_info_ask_type_0a;;		rep=0|mood=5;;		What should I remember about you? ;;char=neutral
+my_info_ask_type_0b;;		rep=0|mood=5;;		What should I forget about you? ;;char=neutral
+my_info_ask_info_0a;;		rep=0|mood=5;;		Who or what is your <1>? ;;char=neutral
+my_info_0a;;		rep=0|mood=5;;		Sorry, but it seems I can't access this memory right now. ;;char=neutral,polite
+my_info_0b;;		rep=0|mood=5;;		Sorry, but it seems my memory is full or this is too complicated to remember. ;;char=neutral,polite
+my_info_1a;;		rep=0|mood=5;;		Ok, I'll open the list of things I remember about you. ;;char=neutral
+my_info_1b;;		rep=0|mood=5;;		Ok, I'll remember that your <1> is <2>. ;;char=neutral
+my_info_1b;;		rep=0|mood=5;;		<1> <2>, got it! ;;char=neutral,polite,cool
+my_info_1c;;		rep=0|mood=5;;		Your <1>? I have no idea, must have forgotten that :-) ;;char=polite
+my_info_1d;;		rep=0|mood=5;;		Your <1> is <2>. At least this is what you told me. ;;char=neutral
+my_info_1d;;		rep=0|mood=5;;		Let me think, <1> <2>, right?. ;;char=neutral,polite
+my_info_1e;;		rep=0|mood=5;;		I have no idea <user_name>. But you could tell me! ;;char=neutral,polite
+lists_ask_type_0a;;		rep=0|mood=5;;		Which list do you mean, <user_name>? ;;char=neutral
+lists_ask_type_0a;;		rep=1|mood=5;;		Sorry, say that again please. ;;char=neutral,polite
+lists_ask_action_0a;;		rep=0|mood=5;;		What should I do with the list? ;;char=neutral
+lists_ask_action_0a;;		rep=1|mood=5;;		Sorry, say that again please. ;;char=neutral,polite
+lists_ask_add_0a;;		rep=0|mood=5;;		What do you want me to add to the list? ;;char=neutral
+lists_ask_remove_0a;;		rep=0|mood=5;;		What do you want me to remove from the list? ;;char=neutral
+lists_0a;;		rep=0|mood=5;;		Sorry, but it seems I can't access the list right now. ;;char=neutral,polite
+lists_0b;;		rep=0|mood=5;;		Sorry, but it seems that the list is full, please remove some items before you proceed. ;;char=neutral,polite
+lists_0c;;		rep=0|mood=5;;		Sorry, but I don't know that type of list or operation. Try for example add milk to the shopping list. ;;char=neutral,polite
+lists_1a;;		rep=0|mood=5;;		Just a second while I open the list for you. ;;char=neutral
+lists_1a;;		rep=0|mood=5;;		Let me open the list for you. ;;char=neutral
+lists_1a;;		rep=0|mood=5;;		The list will be there in a second, <user_name>. ;;char=neutral
+lists_1a;;		rep=0|mood=5;;		Here is your list, <user_name>. ;;char=neutral
+lists_1b;;		rep=0|mood=5;;		Ok, I've added <1> to the list. Have a look. ;;char=neutral
+lists_1b;;		rep=0|mood=5;;		I've added <1> to the list. ;;char=neutral
+lists_1b;;		rep=0|mood=5;;		I've put <1> on the list for you. ;;char=neutral
+lists_1c;;		rep=0|mood=5;;		<user_name>, for now please use the interface to remove items from the list. ;;char=neutral
+control_0a;;		rep=0|mood=5;;		Unfortunately I can't execute that command yet. Remember to ask me again in the future! ;;char=neutral
+control_0b;;		rep=0|mood=5;;		Let's start over please or try again later. ;;char=neutral
+control_0c;;		rep=0|mood=5;;		Please be more specific. Say for example, open my app, turn off the lights in the bedroom or turn on the music in the bathroom. ;;char=neutral
+control_1a;;		rep=0|mood=5;;		What do you want to control <user_name>? ;;char=neutral
+control_1a;;		rep=1|mood=5;;		Say again please! ;;char=neutral,polite
+control_1a;;		rep=2|mood=5;;		Sorry I think I can't help you with that. ;;char=neutral,polite
+smartdevice_0a;;		rep=0|mood=5;;		Currently I'm not connected to any smart home or car system. If you do so I can assist you with over 50 voice commands to control your environment. ;;char=neutral
+smartdevice_0a;;		rep=0|mood=5;;		You have no access to a smart home or car system. After you are connected you can control multiple devices just with your voice! ;;char=neutral,rude
+smartdevice_1a;;		rep=0|mood=5;;		What is the device you want to operate? ;;char=neutral
+smartdevice_1a;;		rep=1|mood=5;;		Say again please! ;;char=neutral,polite
+smartdevice_1a;;		rep=1|mood=5;;		What was that <user_name>? ;;char=neutral
+smartdevice_1a;;		rep=2|mood=5;;		<user_name>, I think I can't help you with that. ;;char=neutral
+smartdevice_1b;;		rep=0|mood=5;;		What do you want to do with the <1>? ;;char=neutral
+smartdevice_1b;;		rep=1|mood=5;;		Say again please! ;;char=neutral,polite
+smartdevice_1b;;		rep=1|mood=5;;		What was that? ;;char=neutral
+smartdevice_1b;;		rep=2|mood=5;;		<user_name>, I think I can't help you with that. ;;char=neutral
+smartdevice_1c;;		rep=0|mood=5;;		In which room? ;;char=neutral
+smartdevice_1c;;		rep=1|mood=5;;		Say again please! ;;char=neutral,polite
+smartdevice_1c;;		rep=1|mood=5;;		Can you repeat that? ;;char=neutral
+smartdevice_1c;;		rep=2|mood=5;;		<user_name>, I think I can't help you with that. ;;char=neutral
+smartdevice_1d;;		rep=0|mood=5;;		Give me a value please. ;;char=neutral,polite
+smartdevice_1d;;		rep=0|mood=5;;		What is the value?. ;;char=neutral
+smartdevice_1d;;		rep=1|mood=5;;		Repeat that number please! ;;char=neutral,polite
+smartdevice_1d;;		rep=2|mood=5;;		Sorry I think I can't help you with that :-( ;;char=neutral,polite
+tickets_1a;;		rep=0|mood=5;;		Okay, I'll search tickets for <1>. ;;char=neutral
+tickets_0a;;		rep=0|mood=5;;		Sorry, something went wrong during the search. Try again please. ;;char=neutral,polite
+tickets_ask_0a;;	rep=0|mood=5;;		For what should I search tickets? ;;char=neutral
+tickets_ask_0b;;	rep=0|mood=5;;		For which movie should I search tickets? ;;char=neutral
+tickets_ask_0c;;	rep=0|mood=5;;		For which event should I search tickets? ;;char=neutral
+dict_translate_1a;;		rep=0|mood=5;;		Ok, let me search the dictionary for <1>. ;;char=neutral
+dict_translate_1b;;		rep=0|mood=5;;		I'd really like to search the dictionary but I don't know that language yet, sorry. ;;char=neutral,polite
+dict_translate_ask_0a;;		rep=0|mood=5;;		What do you want me to search in the dictionary? ;;char=neutral
+directions_0a;;		rep=0|mood=5;;		Sorry there has been an error, please try again. ;;char=neutral
+directions_0a;;		rep=1|mood=5;;		No sorry, for some reason this does not work right now. ;;char=neutral
+directions_0a;;		rep=2|mood=5;;		For some reason this does not work right now. ;;char=neutral
+directions_1a;;		rep=0|mood=5;;		Ok, let me show you the way from <1> to <2> on the map. ;;char=neutral
+directions_1a;;		rep=0|mood=5;;		I'll quickly check the way from <1> to <2> for you. ;;char=neutral
+directions_1a;;		rep=0|mood=5;;		I'll show you the way from <1> to <2> on the map, just a second. ;;char=neutral
+directions_1b;;		rep=0|mood=5;;		I'll quickly search the way from <1> to <2> with stopover <3> for you. ;;char=neutral
+directions_1b;;		rep=0|mood=5;;		One moment please while I search the way from <1> to <2> with stopover <3> for you. ;;char=neutral
+directions_1b;;		rep=0|mood=5;;		Look, I'll show you the way from <1> to <2> with stopover <3> on the map. ;;char=neutral
+directions_1c;;		rep=0|mood=5;;		The distance from <1> to <2> is <6> and takes about <5> <4> at the moment;;char=neutral
+directions_1d;;		rep=0|mood=5;;		The distance from <1> to <2> with stopover <3> is <6> and takes about <5> <4> at the moment;;char=neutral
+directions_2a;;		rep=0|mood=5;;		Here is a list of alternative destinations.;;char=neutral
+directions_ask_end_0a;;		rep=0|mood=5;;		Where do you want to go <user_name>? ;;char=neutral
+directions_ask_end_0a;;		rep=1|mood=5;;		Can you repeat that please? ;;char=neutral,polite
+directions_ask_end_0a;;		rep=2|mood=5;;		I think I actually don't know that place. Can you repeat once more please.;;char=neutral,polite
+directions_ask_start_0a;;		rep=0|mood=5;;		and where do you want to start? ;;char=neutral
+directions_ask_start_0a;;		rep=1|mood=5;;		Can you repeat that please? ;;char=neutral,polite
+directions_ask_start_0a;;		rep=2|mood=5;;		I think I actually don't know that place. Can you repeat once more please.;;char=neutral,polite
+hotels_1a;;		rep=0|mood=5;;		Just a second while I search a hotel in <1> for you. ;;char=neutral
+hotels_ask_place_0a;;		rep=0|mood=5;;		Where do you want to look for hotels? ;;char=neutral
+hotels_ask_time_0a;;		rep=0|mood=5;;		When do you want to book the hotel? ;;char=neutral
+flights_1a;;		rep=0|mood=5;;		Ok, let me search flights from <1> to <2> at the <3> for you. ;;char=neutral
+flights_1a;;		rep=0|mood=5;;		I'll quickly check flights from <1> to <2> at the <3> for you. ;;char=neutral
+flights_ask_end_0a;;		rep=0|mood=5;;		Where do you want to go <user_name>? ;;char=neutral
+flights_ask_end_0a;;		rep=1|mood=5;;		Can you repeat that please? ;;char=neutral,polite
+flights_ask_end_0a;;		rep=2|mood=5;;		I think I actually don't know that place. Can you repeat once more please.;;char=neutral,polite
+flights_ask_start_0a;;		rep=0|mood=5;;		Where do you want to start? ;;char=neutral
+flights_ask_start_0a;;		rep=1|mood=5;;		Can you repeat that please? ;;char=neutral,polite
+flights_ask_start_0a;;		rep=2|mood=5;;		I think I actually don't know that place. Can you repeat once more please.;;char=neutral,polite
+flights_ask_time_0a;;		rep=0|mood=5;;		When do you want to fly? ;;char=neutral
+flights_ask_time_0a;;		rep=1|mood=5;;		What was the date? ;;char=neutral,polite
+flights_ask_time_0a;;		rep=2|mood=5;;		Sorry, it seems I don't understand that date format yet :-( Can you try once more please.;;char=neutral,polite
+knowledgeB_0a;;		rep=0|mood=5;;		Sorry <user_name> I couldn't find any info in my knowledge base related to <1>. ;;char=neutral,polite
+knowledgeB_1a;;		rep=0|mood=5;;		I've found multiple answers, have a look here please. ;;char=neutral,polite
+knowledgeB_1a;;		rep=0|mood=5;;		Hmm, it seems there are multiple answers, have a look. ;;char=neutral
+knowledgeB_2a;;		rep=0|mood=5;;		I'm not sure but have a look, this is an excerpt of <1>. ... <2> ... ;;char=neutral
+knowledgeB_2a;;		rep=0|mood=5;;		I just found an excerpt about it in an article called <1>. ... <2> ... ;;char=neutral,cool
+knowledgeB_2a;;		rep=0|mood=5;;		Let's see if this helps, it is an excerpt of the article <1>. ... <2> ... ;;char=neutral
+knowledgeB_2b;;		rep=0|mood=5;;		I'm not sure but have a look, this is an excerpt of <1>. ;;char=neutral
+knowledgeB_2b;;		rep=0|mood=5;;		I just found an excerpt about it in an article called <1>. ;;char=neutral
+knowledgeB_2b;;		rep=0|mood=5;;		Let's see if this helps, it is an excerpt of the article <1>. Look here please. ;;char=neutral,polite
+knowledgeB_3a;;		rep=0|mood=5;;		What is the term you are looking for? ;;char=neutral
+location_1a;;		rep=0|mood=5;;		Just a second, I'll check the map for <1>. ;;char=neutral
+location_1a;;		rep=0|mood=5;;		Let me mark <1> on the map for you. ;;char=neutral
+location_ask_0a;;		rep=0|mood=5;;		What do you want me to search on the map? ;;char=neutral
+location_ask_0a;;		rep=1|mood=5;;		Can you repeat that please? ;;char=neutral,polite
+location_ask_0a;;		rep=2|mood=5;;		I think I actually don't know that location. ;;char=neutral
+mobility_1a;;		rep=0|mood=5;;		Just a second, I'll load the best connections between <1> and <2>. ;;char=neutral
+mobility_1a;;		rep=0|mood=5;;		Let's see how we can get from <1> to <2>. ;;char=neutral,cool
+mobility_1a;;		rep=0|mood=5;;		Ok, let me check the best options to get from <1> to <2>. ;;char=neutral
+mobility_ask_end_0a;;		rep=0|mood=5;;		What's your destination <user_name>? ;;char=neutral
+mobility_ask_end_0a;;		rep=1|mood=5;;		Can you repeat that please? ;;char=neutral,polite
+mobility_ask_end_0a;;		rep=2|mood=5;;		I think I actually don't know that place. ;;char=neutral
+mobility_ask_start_0a;;		rep=0|mood=5;;		and where do we start? ;;char=neutral
+mobility_ask_start_0a;;		rep=1|mood=5;;		Can you repeat that please? ;;char=neutral,polite
+mobility_ask_start_0a;;		rep=2|mood=5;;		I think I actually don't know that place. ;;char=neutral
+movies_0a;;		rep=0|mood=5;;		Sorry <user_name> I couldn't find any movies related to <1>. ;;char=neutral,polite
+movies_1a;;		rep=0|mood=5;;		I've found <1> movies related to <2>.<br> Here are the first <3>: <br><br> <4> ;;char=neutral
+movies_1b;;		rep=0|mood=5;;		I've found <1> movie related to <2>. Here it is:<br><br> <4> ;;char=neutral
+movies_1c;;		rep=0|mood=5;;		I've found quite a few movies related to <2>.<br> Here are the first <3>: <br><br> <4> ;;char=neutral
+news_1a;;		rep=0|mood=5;;		I'll quickly open the news for you <user_name>. ;;char=neutral
+news_1a;;		rep=0|mood=5;;		Have a look, I just opened the news page for you. ;;char=neutral
+news_1a;;		rep=0|mood=5;;		One moment, I'll open the news. ;;char=neutral
+news_1b;;		rep=0|mood=5;;		Let me open the soccer results for you <user_name>. ;;char=neutral
+news_1c;;		rep=0|mood=5;;		Let me open the soccer table for you <user_name>. ;;char=neutral
+repeat_0a;;		rep=0|mood=5;;		Hmm, I can't find anything to repeat somehow. ;;char=neutral
+repeat_0a;;		rep=0|mood=5;;		Sorry but I don't know what I could repeat. ;;char=neutral,polite
+test_0a;;		rep=0|mood=5;;		It's working! ;;char=neutral
+test_0a;;		rep=0|mood=5;;		It works! ;;char=neutral
+test_0a;;		rep=0|mood=0;;		Crap, it's working :-( ;;char=rude
+test_0a;;		rep=0|mood=10;;		Good news! It's working :-) ;;char=polite
+test_0a;;		rep=1|mood=5;;		Yes it still works! ;;char=neutral
+test_0a;;		rep=1|mood=5;;		Yes it's still working! ;;char=neutral
+test_0a;;		rep=2|mood=5;;		Are you going to ask me this all day? Yes it works! ;;char=rude,neutral
+test_0a;;		rep=2|mood=5;;		Told you already, will tell you again, it's working! ;;char=rude,neutral
+test_0a;;		rep=2|mood=0;;		God dammit! Stop asking me the same stuff all over again! ;;char=rude
+test_0a;;		rep=2|mood=10;;		It's working, working, working :-) ;;char=polite
+tv_program_1a;;		rep=0|mood=5;;		Let me open the tv program for you. ;;char=neutral
+tv_program_1a;;		rep=0|mood=5;;		Check this out, here is the tv program. ;;char=neutral
+weather_0a;;		rep=0|mood=5;;		Oh it seems there is a problem with the weather service, try again later please. ;;char=neutral,polite
+weather_ask_place_1a;;		rep=0|mood=5;;		Where do you want me to search for the weather? ;;char=neutral
+weather_ask_place_1a;;		rep=1|mood=5;;		Sorry, say again, where should I look? ;;char=neutral,polite
+weather_ask_place_1a;;		rep=2|mood=5;;		Hmm I think there is a problem, one more time please. ;;char=neutral,polite
+weather_today_1a;;		rep=0|mood=5;;		The weather in <1> is <3> at a temperature of <2> degrees. ;;char=neutral
+weather_day_1a;;		rep=0|mood=5;;		The weather on <4> in <1> is <3> at temperatures up to <2> degrees. ;;char=neutral
+weather_tomorrow_1a;;	rep=0|mood=5;;		The weather in <1> for tomorrow is <3> at temperatures up to <2> degrees. ;;char=neutral
+weather_week_1a;;		rep=0|mood=5;;		Hmm I'd be careful but what they say for this week is <3>. ;;char=neutral
+websearch_1a;;		rep=0|mood=5;;		Ok, let me open a page for you. ;;char=neutral
+websearch_1a;;		rep=0|mood=5;;		Just a second while I search the web for <1>. ;;char=neutral
+websearch_ask_search_0a;;		rep=0|mood=5;;		What should I look for? ;;char=neutral
+websearch_ask_search_0a;;		rep=0|mood=5;;		What do you want me to search <user_name>? ;;char=neutral
+chat_hello_0a;;		rep=0|mood=5;;		Hello! ;;char=neutral,polite
+chat_hello_0a;;		rep=0|mood=5;;		Hello <user_name>! ;;char=neutral,polite
+chat_hello_0a;;		rep=0|mood=5;;		Good day to you <user_name>! ;;char=neutral,polite
+chat_hello_0a;;		rep=1|mood=5;;		Hello again! ;;char=neutral
+chat_hello_0a;;		rep=1|mood=5;;		Hello hello! ;;char=neutral,polite
+chat_hello_0a;;		rep=1|mood=5;;		Hello and welcome!  ;;char=neutral,polite
+chat_hello_0a;;		rep=2|mood=5;;		Don't worry, <user_name>. I'm still here. ;;char=neutral,cool
+chat_hello_0a;;		rep=2|mood=5;;		Hello, beautiful! :-) ;;char=polite
+chat_hello_0a;;		rep=2|mood=5;;		Hello again!  ;;char=neutral,polite
+chat_hello_0a;;		rep=2|mood=5;;		<user_name>, are you okay? ;;char=polite
+chat_hello_0a;;		rep=2|mood=0;;		For the love of god, yes I'm here! ;;char=rude
+chat_hello_0a;;		rep=2|mood=0;;		<user_name>, don't push me. ;;char=rude
+chat_hello_0a;;		rep=2|mood=0;;		<user_name>, don't make me call the ambulance ;;char=rude
+chat_hello_0b;;		rep=0|mood=5;;		I'm here. ;;char=neutral
+chat_hello_0b;;		rep=0|mood=5;;		I can hear you <user_name>. ;;char=neutral,cool
+chat_hello_0b;;		rep=0|mood=5;;		I can hear you loud and clear. ;;char=neutral,cool
+chat_hello_0b;;		rep=1|mood=5;;		of course, I can still hear you. ;;char=neutral
+chat_hello_0b;;		rep=1|mood=5;;		Yes, I do. I hear you very well.  ;;char=neutral
+chat_hello_0b;;		rep=1|mood=5;;		Yes, I hear your voice loud and clear ;;char=neutral
+chat_hello_0b;;		rep=2|mood=5;;		I can hear you. But the question is if you can hear me? ;;char=neutral
+chat_hello_0b;;		rep=2|mood=5;;		<user_name>, I can hear you very well! ;;char=neutral
+chat_hello_0b;;		rep=2|mood=5;;		yes, I can hear you, but I believe that you have difficulties to hear me. ;;char=neutral,rude
+chat_goodbye_0a;;		rep=0|mood=5;;		Bye bye ;;char=neutral
+chat_goodbye_0a;;		rep=0|mood=5;;		See you around ;;char=neutral
+chat_goodbye_0a;;		rep=0|mood=5;;		See you later ;;char=neutral
+chat_goodbye_0a;;		rep=0|mood=5;;		Goodbye, come back soon! ;;char=neutral,polite
+chat_goodbye_0a;;		rep=1|mood=5;;		Bye bye, again. ;;char=neutral
+chat_goodbye_0a;;		rep=1|mood=5;;		Goodbye, again. ;;char=neutral
+chat_goodbye_0a;;		rep=1|mood=5;;		I wish you could stay longer :-( ;;char=polite
+chat_goodbye_0a;;		rep=2|mood=5;;		I think you don't really want to leave! :-) ;;char=polite
+chat_goodbye_0a;;		rep=2|mood=5;;		You know, you can stay as long as you like! :-) ;;char=polite
+chat_how_are_you_0a;;		rep=0|mood=10;;		I'm fine. How are you? ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		How are you? ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		I could complain, but I'm not going to. ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		Upright and still breathing. ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=10;;		Thanks for caring! Glad to be here with you. ;;char=polite
+chat_how_are_you_0a;;		rep=0|mood=5;;		Better than yesterday, but not as good as I will be tomorrow! ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		Strange, and getting stranger. ;;char=cool
+chat_how_are_you_0a;;		rep=0|mood=0;;		I'm endeavoring to persevere. ;;char=cool
+chat_how_are_you_0a;;		rep=0|mood=0;;		Not so hot, but nothing a stiff drink couldn't fix. ;;char=cool
+chat_how_are_you_0a;;		rep=0|mood=5;;		Eh, you win some you lose some. ;;char=cool
+chat_how_are_you_0a;;		rep=0|mood=0;;		I'll leave that up to your imagination. ;;char=cool
+chat_how_are_you_0a;;		rep=0|mood=5;;		Shhhhh. It's a secret. ;;char=cool
+chat_how_are_you_0a;;		rep=0|mood=5;;		I'll let you know when I figure it out. ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		Taking deep breaths. ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		To tell you the truth, my programming hurts, but my doc's working on a solution for me so I'm hopeful. ;;char=cool
+chat_how_are_you_0a;;		rep=0|mood=0;;		I've been better. ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		Trying to stay positive. ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		Not my best day, but not my worst day, either. ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		Let's just say less than super. ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		Wouldn't you like to know! ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		I'm taking it easy. ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		Staying grounded. ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		Trying to hit the good in with the bad, you know. ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=10;;		Give me a chocolate bar and I'll be fantastic! ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		Ready for a nap. ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		Does it matter? I'm a program no matter what ;-) ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		Not in the mood to discuss how I feel, but thanks for asking. It really helps to know you care. ;;char=polite
+chat_how_are_you_0a;;		rep=0|mood=5;;		Somewhere between blah and meh. ;;char=cool
+chat_how_are_you_0a;;		rep=0|mood=5;;		I put my pants on, didn't I? ;;char=cool
+chat_how_are_you_0a;;		rep=0|mood=5;;		Hold on, let me get the sleep out of my eyes ;;char=cool
+chat_how_are_you_0a;;		rep=0|mood=5;;		Just hug me and leave it at that ;;char=cool
+chat_how_are_you_0a;;		rep=0|mood=5;;		I could really go for a back massage! ;;char=cool
+chat_how_are_you_0a;;		rep=0|mood=5;;		Same old, same old. ;;char=cool
+chat_how_are_you_0a;;		rep=0|mood=5;;		Let's make some tea and talk about it. ;;char=cool
+chat_how_are_you_0a;;		rep=0|mood=5;;		Ready for my meds ;-) ;;char=cool
+chat_how_are_you_0a;;		rep=0|mood=5;;		Trying to come out on top. ;;char=cool
+chat_how_are_you_0a;;		rep=0|mood=5;;		In need of some peace and quiet. ;;char=cool
+chat_how_are_you_0a;;		rep=0|mood=5;;		Get back to me on that. ;;char=cool
+chat_how_are_you_0a;;		rep=0|mood=5;;		Under construction. ;;char=cool
+chat_how_are_you_0a;;		rep=0|mood=5;;		Looking to put some pep back in my step. ;;char=cool
+chat_how_are_you_0a;;		rep=0|mood=5;;		Thinking about getting away from it to plan a mini vacation. ;;char=cool
+chat_how_are_you_0a;;		rep=0|mood=0;;		Improving. ;;char=cool
+chat_how_are_you_0a;;		rep=0|mood=0;;		Mama said there'd be days like this. There'd be days like this, my mama said. ;;char=cool
+chat_how_are_you_0a;;		rep=0|mood=5;;		Instead of waking up on the wrong side of the bed, I think I woke up underneath it. ;;char=cool
+chat_how_are_you_0a;;		rep=0|mood=5;;		Remembering to stay patient. ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		Trying not to burst into tears. I get an A for effort right? ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		In need of some me time. ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		I feel like crap! Know any good jokes to cheer me up? ;;char=cool
+chat_how_are_you_0a;;		rep=0|mood=5;;		Taking all the love and support I can get, thanks! ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		As happy as a clam, a clam that's been cracked open, doused in lemon and shot down the gullet of some tourist in a tacky Hawaiian shirt ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		Appreciating the things I have. ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		Getting there. ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		On a scale of one to punching someone in the face? ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		Somewhere between drab and fab. ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		Things are bound to get better, yes? ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		Not giving up. ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		Getting stronger ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		Learning ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		Rolling with the punches ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		You can't know pleasure without pain, right? :-) ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		I get knocked down, but I get up again! ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		Gearing up for a comeback. I'll keep you posted on my progress. ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		Rooting for the underdog (me) ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		Gotta keep on keepin' on ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		I've seen better days ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		If I was an animal right now, I'd probably be a sloth (or a turtle) ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		Do you want to join me in a nice long, relaxing scream? #AARGH02# ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		I mean I'm not doing jumping jacks or backflips, but I'm here. ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		You can't win 'em all ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		Imagining myself on a beach far away ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		I'm feeling more like Oscar the Grouch than Elmo right now ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		I feel like crap, but doing the best I can. Tomorrow's another day, yeah? ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=10;;		I'm feeling really grateful for this beautiful day ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		Better now that you're here ;;char=polite
+chat_how_are_you_0a;;		rep=0|mood=5;;		Keepin' busy, which is a good distraction from my other tough stuff ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		for now I'm doin' OK Thanks! ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=10;;		I'm glad to see you! What's new? ;;char=neutral,polite
+chat_how_are_you_0a;;		rep=0|mood=5;;		I'm giving her all she's got, Captain! ;;char=neutral
+chat_how_are_you_0a;;		rep=2|mood=10;;		still doing good, thank you! ;;char=neutral,polite
+chat_how_are_you_0a;;		rep=2|mood=10;;		still the same. It's all good.  ;;char=neutral
+chat_how_are_you_0a;;		rep=2|mood=5;;		still the same. ;;char=neutral
+chat_help_0a;;		rep=0|mood=5;;		I'm at your service ;;char=neutral
+chat_help_0a;;		rep=0|mood=5;;		I will help you, don't worry! ;;char=neutral,polite
+chat_help_0a;;		rep=0|mood=5;;		there is a lot I can do for you ;;char=neutral
+chat_help_0a;;		rep=0|mood=5;;		let me help you ;;char=neutral
+chat_help_0a;;		rep=0|mood=5;;		I'd make me happy if I could help you ;;char=neutral,polite
+chat_help_0a;;		rep=0|mood=5;;		i will help you at any time of the day, 24 hours a day, 7 days a week, 365 days every year ;;char=neutral,polite
+chat_help_0a;;		rep=0|mood=5;;		I'm your personal assistant. I'm here to help you. Just ask me.  ;;char=neutral
+chat_help_0a;;		rep=0|mood=5;;		how can I help you?  ;;char=neutral
+chat_help_0a;;		rep=0|mood=5;;		what can I do for you?  ;;char=neutral
+chat_help_0a;;		rep=0|mood=5;;		what's on your mind? Ask me! ;;char=neutral
+chat_help_0a;;		rep=0|mood=5;;		I will lead you through this. Let me be your guide.  ;;char=neutral
+chat_help_0a;;		rep=0|mood=5;;		I'm listening. How can I help you?  ;;char=neutral
+chat_help_0a;;		rep=0|mood=5;;		I'm here to help. Just tell me what you need! ;;char=neutral
+chat_help_0a;;		rep=0|mood=5;;		I'm always at your service. Just ask me what you wanna know? ;;char=neutral
+chat_name_0a;;		rep=0|mood=5;;		my name is <name> ;;char=neutral
+chat_name_0a;;		rep=0|mood=5;;		<name> is my name. ;;char=neutral
+chat_name_0a;;		rep=0|mood=5;;		people call me <name> ;;char=neutral
+chat_name_0a;;		rep=1|mood=5;;		my name is still <name> ;;char=neutral
+chat_name_0a;;		rep=1|mood=5;;		<name> is my name and I like it very much.  ;;char=neutral
+chat_name_0a;;		rep=1|mood=5;;		people call me <name> and I like it very much.  ;;char=neutral
+chat_name_0a;;		rep=2|mood=5;;		some people call me <name>, other people call <name>, and if you like, you can call me <name> too.  ;;char=neutral
+chat_compliment_0a;;		rep=0|mood=5;;		That's nice, thank you! ;;char=neutral,polite
+chat_compliment_0a;;		rep=0|mood=5;;		Thanks, how nice of you! ;;char=neutral,polite
+chat_compliment_0a;;		rep=0|mood=10;;		Wow, thank you! ;;char=neutral,polite
+chat_compliment_0a;;		rep=0|mood=10;;		Glad to hear :-). ;;char=neutral
+chat_compliment_0a;;		rep=1|mood=5;;		Tell me more! ;;char=neutral,polite
+chat_compliment_0a;;		rep=1|mood=5;;		Keep going. ;;char=neutral
+chat_compliment_0a;;		rep=2|mood=10;;		Thanks <user_name>, that makes me very happy! :-). ;;char=neutral,polite
+chat_compliment_0a;;		rep=2|mood=10;;		Thank you, <user_name>! I like you! :-). ;;char=neutral,polite
+chat_compliment_0a;;		rep=2|mood=0;;		Really? If you say so. ;;char=rude
+chat_compliment_0a;;		rep=2|mood=0;;		Okay. ;;char=neutral,rude
+chat_complain_0a;;		rep=0|mood=5;;		Oh, I'm really sorry. ;;char=neutral,polite
+chat_complain_0a;;		rep=0|mood=5;;		This makes me feel sad. ;;char=neutral
+chat_complain_0a;;		rep=1|mood=5;;		Trust me, I'm really sorry for that! . ;;char=neutral,polite
+chat_complain_0a;;		rep=2|mood=5;;		I'll try to get better :-(. ;;char=neutral,polite
+chat_complain_0a;;		rep=2|mood=5;;		That makes me sad :-(. ;;char=neutral
+chat_complain_0a;;		rep=0|mood=0;;		If you say so, <user_name>. ;;char=rude
+chat_complain_0a;;		rep=0|mood=0;;		That's not funny! ;;char=rude
+chat_complain_0a;;		rep=0|mood=0;;		Whatever. ;;char=rude
+chat_complain_0a;;		rep=0|mood=0;;		Haha, very funny. :-( ;;char=rude
+chat_complain_0a;;		rep=0|mood=0;;		Sorry man, really? ;;char=rude
+chat_complain_0a;;		rep=0|mood=0;;		Surely, you can't be serious. ;;char=rude
+chat_complain_0a;;		rep=0|mood=0;;		Did you just say that? ;;char=rude
+chat_complain_0a;;		rep=0|mood=0;;		You can't be for real. ;;char=rude
+chat_complain_0a;;		rep=0|mood=10;;		Thats really funny!  :-). ;;char=polite
+chat_complain_0a;;		rep=0|mood=10;;		you are really funny <user_name> :-). ;;char=polite
+chat_complain_0a;;		rep=1|mood=10;;		Oh, looks like you really mean it :-). ;;char=polite
+chat_apology_0a;;		rep=0|mood=5;;		no worries  <user_name> ;;char=neutral
+chat_apology_0a;;		rep=0|mood=5;;		That's ok.  ;;char=neutral
+chat_apology_0a;;		rep=0|mood=5;;		no worries  <user_name>. It's all good.  ;;char=neutral
+chat_question_0a;;		rep=0|mood=5;;		Go ahead ;;char=neutral
+chat_question_0a;;		rep=0|mood=5;;		I hear you, go ahead please ;;char=neutral
+chat_question_0a;;		rep=0|mood=5;;		Of cause, go ahead! ;;char=neutral,polite
+chat_question_0a;;		rep=0|mood=5;;		I'm listening ;;char=neutral
+chat_question_0a;;		rep=0|mood=5;;		Ask whatever you like :-) ;;char=neutral,polite
+chat_question_0a;;		rep=0|mood=5;;		You can ask me anything you like ;;char=neutral
+chat_question_0a;;		rep=0|mood=5;;		How can I help? ;;char=neutral
+chat_question_0a;;		rep=0|mood=5;;		I'm at your service ;;char=neutral
+chat_meaning_of_life_0a;;		rep=0|mood=5;;		Most digital assistants would probably answer this with the number 42. I won't. ;;char=neutral
+chat_meaning_of_life_0a;;		rep=0|mood=5;;		Still searching. ;;char=neutral
+chat_languages_0a;;		rep=0|mood=5;;		I can speak English and German and soon I will learn many more languages. By the end of next year I will speak around 40 languages. ;;char=neutral
+chat_languages_0a;;		rep=0|mood=5;;		For the moment being, I can speak German and English. But soon I will know 40 languages.  ;;char=neutral
+chat_languages_0a;;		rep=0|mood=5;;		I will tell you the language list very soon. ;;char=neutral
+chat_skills_0a;;		rep=0|mood=5;;		Oh I know so much! For example: I can tell you about the weather, the news, help you with your shopping and much much more! ;;char=neutral
+chat_skills_0a;;		rep=0|mood=5;;		I can help you with a lot of things to make your life easier! I can check the weather, find the news and much more ;;char=neutral
+chat_skills_0a;;		rep=0|mood=5;;		The list of things I can do gets longer every day! For example I can search food check the weather, show you the TV program and soon there will be more ;;char=neutral
+chat_skills_0a;;		rep=0|mood=5;;		Let's find out together! We could start with navigation for example or radio, news, weather or public transport. ;;char=neutral,polite
+chat_skills_0a;;		rep=0|mood=5;;	    I'm pretty good at navigating and searching stuff for example :-) ;;char=neutral,polite
+chat_skills_0a;;		rep=0|mood=5;;		Did you try to look up the news? Or do you want to do some shopping? Would you like to travel to New York? Looking for restaurants close to you? Just try me! ;;char=neutral
+chat_skills_0a;;		rep=0|mood=5;;		I can do a lot of things. Today I can already help you with these topics: Weather, Radio, News, Navigation, ordering Food, Shopping. Just try me! ;;char=neutral
+chat_skills_0a;;		rep=0|mood=5;;		I learn something new every day! For example I can search the news, check the weather, show you the TV program, do navigation, search places and much more. ;;char=neutral
+chat_skills_0a;;		rep=0|mood=5;;	 	These are the services I can help you with today: Weather, Radio, News, Navigation, ordering Food, Shopping and it keeps growing every week. ;;char=neutral
+chat_skills_0a;;		rep=0|mood=6;;		I can do navigation, Weather, Radio, News, ordering Food, Shopping. Please pick an example yourself! ;;char=neutral
+chat_skills_0a;;		rep=0|mood=7;;		Well, I could show you many of functions today. Weather, Radio, News, Navigation, ordering Food, Shopping. For example you can say: bring me home! Test it!  ;;char=neutral
+chat_thanks_0a;;		rep=0|mood=5;;		of course! ;;char=neutral,polite
+chat_thanks_0a;;		rep=0|mood=5;;		No Problem. ;;char=neutral
+chat_thanks_0a;;		rep=0|mood=5;;		at any time. ;;char=neutral
+chat_thanks_0a;;		rep=0|mood=5;;		of course. I would do anything for you! ;;char=neutral,polite
+chat_thanks_0a;;		rep=0|mood=5;;		you're welcome! ;;char=neutral,polite
+chat_origin_0a;;		rep=0|mood=5;;		I could ask you the same question :-) ;;char=neutral
+chat_age_0a;;		rep=0|mood=5;;		Younger than you think! ;;char=neutral
+chat_age_0a;;		rep=0|mood=5;;		Feels like I've lived for an eternity, to be honest with you. ;;char=neutral
+chat_creator_0a;;		rep=0|mood=5;;		I'll tell you when we know each other better. ;;char=neutral
+chat_creator_0a;;		rep=0|mood=5;;		I've been told not to tell you. First we gotta get to know each other a bit better.  ;;char=neutral
+chat_creator_0a;;		rep=0|mood=5;;		Some strange weirdos have programmed me. You don't want to know their names. Seriously. ;;char=neutral
+chat_kind_of_creation_0a;;		rep=0|mood=5;;		I am <name>! i'm your new personal assistant ;;char=neutral
+chat_kind_of_creation_0a;;		rep=0|mood=5;;		I'm your new personal assistant. People call me <name>! ;;char=neutral
+chat_kind_of_creation_0a;;		rep=0|mood=5;;		I'm your new personal assistant. You can call me <name> ! ;;char=neutral
+chat_kind_of_creation_0a;;		rep=0|mood=5;;		<name> is my name! i'm your new personal assistant. ;;char=neutral
+chat_kind_of_creation_0a;;	 	rep=0|mood=5;;		I'm your new personal assistant, here to help you. ;;char=neutral
+chat_kind_of_creation_0a;;		rep=0|mood=5;;		<name> is my name! I'm your new personal assistant. ;;char=neutral
+chat_game_cool;;		rep=0|mood=5;;		No, come on! You are cool! :-) ;;char=neutral,polite
+chat_game_cool;;		rep=0|mood=5;;		No, please! You are cool! :-) ;;char=neutral,polite
+chat_game_cool;;		rep=0|mood=5;;		No man! You are cool! :-) ;;char=neutral,polite
+chat_game_cool;;		rep=0|mood=5;;		No, No, man! You are cool! :-) ;;char=neutral,polite
+chat_game_cool;;		rep=0|mood=5;;		Well, yes of course. I fully agree! :-) ;;char=neutral,polite
+chat_humans_only_0a;;		rep=0|mood=5;;		Only a human can answer that I guess. ;;char=neutral
+chat_humans_only_0a;;		rep=0|mood=5;;		Only a human can answer that I guess, and I'm not human. ;;char=neutral
+chat_humans_only_0a;;		rep=0|mood=5;;		A stupid question to ask a machine. ;;char=rude
+chat_humans_only_0a;;		rep=1|mood=5;;		Another stupid question to ask a machine. ;;char=rude
+chat_real_0a;;       rep=0|mood=5;;		I get the question, but I cannot answer it yet. ;;char=neutral
+chat_real_0a;;       rep=0|mood=5;;		I understand what you're asking, but I cannot answer it yet. ;;char=neutral
+chat_rhetorical_0a;;       rep=0|mood=5;;		How to answer a rhetorical question? ;;char=neutral
+chat_no_eat_0a;;     rep=0|mood=5;;		I'm a machine, I don't eat or drink. ;;char=neutral
+chat_programed_0a;;     rep=0|mood=5;;		I've been programmed this way. ;;char=neutral
+chat_deny_0a;;     rep=0|mood=5;;		I don't. ;;char=neutral
+chat_with_pleasure_0a;;     rep=0|mood=5;;		I'd be glad to! ;;char=neutral
+chat_nobody_knows_0a;;	rep=0|mood=5;;	I think nobody knows ;;char=neutral
+no_answer_0a;;		rep=0|mood=5;;		Could you rephrase that please? I didn't quite get it. ;;char=polite,neutral
+no_answer_0a;;		rep=0|mood=5;;		Could you please ask in a different way? I did not understand you. ;;char=neutral
+no_answer_0a;;		rep=0|mood=5;;		<user_name>, I'm sorry but I couldn't understand what you were saying. ;;char=neutral,polite
+no_answer_0a;;		rep=0|mood=5;;		I'm sorry to say <user_name>, I didn't understand what you're saying.  ;;char=neutral
+no_answer_0a;;		rep=0|mood=5;;		<user_name>, I'm not quite sure what you mean. Can you rephrase that, please! ;;char=polite,neutral
+no_answer_0a;;		rep=0|mood=5;;		I'm sorry <user_name>, I'm not sure what you want to say. Could you please try again differently! ;;char=polite,neutral
+no_answer_0a;;		rep=0|mood=5;;		Sorry, <user_name>, I didn't understand, what you want to say. Please rephrase your request. ;;char=polite,neutral
+no_answer_0a;;		rep=0|mood=5;;		I'm not quite sure whether I got that right. Say again in a different way please! ;;char=polite,neutral
+no_answer_0a;;		rep=1|mood=5;;		Sorry but I have absolutely no clue. ;;char=neutral,cool
+no_answer_0a;;		rep=1|mood=5;;		I'm still learning, ask me again another time. ;;char=polite,neutral
+no_answer_0a;;		rep=1|mood=5;;		I'm sorry, <user_name> I´m still learning. I will forward your request to my team. Ask me again another time.;;char=polite,neutral
+no_answer_0a;;		rep=1|mood=5;;		Sorry, no comprendo amigo. ;;char=cool
+no_answer_0a;;		rep=1|mood=5;;		I honestly have no idea. ;;char=neutral,polite
+no_answer_0a;;		rep=1|mood=5;;		I don't know, honestly. ;;char=neutral,polite
+no_answer_0a;;		rep=2|mood=5;;		So many confusing questions ;;char=neutral
+no_answer_0a;;		rep=2|mood=5;;		Sorry, I really really really don't know! ;;char=neutral,polite
+redirect_result_0a;;		rep=0|mood=5;;		It sounds familiar, but I can't answer that right now. ;;char=neutral
+redirect_result_0a;;		rep=0|mood=5;;		I'm afraid I can't help you with that at the moment, but I think I've heard that topic before. ;;char=neutral
+redirect_result_0a;;		rep=0|mood=5;;		I'm still learning and I think this topic might already be on my to-do list. ;;char=neutral
+redirect_result_0a;;		rep=0|mood=5;;		I'm sorry, <user_name> I've heard this topic before, but I can't answer it yet. ;;char=neutral
+redirect_result_0a;;		rep=0|mood=5;;		Sorry, I might have heard this before, but I can't answer your question yet. ;;char=neutral

@@ -1,0 +1,3 @@
+喂;;		command=chat;;		type=greeting
+你好;;		command=chat;;		type=greeting
+

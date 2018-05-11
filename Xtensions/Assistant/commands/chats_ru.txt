@@ -1,0 +1,2 @@
+Привет;;		command=chat;;		type=greeting
+

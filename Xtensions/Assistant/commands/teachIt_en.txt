@@ -1,0 +1,38 @@
+Test;;		command=chat;;		reply=<test_0a>
+This is a test;;		command=chat;;		reply=<test_0a>
+Is everything working?;;		command=chat;;		reply=<test_0a>
+Let's see if it is working;;		command=chat;;		reply=<test_0a>
+Please check if everything is working;;		command=chat;;		reply=<test_0a>
+do that again;;		command=repeat
+say it again;;		command=repeat
+say again;;			command=repeat
+can you repeat that please;;		command=repeat
+repeat that;;					command=repeat
+search a train connection;;		command=open_link;;		url=http://reiseauskunft.bahn.de/bin/query.exe/dn?REQ0JourneyStopsS0A=3&S=***&REQ0JourneyStopsZ0A=3&Z=***&REQ0&start=1;;		parameter_set=***place&&***place;;		question_set=Ok, lets search a train. Where do you want to start?||start where?&&and where do you want to go?||and where to go?;;		link_info=DB connection from <1> to <2>;;		link_ico=http://localhost/files/db-logo.png;;		answer_set=searching a connection from <1> to <2> with Deutsche Bahn||searching a connection
+search a train;;					command=open_link;;		url=http://reiseauskunft.bahn.de/bin/query.exe/dn?REQ0JourneyStopsS0A=3&S=***&REQ0JourneyStopsZ0A=3&Z=***&REQ0&start=1;;		parameter_set=***place&&***place;;		question_set=Ok, lets search a train. Where do you want to start?||start where?&&and where do you want to go?||and where to go?;;		link_info=DB connection from <1> to <2>;;		link_ico=http://localhost/files/db-logo.png;;		answer_set=searching a connection from <1> to <2> with Deutsche Bahn||searching a connection
+abort;;		command=chat;;		reply=there is nothing to abort right now||nothing there to abort
+Navi;;		command=directions;;
+Navigation;;		command=directions;;
+Dictionary;;		command=dict_translate;;
+Wikipedia;;		command=knowledgebase;;
+Wiki;;		command=knowledgebase;;
+shl;;		command=lists;;list_type=<shopping>;;
+Dashboard;;		command=dashboard;;
+Settings;;		command=dashboard;;
+Setup;;		command=dashboard;;
+Match;;		command=match;;		collection=messe_muenchen;;
+count;;		command=count;;
+1;;		command=count;;		number=1;;		memory=1;;
+one;;		command=count;;		number=1;;		memory=1;;
+=);;				command=chat;;		reply=#LAUGH01#||#LAUGH02#||#LAUGH03#
+:-);;				command=chat;;		reply=#LAUGH01#||#LAUGH02#||#LAUGH03#
+:);;				command=chat;;		reply=#LAUGH01#||#LAUGH02#||#LAUGH03#
+find smart home system;;		command=chat;;		reply=there is no smart home or car system around||there is no access to a smart home or car signal
+connect to a smart home system;;		command=chat;;		reply=there is no smart home or car system around||there is no access to a smart home or car signal
+connect to a smart car system;;		command=chat;;		reply=there is no smart home or car system around||there is no access to a smart home or car signal
+access smart home system;;		command=chat;;		reply=there is no smart home or car system around||there is no access to a smart home or car signal
+locate smart home system;;		command=chat;;		reply=there is no smart home or car system around||there is no access to a smart home or car signal
+search for smart home system;;		command=chat;;		reply=there is no smart home or car system around||there is no access to a smart home or car signal
+nps;; 	command=feedback_nps;;  
+evnts;; 	command=events_personal;; 
+test chain;;	command=sentence_connect;;		sentences=hello&&weather;;	reply=Here is your summary.||<summary_0a>;;

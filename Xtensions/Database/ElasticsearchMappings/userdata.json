@@ -1,0 +1,63 @@
+{
+  "settings":{
+    "index": {
+      "analysis": {
+        "analyzer": {
+          "keylower": {
+            "tokenizer": "keyword",
+            "filter": "lowercase"
+          }
+        }
+      }
+    }
+  },
+  "mappings" : {
+    "lists" : {
+		"properties" : {
+			"user" : { "type" : "string", "analyzer": "keylower" },
+			"section" : { "type" : "string", "analyzer": "keylower" },
+			"indexType" : { "type" : "string", "analyzer": "keylower" },
+			"title" : { "type" : "string" },
+			"titleHtml" : { "type" : "string", "index" : "not_analyzed" },
+			"icon" : { "type" : "string", "index" : "not_analyzed" },
+			"desc" : { "type" : "string" },
+			"listType" : { "type" : "string", "index" : "not_analyzed" },
+			"moreInfo" : { "type" : "object" },
+			"data" : { "type" : "object" }
+		}
+	},
+	"addresses" : {
+		"properties" : {
+			"user" : { "type" : "string", "analyzer": "keylower" },
+			"contactId" : { "type" : "string", "analyzer": "keylower" },
+			"specialTag" : { "type" : "string", "analyzer": "keylower" },
+			"specialName" : { "type" : "string" },
+			"country" : 	{ "type" : "string" },
+			"area_state" : 	{ "type" : "string" },
+			"city" : 		{ "type" : "string" },
+			"code" : 		{ "type" : "string" },
+			"street" : 		{ "type" : "string" },
+			"s_nbr" : 		{ "type" : "string" },
+			"name" : 		{ "type" : "string" },
+			"desc" : 		{ "type" : "string" },
+			"latitude" : 	{ "type" : "string" },
+			"longitude" : 	{ "type" : "string" },
+			"location" : { "type" : "geo_point" }
+		}
+	},
+	"contacts" : {
+		"properties" : {
+			"user" : { "type" : "string", "analyzer": "keylower" },
+			"contactId" : { "type" : "string", "analyzer": "keylower" },
+			"specialTag" : { "type" : "string", "analyzer": "keylower" },
+			"data" : { "type" : "object" }
+		}
+	},
+	"services" : {
+		"properties" : {
+			"custom" : { "type" : "object" },
+			"system" : { "type" : "object" }
+		}
+	}
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "mappings" : {
+    "all" : {
+      "properties" : {
+        "date" : { "type" : "date" },
+        "user" : { "type" : "string" },
+        "message" : { "type" : "string" },
+        "oldValue" : { "type" : "string" },
+        "newValue" : { "type" : "string" },
+        "language" : { "type" : "string" }
+      }
+    }
+  }
+}

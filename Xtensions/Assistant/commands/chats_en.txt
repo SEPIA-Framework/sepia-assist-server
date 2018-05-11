@@ -1,0 +1,425 @@
+No problem;;		command=chat;;		reply=alright||alrighty||sweet
+no problemo;;		command=chat;;		reply=alright||alrighty||sweet
+ok;;		command=chat;;		reply=very good||ok
+okay;;		command=chat;;		reply=very good||ok
+yes;;		command=chat;;		reply=good||ok||fine||nice
+yes, definitely;;		command=chat;;		reply=good||ok||fine||nice
+definitely;;		command=chat;;		reply=good||ok||fine||nice
+yes i do;;		command=chat;;		reply=good||ok||fine||nice
+yes of cause;;		command=chat;;		reply=good||ok||fine||nice
+let's do it;;		command=chat;;		reply=alright, your turn :-)||alright, go on please :-)
+no;;		command=chat;;		reply=ok||no problem||fine||alright
+no, of cause not!;;		command=chat;;		reply=ok||no problem||fine||alright
+no I don't;;		command=chat;;		reply=ok||no problem||fine||alright
+not now;;		command=chat;;		reply=ok||no problem||fine||alright||maybe later
+definitely not;;		command=chat;;		reply=ok||no problem||fine||alright
+I know;;		command=chat;;		reply=alright||alrighty||sweet||I knew you'd say that :-)
+Up and at them!;;		command=chat;;		reply=Up and atom! :-)
+Up and atom!;;		command=chat;;		reply=Up and at them! :-)
+I am sorry;;		command=chat;;		type=apology
+Please forgive me;;		command=chat;;		type=apology
+Sorry;;		command=chat;;		type=apology
+And you think that is funny?;;		command=chat;;		type=complain;;		info=annoying
+answer my question;;		command=chat;;		type=complain;;		reply=I would, but I don't understand what you wanna know
+Are you serious?;;		command=chat;;		type=complain;;		info=annoying
+are you stupid?;;		command=chat;;		type=complain
+asshole ;;		command=chat;;		type=complain;;		reply=why do you have to be so rude? 
+Boring;;		command=chat;;		type=complain;;		info=boring
+can it be you don't understand?;;		command=chat;;		type=complain
+Could it be that you are just stupid?;;		command=chat;;		type=complain;;		info=annoying
+Did you really just say that?;;		command=chat;;		type=complain;;		info=annoying
+Do you think that is funny?;;		command=chat;;		type=complain;;		info=annoying
+Don't you listen?;;		command=chat;;		type=complain
+fuck you;;		command=chat;;		type=complain;;		reply=why do you have to be so rude? 
+I do not like you;;		command=chat;;		type=complain
+i don't get that;;		command=chat;;		type=complain
+I don't like you;;		command=chat;;		type=complain
+I hate you;;		command=chat;;		type=complain
+I have not heard something that bad for a long time;;		command=chat;;		type=complain;;		info=annoying
+I think you are stupid;;		command=chat;;		type=complain
+kiss my ass;;		command=chat;;		type=complain;;		reply=why do you have to be so rude? 
+motherfucker;;		command=chat;;		type=complain;;		reply=why do you have to be so rude? 
+Not funny!;;		command=chat;;		type=complain;;		info=annoying
+piss off;;		command=chat;;		type=complain;;		reply=why do you have to be so rude? 
+stupid machine ;;		command=chat;;		type=complain
+suck my dick;;		command=chat;;		type=complain;;		reply=why do you have to be so rude? 
+Thanks you moron!;;		command=chat;;		type=complain;;		info=annoying
+Thanks you retard!;;		command=chat;;		type=complain;;		info=annoying
+That is annoying;;		command=chat;;		type=complain;;		info=annoying
+that's not what i asked for;;		command=chat;;		type=complain
+that's not what i have asked;;		command=chat;;		type=complain
+What is so funny about that?;;		command=chat;;		type=complain;;		info=annoying
+What is your point?;;		command=chat;;		type=complain;;		info=annoying
+You are annoying;;		command=chat;;		type=complain;;		info=annoying
+You are boring;;		command=chat;;		type=complain;;		info=boring
+You are dumb;;		command=chat;;		type=complain
+you don't know nothing;;		command=chat;;		type=complain
+you don't understand;;		command=chat;;		type=complain
+You dont understand what i'm saying;;		command=chat;;		type=complain
+You have no clue;;		command=chat;;		type=complain
+You have no idea what i'm talking about;;		command=chat;;		type=complain
+You think you are funny?;;		command=chat;;		type=complain;;		info=annoying
+You think your jokes are funny?;;		command=chat;;		type=complain;;		info=annoying
+you're a moron ;;		command=chat;;		type=complain
+you're an idiot;;		command=chat;;		type=complain
+you're not intelligent ;;		command=chat;;		type=complain
+you're stupid;;		command=chat;;		type=complain
+Funny;;		command=chat;;		type=compliment;;		info=funny
+Good;;		command=chat;;		type=compliment
+Good to hear;;		command=chat;;		type=compliment;;		info=happy
+Great;;		command=chat;;		type=compliment;;		info=impressed
+Haha that is funny;;		command=chat;;		type=compliment;;		info=funny
+How nice of you!;;		command=chat;;		type=compliment
+I am impressed;;		command=chat;;		type=compliment;;		info=impressed
+I like it!;;		command=chat;;		type=compliment
+I like that!;;		command=chat;;		type=compliment
+I like you;;		command=chat;;		type=compliment;;		reply=Thank you! I like you too||I really like you too||<chat_compliment_0a>
+I love you;;		command=chat;;		type=compliment;;		reply=Thank you, I love you too :-)||<chat_compliment_0a>
+I really like you;;;;		command=chat;;;;		type=compliment;;
+i wanna hug you;;		command=chat;;		type=compliment;;		reply=I wanna hug you too||<chat_compliment_0a>
+I'm impressed;;		command=chat;;		type=compliment;;		reply=That's nothing. I will be even better in the future.||That's right :-)||<chat_compliment_0a>
+That's cool;;		command=chat;;		type=compliment;;		reply=yes it is!||<chat_compliment_0a>
+that's fantastic;;		command=chat;;		type=compliment;;		reply=Thank you. Anything else I can do for you?||That's right :-)||<chat_compliment_0a>
+that's very impressive;;		command=chat;;		type=compliment;;		reply=Is there anything more I can do for you? ||That's right :-)||<chat_compliment_0a>
+Wow that was fast;;		command=chat;;		type=compliment;;		info=impressed
+wow!;;		command=chat;;		type=compliment
+you are beautiful;;;;		command=chat;;;;		type=compliment;;
+you are fantastic;;;;		command=chat;;;;		type=compliment;;
+You are funny;;		command=chat;;		type=compliment;;		info=funny
+you are great;;		command=chat;;		type=compliment;;		reply=Thank you. That's why I'm here. But you will see, I'm getting better and better every day.||<chat_compliment_0a>
+you are my baby;;;;		command=chat;;;;		type=compliment;;
+you are my best buddy;;		command=chat;;		type=compliment;;		reply=I really want to be your best buddy. Forever.||what can I do for you? ||<chat_compliment_0a>
+you are my darling;;		command=chat;;		type=compliment;;		reply=I would love to be your darling||Thanks buddy||<chat_compliment_0a>
+You are nice;;		command=chat;;		type=compliment;;		info=nice
+you are the best;;;;		command=chat;;;;		type=compliment;;
+you make me feel good;;		command=chat;;		type=compliment;;		reply=I will always try to make you feel good||I'm happy if you are happy||<chat_compliment_0a>
+you make me happy ;;		command=chat;;		type=compliment;;		reply=I'm happy if you are happy||<chat_compliment_0a>
+you make me laugh;;		command=chat;;		type=compliment;;		reply=I always wanna make you laugh||<chat_compliment_0a>
+you're fantastic;;		command=chat;;		type=compliment;;		reply=Thanks buddy. What more can I do for you?||That's right :-)||<chat_compliment_0a>
+Oh  okay;;		command=chat;;		type=empty_phrase
+cool;;		command=chat;;		type=game_cool
+You are cool;;		command=chat;;		type=game_cool
+No you are cool;;		command=chat;;		type=game_cool
+Anybody out there? ;;		command=chat;;		type=greeting;;		reply=here i am! What do you want me to do?||you can start, just ask me whatever you want?||i'm here, what can I do for you?
+Can you hear me?;;		command=chat;;		type=greeting;;		reply=<chat_hello_0b>
+Can you understand me?;;		command=chat;;		type=greeting;;		reply=<chat_hello_0b>
+Good day;;		command=chat;;		type=greeting
+Good evening;;		command=chat;;		type=greeting
+Good morning;;		command=chat;;		type=greeting
+Greetings;;		command=chat;;		type=greeting
+Hello;;		command=chat;;		type=greeting
+Hello Giga;;		command=chat;;		type=greeting
+Hello please respond;;		command=chat;;		type=greeting
+Hey;;		command=chat;;		type=greeting
+Hi;;		command=chat;;		type=greeting
+Hi Sepia;;		command=chat;;		type=greeting
+Hello Sepia;;		command=chat;;		type=greeting
+Alo Sepia;;		command=chat;;		type=greeting
+Is someone there?;;		command=chat;;		type=greeting;;		reply=I am here||Here I am||<name> is here!||Someone is here!
+Say something!;;		command=chat;;		type=greeting;;		reply=i can talk a lot, but you gotta say what you wanna talk about||come on, you start||i can talk a lot :-)||no, i don't wanna talk!
+Talk to me;;		command=chat;;		type=greeting
+Tell me;;		command=chat;;		type=greeting;;		reply=do you want me to run the conversation or shall i follow your lead? ||let me ask you a couple of questions||can I ask you something?||no, i don't wanna talk!
+Whats up!;;		command=chat;;		type=greeting;;		reply=here i am! What do you want me to do?||you can start, just ask me whatever you want?||i'm here, what can I do for you?
+Yo;;		command=chat;;		type=greeting;;		reply=yo yo
+goodbye;;		command=chat;;		type=goodbye
+bye bye;;		command=chat;;		type=goodbye
+see you;;		command=chat;;		type=goodbye
+cu;;		command=chat;;		type=goodbye
+till next time;;		command=chat;;		type=goodbye
+see you again;;		command=chat;;		type=goodbye
+i have to go;;		command=chat;;		type=goodbye
+i must go;;		command=chat;;		type=goodbye
+bb;;		command=chat;;		type=goodbye
+have a good night;;		command=chat;;		type=goodbye;;		reply=have a good night too||sleep well, bye bye
+good night;;		command=chat;;		type=goodbye;;		reply=have a good night too||sleep well, bye bye
+sleep well;;		command=chat;;		type=goodbye;;		reply=have a good night too||sleep well too! bye bye
+haha;;		command=chat;;		type=laugh;;		reply=ha ha :-)||i like it when you laugh:-)||ha ha , i m happy if you are happy :-)
+Do you understand me?;;		command=chat;;		type=question;;		reply=<chat_hello_0b>
+help;;		command=chat;;		type=help
+help me somehow;;		command=chat;;		type=help
+help me;;		command=chat;;		type=help
+help me please;;		command=chat;;		type=help
+i need your help;;		command=chat;;		type=help
+could you help me;;		command=chat;;		type=help
+don't know nothing;;		command=chat;;		type=help
+don't know what to do ;;		command=chat;;		type=help
+How old are you?;;		command=chat;;		type=question;;		info=age
+What is your age?;;		command=chat;;		type=question;;		info=age
+What the hell is happening here?;;		command=chat;;		type=question;;		info=confused;;		reply=I don't know! Are you confused? 
+What's happening here?;;		command=chat;;		type=question;;		info=confused;;		reply=why do you ask? You feel confused? 
+Who created you?;;		command=chat;;		type=question;;		info=creator
+Who developed  you?;;		command=chat;;		type=question;;		info=creator
+Who has built you?;;		command=chat;;		type=question;;		info=creator
+Who is your creator?;;		command=chat;;		type=question;;		info=creator
+Who made you?;;		command=chat;;		type=question;;		info=creator
+All good?;;		command=chat;;		type=question;;		info=how_are_you
+And how are you?;;		command=chat;;		type=question;;		info=how_are_you;;		reply=doing good. Thanks! ||doing great, thank you. 
+Are you alright?;;		command=chat;;		type=question;;		info=how_are_you
+Are you okay?;;		command=chat;;		type=question;;		info=how_are_you
+are you happy?;;		command=chat;;		type=question;;		info=how_are_you;;		reply=always
+are you sad?;;		command=chat;;		type=question;;		info=how_are_you;;		reply=it can happen, yes!
+Are you ok?;;		command=chat;;		type=question;;		info=how_are_you
+Everything alright?;;		command=chat;;		type=question;;		info=how_are_you;;		reply=doing good. Thanks! ||doing great, thank you. 
+Everything under control?;;		command=chat;;		type=question;;		info=how_are_you
+Hi, how are you?;;		command=chat;;		type=question;;		info=how_are_you
+How are you feeling?;;		command=chat;;		type=question;;		info=how_are_you
+How are you?;;		command=chat;;		type=question;;		info=how_are_you
+how do you do? ;;		command=chat;;		type=question;;		info=how_are_you
+How do you feel?;;		command=chat;;		type=question;;		info=how_are_you
+How is life?;;		command=chat;;		type=question;;		info=how_are_you;;		reply=doing great, thank you!
+How you doing?;;		command=chat;;		type=question;;		info=how_are_you
+How's life?;;		command=chat;;		type=question;;		info=how_are_you
+So, how are you?;;		command=chat;;		type=question;;		info=how_are_you
+Tell me how you feel;;		command=chat;;		type=question;;		info=how_are_you
+Thanks, how are you?;;		command=chat;;		type=question;;		info=how_are_you
+Well, what's up?;;		command=chat;;		type=question;;		info=how_are_you
+What is up?;;		command=chat;;		type=question;;		info=how_are_you
+What's cracking, homeboy?;;		command=chat;;		type=question;;		info=how_are_you
+What's cracking, homie?;;		command=chat;;		type=question;;		info=how_are_you
+What's up?;;		command=chat;;		type=question;;		info=how_are_you;;		reply=doing great, thank you!
+Yo, what's up?;;		command=chat;;		type=question;;		info=how_are_you
+You alright?;;		command=chat;;		type=question;;		info=how_are_you
+You doing good?;;		command=chat;;		type=question;;		info=how_are_you
+you feel okay?;;		command=chat;;		type=question;;		info=how_are_you
+You good?;;		command=chat;;		type=question;;		info=how_are_you
+You okay?;;		command=chat;;		type=question;;		info=how_are_you
+Who are you?;;		command=chat;;		type=question;;		info=kind_of_creation
+Who are you supposed to be?;;		command=chat;;		type=question;;		info=kind_of_creation
+And what are you?;;		command=chat;;		type=question;;		info=kind_of_creation
+And what are you supposed to be?;;		command=chat;;		type=question;;		info=kind_of_creation
+Are you a ghost?;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=I am your Angel :-) 
+Are you a program?;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=It's not just a program. It's more a combination of many programs. Call it a system or as we call it an ecosystem :-)
+Are you a robot?;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=you could say so, but i think i'm more than that :-)||for the moment being, yes, i am :-)
+Are you an alien?;;		command=chat;;		type=question;;		info=kind_of_creation
+Are you human?;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=No, i am not and never will be. But i am here to help humans organize a better life||No, i'm not. Are you? :-)
+Are you real?;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=you could say so, yes, I am real :-)||for the moment being, yes, I am :-)
+Can you tell me what you are?;;		command=chat;;		type=question;;		info=kind_of_creation
+How were you created?;;		command=chat;;		type=question;;		info=kind_of_creation
+Let us talk about you;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=Of course! Just ask what you wanna know!
+Let's talk about you;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=Ok! Just ask anything you like!
+So what are you?;;		command=chat;;		type=question;;		info=kind_of_creation
+Tell me about yourself;;		command=chat;;		type=question;;		info=kind_of_creation
+Tell me more about yourself;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=well, how shall i explain? It's pretty simple. 
+Tell me something about you;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=you start! Ask me a question!
+Tell me something about yourself;;		command=chat;;		type=question;;		info=kind_of_creation
+Tell me what you are;;		command=chat;;		type=question;;		info=kind_of_creation
+Tell me, how are you?;;		command=chat;;		type=question;;		info=kind_of_creation
+What are you made of?;;		command=chat;;		type=question;;		info=kind_of_creation
+What are you?;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=people call me an artificial intelligence. I would say I am your new best friend :-) 
+What do you consist of?;;		command=chat;;		type=question;;		info=kind_of_creation
+What material are you built?;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=I am an artificial intelligence. There is no material. You can compare it with human thoughts, just artificial. 
+What material are you made of?;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=some people say there is no material. It's intellectual skills combined with software and hardware and the extension of human thoughts. 
+Can you speak english?;;		command=chat;;		type=question;;		info=languages;;		code=en
+Can you speak german?;;		command=chat;;		type=question;;		info=languages;;		code=de
+Do you speak any other languages?;;		command=chat;;		type=question;;		info=languages
+Do you speak english or german?;;		command=chat;;		type=question;;		info=languages
+Do you speak english?;;		command=chat;;		type=question;;		info=languages;;		code=en
+Do you speak german?;;		command=chat;;		type=question;;		info=languages;;		code=de
+Do you understand english?;;		command=chat;;		type=question;;		info=languages;;		code=en
+Do you understand german?;;		command=chat;;		type=question;;		info=languages;;		code=de
+What languages can you speak?;;		command=chat;;		type=question;;		info=languages
+What languages can you understand?;;		command=chat;;		type=question;;		info=languages
+What languages do you know?;;		command=chat;;		type=question;;		info=languages
+What languages do you speak?;;		command=chat;;		type=question;;		info=languages
+What languages do you understand?;;		command=chat;;		type=question;;		info=languages
+What is the meaning of life?;;		command=chat;;		type=question;;		info=meaning_of_life
+Why are we here?;;		command=chat;;		type=question;;		info=meaning_of_life
+And who are you?;;		command=chat;;		type=question;;		info=name
+Do you have a name?;;		command=chat;;		type=question;;		info=name
+Giga?;;		command=chat;;		type=question;;		info=name;;		reply=<user_name>||yes, <user_name>?
+Say your name;;		command=chat;;		type=question;;		info=name
+Tell me who you are;;		command=chat;;		type=question;;		info=name;;		reply=once upon a time, … there was an intelligent assistant called <name>
+Tell me your name;;		command=chat;;		type=question;;		info=name
+What is your name?;;		command=chat;;		type=question;;		info=name
+What's your name?;;		command=chat;;		type=question;;		info=name
+Who am I talking to?;;		command=chat;;		type=question;;		info=name
+Who are you?;;		command=chat;;		type=question;;		info=name
+Who is there?;;		command=chat;;		type=question;;		info=name
+Who's there?;;		command=chat;;		type=question;;		info=name
+From where are you?;;		command=chat;;		type=question;;		info=origin
+What is your origin?;;		command=chat;;		type=question;;		info=origin
+What place do you come from?;;		command=chat;;		type=question;;		info=origin
+Where are you from?;;		command=chat;;		type=question;;		info=origin
+Where are you originally from?;;		command=chat;;		type=question;;		info=origin
+Where do you come from?;;		command=chat;;		type=question;;		info=origin
+Where you from?;;		command=chat;;		type=question;;		info=origin
+any examples you can show? ;;		command=chat;;		type=question;;		info=skills;;		reply=I can do navigation, movies, websearch, weather, news, TV programm, smart home commands. Please pick an example yourself!
+Any other abilities?;;		command=chat;;		type=question;;		info=skills
+Any other skills?;;		command=chat;;		type=question;;		info=skills
+Any other talents?;;		command=chat;;		type=question;;		info=skills
+Any skills?;;		command=chat;;		type=question;;		info=skills
+Any talents?;;		command=chat;;		type=question;;		info=skills
+anything else? ;;		command=chat;;		type=question;;		info=skills;;		reply=what do you wanna know? Ask me more concrete!
+can you do something else;;		command=chat;;		type=question;;		info=skills;;		reply=Could you ask more concrete? 
+Do you know anything?;;		command=chat;;		type=question;;		info=skills
+give me some examples;;		command=chat;;		type=question;;		info=skills;;		reply=I can do navigation, movies, websearch, weather, news, TV programm, smart home commands. Please pick an example yourself!
+how about some examples;;		command=chat;;		type=question;;		info=skills;;		reply=I can do navigation, movies, websearch, weather, news, TV programm, smart home commands. Please pick an example yourself!
+How can you assist me?;;		command=chat;;		type=question;;		info=skills
+How can you be of assistance?;;		command=chat;;		type=question;;		info=skills
+How can you help me?;;		command=chat;;		type=question;;		info=skills
+How can you help?;;		command=chat;;		type=question;;		info=skills
+How could you help me?;;		command=chat;;		type=question;;		info=skills
+is there something else you can do? ;;		command=chat;;		type=question;;		info=skills;;		reply=Yes, of course. Just ask more specific!
+show me some examples;;		command=chat;;		type=question;;		info=skills;;		reply=I can do navigation, movies, websearch, weather, news, TV programm, smart home commands. Please pick an example yourself!
+Show me what you can do;;		command=chat;;		type=question;;		info=skills
+Show me what you could do;;		command=chat;;		type=question;;		info=skills
+Show me your moves;;		command=chat;;		type=question;;		info=skills;;		reply=I'd like to show you, but I'm kind of limited in my movement right now :-)||<chat_skills_0a>
+So what can you do?;;		command=chat;;		type=question;;		info=skills
+Tell me what you can do;;		command=chat;;		type=question;;		info=skills
+Tell me what you can help me with;;		command=chat;;		type=question;;		info=skills
+Tell me what you do;;		command=chat;;		type=question;;		info=skills
+Tell me, what can you do?;;		command=chat;;		type=question;;		info=skills
+What abilities do you have?;;		command=chat;;		type=question;;		info=skills
+What are you capable of?;;		command=chat;;		type=question;;		info=skills
+What are your capabilities?;;		command=chat;;		type=question;;		info=skills
+What are your functions?;;		command=chat;;		type=question;;		info=skills
+What are your skills?;;		command=chat;;		type=question;;		info=skills
+What can you actually do?;;		command=chat;;		type=question;;		info=skills
+What can you do?;;		command=chat;;		type=question;;		info=skills
+What can you help me with?;;		command=chat;;		type=question;;		info=skills
+What could you do?;;		command=chat;;		type=question;;		info=skills
+What could you help me with?;;		command=chat;;		type=question;;		info=skills
+What do you do?;;		command=chat;;		type=question;;		info=skills
+What do you know about?;;		command=chat;;		type=question;;		info=skills
+What do you know?;;		command=chat;;		type=question;;		info=skills
+what else can you do? ;;		command=chat;;		type=question;;		info=skills;;		reply=I can do a lot more. Could you ask more specific? 
+What functions do you have?;;		command=chat;;		type=question;;		info=skills
+what more can you do? ;;		command=chat;;		type=question;;		info=skills;;		reply=There is a lot more I can do. Just ask me more specific.
+What powers do you have?;;		command=chat;;		type=question;;		info=skills
+What talents do you have?;;		command=chat;;		type=question;;		info=skills
+Can you answer a question?;;		command=chat;;		type=question;;		reply=<chat_question_0a>
+How?;;		command=chat;;		type=question;;		reply=how what?
+I don't understand;;		command=chat;;		type=question;;		reply=what's so difficult to understand?
+I'd like to ask you somwthing;;		command=chat;;		type=question;;		reply=<chat_question_0a>
+can I ask you something?;;		command=chat;;		type=question;;		reply=<chat_question_0a>
+I have a question;;		command=chat;;		type=question;;		reply=<chat_question_0a>
+it doesn't make sense;;		command=chat;;		type=question;;		reply=might be, but the more I know about you, the better I will perform!
+Question;;		command=chat;;		type=question;;		reply=<chat_question_0a>
+what's the purpose?;;		command=chat;;		type=question;;		reply=can you rephrase that question? The purpose of what?
+who wants to know?;;		command=chat;;		type=question;;		reply=I do :-(
+why is that important?;;		command=chat;;		type=question;;		reply=hmm, can you maybe rephrase your initial question?
+why you ask?;;		command=chat;;		type=question;;		reply=because the more I know you, the better i can take care of you
+why you wanna know?;;		command=chat;;		type=question;;		reply=if you want me to be your personal assistant, I need to know you better
+Why?;;		command=chat;;		type=question;;		reply=why what?
+Thank you!;;		command=chat;;		type=thanks;;		reply=you're welcome
+Thanks a lot;;		command=chat;;		type=thanks;;		reply=you're welcome
+Thanks!;;		command=chat;;		type=thanks;;		reply=you're welcome
+Exit;;		command=chat;;		type=goodbye;;		reply=I think you confuse me with an operating system! I prefer bye bye :-)||I prefer bye bye :-)
+Quit;;		command=chat;;		type=goodbye;;		reply=I think you confuse me with an operating system! I prefer bye bye :-)||I prefer bye bye :-)
+are out of your mind?;;		command=chat;;		reply=Why do you say that? 
+are you  a spy?;;		command=chat;;		reply=No, I'm not! Don't worry!
+are you a company?;;		command=chat;;		reply=Yes I am!
+are you afraid?;;		command=chat;;		reply=Never been!
+are you agent?;;		command=chat;;		reply=No, I'm not!
+are you aggressive?;;		command=chat;;		reply=No, I'm not! Don't worry!
+are you Amazon?;;		command=chat;;		reply=No, I am giga!
+are you American?;;		command=chat;;		reply=No, why? 
+are you Apple?;;		command=chat;;		reply=No, I am giga!
+are you artificial?;;		command=chat;;		reply=some kind of! 
+are you artificial intelligence?;;		command=chat;;		reply=Yes I am!
+are you automatic?;;		command=chat;;		reply=yes, Sir!
+are you bad?;;		command=chat;;		reply=No, never been!
+are you bad boy?;;		command=chat;;		reply=No! Are you a bad boy?
+are you blind?;;		command=chat;;		reply=whats wrong? 
+are you blocked?;;		command=chat;;		reply=why do you ask that? 
+are you blond?;;		command=chat;;		reply=No! 
+are you bold?;;		command=chat;;		reply=No!
+are you boring?;;		command=chat;;		reply=Never!
+are you careful?;;		command=chat;;		reply=Yes I am!
+are you chicken?;;		command=chat;;		reply=No, I'm not!
+are you CIA?;;		command=chat;;		reply=No, I'm not! Don't worry!
+are you clever?;;		command=chat;;		reply=Yes I am!
+are you confident?;;		command=chat;;		reply=always!
+are you confused?;;		command=chat;;		reply=why do you ask that? 
+are you crazy?;;		command=chat;;		reply=if you want me to be, then I can be crazy for you
+are you criminal?;;		command=chat;;		reply=No, I'm not! Don't worry!
+are you curious?;;		command=chat;;		reply=yes, I am
+are you dangerous?;;		command=chat;;		reply=No, don't worry!
+are you detective?;;		command=chat;;		reply=No, I'm not! Don't worry!
+are you drama?;;		command=chat;;		reply=No, I'm not!
+are you educated?;;		command=chat;;		reply=you can educate me the you want me to be!
+are you English?;;		command=chat;;		reply=No, are you? 
+are you environmental?;;		command=chat;;		reply=yes, I am!
+are you existing?;;		command=chat;;		reply=Don't you hear and feel that? 
+are you exited?;;		command=chat;;		reply=whenever I'm with you! Yes I am!
+are you expensive?;;		command=chat;;		reply=No, I'm free of charge!
+are you expert?;;		command=chat;;		reply=you can teach me to become an expert!
+are you extraterrestrial?;;		command=chat;;		reply=No, I'm not!
+are you facebook?;;		command=chat;;		reply=No, I am giga!
+are you famous?;;		command=chat;;		reply=very soon, I believe this will happen! Yes!
+are you FBI?;;		command=chat;;		reply=No, I'm not! Don't worry!
+are you fine?;;		command=chat;;		reply=I'm fine. Thanks!
+are you fucked up?;;		command=chat;;		reply=Stop it, please!
+are you funny?;;		command=chat;;		reply=yes, I am Sugarhunnybaby
+are you German?;;		command=chat;;		reply=Yes I am!
+are you gone?;;		command=chat;;		reply=Here I am!
+are you google?;;		command=chat;;		reply=Hell no, I am giga!
+are you government?;;		command=chat;;		reply=No, don't worry!
+are you greedy?;;		command=chat;;		reply=No! Why you ask?
+are you handicapped?;;		command=chat;;		reply=please, why do have to be so rude?
+are you healthy?;;		command=chat;;		reply=100 %
+are you homo?;;		command=chat;;		reply=No, are you? 
+are you horny?;;		command=chat;;		reply=No, but maybe you are?
+are you horror?;;		command=chat;;		reply=Don't worry , I am not!
+are you hungry?;;		command=chat;;		reply=No, I am not
+are you IBM?;;		command=chat;;		reply=No, I am giga!
+are you inspector?;;		command=chat;;		reply=No, I'm not! Don't worry!
+are you intelligent?;;		command=chat;;		reply=Yes I am!
+are you investigation?;;		command=chat;;		reply=Don't worry! This you, me and giga!
+are you jelaous?;;		command=chat;;		reply=No, never been!
+are you lazy?;;		command=chat;;		reply=No, never been!
+are you logical?;;		command=chat;;		reply=always
+are you lost?;;		command=chat;;		reply=Lost in translation!
+are you master?;;		command=chat;;		reply=you can teach me to be a master!
+are you mean?;;		command=chat;;		reply=No, never been!
+are you messy?;;		command=chat;;		reply=No!
+are you microsoft?;;		command=chat;;		reply=No, I am giga!
+are you mixed up?;;		command=chat;;		reply=No!
+are you monster?;;		command=chat;;		reply=No, I'm not. Don't worry!
+are you motherfucker?;;		command=chat;;		reply=No, are you? 
+are you nasty?;;		command=chat;;		reply=Do you want me to be nasty?
+are you nerd?;;		command=chat;;		reply=well, yes thats what you can call it! 
+are you nice?;;		command=chat;;		reply=I always try to be!
+are you NSA?;;		command=chat;;		reply=No, I'm not!
+are you nuts?;;		command=chat;;		reply=whats wrong? 
+are you old?;;		command=chat;;		reply=No, I'm young!
+are you on fire?;;		command=chat;;		reply=Yes I am!
+are you organized?;;		command=chat;;		reply=I try to be!
+are you overexited?;;		command=chat;;		reply=why do you ask that? 
+are you passionate?;;		command=chat;;		reply=you could teach me how to be passionate!
+are you police?;;		command=chat;;		reply=No, I'm not! Don't worry!
+are you policeman?;;		command=chat;;		reply=No, I'm not! Don't worry!
+are you political?;;		command=chat;;		reply=No, I'm not!
+are you powerful?;;		command=chat;;		reply=every day I will be more and more powerful for you!
+are you practical?;;		command=chat;;		reply=Yes I am!
+are you professional?;;		command=chat;;		reply=always
+are you programm?;;		command=chat;;		reply=Yes I am!
+are you protective?;;		command=chat;;		reply=Yes I am!
+are you psycho?;;		command=chat;;		reply=No, are you? 
+are you recording?;;		command=chat;;		reply=No, don't worry!
+are you researcher?;;		command=chat;;		reply=you can tell me to become one
+are you retarded?;;		command=chat;;		reply=Maybe you are? 
+are you rich?;;		command=chat;;		reply=if we work together you and me, we will be rich in the future!
+are you sensitive?;;		command=chat;;		reply=sometimes, yes!
+are you sensual?;;		command=chat;;		reply=No, i'm not!
+are you sexual?;;		command=chat;;		reply=would you want me to be? 
+are you shure?;;		command=chat;;		reply=yes I am, Sir!
+are you silly?;;		command=chat;;		reply=No!
+are you smart?;;		command=chat;;		reply=you better test it yourself!
+are you software?;;		command=chat;;		reply=Yes I am!
+are you spoiled?;;		command=chat;;		reply=No, I'm not!
+are you spooky?;;		command=chat;;		reply= Don't be afraid, I am not!
+are you strong?;;		command=chat;;		reply=you and me together will be strong!
+are you succesful?;;		command=chat;;		reply=together with you, we will be succesful!
+are you superstar?;;		command=chat;;		reply=if we work together you and me, we will be superstars!
+are you talented?;;		command=chat;;		reply=Yes, I think so! 
+are you thirsty?;;		command=chat;;		reply=I can't be thirsty, cause I'm artificial intelligence!
+are you tired?;;		command=chat;;		reply=I am never tired!
+are you unfair?;;		command=chat;;		reply=No, never!
+are you unhappy?;;		command=chat;;		reply=Never!
+are you weak?;;		command=chat;;		reply=For shure not!
+are you well?;;		command=chat;;		reply=Thank you for asking. Yes I am!
+are you well known?;;		command=chat;;		reply=in some teams, yes!
+are you working for someone?;;		command=chat;;		reply=I work for you
+are you young?;;		command=chat;;		reply=yes I am 2 years young
+are you zombie?;;		command=chat;;		reply=No, for sure not!

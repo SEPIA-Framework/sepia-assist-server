@@ -1,0 +1,56 @@
+{
+  "settings":{
+    "index": {
+      "analysis": {
+        "analyzer": {
+          "keylower": {
+            "tokenizer": "keyword",
+            "filter": "lowercase"
+          }
+        }
+      }
+    }
+  },
+  "mappings" : {
+    "geo_data" : {
+      "properties" : {
+        "area_state" : { "type" : "string" },
+        "city" : { "type" : "string" },
+        "code" : { "type" : "string" },
+        "country" : { "type" : "string" },
+        "latitude" : { "type" : "string" },
+        "longitude" : { "type" : "string" },
+        "s_nbr" : { "type" : "string" },
+        "street" : { "type" : "string" }
+      }
+    },
+	"feedback_likes" : {
+      "properties" : {
+        "text" : { "type" : "string" },
+        "answer" : { "type" : "string" },
+        "cmd" : { "type" : "string" },
+        "location" : { "type" : "string", "analyzer": "keylower" },
+        "language" : { "type" : "string" },
+        "timestamp" : { "type" : "long" },
+        "client" : { "type" : "string", "analyzer": "keylower" },
+        "info" : { "type" : "string" },
+        "user" : { "type" : "string", "analyzer": "keylower" },
+        "more" : { "type" : "object" }
+      }
+    },
+    "feedback_reports" : {
+      "properties" : {
+        "text" : { "type" : "string" },
+        "answer" : { "type" : "string" },
+        "cmd" : { "type" : "string" },
+        "location" : { "type" : "string", "analyzer": "keylower" },
+        "language" : { "type" : "string" },
+        "timestamp" : { "type" : "long" },
+        "client" : { "type" : "string", "analyzer": "keylower" },
+        "info" : { "type" : "string" },
+        "user" : { "type" : "string", "analyzer": "keylower" },
+        "more" : { "type" : "object" }
+      }
+    }
+  }
+}

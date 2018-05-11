@@ -1,0 +1,62 @@
+{
+  "settings":{
+    "index": {
+      "analysis": {
+        "analyzer": {
+          "keylower": {
+            "tokenizer": "keyword",
+            "filter": "lowercase"
+          }
+        }
+      }
+    }
+  },
+  "mappings" : {
+    "all" : {
+      "properties" : {
+        "Guuid" : { "type" : "string", "analyzer": "keylower" },
+		"Email" : { "type" : "string", "analyzer": "keylower" },
+		"Phone" : { "type" : "string", "analyzer": "keylower" },
+        "uname" : { 
+			"properties" : {
+				"first" : { "type" : "string" },
+				"last" : { "type" : "string" },
+				"nick" : { "type" : "string" }
+			}
+		},
+		"uroles" : { "type" : "string" },
+		"infos" : { 
+			"properties" : {
+				"birth" : { "type" : "string" },
+				"lang_code" : { "type" : "string" },
+				"gender" : { "type" : "string" },
+				"bot_char" : { "type" : "string" }
+			}
+		},
+		"addresses" : {
+			"properties" : {
+				"uhome" : { 
+					"properties" : {
+						"location" : { "type" : "geo_point" }
+					}
+				}
+			}
+		}
+        "pwd" : { "type" : "string", "index" : "not_analyzed" },
+		"pwd_salt" : { "type" : "string", "index" : "not_analyzed" },
+		"pwd_iteration" : { "type" : "integer", "index" : "not_analyzed" },
+		"tokens" : { "type" : "object" },
+		"statistics" : { 
+			"properties" : {
+				"totalCalls" : { "type" : "long" },
+				"lastLogin" : { "type" : "long" }
+			}
+		},
+      },
+	  "_meta" : {
+		"tokens_info" : "use 'token' (string) and 'ts' (long) to store tokens",
+		"adr_info" : "in general use index 'userdata/addresses' instead"
+	  }
+    }
+  }
+}

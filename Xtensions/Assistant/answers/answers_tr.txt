@@ -1,0 +1,1 @@
+﻿test_0a;;		rep=0|mood=5;;		It's working! ;;char=neutral

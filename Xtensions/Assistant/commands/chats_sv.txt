@@ -1,0 +1,2 @@
+God dag;;		command=chat;;		type=greeting
+

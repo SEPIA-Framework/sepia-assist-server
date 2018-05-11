@@ -1,0 +1,22 @@
+{
+  "settings":{
+    "index": {
+      "analysis": {
+        "analyzer": {
+          "keylower": {
+            "tokenizer": "keyword",
+            "filter": "lowercase"
+          }
+        }
+      }
+    }
+  },
+  "mappings" : {
+    "users" : {
+		"properties" : {
+			"uid" : { "type" : "string", "analyzer": "keylower" },
+			"info" : { "type" : "string", "analyzer": "keylower" }
+		}
+	}
+  }
+}

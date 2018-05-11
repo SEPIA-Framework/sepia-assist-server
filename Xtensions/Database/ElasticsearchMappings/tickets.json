@@ -1,0 +1,30 @@
+{
+  "settings":{
+    "index": {
+      "analysis": {
+        "analyzer": {
+          "keylower": {
+            "tokenizer": "keyword",
+            "filter": "lowercase"
+          }
+        }
+      }
+    }
+  },
+  "mappings" : {
+    "registry" : {
+		"properties" : {
+			"guid" : { "type" : "text", "analyzer": "keylower" },
+			"token" : { "type" : "string", "index" : "not_analyzed" },
+			"ts" : { "type" : "long" }
+		}
+	},
+	"support" : {
+		"properties" : {
+			"guid" : { "type" : "text", "analyzer": "keylower" },
+			"token" : { "type" : "string", "index" : "not_analyzed" },
+			"ts" : { "type" : "long" }
+		}
+	}
+  }
+}

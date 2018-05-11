@@ -1,0 +1,2 @@
+Cześć;;		command=chat;;		type=greeting
+

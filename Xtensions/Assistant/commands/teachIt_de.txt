@@ -1,0 +1,47 @@
+Test;;		command=chat;;		reply=<test_0a>
+Dies ist ein Test;;		command=chat;;		reply=<test_0a>
+Funktioniert alles?;;		command=chat;;		reply=<test_0a>
+Mal gucken ob es klappt;;		command=chat;;		reply=<test_0a>
+Guck mal ob alles funktioniert;;		command=chat;;		reply=<test_0a>
+mach das noch mal;;		command=repeat
+sag das noch mal;;		command=repeat
+wiederholen bitte;;		command=repeat
+wiederhole das;;		command=repeat
+sag noch mal;;		command=repeat
+kannst du das wiederholen bitte;;		command=repeat
+kannst du das noch mal wiederholen bitte;;		command=repeat
+suche eine Zugverbindung;;		command=open_link;;		url=http://reiseauskunft.bahn.de/bin/query.exe/dn?REQ0JourneyStopsS0A=3&S=***&REQ0JourneyStopsZ0A=3&Z=***&REQ0&start=1;;		parameter_set=***place&&***place;;		question_set=Ok, ich such nen Zug. Wo soll es losgehen?||wo soll es losgehen?&&und wo willst du hin?||und wohin solls gehen?;;		link_info=DB Verbindung von <1> nach <2>;;		link_ico=http://localhost/files/db-logo.png;;		answer_set=Auf gehts, ich suche eine Verbindung von <1> nach <2> mit der Deutschen Bahn||suche eine Verbindung, Sekunde
+suche einen Zug;;		command=open_link;;		url=http://reiseauskunft.bahn.de/bin/query.exe/dn?REQ0JourneyStopsS0A=3&S=***&REQ0JourneyStopsZ0A=3&Z=***&REQ0&start=1;;		parameter_set=***place&&***place;;		question_set=Ok, ich such nen Zug. Wo soll es losgehen?||wo soll es losgehen?&&und wo willst du hin?||und wohin solls gehen?;;		link_info=DB Verbindung von <1> nach <2>;;		link_ico=http://localhost/files/db-logo.png;;		answer_set=Auf gehts, ich suche eine Verbindung von <1> nach <2> mit der Deutschen Bahn||suche eine Verbindung, Sekunde
+ich suche ein Hotel;;		command=open_link;;		url=http://www.reservetravel.com/v6?siteId=64&type=address&address=***;;		parameter_set=***place;;		question_set=Ok, ich suche ein Hotel für dich. Wo soll es sein?||wo soll das Hotel sein?;;		link_info=Hotel in <1>;;		link_ico=http://localhost/files/www-logo.png;;		answer_set=Auf gehts, ich suche ein Hotel in <1>||suche ein Hotel, eine Sekunde;;
+suche ein Hotel;;		command=open_link;;		url=http://www.reservetravel.com/v6?siteId=64&type=address&address=***;;		parameter_set=***place;;		question_set=Ok, ich suche ein Hotel für dich. Wo soll es sein?||wo soll das Hotel sein?;;		link_info=Hotel in <1>;;		link_ico=http://localhost/files/www-logo.png;;		answer_set=Auf gehts, ich suche ein Hotel in <1>||suche ein Hotel, eine Sekunde;;
+ich brauche ein Hotel;;		command=open_link;;		url=http://www.reservetravel.com/v6?siteId=64&type=address&address=***;;		parameter_set=***place;;		question_set=Ok, ich suche ein Hotel für dich. Wo soll es sein?||wo soll das Hotel sein?;;		link_info=Hotel in <1>;;		link_ico=http://localhost/files/www-logo.png;;		answer_set=Auf gehts, ich suche ein Hotel in <1>||suche ein Hotel, eine Sekunde;;
+Hotel;;		command=open_link;;		url=http://www.reservetravel.com/v6?siteId=64&type=address&address=***;;		parameter_set=***place;;		question_set=Ok, ich suche ein Hotel für dich. Wo soll es sein?||wo soll das Hotel sein?;;		link_info=Hotel in <1>;;		link_ico=http://localhost/files/www-logo.png;;		answer_set=Auf gehts, ich suche ein Hotel in <1>||suche ein Hotel, eine Sekunde;;
+abbrechen;;		command=chat;;		reply=es gibt gerade nix was man abbrechen müsste||nix da zum abbrechen
+Navi;;		command=directions;;
+Navigation;;		command=directions;;
+Wörterbuch;;		command=dict_translate;;
+Wikipedia;;		command=knowledgebase;;
+Wiki;;		command=knowledgebase;;
+shl;;		command=lists;;list_type=<shopping>;;
+Dashboard;;		command=dashboard;;
+Einstellungen;;		command=dashboard;;
+Setup;;		command=dashboard;;
+Match;;		command=match;;		collection=messe_muenchen;;
+zählen;;		command=count;;
+zähle;;		command=count;;
+1;;		command=count;;		number=1;;		memory=1;;
+eins;;		command=count;;				number=1;;		memory=1;;
+=);;				command=chat;;		reply=#LAUGH01#||#LAUGH02#||#LAUGH03#
+:-);;				command=chat;;		reply=#LAUGH01#||#LAUGH02#||#LAUGH03#
+:);;				command=chat;;		reply=#LAUGH01#||#LAUGH02#||#LAUGH03#
+Favoriten hinzufügen;;		command=my_favorite;;
+Favoriten zeigen;;		command=my_favorite;;	action=open;;
+finde ein smart car system;;		command=chat;;		reply=es scheint kein Smart Home oder Car System zu geben hier||hab kein Smart Home oder Car System gefunden hier
+finde ein smart home system;;		command=chat;;		reply=es scheint kein Smart Home oder Car System zu geben hier||hab kein Smart Home oder Car System gefunden hier
+suche ein smart home system;;		command=chat;;		reply=es scheint kein Smart Home oder Car System zu geben hier||hab kein Smart Home oder Car System gefunden hier
+verbinde dich mit einem smart home system;;		command=chat;;		reply=es scheint kein Smart Home oder Car System zu geben hier||hab kein Smart Home oder Car System gefunden hier
+verbinde dich mit dem smart car system;;		command=chat;;		reply=es scheint kein Smart Home oder Car System zu geben hier||hab kein Smart Home oder Car System gefunden hier
+lokalisiere ein smart home system;;		command=chat;;		reply=es scheint kein Smart Home oder Car System zu geben hier||hab kein Smart Home oder Car System gefunden hier
+nps;; 	command=feedback_nps;;  
+evnts;; 	command=events_personal;;
+test chain;;	command=sentence_connect;;		sentences=hallo&&wetter;;	reply=Hier ist deine Zusammenfassung||<summary_0a>;;

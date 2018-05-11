@@ -1,0 +1,50 @@
+{
+  "settings":{
+    "index": {
+      "analysis": {
+        "analyzer": {
+          "keylower": {
+            "tokenizer": "keyword",
+            "filter": "lowercase"
+          },"whitelower": {
+          	"tokenizer": "whitespace",
+            "filter": "lowercase"
+          }
+        }
+      }
+    }
+  },
+  "mappings" : {
+    "all" : {
+      "properties" : {
+        "command" : { "type" : "string" },
+        "type" : { "type" : "string" },
+        "info" : { "type" : "string" },
+        "more" : { "type" : "object" },
+        "sentences" : {
+          "type": "nested",
+          "properties" : {
+            "public" : { "type": "boolean" },
+            "local" : { "type": "boolean" },
+            "explicit" : { "type": "boolean" },
+            "language" : { "type" : "string", "analyzer": "keylower" },
+            "environment" : { "type" : "string", "analyzer": "keylower" },
+            "text" : { "type" : "string" },
+            "tagged_text" : { "type" : "string" },
+            "params" : { "type" : "object" },
+            "cmd_summary" : { "type" : "string" },
+            "machine_translated": { "type": "boolean" },
+			"translated_from": { "type" : "string"},
+			"old_text": { "type" : "string"},
+            "source" : { "type" : "string", "analyzer": "whitelower" },
+            "user" : { "type" : "string", "analyzer": "keylower" },
+            "user_location" : { "type" : "string", "analyzer": "keylower" },
+            "data" : { "type" : "object" },
+            "replies" : { "type" : "string" },
+            "date" : { "type" : "date" }
+          }
+        }
+      }
+    }
+  }
+}

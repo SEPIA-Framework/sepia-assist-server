@@ -1,0 +1,3 @@
+Ciao;;		command=chat;;		type=greeting
+Buongiorno;;		command=chat;;		type=greeting
+
