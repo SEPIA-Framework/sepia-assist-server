@@ -12,6 +12,7 @@ import net.b07z.sepia.server.assist.parameters.DateAndTime.DateType;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.Statistics;
 import net.b07z.sepia.server.assist.tools.DateTimeConverters;
+import net.b07z.sepia.server.core.assistant.ACTIONS;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Converters;
@@ -143,6 +144,7 @@ public class Weather_DarkSky implements ApiInterface{
 	private static final String answerTomorrow = "weather_tomorrow_1a";
 	private static final String answerDayOfWeek = "weather_day_1a";
 	private static final String answerThisWeek = "weather_week_1a";
+	private static final String answerNoApiKey = "default_no_access_0a";
 
 	//result
 	public ApiResult getResult(NluResult NLU_result){
@@ -226,8 +228,24 @@ public class Weather_DarkSky implements ApiInterface{
 		//TODO: add Accept-Encoding: gzip to request header ????
 		String url = "";
 		if (Is.nullOrEmpty(Config.forecast_io_key)){
-			throw new RuntimeException(DateTime.getLogDate() + " ERROR - Weather_DarkSky.java / Got no API key!");
-			//TODO: we can add some real info here
+			//add some real info here about missing key
+			api.setCustomAnswer(answerNoApiKey);
+			
+			//add button that links to help
+			api.addAction(ACTIONS.BUTTON_IN_APP_BROWSER);
+			api.putActionInfo("url", "https://github.com/SEPIA-Framework/sepia-docs/wiki/Installation#api-keys");
+			api.putActionInfo("title", "Help: API-Keys");
+			
+			//all clear?
+			api.setStatusOkay();
+			
+			//finally build the API_Result
+			ApiResult result = api.buildApiResult();
+					
+			//return result_JSON.toJSONString();
+			return result;
+			
+			//throw new RuntimeException(DateTime.getLogDate() + " ERROR - Weather_DarkSky.java / Got no API key!");
 		}
 		try{
 			url = "https://api.forecast.io/forecast/" + Config.forecast_io_key + "/" + URLEncoder.encode(coords, "UTF-8") + "?units=" + units + "&lang=" + api.language + add_params;
@@ -328,10 +346,10 @@ public class Weather_DarkSky implements ApiInterface{
 				JSON.add(detailsOut, "hourly", hours);
 				
 				//response info
-				api.resultInfo_add("place", place);
-				api.resultInfo_add("tempRequest", (int) tempNow);
-				api.resultInfo_add("tempDesc", tempNowDesc);
-				api.resultInfo_add("day", dayLong);
+				api.resultInfoPut("place", place);
+				api.resultInfoPut("tempRequest", (int) tempNow);
+				api.resultInfoPut("tempDesc", tempNowDesc);
+				api.resultInfoPut("day", dayLong);
 				
 				//card type
 				cardElementType = ElementType.weatherNow;
@@ -413,21 +431,21 @@ public class Weather_DarkSky implements ApiInterface{
 				JSON.add(detailsOut, "daily", daysData);
 				
 				//response info and card type
-				api.resultInfo_add("place", place);
+				api.resultInfoPut("place", place);
 				if (days == 1){
-					api.resultInfo_add("tempRequest", (int) targetTemp);
-					api.resultInfo_add("tempDesc", targetDesc);
-					api.resultInfo_add("day", dayLong);
+					api.resultInfoPut("tempRequest", (int) targetTemp);
+					api.resultInfoPut("tempDesc", targetDesc);
+					api.resultInfoPut("day", dayLong);
 					cardElementType = ElementType.weatherTmo;
 				}else if (!tooFarOrUnspecific){
-					api.resultInfo_add("tempRequest", (int) targetTemp);
-					api.resultInfo_add("tempDesc", targetDesc);
-					api.resultInfo_add("day", dayLong);
+					api.resultInfoPut("tempRequest", (int) targetTemp);
+					api.resultInfoPut("tempDesc", targetDesc);
+					api.resultInfoPut("day", dayLong);
 					cardElementType = ElementType.weatherWeek;
 				}else{
-					api.resultInfo_add("tempRequest", "");
-					api.resultInfo_add("tempDesc", tempWeekDesc);
-					api.resultInfo_add("day", "");
+					api.resultInfoPut("tempRequest", "");
+					api.resultInfoPut("tempDesc", tempWeekDesc);
+					api.resultInfoPut("day", "");
 					cardElementType = ElementType.weatherWeek;
 				}
 			}
@@ -443,7 +461,7 @@ public class Weather_DarkSky implements ApiInterface{
 			api.status = "success";
 			
 			//finally build the API_Result
-			ApiResult result = api.build_API_result();
+			ApiResult result = api.buildApiResult();
 					
 			//return result_JSON.toJSONString();
 			return result;
@@ -454,13 +472,13 @@ public class Weather_DarkSky implements ApiInterface{
 			Debugger.printStackTrace(e, 3);
 			
 			//set all parameters to emtpy to avoid ANS_Loader complaints
-			api.resultInfo_add("place","");
-			api.resultInfo_add("tempRequest","");
-			api.resultInfo_add("tempDesc","");
-			api.resultInfo_add("day","");
+			api.resultInfoPut("place","");
+			api.resultInfoPut("tempRequest","");
+			api.resultInfoPut("tempDesc","");
+			api.resultInfoPut("day","");
 			
 			//build the API_Result and goodbye
-			ApiResult result = api.build_API_result(); 
+			ApiResult result = api.buildApiResult(); 
 			return result;
 		}
 	}
