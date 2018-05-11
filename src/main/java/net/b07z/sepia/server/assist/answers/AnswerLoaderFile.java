@@ -127,15 +127,15 @@ public class AnswerLoaderFile implements AnswerLoader {
 			//answer = getAnswer(language, key, cmd_repeat, cmd_repeat_N, mood);
 			answer = getKeyResult(memory, language, key, cmd_repeat, cmd_repeat_N, mood);
 		}
-		//System.out.println("ANS_Loader - answer: " + answer); 	//debug
+		//System.out.println("AnswerLoader - answer: " + answer); 	//debug
 		if (wildcards != null && wildcards.length>0){
 			int N = wildcards.length;
 			//replace wildcards
 			for (int i=0; i<N; i++){
-				//System.out.println("ANS_Loader: " + answer); 		//debug
+				//System.out.println("AnswerLoader: " + answer); 		//debug
 				Object wco = wildcards[i];
 				if (wco == null){
-					Debugger.println("ANS_Loader - missing answerParameter in answer: '" + answer + "'", 1);
+					Debugger.println("AnswerLoader - missing answerParameter in answer: '" + answer + "'", 1);
 					answer = answer.replaceFirst("<" + (i+1) + ">" , "null");
 				}else{
 					answer = answer.replaceFirst("<" + (i+1) + ">" , wco.toString());

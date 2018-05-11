@@ -164,6 +164,7 @@ public class Weather_DarkSky implements ApiInterface{
 		if (place == null){
 			place = getPlaceName("<coordinates>", api.language);
 		}
+		api.resultInfoPut("place", place);
 		
 		//adapt answer and search to given date
 		String dateType = (String) timeJSON.get(InterviewData.TIME_TYPE); 
@@ -228,6 +229,9 @@ public class Weather_DarkSky implements ApiInterface{
 		//TODO: add Accept-Encoding: gzip to request header ????
 		String url = "";
 		if (Is.nullOrEmpty(Config.forecast_io_key)){
+			//set all parameters to empty to avoid AnswerLoader complaints
+			api.resultInfoFill();
+						
 			//add some real info here about missing key
 			api.setCustomAnswer(answerNoApiKey);
 			
@@ -471,11 +475,8 @@ public class Weather_DarkSky implements ApiInterface{
 			Debugger.println("Weather - error: " + e.getMessage(), 1);
 			Debugger.printStackTrace(e, 3);
 			
-			//set all parameters to emtpy to avoid ANS_Loader complaints
-			api.resultInfoPut("place","");
-			api.resultInfoPut("tempRequest","");
-			api.resultInfoPut("tempDesc","");
-			api.resultInfoPut("day","");
+			//set all parameters to empty to avoid AnswerLoader complaints
+			api.resultInfoFill();
 			
 			//build the API_Result and goodbye
 			ApiResult result = api.buildApiResult(); 

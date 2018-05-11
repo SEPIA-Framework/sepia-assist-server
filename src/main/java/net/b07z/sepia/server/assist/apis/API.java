@@ -43,7 +43,7 @@ public class API {
 	public String htmlInfo = "";						//extended html content to answer (e.g. for info center)
 	public JSONArray cardInfo = new JSONArray();		//compact info for "cards"
 	public JSONArray actionInfo = new JSONArray();		//info to execute an action
-	public JSONObject resultInfo = new JSONObject();	//common result info, important for displaying result view details
+	public JSONObject resultInfo = new JSONObject();	//common result info, important for displaying result view details and build answer parameters
 	public boolean hasInfo = false;						//is extended html content available?
 	public boolean hasCard = false;						//is content for a "card" available?
 	public boolean hasAction = false;					//is an action available?
@@ -249,6 +249,16 @@ public class API {
 		resultInfo.forEach((k, v)->{
 			this.resultInfo.put(k, v);
 		});
+	}
+	/**
+	 * Fill missing info with blanks. This is a solution/workaround to quickly fill up the answer-parameters that are not needed.
+	 */
+	public void resultInfoFill(){
+		for (String ap : this.apiInfo.answerParameters){
+			if (this.resultInfo.get(ap) == null){
+				resultInfoPut(ap, "");
+			}
+		}
 	}
 	/**
 	 * Get a parameter from the resultInfo (previously added by e.g. "resultInfo_addAll").

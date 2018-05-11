@@ -131,11 +131,11 @@ public class AnswerLoaderElasticsearch implements AnswerLoader {
 		}
 		if (wildcards != null && wildcards.length>0){
 			int N = wildcards.length;
-			//replace wildcards
+			//replace wildcards - TODO: this could be more efficient if we would only check the required wildcards
 			for (int i=0; i<N; i++){
 				Object wco = wildcards[i];
 				if (wco == null){
-					Debugger.println("ANS_Loader - missing answerParameter in answer: '" + answer + "'", 1);
+					Debugger.println("AnswerLoader - missing answerParameter in answer: '" + answer + "'", 1);
 					answer = answer.replaceFirst("<" + (i+1) + ">" , "null");
 				}else{
 					answer = answer.replaceFirst("<" + (i+1) + ">" , wco.toString());

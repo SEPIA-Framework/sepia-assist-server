@@ -58,12 +58,12 @@ public class AbstractInterview implements InterviewInterface{
 	}
 	
 	@Override
-	public InterviewResult getMissingParameters(NluResult NLU_result) {
+	public InterviewResult getMissingParameters(NluResult nluResult) {
 		//make interview assistant
-		Interview assistant = new Interview(NLU_result);
+		Interview assistant = new Interview(nluResult);
 		
 		//Get info
-		InterviewInfo iInfo = getInfo(NLU_result.language);
+		InterviewInfo iInfo = getInfo(nluResult.language);
 		
 		//required parameters
 		for (Parameter p : iInfo.requiredParameters){
@@ -147,7 +147,7 @@ public class AbstractInterview implements InterviewInterface{
 		Set<String> dynamicParameters = assistant.getDynamicParameters();
 		for (String dp : dynamicParameters){
 			
-			String input = NLU_result.getParameter(dp);
+			String input = nluResult.getParameter(dp);
 			boolean isFinal = assistant.isFinal(dp);
 			if (!isFinal && !input.isEmpty()){
 				Parameter p = null;
