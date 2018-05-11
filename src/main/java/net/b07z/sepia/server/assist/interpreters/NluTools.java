@@ -65,7 +65,7 @@ public class NluTools {
 		}
 		possibleParameters.add(kv);
 		NluResult result = new NluResult(possibleCMDs, possibleParameters, possibleScore, bestScoreIndex);
-		result.certainty_lvl = 1.0d;
+		result.certaintyLvl = 1.0d;
 		
 		//TODO: missing:	input parameters parsed to result (language, context, environment, etc. ...)
 		

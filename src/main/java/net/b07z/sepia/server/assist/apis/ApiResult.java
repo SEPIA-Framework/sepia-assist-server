@@ -31,7 +31,7 @@ public class ApiResult {
 	String status = "still_ok";					//result status (fail/success/still_ok) - fail is for serious errors without planned answer, success is for perfect answer as planned, still_ok is with answer but no result
 	JSONObject more;							//flexible, additional parameters (more stuff I most likely forgot to implement right now or that is different from API to API)
 	
-	public JSONObject result_JSON = new JSONObject();	//JSON result returned to client. Attention: this is updated directly sometimes and may include more info than the variables itself :/
+	public JSONObject resultJson = new JSONObject();	//JSON result returned to client. Attention: this is updated directly sometimes and may include more info than the variables itself :/
 														//usually this is build by API.java
 	//included in more JSON on return
 	String language = "en";
@@ -69,7 +69,7 @@ public class ApiResult {
 		this.answer = answer;
 		this.htmlInfo = htmlInfo;
 		this.hasInfo = hasInfo;
-		this.result_JSON = resulJSON;
+		this.resultJson = resulJSON;
 	}
 	/**
 	 * In addition to the basic constructor this one includes a clean answer and an additional "cards" JSON Object 
@@ -81,7 +81,7 @@ public class ApiResult {
 	 * @param cardInfo - compact "cards" info stored as JSON Array (usually with up to 3 items)
 	 * @param hasInfo - indicates if extended HTML is available (true/false)
 	 * @param hasCard - is compact "cards" info available (true/false)
-	 * @param result_JSON - result as JSON object to send to client
+	 * @param resultJson - result as JSON object to send to client
 	 */
 	@SuppressWarnings("unchecked")
 	public ApiResult (String status, String answer, String answer_clean, String htmlInfo, JSONArray cardInfo, boolean hasInfo, boolean hasCard){
@@ -93,15 +93,15 @@ public class ApiResult {
 		this.hasInfo = hasInfo;
 		this.hasCard = hasCard;
 		//create JSON result
-		result_JSON.put("result", status);
-		result_JSON.put("answer", answer);
-		result_JSON.put("answer_clean", answer_clean);
-		result_JSON.put("hasInfo", new Boolean(hasInfo));
-		result_JSON.put("htmlInfo", htmlInfo);
-		result_JSON.put("hasCard", new Boolean(hasCard));
-		result_JSON.put("cardInfo", cardInfo);
-		result_JSON.put("hasAction", new Boolean(hasAction));
-		result_JSON.put("actionInfo", actionInfo);
+		resultJson.put("result", status);
+		resultJson.put("answer", answer);
+		resultJson.put("answer_clean", answer_clean);
+		resultJson.put("hasInfo", new Boolean(hasInfo));
+		resultJson.put("htmlInfo", htmlInfo);
+		resultJson.put("hasCard", new Boolean(hasCard));
+		resultJson.put("cardInfo", cardInfo);
+		resultJson.put("hasAction", new Boolean(hasAction));
+		resultJson.put("actionInfo", actionInfo);
 	}
 	/**
 	 * In addition to the basic constructor this one includes a clean answer, an additional "cards" JSON Object 
@@ -115,7 +115,7 @@ public class ApiResult {
 	 * @param hasInfo - indicates if extended HTML is available (true/false)
 	 * @param hasCard - is compact "cards" info available (true/false)
 	 * @param hasAction - is there an "action" request to the client like "open an app" etc.? 
-	 * @param result_JSON - result as JSON object to send to client
+	 * @param resultJson - result as JSON object to send to client
 	 */
 	@SuppressWarnings("unchecked")
 	public ApiResult (String status, String answer, String answer_clean, String htmlInfo, JSONArray cardInfo, JSONArray actionInfo, boolean hasInfo, boolean hasCard, boolean hasAction){
@@ -128,15 +128,15 @@ public class ApiResult {
 		this.hasInfo = hasInfo;
 		this.hasCard = hasCard;
 		//create JSON result
-		result_JSON.put("result", status);
-		result_JSON.put("answer", answer);
-		result_JSON.put("answer_clean", answer_clean);
-		result_JSON.put("hasInfo", new Boolean(hasInfo));
-		result_JSON.put("htmlInfo", htmlInfo);
-		result_JSON.put("hasCard", new Boolean(hasCard));
-		result_JSON.put("cardInfo", cardInfo);
-		result_JSON.put("hasAction", new Boolean(hasAction));
-		result_JSON.put("actionInfo", actionInfo);
+		resultJson.put("result", status);
+		resultJson.put("answer", answer);
+		resultJson.put("answer_clean", answer_clean);
+		resultJson.put("hasInfo", new Boolean(hasInfo));
+		resultJson.put("htmlInfo", htmlInfo);
+		resultJson.put("hasCard", new Boolean(hasCard));
+		resultJson.put("cardInfo", cardInfo);
+		resultJson.put("hasAction", new Boolean(hasAction));
+		resultJson.put("actionInfo", actionInfo);
 	}
 	
 	/**
@@ -169,14 +169,14 @@ public class ApiResult {
 		// ... oh crimes of my youth ...
 		//TODO: make sure to update the class as well and not only the JSON
 		//to make things a bit easier update the 3 basics data fields again
-		JSON.add(result_JSON, "hasInfo", new Boolean(!htmlInfo.isEmpty()));
-		JSON.add(result_JSON, "htmlInfo", htmlInfo);
-		JSON.add(result_JSON, "hasCard", new Boolean(cardInfo != null && !cardInfo.isEmpty()));
-		JSON.add(result_JSON, "cardInfo", cardInfo);
-		JSON.add(result_JSON, "hasAction", new Boolean(actionInfo != null && !actionInfo.isEmpty()));
-		JSON.add(result_JSON, "actionInfo", actionInfo);
+		JSON.add(resultJson, "hasInfo", new Boolean(!htmlInfo.isEmpty()));
+		JSON.add(resultJson, "htmlInfo", htmlInfo);
+		JSON.add(resultJson, "hasCard", new Boolean(cardInfo != null && !cardInfo.isEmpty()));
+		JSON.add(resultJson, "cardInfo", cardInfo);
+		JSON.add(resultJson, "hasAction", new Boolean(actionInfo != null && !actionInfo.isEmpty()));
+		JSON.add(resultJson, "actionInfo", actionInfo);
 		
-		return result_JSON.toJSONString();
+		return resultJson.toJSONString();
 	}
 	
 	/**

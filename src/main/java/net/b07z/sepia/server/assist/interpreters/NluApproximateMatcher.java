@@ -88,7 +88,7 @@ public class NluApproximateMatcher implements NluInterface{
 			NLP = new NluCmdReconstructor();
 			NluResult result = NLP.interpret(input);
 			//overwrite certainty
-			result.certainty_lvl = certainty_lvl;
+			result.certaintyLvl = certainty_lvl;
 			result.bestDirectMatch = bestKey;
 			//restore original input
 			input.text = org_text;
@@ -103,7 +103,7 @@ public class NluApproximateMatcher implements NluInterface{
 
 	//certainty might result from edit distance ...
 	public double getCertaintyLevel(NluResult result) {
-		return result.certainty_lvl;
+		return result.certaintyLvl;
 	}
 	
 	//----BEST MATCH FINDERS----

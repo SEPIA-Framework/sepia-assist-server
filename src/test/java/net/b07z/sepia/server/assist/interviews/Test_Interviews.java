@@ -82,14 +82,14 @@ public class Test_Interviews {
 			result = iResult.apiResult;
 		}
 		//check
-		JSON.printJSONpretty(result.result_JSON);
+		JSON.printJSONpretty(result.resultJson);
 		System.out.println("");
 		
 		//NLP 2 - answer
 		//input.text = "am 12. Dezember";
 		input.text = "at december the 12th";
 		input.input_miss = result.getMissingInput();
-		input.last_cmd = nlu_res.cmd_summary;
+		input.last_cmd = nlu_res.cmdSummary;
 		NLP = new ResponseHandler();
 		nlu_res = NLP.interpret(input);
 		//check
@@ -102,7 +102,7 @@ public class Test_Interviews {
 			result = assistant.getServiceResults(iResult);
 			//check
 			System.out.println("TEST FINAL API_RESULT: " + result.getResultJSON());
-			JSON.printJSONpretty(result.result_JSON);
+			JSON.printJSONpretty(result.resultJson);
 			System.out.println("");
 		}else{
 			System.out.println("NO RESULT");
@@ -143,7 +143,7 @@ public class Test_Interviews {
 			result = assistant.getServiceResults(iResult);
 			//check
 			System.out.println("TEST FINAL API_RESULT: " + result.getResultJSON());
-			JSON.printJSONpretty(result.result_JSON);
+			JSON.printJSONpretty(result.resultJson);
 			System.out.println("");
 		}else{
 			System.out.println("NO RESULT");
@@ -187,7 +187,7 @@ public class Test_Interviews {
 			result = assistant.getServiceResults(iResult);
 			//check
 			System.out.println("TEST FINAL API_RESULT: " + result.getResultJSON());
-			JSON.printJSONpretty(result.result_JSON);
+			JSON.printJSONpretty(result.resultJson);
 			System.out.println("");
 		}else{
 			System.out.println("NO RESULT");

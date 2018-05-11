@@ -30,14 +30,14 @@ import net.b07z.sepia.server.core.tools.JSON;
 public class NluResult {
 	
 	//modified input
-	public String normalized_text = "";			//input text after normalization
+	public String normalizedText = "";			//input text after normalization
 	//variables
 	public String language = "en";				
 	public String context = "default";			//context is what the user did/said before to answer queries like "do that again" or "and in Berlin?"
 	public String environment = "default";		//environments can be stuff like home, car, phone etc. to restrict and tweak some results 
 	public int mood = -1;						//mood level 0-10 (10: super happy) of ILA (or whatever the name of the assistant is) can be passed around too
 	//command summary
-	public String cmd_summary = "";				//this command as short summary, used e.g. as comparison to last_cmd of NLU_Input
+	public String cmdSummary = "";				//this command as short summary, used e.g. as comparison to last_cmd of NLU_Input
 	public String bestDirectMatch = "---";		//if this command was found by a direct match, save the best sentence-key here. It helps to understand what command was found. 
 	//... more to come
 	
@@ -45,13 +45,13 @@ public class NluResult {
 	public NluInput input;
 	
 	//result found?
-	boolean found_result = false;		//did the NL-Processor produce a result?
+	boolean foundResult = false;		//did the NL-Processor produce a result?
 	
 	//best result
 	int bestScoreIndex = 0;				//index of the best result in result_array
-	String command_type = "";			//best result command type (e.g. weather)
+	String commandType = "";			//best result command type (e.g. weather)
 	Map<String, String> parameters;		//parameters of best result as HashMap
-	double certainty_lvl = 0.0d;		//scoring of the best result (from 0-1), strongly depends on the NL-Processor how reliable that is
+	double certaintyLvl = 0.0d;			//scoring of the best result (from 0-1), strongly depends on the NL-Processor how reliable that is
 	
 	//all NLP results are stored here:
 	List<String> possibleCMDs = new ArrayList<String>();			//make a list of possible interpretations (commands) of the text
@@ -115,12 +115,12 @@ public class NluResult {
 		this.possibleScore = possibleScore;
 		this.bestScoreIndex = bestScoreIndex;
 		if (possibleCMDs.size()>0){
-			found_result = true;
-			command_type = possibleCMDs.get(bestScoreIndex);
-			context = command_type;		//can be edited later
+			foundResult = true;
+			commandType = possibleCMDs.get(bestScoreIndex);
+			context = commandType;		//can be edited later
 			parameters = possibleParameters.get(bestScoreIndex);
-			cmd_summary = command_type + ";;" + Converters.mapStrStr2Str(parameters);
-			Debugger.println("CMD Summary: " + cmd_summary, 2); 		//debug
+			cmdSummary = commandType + ";;" + Converters.mapStrStr2Str(parameters);
+			Debugger.println("CMD Summary: " + cmdSummary, 2); 		//debug
 		}
 	}
 	
@@ -134,11 +134,11 @@ public class NluResult {
 	@SuppressWarnings("unchecked")
 	public JSONObject getBestResultJSON(){
 		JSONObject obj = new JSONObject();
-		if (found_result && !command_type.matches(CMD.NO_RESULT)) {
+		if (foundResult && !commandType.matches(CMD.NO_RESULT)) {
 			obj.put("result", "success");
 			obj.put("language", language);
-			obj.put("command", command_type);
-			obj.put("certainty", new Double(certainty_lvl));
+			obj.put("command", commandType);
+			obj.put("certainty", new Double(certaintyLvl));
 			obj.put("bestDirectMatch", bestDirectMatch);
 			obj.put("context", context);
 			obj.put("environment", environment);
@@ -242,8 +242,8 @@ public class NluResult {
 		}else{
 			parameters.put(param, value);
 		}
-		if (command_type != null && !command_type.matches("")){
-			cmd_summary = command_type + ";;" + Converters.mapStrStr2Str(parameters);
+		if (commandType != null && !commandType.matches("")){
+			cmdSummary = commandType + ";;" + Converters.mapStrStr2Str(parameters);
 		}
 	}
 	/**
@@ -253,8 +253,8 @@ public class NluResult {
 	public void removeParameter(String param){
 		if (parameters != null){
 			parameters.remove(param);
-			if (command_type != null && !command_type.matches("")){
-				cmd_summary = command_type + ";;" + Converters.mapStrStr2Str(parameters);
+			if (commandType != null && !commandType.matches("")){
+				cmdSummary = commandType + ";;" + Converters.mapStrStr2Str(parameters);
 			}
 		}
 	}
@@ -289,8 +289,8 @@ public class NluResult {
 			}
 			fin = finals.toString().replaceAll("\\s+", "");
 			parameters.put(PARAMETERS.FINAL, fin);
-			if (command_type != null && !command_type.isEmpty()){
-				cmd_summary = command_type + ";;" + Converters.mapStrStr2Str(parameters);
+			if (commandType != null && !commandType.isEmpty()){
+				cmdSummary = commandType + ";;" + Converters.mapStrStr2Str(parameters);
 			}
 		}
 	}
@@ -316,16 +316,16 @@ public class NluResult {
 	 * @return      command as string
 	 */
 	public String getCommand(){
-		return command_type;
+		return commandType;
 	}
 	/**
 	 * Set a the command type of the best NLU result, if you need to overwrite it. Use it before set_parameter! 
 	 * Refreshes cmd_summary too.
 	 */
 	public void setCommand(String new_command){
-		command_type = new_command;
-		if (command_type != null && !command_type.matches("") && parameters != null){
-			cmd_summary = command_type + ";;" + Converters.mapStrStr2Str(parameters);
+		commandType = new_command;
+		if (commandType != null && !commandType.matches("") && parameters != null){
+			cmdSummary = commandType + ";;" + Converters.mapStrStr2Str(parameters);
 		}
 	}
 	
@@ -346,6 +346,6 @@ public class NluResult {
 	 * @return a number between 0 and 1 somehow calculated by the NLP during command interpretation.
 	 */
 	public double getCertaintyLevel() {
-		return certainty_lvl;
+		return certaintyLvl;
 	}
 }

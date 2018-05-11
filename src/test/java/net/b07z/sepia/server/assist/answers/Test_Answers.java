@@ -29,7 +29,7 @@ public class Test_Answers {
 		input.language = "de";
 		
 		NluResult res = new NluResult(input);
-		res.cmd_summary = "test";
+		res.cmdSummary = "test";
 		
 		//get Answer
 		System.out.println("answer: " + loader.getAnswer(res, "<direct>Hallo <user_name>, es klappt!"));

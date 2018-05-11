@@ -17,13 +17,13 @@ public class NluCmdReconstructor implements NluInterface {
 		
 		NluResult result = NluTools.cmdSummaryToResult(input, cmd_summary);
 		double certainty_lvl = 1.0d;		//as this is the reconstructor it is 100% certain
-		result.certainty_lvl = certainty_lvl;
+		result.certaintyLvl = certainty_lvl;
 		
 		return result;
 	}
 
 	public double getCertaintyLevel(NluResult result) {
-		return result.certainty_lvl;
+		return result.certaintyLvl;
 	}
 
 }

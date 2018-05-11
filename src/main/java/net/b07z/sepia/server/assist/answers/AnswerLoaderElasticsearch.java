@@ -72,14 +72,14 @@ public class AnswerLoaderElasticsearch implements AnswerLoader {
 		String contextSearch = "";
 		if (nlu_res.input.input_type.matches("response")){
 			//be less strict with responses
-			String A = nlu_res.cmd_summary.replaceAll("parameter_set=.*?;;", "");
+			String A = nlu_res.cmdSummary.replaceAll("parameter_set=.*?;;", "");
 			A = A.replaceFirst(nlu_res.input.input_miss + "=(.*?)(;;|$)", "");
 			String B = Pattern.quote(last_cmd).replaceAll("parameter_set=.*?;;", "");
 			B = B.replaceFirst(nlu_res.input.input_miss + "=(.*?)(;;|$)", "");
 			cmd_repeat = (A.matches(B));
 		}else if (nlu_res.getCommand().equals(CMD.NO_RESULT)){
 			//be a bit less restrictive with no_result ... and have some random fun
-			String A = nlu_res.cmd_summary.replaceAll("text=.*?;;", "").trim();
+			String A = nlu_res.cmdSummary.replaceAll("text=.*?;;", "").trim();
 			String B = Pattern.quote(last_cmd).replaceAll("text=.*?;;", "").trim();
 			if (A.matches(B)){		//&& (Math.random() < 0.5f)
 				cmd_repeat = true;
@@ -88,7 +88,7 @@ public class AnswerLoaderElasticsearch implements AnswerLoader {
 			contextSearch = CMD.NO_RESULT;
 		}else{
 			//be very strict with the rest
-			cmd_repeat = (nlu_res.cmd_summary.matches(Pattern.quote(last_cmd)));
+			cmd_repeat = (nlu_res.cmdSummary.matches(Pattern.quote(last_cmd)));
 		}
 		int cmd_repeat_N;
 		if (useContext){

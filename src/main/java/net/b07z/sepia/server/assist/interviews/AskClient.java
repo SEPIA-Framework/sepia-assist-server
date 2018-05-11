@@ -27,24 +27,24 @@ public class AskClient {
 	
 	/**
 	 * Create a result for a client question.
-	 * @param question_key - key to find question in database.
+	 * @param questionKey - key to find question in database.
 	 * @param missing_input - parameter type that is missing (search, start, end, etc... empty or default or text is standard)
-	 * @param NLU_result - result of the NLP
+	 * @param nluResult - result of the NLP
 	 * @param wildcards - parameters given to the question to fill out wildcards
 	 * @return
 	 */
-	public static ApiResult question(String question_key, String missing_input_param, NluResult NLU_result, Object... wildcards){
+	public static ApiResult question(String questionKey, String missingInputParam, NluResult nluResult, Object... wildcards){
 		//initialize result
-		API api = new API(NLU_result);
+		API api = new API(nluResult);
 		
 		//debug
 		//System.out.println("Dialog stage/Last CMD rep.: " + NLU_result.input.dialog_stage + "/" + NLU_result.input.last_cmd_N);
 		
 		//make this a question
-		api.makeThisAQuestion(missing_input_param); 
+		api.makeThisAQuestion(missingInputParam); 
 		
 		//get answer/question to client
-		api.answer = Config.answers.getAnswer(NLU_result, question_key, wildcards);
+		api.answer = Config.answers.getAnswer(nluResult, questionKey, wildcards);
 		api.answerClean = Converters.removeHTML(api.answer);
 		//remove vocal smileys
 		api.answer = AnswerTools.cleanHtmlAnswer(api.answer);
@@ -52,23 +52,23 @@ public class AskClient {
 		api.status = "success";
 		
 		//anything else?
-		api.context = NLU_result.context;				//the context remains the previous one
-		api.cmdSummary = NLU_result.cmd_summary;		//cmd_summary is very important here because it's needed to fuse answer and initial command later
+		api.context = nluResult.context;				//the context remains the previous one
+		api.cmdSummary = nluResult.cmdSummary;		//cmd_summary is very important here because it's needed to fuse answer and initial command later
 		
 		//if there is a question offer abort button
 		api.addAction(ACTIONS.SHOW_ABORT_OPTION);
 		api.hasAction = true;
 		
 		//add yes / no button if the command fits
-		if (missing_input_param.equals(PARAMETERS.YES_NO)){
-			String yes = YesNo.getLocal("<yes>", NLU_result.language);
+		if (missingInputParam.equals(PARAMETERS.YES_NO)){
+			String yes = YesNo.getLocal("<yes>", nluResult.language);
 			api.addAction(ACTIONS.BUTTON_CMD);
 			api.putActionInfo("title", yes);
 			api.putActionInfo("info", "direct_cmd");
 			api.putActionInfo("cmd", api.cmdSummary.replaceFirst(PARAMETERS.YES_NO + "=.*?;;", PARAMETERS.YES_NO + "=<yes>"));
 			api.putActionInfo("visibility", "inputHidden");
 			
-			String no = YesNo.getLocal("<no>", NLU_result.language);
+			String no = YesNo.getLocal("<no>", nluResult.language);
 			api.addAction(ACTIONS.BUTTON_CMD);
 			api.putActionInfo("title", no);
 			api.putActionInfo("info", "direct_cmd");
@@ -89,15 +89,15 @@ public class AskClient {
 	 * registers the increase token, compares it to the database and calls the old API (the one that needs the access) again with the new
 	 * access level. 
 	 */
-	public static ApiResult increaseAccessLevel(NluResult NLU_result){
+	public static ApiResult increaseAccessLevel(NluResult nluResult){
 		//initialize result
-		API api = new API(NLU_result);
+		API api = new API(nluResult);
 		
 		//debug
 		//System.out.println("Dialog stage/Last CMD rep.: " + NLU_result.input.dialog_stage + "/" + NLU_result.input.last_cmd_N);
 		
 		//get answer/question to client
-		api.answer = Config.answers.getAnswer(NLU_result, "default_ask_incaccess_0a");
+		api.answer = Config.answers.getAnswer(nluResult, "default_ask_incaccess_0a");
 		api.answerClean = Converters.removeHTML(api.answer);
 		
 		//TODO: IMPLEMENT AUTHORIZATION ACTION 
@@ -105,8 +105,8 @@ public class AskClient {
 		api.status = "success";
 		
 		//anything else?
-		api.context = NLU_result.context;				//the context remains the previous one
-		api.cmdSummary = NLU_result.cmd_summary;		//cmd_summary is very important here because it's needed to fuse answer and initial command later
+		api.context = nluResult.context;				//the context remains the previous one
+		api.cmdSummary = nluResult.cmdSummary;		//cmd_summary is very important here because it's needed to fuse answer and initial command later
 		
 		//finally build the API_Result
 		ApiResult result = api.buildApiResult();

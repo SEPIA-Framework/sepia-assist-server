@@ -171,7 +171,7 @@ public class NluTaggedSentenceMatcher implements NluInterface{
 			NluResult result = NLP.interpret(input);
 			
 			//overwrite certainty
-			result.certainty_lvl = best_sm.getCertainty();
+			result.certaintyLvl = best_sm.getCertainty();
 			
 			result.bestDirectMatch = (best_sm == null)? "---" : best_sm.testSentence;
 			//restore original input
@@ -187,7 +187,7 @@ public class NluTaggedSentenceMatcher implements NluInterface{
 
 	//certainty might result from edit distance ...
 	public double getCertaintyLevel(NluResult result) {
-		return result.certainty_lvl;
+		return result.certaintyLvl;
 	}
 	
 	//--------------------------------------

@@ -99,7 +99,7 @@ public class NluSentenceMatcher implements NluInterface{
 			NluResult result = NLP.interpret(input);
 			
 			result.bestDirectMatch = matched_search;
-			result.certainty_lvl = 1.0d;	//as this is the identity matcher he must be 100% sure.
+			result.certaintyLvl = 1.0d;	//as this is the identity matcher he must be 100% sure.
 			
 			return result;
 			
@@ -110,7 +110,7 @@ public class NluSentenceMatcher implements NluInterface{
 
 	//certainty might result from edit distance ...
 	public double getCertaintyLevel(NluResult result) {
-		return result.certainty_lvl;
+		return result.certaintyLvl;
 	}
 
 }

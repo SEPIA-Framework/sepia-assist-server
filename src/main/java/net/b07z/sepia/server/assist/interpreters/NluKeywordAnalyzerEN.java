@@ -1002,10 +1002,10 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 		
 		//create the result with default constructor and add specific variables:
 		NluResult result = new NluResult(possibleCMDs, possibleParameters, possibleScore, bestScoreIndex);
-		result.certainty_lvl = certainty_lvl;
+		result.certaintyLvl = certainty_lvl;
 		//copy the default variables from input (like environment, mood etc.) and add input to result:
 		result.setInput(input);
-		result.normalized_text = text;	//input has the real text, result has the normalized text
+		result.normalizedText = text;	//input has the real text, result has the normalized text
 		//you can set some of the default result variables manually if the interpreter changes them:
 		result.language = language;		// might well be analyzed and changed by the interpreter, in this case here it must be English
 		//result.context = context;		// is auto-set inside the constructor to best command 
@@ -1015,7 +1015,7 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 	}
 
 	public double getCertaintyLevel(NluResult result) {
-		return result.certainty_lvl;
+		return result.certaintyLvl;
 	}
 	
 	/**

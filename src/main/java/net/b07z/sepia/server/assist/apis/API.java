@@ -89,7 +89,7 @@ public class API {
 		this.dialogStage = nluResult.input.dialog_stage;
 		this.context = nluResult.getCommand();
 		this.environment = nluResult.environment;
-		this.cmdSummary = nluResult.cmd_summary;
+		this.cmdSummary = nluResult.cmdSummary;
 		this.resultInfoPut("cmd", nluResult.getCommand());
 		
 		this.nluResult = nluResult;
@@ -318,7 +318,7 @@ public class API {
 	 */
 	public void overwriteParameter(String parameter, String new_value){
 		nluResult.setParameter(parameter, new_value);
-		cmdSummary = nluResult.cmd_summary;
+		cmdSummary = nluResult.cmdSummary;
 	}
 	/**
 	 * Remove a certain parameter and reconstruct cmd_summary if command_type is set.
@@ -326,7 +326,7 @@ public class API {
 	 */
 	public void removeParameter(String parameter){
 		nluResult.removeParameter(parameter);
-		cmdSummary = nluResult.cmd_summary;
+		cmdSummary = nluResult.cmdSummary;
 	}
 	
 	/**
@@ -407,7 +407,7 @@ public class API {
 			}
 		}*/
 		result.resultInfo = resultInfo;
-		JSON.add(result.result_JSON, "resultInfo", resultInfo);
+		JSON.add(result.resultJson, "resultInfo", resultInfo);
 		
 		//add customInfo
 		result.customInfo = customInfo;
@@ -424,7 +424,7 @@ public class API {
 		//add more - cause it is not in the constructor for API_Result
 		if (!more.isEmpty()){
 			result.more = more;
-			JSON.add(result.result_JSON, "more", more);
+			JSON.add(result.resultJson, "more", more);
 		}
 		//check response type
 		if (responseType.matches(RESPONSE_QUESTION)){
@@ -432,9 +432,9 @@ public class API {
 			result.responseType = responseType;
 			result.inputMiss = inputMiss;
 			result.dialogStage = dialogStage;
-			JSON.add(result.result_JSON, "response_type", responseType);
-			JSON.add(result.result_JSON, "input_miss", inputMiss);
-			JSON.add(result.result_JSON, "dialog_stage", new Integer(dialogStage)); 	//should track this always?
+			JSON.add(result.resultJson, "response_type", responseType);
+			JSON.add(result.resultJson, "input_miss", inputMiss);
+			JSON.add(result.resultJson, "dialog_stage", new Integer(dialogStage)); 	//should track this always?
 		}
 		
 		return result;

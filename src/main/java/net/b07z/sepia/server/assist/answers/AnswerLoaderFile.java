@@ -79,14 +79,14 @@ public class AnswerLoaderFile implements AnswerLoader {
 		String contextSearch = "";
 		if (params.input.input_type.matches("response")){
 			//be less strict with responses
-			String A = params.cmd_summary.replaceAll("parameter_set=.*?;;", "");
+			String A = params.cmdSummary.replaceAll("parameter_set=.*?;;", "");
 			A = A.replaceFirst(params.input.input_miss + "=(.*?)(;;|$)", "");
 			String B = last_cmd.replaceAll("parameter_set=.*?;;", "");
 			B = B.replaceFirst(params.input.input_miss + "=(.*?)(;;|$)", "");
 			cmd_repeat = (A.matches(Pattern.quote(B)));
 		}else if (params.getCommand().equals(CMD.NO_RESULT)){
 			//be a bit less restrictive with no_result and have some random fun
-			String A = params.cmd_summary.replaceAll("text=.*?;;", "").trim();
+			String A = params.cmdSummary.replaceAll("text=.*?;;", "").trim();
 			String B = last_cmd.replaceAll("text=.*?;;", "").trim();
 			if (A.matches(Pattern.quote(B))){		// && (Math.random() < 0.5f)
 				cmd_repeat = true;
@@ -95,7 +95,7 @@ public class AnswerLoaderFile implements AnswerLoader {
 			contextSearch = CMD.NO_RESULT;
 		}else{
 			//be very strict with the rest
-			cmd_repeat = (params.cmd_summary.matches(Pattern.quote(last_cmd)));
+			cmd_repeat = (params.cmdSummary.matches(Pattern.quote(last_cmd)));
 		}
 		int cmd_repeat_N;
 		if (useContext){

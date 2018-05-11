@@ -51,7 +51,7 @@ public class ResponseHandler implements NluInterface{
 		}
 		
 		NluResult result = NluTools.cmdSummaryToResult(input, cmd_summary);
-		result.normalized_text = response;
+		result.normalizedText = response;
 		
 		//abort?
 		if (RegexParameterSearch.is_abort(response, language)){
@@ -116,7 +116,7 @@ public class ResponseHandler implements NluInterface{
 	}
 
 	public double getCertaintyLevel(NluResult result) {
-		return result.certainty_lvl;
+		return result.certaintyLvl;
 	}
 	
 	//-------HELPER METHODS--------

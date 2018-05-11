@@ -103,7 +103,7 @@ public class SentenceConnect implements ApiInterface{
 					//build action
 					api.addAction(ACTIONS.QUEUE_CMD);
 					api.putActionInfo("info", "direct_cmd");
-					api.putActionInfo("cmd", thisRes.cmd_summary);
+					api.putActionInfo("cmd", thisRes.cmdSummary);
 					//api.actionInfo_put_info("options", JSON.make(ACTIONS.SKIP_TTS, true));
 				}
 				//use new result for next command? TODO: I think we need some context handling here
