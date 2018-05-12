@@ -13,7 +13,7 @@ public class Test_TTS {
 		//load stuff
 		Config.setupAnswers();		//answers
 		NluInput NLU_input = new NluInput();
-		NLU_input.last_cmd = "empty";
+		NLU_input.lastCmd = "empty";
 		//NLU_Result NLU_result = new NLU_Result(NLU_input);
 		
 		long tic = System.currentTimeMillis();

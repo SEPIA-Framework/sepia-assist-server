@@ -7,6 +7,8 @@ error_geo_location_0a;;		rep=2|mood=5;;		Es tut mir leid, da komme ich wohl gera
 error_geo_location_personal_0a;;		rep=0|mood=5;;		Es tut mir leid, ich kann den Ort wohl nicht bestimmen, kannst du bitte die Einstellungen prüfen. 		;;char=neutral
 error_geo_location_personal_0a;;		rep=1|mood=5;;		Es kann sein, dass die Adresse falsch oder unvollständig ist, ich kann sie einfach nicht finden. 		;;char=neutral
 error_geo_location_personal_0a;;		rep=2|mood=5;;		Es tut mir leid, da komme ich wohl gerade nicht weiter, kann diese Adresse einfach nicht nutzen.		;;char=neutral
+error_language_not_supported_0a;;	rep=0|mood=5;;		Es tut mir leid, aber dieser Service unterstützt die aktive Sprache nicht. 		;;char=neutral
+error_region_not_supported_0a;;		rep=0|mood=5;;		Es tut mir leid, aber dieser Service unterstützt die aktive Region nicht. 		;;char=neutral
 abort_0a;;		rep=0|mood=5;;		Ok, lass noch mal neu anfangen. ;;char=cool,neutral
 abort_0a;;		rep=0|mood=5;;		Ok, habs abgebrochen. ;;char=cool,neutral
 abort_0b;;		rep=0|mood=5;;		Ich glaube wir kommen gerade nicht weiter. Lass es uns später noch mal probieren. ;;char=neutral
@@ -453,21 +455,21 @@ chat_programed_0a;;     rep=0|mood=5;;		Ich wurde so programmiert. ;;char=neutra
 chat_deny_0a;;     rep=0|mood=5;;		Ist doch gar nicht so. ;;char=neutral
 chat_with_pleasure_0a;;     rep=0|mood=5;;		Gerne! ;;char=neutral
 chat_nobody_knows_0a;;	rep=0|mood=5;;	Das weiß wohl niemand ;;char=neutral
-no_answer_0a;;		rep=0|mood=5;;		Könntest du das noch einmal neu formulieren? ;;char=polite,neutral
+no_answer_0a;;		rep=0|mood=5;;		Hab ich nicht verstanden, könntest du das noch einmal neu formulieren? ;;char=neutral
 no_answer_0a;;		rep=0|mood=5;;		<user_name>, ich bin mir nicht ganz sicher. Kannst du das noch einmal anders sagen? ;;char=polite,neutral
-no_answer_0a;;		rep=0|mood=5;;		Tut mir leid <user_name>, ich bin unsicher, was du meinst. Könntest du das bitte anders formulieren? ;;char=polite,neutral
-no_answer_0a;;		rep=0|mood=5;;		Tut mir leid <user_name>, ich bin unsicher, was du meinst. ;;char=polite,neutral
-no_answer_0a;;		rep=0|mood=5;;		Sorry <user_name>, ich habe nicht ganz verstanden, was du sagen willst. Formuliere es bitte noch einmal um. ;;char=polite,neutral
-no_answer_0a;;		rep=0|mood=5;;		Sorry <user_name>, ich habe nicht ganz verstanden, was du sagen willst. ;;char=polite,neutral
+no_answer_0a;;		rep=0|mood=5;;		Tut mir leid, bin unsicher was du meinst. Könntest du das umformulieren? ;;char=neutral
+no_answer_0a;;		rep=0|mood=5;;		Tut mir leid <user_name>, ich bin nicht sicher was du meinst. ;;char=neutral
+no_answer_0a;;		rep=0|mood=5;;		Sorry <user_name>, hab nicht verstanden was du sagen willst. ;;char=cool,neutral
+no_answer_0a;;		rep=0|mood=5;;		Sorry <user_name>, das habe ich nicht verstanden. ;;char=neutral
 no_answer_0a;;		rep=0|mood=5;;		Ich bin nicht ganz sicher, ob ich dich richtig verstanden habe. Kannst du es anders formulieren?;;char=polite,neutral
-no_answer_0a;;		rep=1|mood=5;;		Das ist eine gute Frage <user_name>, aber lass uns ein anderes Mal darüber sprechen. ;;char=neutral
-no_answer_0a;;		rep=1|mood=5;;		Ich schlage vor wir greifen dieses Thema ein anderes Mal wieder auf. ;;char=neutral 
-no_answer_0a;;		rep=1|mood=5;;		Momentan lerne ich noch, frag mich doch bald noch einmal. ;;char=polite,neutral
-no_answer_0a;;		rep=1|mood=5;;		Tut mir leid, <user_name> ich befinde mich noch im Lernprozess und kann diese Frage leider noch nicht beantworten. ;;char=polite,neutral
-no_answer_0a;;		rep=1|mood=5;;		Ich will mich kontinuierlich verbessern und kann dir bestimmt bald Antwort auf deine Frage geben. ;;char=polite,neutral
+no_answer_0a;;		rep=1|mood=5;;		Das ist vermutlich eine gute Frage <user_name>, aber lass uns ein anderes Mal darüber sprechen. ;;char=cool,neutral
+no_answer_0a;;		rep=1|mood=5;;		Ich schlage vor wir greifen dieses Thema ein anderes Mal wieder auf, habe gerade keine Antwort. ;;char=neutral 
+no_answer_0a;;		rep=1|mood=5;;		Momentan lerne ich noch, frag mich doch nach dem nächsten Update noch einmal. ;;char=cool,neutral
+no_answer_0a;;		rep=1|mood=5;;		Irgendwann werde ich dir bestimmt eine Antwort auf diese Frage geben können, aber nicht Heute. ;;char=cool,neutral
+no_answer_0a;;		rep=2|mood=5;;		<user_name>, ich weiß es nicht! ;;char=cool,rude
 no_answer_0a;;		rep=2|mood=5;;		Ich muss dir leider sagen, dass ich dir darauf grade wirklich keine Antwort geben kann. ;;char=neutral
-no_answer_0a;;		rep=2|mood=5;;		Tut mir leid, da hab ich jetzt wirklich keine Antwort parat. ;;char=cool
-no_answer_0a;;		rep=2|mood=5;;		Das tut mir leid, <user_name>, dazu fällt mir momentan wirklich nichts ein. ;;char=cool
+no_answer_0a;;		rep=2|mood=5;;		Tut mir leid, da hab ich jetzt wirklich keine Antwort parat. ;;char=cool,neutral
+no_answer_0a;;		rep=2|mood=5;;		Es tut mir leid <user_name>, dazu fällt mir momentan wirklich nichts ein. ;;char=cool,neutral
 redirect_result_0a;;		rep=0|mood=5;;		Ich ahne grob worum es geht, kann dir zur Zeit aber noch keine Antwort darauf geben. ;;char=neutral
 redirect_result_0a;;		rep=0|mood=5;;		Das Thema kommt mir bekannt vor, ich kann es aber leider noch nicht beantworten. ;;char=neutral
 redirect_result_0a;;		rep=0|mood=5;;		Bei diesem Thema bin ich mir noch nicht sicher, sorry. ;;char=neutral

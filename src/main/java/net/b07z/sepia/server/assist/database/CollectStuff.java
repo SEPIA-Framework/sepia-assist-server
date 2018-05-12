@@ -60,7 +60,7 @@ public class CollectStuff {
 		    	//geo-data
 		    	int code1 = 0;
 		    	if (Config.collectGeoData){
-			    	String loc = nluResult.input.user_location;
+			    	String loc = nluResult.input.userLocation;
 			    	if (loc != null && !loc.isEmpty()){
 			    		JSONObject locJson = JSON.parseStringOrFail(loc);
 			    		String city = JSON.getString(locJson, LOCATION.CITY);

@@ -3,18 +3,20 @@ package net.b07z.sepia.server.assist.apis;
 import java.util.ArrayList;
 
 /**
- * Class similar to "User" managing APIs especially allowed access to database.
+ * Class similar to "User" managing database access of APIs.<br>
+ * NOTE: This class is not fully implemented yet (check references) and probably needs some conceptual and technical 
+ * re-work before it can be used.
  * 
  * @author Florian Quirin
  *
  */
 public class ApiManager {
 	
-	private String api_name = "";
-	private String api_key = "";
+	private String apiName = "";
+	private String apiKey = "";
 	private boolean signed = false;
 	
-	private ArrayList<String> allowed_elements;		//list of elements allowed to access
+	private ArrayList<String> allowedElements;		//list of elements allowed to access
 	
 	/**
 	 * Default constructor taking the API name and private key to sign the manager and get allowed database elements.
@@ -23,13 +25,13 @@ public class ApiManager {
 	 */
 	public ApiManager(String name, String key){
 		//authenticate API and get allowed commands list
-		api_name = name;
-		api_key = key;
+		apiName = name;
+		apiKey = key;
 		//
 		signed = true;		//TODO: implement and get allowed elements too
 		//
-		allowed_elements = new ArrayList<String>();
-		allowed_elements.add(api_name);		//every signed API can have its own field inside the user account with full access
+		allowedElements = new ArrayList<String>();
+		allowedElements.add(apiName);		//every signed API can have its own field inside the user account with full access
 	}
 	
 	/**
@@ -37,7 +39,7 @@ public class ApiManager {
 	 * @return
 	 */
 	public String getName(){
-		return api_name;
+		return apiName;
 	}
 	
 	/**
@@ -45,7 +47,7 @@ public class ApiManager {
 	 * @return
 	 */
 	public String getKey(){
-		return api_key;
+		return apiKey;
 	}
 	
 	/**
@@ -63,7 +65,7 @@ public class ApiManager {
 	 * @return true/false
 	 */
 	public boolean isAllowedToAccess(String request){
-		if (allowed_elements.contains(request) || api_name.equals("API_BOSS")){
+		if (allowedElements.contains(request) || apiName.equals("API_BOSS")){
 			return true;
 		}else{
 			return false;

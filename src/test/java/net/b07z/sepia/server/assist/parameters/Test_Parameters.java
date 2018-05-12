@@ -41,7 +41,7 @@ public class Test_Parameters {
 			//normalize text
 			Normalizer normalizer = Config.inputNormalizers.get(language);
 			if (normalizer != null){
-				input.text_raw = text;
+				input.textRaw = text;
 				text = normalizer.normalize_text(text);
 				input.text = text;
 			}

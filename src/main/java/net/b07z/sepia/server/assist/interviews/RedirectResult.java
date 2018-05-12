@@ -58,7 +58,7 @@ public class RedirectResult implements ApiInterface{
 		API api = new API(NLU_result);
 		
 		Debugger.println("cmd: redirect_result", 2);		//debug
-		Debugger.println("SERVICE REDIRECT: '" + NLU_result.getCommand() + "' - text: " + NLU_result.input.text_raw, 3);		//debug
+		Debugger.println("SERVICE REDIRECT: '" + NLU_result.getCommand() + "' - text: " + NLU_result.input.textRaw, 3);		//debug
 		
 		//get answer
 		api.answer = Config.answers.getAnswer(NLU_result, answer_key);		//default is "redirect_result_0a"

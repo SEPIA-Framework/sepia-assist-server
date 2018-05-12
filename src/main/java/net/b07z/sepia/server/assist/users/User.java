@@ -87,8 +87,8 @@ public final class User {
 		
 		//get some temporary local user info
 		if (input != null){
-			if (input.user_location != null && !input.user_location.isEmpty()) userLocation = new Address(JSON.parseStringOrFail(input.user_location));
-			userTime = input.user_time;
+			if (input.userLocation != null && !input.userLocation.isEmpty()) userLocation = new Address(JSON.parseStringOrFail(input.userLocation));
+			userTime = input.userTime;
 			language = input.language;
 		}
 		

@@ -34,12 +34,14 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /**
- * News service test.
+ * News and soccer service.
  * 
  * @author Florian Quirin
  *
  */
 public class News_RssFeeds implements ApiInterface{
+	
+	//TODO: separate "normal" news and soccer stuff... 
 	
 	public static List<NSection> specificSectionsList = new ArrayList<>();
 	static{

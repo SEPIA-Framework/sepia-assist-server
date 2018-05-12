@@ -18,7 +18,7 @@ public class Repeat_Last {
 
 	public static NluResult reload(NluResult NLU_result) {
 		
-		String cmd_summary = NLU_result.input.last_cmd;
+		String cmd_summary = NLU_result.input.lastCmd;
 		
 		//System.out.println("repeat old command: " + cmd_summary);		//debug
 		

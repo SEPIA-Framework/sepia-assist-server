@@ -131,7 +131,7 @@ public class AlarmName implements Parameter_Handler{
 		//reconstruct original phrase to get proper item names
 		if (!name.isEmpty()){
 			Normalizer normalizer = Config.inputNormalizers.get(language);
-			name = normalizer.reconstructPhrase(nluInput.text_raw, name);
+			name = normalizer.reconstructPhrase(nluInput.textRaw, name);
 		}
 		
 		//store it

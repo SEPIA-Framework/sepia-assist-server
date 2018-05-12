@@ -57,7 +57,7 @@ public class LocationWaypoint implements Parameter_Handler{
 		
 		//reconstruct original phrase to get proper item names
 		Normalizer normalizer = Config.inputNormalizers.get(language);
-		place = normalizer.reconstructPhrase(nlu_input.text_raw, place);
+		place = normalizer.reconstructPhrase(nlu_input.textRaw, place);
 
 		return place;
 	}

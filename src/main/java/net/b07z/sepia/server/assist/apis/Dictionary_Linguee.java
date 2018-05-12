@@ -118,7 +118,7 @@ public class Dictionary_Linguee implements ApiInterface{
 		*/
 		
 		//build html
-		if (CLIENTS.hasWebView(NLU_result.input.client_info)){
+		if (CLIENTS.hasWebView(NLU_result.input.clientInfo)){
 			api.htmlInfo = "<object type='text/html' style='width: 100%; height: 400%; overflow-y: hidden;' data='" + call_url + "'></object>";
 		}else{
 			api.htmlInfo = call_url;

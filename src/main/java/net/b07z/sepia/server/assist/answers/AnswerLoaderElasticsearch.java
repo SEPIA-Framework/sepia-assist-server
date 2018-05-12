@@ -62,20 +62,20 @@ public class AnswerLoaderElasticsearch implements AnswerLoader {
 	//get answer using NluResult and key string - complex answer, taking into account the last answer and the mood
 	public String getAnswer(Map<String, List<Answer>> memory, NluResult nlu_res, String key, Object... wildcards) {
 		String language = nlu_res.language;
-		String last_cmd = nlu_res.input.last_cmd;
-		int last_cmd_N = nlu_res.input.last_cmd_N;
+		String last_cmd = nlu_res.input.lastCmd;
+		int last_cmd_N = nlu_res.input.lastCmdN;
 		int mood = nlu_res.mood;
 			
 		//check if last and new command are identical to decide if we choose from repeat-modified reply
 		boolean cmd_repeat = false;
 		boolean useContext = false;
 		String contextSearch = "";
-		if (nlu_res.input.input_type.matches("response")){
+		if (nlu_res.input.inputType.matches("response")){
 			//be less strict with responses
 			String A = nlu_res.cmdSummary.replaceAll("parameter_set=.*?;;", "");
-			A = A.replaceFirst(nlu_res.input.input_miss + "=(.*?)(;;|$)", "");
+			A = A.replaceFirst(nlu_res.input.inputMiss + "=(.*?)(;;|$)", "");
 			String B = Pattern.quote(last_cmd).replaceAll("parameter_set=.*?;;", "");
-			B = B.replaceFirst(nlu_res.input.input_miss + "=(.*?)(;;|$)", "");
+			B = B.replaceFirst(nlu_res.input.inputMiss + "=(.*?)(;;|$)", "");
 			cmd_repeat = (A.matches(B));
 		}else if (nlu_res.getCommand().equals(CMD.NO_RESULT)){
 			//be a bit less restrictive with no_result ... and have some random fun

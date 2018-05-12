@@ -96,7 +96,7 @@ public class TV_Program_Default implements ApiInterface{
 		*/
 		
 		//build html
-		if (CLIENTS.hasWebView(NLU_result.input.client_info)){
+		if (CLIENTS.hasWebView(NLU_result.input.clientInfo)){
 			api.htmlInfo = "<object type='text/html' style='width: 100%; height: 100%; overflow-y: hidden; background-color: #e8e8e8;' data='" + call_url + "'></object>";
 			//api.htmlInfo = "<iframe style='width: 100%; height: 400%; overflow-y: hidden; background-color: #FFF;' src='" + call_url + "'></iframe>";
 		}else{

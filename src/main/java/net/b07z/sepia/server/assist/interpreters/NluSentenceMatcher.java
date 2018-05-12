@@ -93,7 +93,7 @@ public class NluSentenceMatcher implements NluInterface{
 		//handle as if it was a direct command
 		if (cmd!=null){
 			input.text = cmd;
-			input.input_type = "direct_cmd";
+			input.inputType = "direct_cmd";
 			NluInterface NLP;
 			NLP = new NluCmdReconstructor();
 			NluResult result = NLP.interpret(input);

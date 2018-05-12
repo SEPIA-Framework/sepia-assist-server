@@ -268,7 +268,7 @@ public class UserDataDefault implements UserDataInterface {
 		Address adr = user.getTaggedAddress(tag, true);
 		if (adr != null){
 			docId = adr.dbId;
-			//TODO: make sure to reset latitude, longitude here if they are null (by setting them to empty) as noted in doc
+			//TODO: make sure to reset latitude, longitude here if they are null (by setting them to empty) as noted in this java-doc
 		}
 		//Update:
 		JSONObject res = DB.setAddressWithTagAndName(docId, user.getUserID(), tag, name, adrData);

@@ -73,10 +73,10 @@ public class ConfigTestServer {
 		int mood = 5;
 		String environment = "web_app";
 		NluInput input = new NluInput(text, language, context, mood, environment);
-		input.user_location = LOCATION.makeLocation("Germany", "NRW", "Munich", "80331", "Platzl", "9", "48.137", "11.580").toJSONString();
+		input.userLocation = LOCATION.makeLocation("Germany", "NRW", "Munich", "80331", "Platzl", "9", "48.137", "11.580").toJSONString();
 		//input.user_location = "<city>Berlin City<latitude>52.518616<longitude>13.404636";
-		input.user_time = System.currentTimeMillis();
-		input.user_time_local = DateTime.getFormattedDate(Config.defaultSdf);
+		input.userTime = System.currentTimeMillis();
+		input.userTimeLocal = DateTime.getFormattedDate(Config.defaultSdf);
 		User user = getTestUser(ConfigTestServer.email_id1, input, false, false);
 		input.user = user;
 		return input;

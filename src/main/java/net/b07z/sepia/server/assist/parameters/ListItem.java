@@ -86,7 +86,7 @@ public class ListItem implements Parameter_Handler{
 			
 			//reconstruct original phrase to get proper item names
 			Normalizer normalizer = Config.inputNormalizers.get(language);
-			input = normalizer.reconstructPhrase(nluInput.text_raw, input);
+			input = normalizer.reconstructPhrase(nluInput.textRaw, input);
 			if (!input.isEmpty()){
 				input = input.replaceAll("\\b(und|,)\\b"," && ");
 			}
@@ -104,7 +104,7 @@ public class ListItem implements Parameter_Handler{
 			
 			//reconstruct original phrase to get proper item names
 			Normalizer normalizer = Config.inputNormalizers.get(language);
-			input = normalizer.reconstructPhrase(nluInput.text_raw, input);
+			input = normalizer.reconstructPhrase(nluInput.textRaw, input);
 			
 			if (!input.isEmpty()){
 				input = input.replaceAll("\\b(and|,)\\b"," && ");
@@ -144,7 +144,7 @@ public class ListItem implements Parameter_Handler{
 	public String build(String input) {
 		//build default result
 		JSONObject itemResultJSON = new JSONObject();
-			JSON.add(itemResultJSON, InterviewData.INPUT_RAW, nluInput.text_raw);
+			JSON.add(itemResultJSON, InterviewData.INPUT_RAW, nluInput.textRaw);
 			JSON.add(itemResultJSON, InterviewData.VALUE, input);
 		
 		buildSuccess = true;

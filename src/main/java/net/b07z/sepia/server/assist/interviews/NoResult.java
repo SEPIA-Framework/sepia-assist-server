@@ -40,7 +40,7 @@ public class NoResult {
 		API api = new API(NLU_result);
 		
 		Debugger.println("cmd: No Result", 2);		//debug
-		Debugger.println("NO_RESULT: " + NLU_result.input.text_raw + " - LANGUAGE: " + NLU_result.language + " - CLIENT: " + NLU_result.input.client_info + " - API: " + Config.apiVersion, 3);		//debug
+		Debugger.println("NO_RESULT: " + NLU_result.input.textRaw + " - LANGUAGE: " + NLU_result.language + " - CLIENT: " + NLU_result.input.clientInfo + " - API: " + Config.apiVersion, 3);		//debug
 		
 		//get answer
 		api.answer = Config.answers.getAnswer(NLU_result, answer_key);		//default is "no_answer_0a"
@@ -50,7 +50,7 @@ public class NoResult {
 		api.addAction(ACTIONS.BUTTON_CMD);
 		api.putActionInfo("title", "Websearch");
 		api.putActionInfo("info", "direct_cmd");
-		api.putActionInfo("cmd", CmdBuilder.getWebSearch(NLU_result.input.text_raw));
+		api.putActionInfo("cmd", CmdBuilder.getWebSearch(NLU_result.input.textRaw));
 		api.putActionInfo("options", JSON.make(ACTIONS.SKIP_TTS, true));
 		
 		//help button
@@ -58,7 +58,7 @@ public class NoResult {
 		
 		//teach UI button
 		api.addAction(ACTIONS.BUTTON_TEACH_UI);
-		api.putActionInfo("input", NLU_result.input.text_raw);
+		api.putActionInfo("input", NLU_result.input.textRaw);
 		
 		//no result makes ILA sad :-(
 		//api.mood = Assistant.mood_decrease(api.mood);

@@ -17,32 +17,34 @@ import net.b07z.sepia.server.core.data.CmdMap;
  *
  */
 public class NluInput {
+	
+	//input type constants
+	public static final String TYPE_QUESTION = "question";
+	public static final String TYPE_RESPONSE = "response";
 
 	//main input	-						API param /	Description
 	//public Request request;				//request data
 	public String text = "";				//:text:	input text/question/query
-	public String text_raw = "";			//			input text in its raw form, no replacements, no cmd transformation (e.g. for direct commands it tries to retain the text)
+	public String textRaw = "";				//			input text in its raw form, no replacements, no cmd transformation (e.g. for direct commands it tries to retain the text)
 	public String language = "en";			//lang: 	language used for interpretation and results (ISO 639-1 code)
 	public String context = "default";		//context:	context is what the user did/said before to answer queries like "do that again" or "and in Berlin?"
 	public String environment = "default";	//env:		environments (web_app, android_app, ios_app) can be stuff like home, car, phone etc. to restrict and tweak some results
-	public String client_info = "default";	//client:	information about client and client version
+	public String clientInfo = "default";	//client:	information about client and client version
 	public int mood = -1;					//mood:		mood value 0-10 of ILA (or whatever the name of the assistant is) can be passed around too, 10 is the best. Used e.g. in get_answers and TTS
 	//last command
-	public String last_cmd = "";			//last_cmd:		last used command (actually a summary of the last used command)
-	public int last_cmd_N = 0;				//last_cmd_N:	counts how many times the same last command has been used in a row
+	public String lastCmd = "";				//last_cmd:		last used command (actually a summary of the last used command)
+	public int lastCmdN = 0;				//last_cmd_N:	counts how many times the same last command has been used in a row
 	//input type
-	public String input_type = "question";	//input_type:		default is "question", extended dialogues can use "response"
-	public static final String TYPE_QUESTION = "question";
-	public static final String TYPE_RESPONSE = "response";
-	public String input_miss = "";			//input_miss:		if input_type is "response" than this says what's missing (type, search, ..., for chats: yes_no, good_bad, ...)
-	public int dialog_stage = 0;			//dialog_stage:		extended dialogues can undergo multiple stages
+	public String inputType = "question";	//input_type:		default is "question", extended dialogues can use "response"
+	public String inputMiss = "";			//input_miss:		if input_type is "response" than this says what's missing (type, search, ..., for chats: yes_no, good_bad, ...)
+	public int dialogStage = 0;				//dialog_stage:		extended dialogues can undergo multiple stages
 	//personal info
-	public String user_location = "";		//user_location:	address, longitude, latitude coordinates of user
-	public long user_time = -1;				//time:				system time at request sent
-	public String user_time_local = "";		//time_local:		system date and time at locally at user location, default format 2016.12.31_22:44:11
+	public String userLocation = "";		//user_location:	address, longitude, latitude coordinates of user
+	public long userTime = -1;				//time:				system time at request sent
+	public String userTimeLocal = "";		//time_local:		system date and time at locally at user location, default format 2016.12.31_22:44:11
 	public User user;						//user:				holds all info about the user, can reload from account
 	//... more to come
-	public boolean demo_mode = false;		//demomode:			true/false if you want to use the demomode
+	public boolean demoMode = false;		//demomode:			true/false if you want to use the demomode
 	
 	//Stuff to cache during all processes from NLU to service result:
 	
@@ -61,7 +63,7 @@ public class NluInput {
 	 */
 	public NluInput(String text){
 		this.text = text;
-		this.text_raw = text;
+		this.textRaw = text;
 	}
 	/**
 	 * Create input.
@@ -70,7 +72,7 @@ public class NluInput {
 	 */
 	public NluInput(String text, String language){
 		this.text = text;
-		this.text_raw = text;
+		this.textRaw = text;
 		this.language = language;
 	}
 	/**
@@ -83,7 +85,7 @@ public class NluInput {
 	 */
 	public NluInput(String text, String language, String context, int mood, String environment){
 		this.text = text;
-		this.text_raw = text;
+		this.textRaw = text;
 		this.language = language;
 		this.context = context;
 		this.mood = mood;
@@ -128,7 +130,7 @@ public class NluInput {
 	 * @return true/false
 	 */
 	public boolean isAnswerToQuestion(){
-		if (input_type.equals(TYPE_RESPONSE)){
+		if (inputType.equals(TYPE_RESPONSE)){
 			return true;
 		}else{
 			return false;
@@ -141,7 +143,7 @@ public class NluInput {
 	 * @return true/false
 	 */
 	public boolean isAnswerToParameter(String parameter){
-		if (input_type.equals(TYPE_RESPONSE) && input_miss.equals(parameter)){
+		if (inputType.equals(TYPE_RESPONSE) && inputMiss.equals(parameter)){
 			return true;
 		}else{
 			return false;
@@ -156,8 +158,8 @@ public class NluInput {
 	 * @return number of repeats (note: it lags because it is evaluated in client and gives two times 0 at the beginning: 0,0,1,2)
 	 */
 	public int isRepeatedAnswerToParameter(String parameter){
-		if (input_type.equals(TYPE_RESPONSE) && input_miss.equals(parameter)){
-			return last_cmd_N; 		//last_cmd_N actually lags behind, giving 0,0,1,2 because it is evaluated in client ... i guess
+		if (inputType.equals(TYPE_RESPONSE) && inputMiss.equals(parameter)){
+			return lastCmdN; 		//last_cmd_N actually lags behind, giving 0,0,1,2 because it is evaluated in client ... i guess
 		}else{
 			return 0;
 		}
@@ -175,7 +177,7 @@ public class NluInput {
 		String B = Pattern.quote(last_cmd).replaceAll("parameter_set=.*?;;", "");
 		return (A.matches(B));
 		*/
-		if (input_type.equals(TYPE_RESPONSE) && input_miss.equals(parameter)){
+		if (inputType.equals(TYPE_RESPONSE) && inputMiss.equals(parameter)){
 			return true;
 		}else{
 			return false;

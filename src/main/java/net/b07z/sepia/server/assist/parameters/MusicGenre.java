@@ -102,7 +102,7 @@ public class MusicGenre implements Parameter_Handler{
 		//reconstruct original phrase to get proper item names
 		if (!genre.isEmpty()){
 			Normalizer normalizer = Config.inputNormalizers.get(language);
-			genre = normalizer.reconstructPhrase(nluInput.text_raw, genre);
+			genre = normalizer.reconstructPhrase(nluInput.textRaw, genre);
 		}
 		
 		//store it

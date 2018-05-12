@@ -286,7 +286,7 @@ public class RadioStation implements Parameter_Handler{
 		//reconstruct original phrase to get proper item names
 		if (!station.isEmpty()){
 			Normalizer normalizer = Config.inputNormalizers.get(language);
-			station = normalizer.reconstructPhrase(nluInput.text_raw, station);
+			station = normalizer.reconstructPhrase(nluInput.textRaw, station);
 		}
 		
 		//store it

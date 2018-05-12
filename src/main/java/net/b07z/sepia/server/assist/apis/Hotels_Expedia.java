@@ -116,7 +116,7 @@ public class Hotels_Expedia implements ApiInterface{
 		}
 		
 		//make action: browser url call
-		if (CLIENTS.hasWebView(NLU_result.input.client_info)){
+		if (CLIENTS.hasWebView(NLU_result.input.clientInfo)){
 			//api.actionInfo_add_action(ACTIONS.OPEN_URL);
 			//api.actionInfo_put_info("url", url);
 			api.addAction(ACTIONS.OPEN_INFO);
@@ -135,7 +135,7 @@ public class Hotels_Expedia implements ApiInterface{
 		api.hasCard = true;
 		
 		//build html
-		if (CLIENTS.hasWebView(NLU_result.input.client_info)){
+		if (CLIENTS.hasWebView(NLU_result.input.clientInfo)){
 			api.htmlInfo = "<object type='text/html' style='width: 100%; height: 300%; overflow-y: hidden;' data='" + url + "'></object>";
 		}else{
 			api.htmlInfo = url;

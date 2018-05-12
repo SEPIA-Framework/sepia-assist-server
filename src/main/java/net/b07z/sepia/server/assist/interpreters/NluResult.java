@@ -165,7 +165,7 @@ public class NluResult {
 	 * Get raw text input as sent by user.
 	 */
 	public String getRawInput(){
-		return input.text_raw;
+		return input.textRaw;
 	}
 	/**
 	 * Get text input of user after normalization.

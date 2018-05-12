@@ -36,8 +36,8 @@ public class ResponseHandler implements NluInterface{
 	
 	public NluResult interpret(NluInput input) {
 		String response = input.text;
-		String missing_input = input.input_miss;
-		String cmd_summary = input.last_cmd;
+		String missing_input = input.inputMiss;
+		String cmd_summary = input.lastCmd;
 		String language = input.language;
 		//String context = input.context;
 		//String environment = input.environment;
@@ -57,7 +57,7 @@ public class ResponseHandler implements NluInterface{
 		if (RegexParameterSearch.is_abort(response, language)){
 			//abort result
 			result.setCommand(CMD.ABORT);
-			result.setParameter(input.input_miss, "");
+			result.setParameter(input.inputMiss, "");
 			return result;
 		}
 		
@@ -89,7 +89,7 @@ public class ResponseHandler implements NluInterface{
 				}
 			}
 			//set
-			result.setParameter(input.input_miss, response);
+			result.setParameter(input.inputMiss, response);
 		
 		//else: automatic tweaking relies on parameter names
 		}else{
@@ -106,7 +106,7 @@ public class ResponseHandler implements NluInterface{
 			}else{
 				response = tweak_parameters(response, missing_input, language, cmd, input);
 				//set
-				result.setParameter(input.input_miss, response);
+				result.setParameter(input.inputMiss, response);
 			}
 			//System.out.println("result: " + result.getBestResultJSON()); 		//DEBUG
 		}
@@ -136,7 +136,7 @@ public class ResponseHandler implements NluInterface{
 			Parameter_Handler handler = p.getHandler();
 			handler.setup(input);
 			//check if its a generic handler, because that one would not search for stuff if its not asked explicitly
-			if (handler.isGeneric() && !input.input_miss.equals(p.getName())){
+			if (handler.isGeneric() && !input.inputMiss.equals(p.getName())){
 				//System.out.println("ResponseHandler - tweakResult - skipped to search response of '" + parameter + "' for: " + p.getName()); 		//debug
 				continue;
 			}

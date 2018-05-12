@@ -163,9 +163,9 @@ public class NluTaggedSentenceMatcher implements NluInterface{
 			
 			//construct
 			String org_text = input.text;				//we need to save this to restore after reconstruction
-			String org_input_type = input.input_type;	//same here
+			String org_input_type = input.inputType;	//same here
 			input.text = cmd;
-			input.input_type = "direct_cmd";
+			input.inputType = "direct_cmd";
 			NluInterface NLP;
 			NLP = new NluCmdReconstructor();			//reconstruct to make a proper result from best_cmd
 			NluResult result = NLP.interpret(input);
@@ -176,7 +176,7 @@ public class NluTaggedSentenceMatcher implements NluInterface{
 			result.bestDirectMatch = (best_sm == null)? "---" : best_sm.testSentence;
 			//restore original input
 			input.text = org_text;
-			input.input_type = org_input_type;
+			input.inputType = org_input_type;
 			
 			return result;
 			

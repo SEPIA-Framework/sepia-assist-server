@@ -69,20 +69,20 @@ public class AnswerLoaderFile implements AnswerLoader {
 	//get answer using NLU_Result and key string - complex answer, taking into account the last answer and the mood
 	public String getAnswer(Map<String, List<Answer>> memory, NluResult params, String key, Object... wildcards) {
 		String language = params.language;
-		String last_cmd = params.input.last_cmd;
-		int last_cmd_N = params.input.last_cmd_N;
+		String last_cmd = params.input.lastCmd;
+		int last_cmd_N = params.input.lastCmdN;
 		int mood = params.mood;
 			
 		//check if last and new command are identical to decide if we choose from repeat-modified reply
 		boolean cmd_repeat = false;
 		boolean useContext = false;
 		String contextSearch = "";
-		if (params.input.input_type.matches("response")){
+		if (params.input.inputType.matches("response")){
 			//be less strict with responses
 			String A = params.cmdSummary.replaceAll("parameter_set=.*?;;", "");
-			A = A.replaceFirst(params.input.input_miss + "=(.*?)(;;|$)", "");
+			A = A.replaceFirst(params.input.inputMiss + "=(.*?)(;;|$)", "");
 			String B = last_cmd.replaceAll("parameter_set=.*?;;", "");
-			B = B.replaceFirst(params.input.input_miss + "=(.*?)(;;|$)", "");
+			B = B.replaceFirst(params.input.inputMiss + "=(.*?)(;;|$)", "");
 			cmd_repeat = (A.matches(Pattern.quote(B)));
 		}else if (params.getCommand().equals(CMD.NO_RESULT)){
 			//be a bit less restrictive with no_result and have some random fun

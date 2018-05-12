@@ -97,8 +97,8 @@ public class Assistant {
 	 */
 	public static String getLastContextParameter(NluInput input, User user, String key){
 		String context = "";
-		if (!input.last_cmd.isEmpty()){
-			context = input.last_cmd.replaceFirst(".*"+ key + "=(.*?)(;;|$).*", "$1").trim();
+		if (!input.lastCmd.isEmpty()){
+			context = input.lastCmd.replaceFirst(".*"+ key + "=(.*?)(;;|$).*", "$1").trim();
 		}else if (user != null){
 			user.getLastContextParameter(key);
 		}
@@ -113,8 +113,8 @@ public class Assistant {
 	 */
 	public static String getLastContextCommand(NluInput input, User user, String cmd){
 		String context = "";
-		if (!input.last_cmd.isEmpty()){
-			if (input.last_cmd.replaceFirst(";;.*", "").trim().equals(cmd)){
+		if (!input.lastCmd.isEmpty()){
+			if (input.lastCmd.replaceFirst(";;.*", "").trim().equals(cmd)){
 				context = cmd;
 			}
 		}else if (user != null){

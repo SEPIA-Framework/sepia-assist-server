@@ -88,8 +88,8 @@ public class Test_Interviews {
 		//NLP 2 - answer
 		//input.text = "am 12. Dezember";
 		input.text = "at december the 12th";
-		input.input_miss = result.getMissingInput();
-		input.last_cmd = nlu_res.cmdSummary;
+		input.inputMiss = result.getMissingInput();
+		input.lastCmd = nlu_res.cmdSummary;
 		NLP = new ResponseHandler();
 		nlu_res = NLP.interpret(input);
 		//check

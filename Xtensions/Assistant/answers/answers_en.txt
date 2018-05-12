@@ -7,6 +7,8 @@ error_geo_location_0a;;		rep=2|mood=5;;		I'm sorry, I think I'm stuck here. I ca
 error_geo_location_personal_0a;;		rep=0|mood=5;;		I'm sorry but I can't determine the location of this place, can you check your settings please. 		;;char=neutral
 error_geo_location_personal_0a;;		rep=1|mood=5;;		Maybe the address is wrong or incomplete, but I can't seem to find it. 		;;char=neutral
 error_geo_location_personal_0a;;		rep=2|mood=5;;		I'm sorry, I think I'm stuck here. I can't use this address somehow.		;;char=neutral
+error_language_not_supported_0a;;	rep=0|mood=5;;		I'm sorry but this service does not support the active language.		;;char=neutral
+error_region_not_supported_0a;;		rep=0|mood=5;;		I'm sorry but this service does not support the active region. 			;;char=neutral
 abort_0a;;		rep=0|mood=5;;		Ok, let's start over. ;;char=cool,neutral
 abort_0a;;		rep=0|mood=5;;		Ok, I've aborted the action. ;;char=neutral
 abort_0b;;		rep=0|mood=5;;		I think we are stuck right now. Let's try again later please. ;;char=neutral
@@ -500,29 +502,29 @@ chat_humans_only_0a;;		rep=1|mood=5;;		Another stupid question to ask a machine.
 chat_real_0a;;       rep=0|mood=5;;		I get the question, but I cannot answer it yet. ;;char=neutral
 chat_real_0a;;       rep=0|mood=5;;		I understand what you're asking, but I cannot answer it yet. ;;char=neutral
 chat_rhetorical_0a;;       rep=0|mood=5;;		How to answer a rhetorical question? ;;char=neutral
-chat_no_eat_0a;;     rep=0|mood=5;;		I'm a machine, I don't eat or drink. ;;char=neutral
+chat_no_eat_0a;;     rep=0|mood=5;;		I'm a machine, I don't eat or drink, yet. ;;char=neutral
 chat_programed_0a;;     rep=0|mood=5;;		I've been programmed this way. ;;char=neutral
 chat_deny_0a;;     rep=0|mood=5;;		I don't. ;;char=neutral
 chat_with_pleasure_0a;;     rep=0|mood=5;;		I'd be glad to! ;;char=neutral
 chat_nobody_knows_0a;;	rep=0|mood=5;;	I think nobody knows ;;char=neutral
-no_answer_0a;;		rep=0|mood=5;;		Could you rephrase that please? I didn't quite get it. ;;char=polite,neutral
-no_answer_0a;;		rep=0|mood=5;;		Could you please ask in a different way? I did not understand you. ;;char=neutral
+no_answer_0a;;		rep=0|mood=5;;		Could you rephrase that please I didn't quite get it. ;;char=polite,neutral
 no_answer_0a;;		rep=0|mood=5;;		<user_name>, I'm sorry but I couldn't understand what you were saying. ;;char=neutral,polite
-no_answer_0a;;		rep=0|mood=5;;		I'm sorry to say <user_name>, I didn't understand what you're saying.  ;;char=neutral
+no_answer_0a;;		rep=0|mood=5;;		I'm sorry <user_name>, I didn't understand what you were saying.  ;;char=neutral
 no_answer_0a;;		rep=0|mood=5;;		<user_name>, I'm not quite sure what you mean. Can you rephrase that, please! ;;char=polite,neutral
-no_answer_0a;;		rep=0|mood=5;;		I'm sorry <user_name>, I'm not sure what you want to say. Could you please try again differently! ;;char=polite,neutral
-no_answer_0a;;		rep=0|mood=5;;		Sorry, <user_name>, I didn't understand, what you want to say. Please rephrase your request. ;;char=polite,neutral
+no_answer_0a;;		rep=0|mood=5;;		I'm sorry <user_name>, I'm not sure what you want to say. Please try again with other words! ;;char=neutral
+no_answer_0a;;		rep=0|mood=5;;		Sorry <user_name>, I didn't quite get that. Try rephrasing maybe. ;;char=polite,neutral
 no_answer_0a;;		rep=0|mood=5;;		I'm not quite sure whether I got that right. Say again in a different way please! ;;char=polite,neutral
 no_answer_0a;;		rep=1|mood=5;;		Sorry but I have absolutely no clue. ;;char=neutral,cool
-no_answer_0a;;		rep=1|mood=5;;		I'm still learning, ask me again another time. ;;char=polite,neutral
-no_answer_0a;;		rep=1|mood=5;;		I'm sorry, <user_name> I´m still learning. I will forward your request to my team. Ask me again another time.;;char=polite,neutral
+no_answer_0a;;		rep=1|mood=5;;		I'm still learning, ask me again after my next update maybe. ;;char=neutral
+no_answer_0a;;		rep=1|mood=5;;		I'm sorry <user_name>, I´m still learning. Try again another time. ;;char=polite,neutral
 no_answer_0a;;		rep=1|mood=5;;		Sorry, no comprendo amigo. ;;char=cool
 no_answer_0a;;		rep=1|mood=5;;		I honestly have no idea. ;;char=neutral,polite
 no_answer_0a;;		rep=1|mood=5;;		I don't know, honestly. ;;char=neutral,polite
-no_answer_0a;;		rep=2|mood=5;;		So many confusing questions ;;char=neutral
+no_answer_0a;;		rep=2|mood=5;;		Wait I have an idea. No, sorry. Lost it again. ;;char=neutral
+no_answer_0a;;		rep=2|mood=5;;		So many confusing questions, I think I'm lost. ;;char=neutral
 no_answer_0a;;		rep=2|mood=5;;		Sorry, I really really really don't know! ;;char=neutral,polite
 redirect_result_0a;;		rep=0|mood=5;;		It sounds familiar, but I can't answer that right now. ;;char=neutral
 redirect_result_0a;;		rep=0|mood=5;;		I'm afraid I can't help you with that at the moment, but I think I've heard that topic before. ;;char=neutral
 redirect_result_0a;;		rep=0|mood=5;;		I'm still learning and I think this topic might already be on my to-do list. ;;char=neutral
-redirect_result_0a;;		rep=0|mood=5;;		I'm sorry, <user_name> I've heard this topic before, but I can't answer it yet. ;;char=neutral
+redirect_result_0a;;		rep=0|mood=5;;		I'm sorry <user_name>, I've heard this topic before, but I can't answer it yet. ;;char=neutral
 redirect_result_0a;;		rep=0|mood=5;;		Sorry, I might have heard this before, but I can't answer your question yet. ;;char=neutral

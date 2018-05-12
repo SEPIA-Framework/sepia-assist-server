@@ -93,7 +93,7 @@ public class Location_Mapsearch implements ApiInterface{
 		
 		//reconstruct original phrase to get proper item names
 		Normalizer normalizer = Config.inputNormalizers.get(api.language);
-		String end_to_say = normalizer.reconstructPhrase(NLU_result.input.text_raw, end);
+		String end_to_say = normalizer.reconstructPhrase(NLU_result.input.textRaw, end);
 		
 		//check place for personal locations
 		if (!end_param.isEmpty()){
@@ -146,7 +146,7 @@ public class Location_Mapsearch implements ApiInterface{
 		String appleMapsURL = "";
 		try {
 			//iOS Apple Maps
-			if (CLIENTS.isAppleCompatible(NLU_result.input.client_info)){
+			if (CLIENTS.isAppleCompatible(NLU_result.input.clientInfo)){
 				appleMapsURL = "http://maps.apple.com/?" +
 						"q=" + URLEncoder.encode(endSimple, "UTF-8");
 			}

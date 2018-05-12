@@ -229,7 +229,7 @@ public class Alarms_Basic implements ApiInterface{
 			}else{
 				//construct new difference
 				String newRefDate = dateDay + Config.defaultSdfSeparator + dateTime;
-				HashMap<String, Long> diff = DateTimeConverters.dateDifference(nluResult.input.user_time_local, newRefDate);
+				HashMap<String, Long> diff = DateTimeConverters.dateDifference(nluResult.input.userTimeLocal, newRefDate);
 				if (diff != null){
 					totalDiff_ms = diff.get("total_ms");
 					diffDays = diff.get("dd");

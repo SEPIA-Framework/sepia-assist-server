@@ -37,7 +37,7 @@ public class Control_Preprocessor implements ApiInterface{
 		//System.out.println("Control dialog stage: " + NLU_result.input.dialog_stage);
 		
 		//System.out.println("Last CMD N: " + NLU_result.input.last_cmd_N);
-		if (NLU_result.input.last_cmd_N > 1){
+		if (NLU_result.input.lastCmdN > 1){
 			//abort
 			api.answer = Config.answers.getAnswer(NLU_result, "control_0b");
 			api.status = "success";

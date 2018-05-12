@@ -36,7 +36,7 @@ public class SmartDevice_Default implements ApiInterface{
 		Debugger.println("cmd: smartDevice, device=" + device + ", action=" + action + ", place= " + room + ", number= " + number, 2);		//debug
 		//System.out.println("Last CMD N: " + NLU_result.input.last_cmd_N);
 		
-		if (NLU_result.input.last_cmd_N > 1){
+		if (NLU_result.input.lastCmdN > 1){
 			//abort
 			api.answer = Config.answers.getAnswer(NLU_result, "control_0b");
 			api.answerClean = Converters.removeHTML(api.answer);

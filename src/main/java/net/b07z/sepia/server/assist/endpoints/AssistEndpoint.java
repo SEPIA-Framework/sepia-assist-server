@@ -123,7 +123,7 @@ public class AssistEndpoint {
 		ApiResult answer;
 		String cmd = result.getCommand();
 		if (!cmd.equals(CMD.NO_RESULT)){
-			Debugger.println("USER " + input.user.getUserID() + " used SERVICE " + cmd + " - TS: " + System.currentTimeMillis() + " - LANGUAGE: " + input.language + " - CLIENT: " + input.client_info + " - API: " + Config.apiVersion, 3);
+			Debugger.println("USER " + input.user.getUserID() + " used SERVICE " + cmd + " - TS: " + System.currentTimeMillis() + " - LANGUAGE: " + input.language + " - CLIENT: " + input.clientInfo + " - API: " + Config.apiVersion, 3);
 		}
 		
 		//check if user wants repetition of old command
@@ -270,10 +270,10 @@ public class AssistEndpoint {
 		NluInput input = new NluInput(text);
 		if (language!=null)			input.language = language;
 		if (context!=null)			input.context = context;
-		if (client_info!=null)		input.client_info = client_info;
+		if (client_info!=null)		input.clientInfo = client_info;
 		if (env!=null)				input.environment = env; 		else 	input.environment = "all"; //input.client_info.replaceFirst("_v\\d.*", "").trim();
-		if (user_location!=null)	input.user_location = user_location;
-		if (time_local!=null)		input.user_time_local = time_local;
+		if (user_location!=null)	input.userLocation = user_location;
+		if (time_local!=null)		input.userTimeLocal = time_local;
 		//
 		if (mood_str!=null){
 			try {
@@ -285,31 +285,31 @@ public class AssistEndpoint {
 		//System.out.println("l:"+ language +", c:"+ context +", m:"+ mood +", e:"+ env);		//debug
 		if (time_str!=null){
 			try {
-				time = Long.parseLong(time_str);				input.user_time = time;
+				time = Long.parseLong(time_str);				input.userTime = time;
 			}catch (Exception e){
-				input.user_time = -1;							e.printStackTrace();
+				input.userTime = -1;							e.printStackTrace();
 			}
 		}
-		if (last_cmd!=null)	input.last_cmd = last_cmd;
+		if (last_cmd!=null)	input.lastCmd = last_cmd;
 		if (last_cmd_N_str!=null){
 			try {
-				last_cmd_N = Integer.parseInt(last_cmd_N_str);	input.last_cmd_N = last_cmd_N;
+				last_cmd_N = Integer.parseInt(last_cmd_N_str);	input.lastCmdN = last_cmd_N;
 			}catch (Exception e){
-				input.last_cmd_N = 0;							e.printStackTrace();
+				input.lastCmdN = 0;							e.printStackTrace();
 			}
 		}
-		if (input_type!=null)	input.input_type = input_type;
-		if (input_miss!=null)	input.input_miss = input_miss;
+		if (input_type!=null)	input.inputType = input_type;
+		if (input_miss!=null)	input.inputMiss = input_miss;
 		if (dialog_stage_str!=null){
 			try {
-				dialog_stage = Integer.parseInt(dialog_stage_str);		input.dialog_stage = dialog_stage;
+				dialog_stage = Integer.parseInt(dialog_stage_str);		input.dialogStage = dialog_stage;
 			}catch (Exception e){
-				input.dialog_stage = 0;									e.printStackTrace();
+				input.dialogStage = 0;									e.printStackTrace();
 			}
 		}
 		
 		if (demomode!=null && demomode.matches("x16y42")){
-			input.demo_mode = true;
+			input.demoMode = true;
 		}
 		
 		//System.out.println("in user_location: " + input.user_location);

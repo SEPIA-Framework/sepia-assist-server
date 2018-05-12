@@ -86,7 +86,7 @@ public class API {
 		
 		this.language = nluResult.language;
 		this.mood = nluResult.mood;
-		this.dialogStage = nluResult.input.dialog_stage;
+		this.dialogStage = nluResult.input.dialogStage;
 		this.context = nluResult.getCommand();
 		this.environment = nluResult.environment;
 		this.cmdSummary = nluResult.cmdSummary;
@@ -106,7 +106,7 @@ public class API {
 	 */
 	public void setDataAccessAuthorization(Class<?> service, String serviceName, String serviceApiKey){
 		//TODO: IMPLEMENT
-		//check class for API_Interface
+		//check class for ApiInterface
 		//service.getSimpleName();
 		//...
 	}
@@ -115,7 +115,7 @@ public class API {
 	 */
 	public String getClientInfo(){
 		//TODO: IMPLEMENT API access check
-		return nluResult.input.client_info;
+		return nluResult.input.clientInfo;
 	}
 	/**
 	 * Get userId of user that is calling the server. (Must be authorized).
@@ -366,7 +366,7 @@ public class API {
 	public void makeThisAQuestion(String missing_input_param){
 		responseType = API.RESPONSE_QUESTION;		//response type is used on client side to post info/answer question/execute command
 		inputMiss = missing_input_param;			//"what did I ask again?" - pass around the missing parameter (search, type, start, end, etc...), hopefully the client sends it back ^^
-		nluResult.input.input_miss = missing_input_param;
+		nluResult.input.inputMiss = missing_input_param;
 		//overwrite wrong answer but make an exception for OPEN_LINK commands 'cause they need it
 		if (!nluResult.getCommand().equals(CMD.OPEN_LINK)){ 
 			nluResult.setParameter(missing_input_param, ""); 		//overwrite wrong answer if there was one

@@ -18,6 +18,7 @@ import net.b07z.sepia.server.assist.server.ConfigTestServer;
 import net.b07z.sepia.server.assist.server.Start;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.tools.DateTime;
+import net.b07z.sepia.server.core.tools.JSON;
 
 public class Test_taggedSentenceMatcher {
 
@@ -49,9 +50,9 @@ public class Test_taggedSentenceMatcher {
 		
 		//get the result of the natural-language-processor (i will usually call it either NLP or NLU and mix at will ;-) )
 		NluInput input = new NluInput(text, language, context, mood, environment);
-		input.user_location = "<city>Berlin City<latitude>52.518616<longitude>13.404636";
-		input.user_time = System.currentTimeMillis();
-		input.user_time_local = DateTime.getFormattedDate("yyyy.MM.dd_HH:mm:ss");
+		input.userLocation = JSON.make("city", "Berlin City", "latitude", 52.519, "longitude", 13.405).toString();
+		input.userTime = System.currentTimeMillis();
+		input.userTimeLocal = DateTime.getFormattedDate("yyyy.MM.dd_HH:mm:ss");
 		//System.out.println("Today: " + Tools_DateTime.getToday("HH:mm:ss yyyy.MM.dd", input));
 		User user = ConfigTestServer.getTestUser(ConfigTestServer.email_id1, input, false, true);
 		input.user = user;

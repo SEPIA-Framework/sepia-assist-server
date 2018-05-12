@@ -190,7 +190,7 @@ public class TtsEndpoint {
 			String question = text.replaceAll(".*?>", "").trim();
 			if (!question.isEmpty()){
 				NluInput input = new NluInput(text, language, "default", mood, "default");
-				input.input_type = "direct_cmd";
+				input.inputType = "direct_cmd";
 				input.user = new User(input, token);
 				if (text.startsWith("<weather>")){
 					input.text = "weather;" + PARAMETERS.PLACE + "=" + question;

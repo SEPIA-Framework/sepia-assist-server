@@ -3,30 +3,22 @@ package net.b07z.sepia.server.assist.interpreters;
 import java.awt.Desktop;
 import java.io.PrintWriter;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
 
-import net.b07z.sepia.server.assist.apis.ApiInterface;
-import net.b07z.sepia.server.assist.apis.Open_CustomLink;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluInterface;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interpreters.NluKeywordAnalyzerDE;
-import net.b07z.sepia.server.assist.interviews.AbstractInterview;
-import net.b07z.sepia.server.assist.interviews.InterviewResult;
-import net.b07z.sepia.server.assist.interviews.InterviewInterface;
-import net.b07z.sepia.server.assist.interviews.NoResult;
 import net.b07z.sepia.server.assist.server.Config;
-import net.b07z.sepia.server.assist.server.ConfigServices;
 import net.b07z.sepia.server.assist.server.ConfigTestServer;
 import net.b07z.sepia.server.assist.server.Start;
 import net.b07z.sepia.server.assist.tts.TtsInterface;
 import net.b07z.sepia.server.assist.users.User;
-import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
 import net.b07z.sepia.server.core.tools.Converters;
+import net.b07z.sepia.server.core.tools.JSON;
 
 /**
  * Use this to test the NL-Processor and API results during development (means NOT on server ;-) ).
@@ -119,7 +111,7 @@ public class Test_Interpreter {
 		//get the result of the natural-language-processor (i will usually call it either NLP or NLU and mix at will ;-) )
 		NluInput input = new NluInput(text, language, context, mood, environment);
 		User user = ConfigTestServer.getTestUser(ConfigTestServer.email_id1, input, false, true);
-		input.user_location = "<city>Berlin City<latitude>52.518616<longitude>13.404636";
+		input.userLocation = JSON.make("country", "Germany", "city", "Berlin City", "latitude", 52.519, "longitude", 13.405).toString();
 		//System.out.println("Today: " + Tools_DateTime.getToday("HH:mm:ss yyyy.MM.dd", input));
 		input.user = user;
 		NluResult result = NLP.interpret(input);

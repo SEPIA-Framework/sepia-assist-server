@@ -27,7 +27,7 @@ public interface InterpretationStep {
 	 * Check if its a direct command or return null.
 	 */
 	public static NluResult getDirectCommand(NluInput input){
-		if (input.input_type.matches("direct_cmd")){
+		if (input.inputType.matches("direct_cmd")){
 			Debugger.println("DIRECT COMMAND", 2); 					//debug
 			//System.out.println("DIRECT CMD: " + input.text); 				//debug
 			
@@ -44,7 +44,7 @@ public interface InterpretationStep {
 	 * Check if its a slash command, aka a command given as text input or return null.
 	 */
 	public static NluResult getSlashCommand(NluInput input){
-		boolean is_slashCMD = RegexParameterSearch.contains_slashCMD(input.text_raw);
+		boolean is_slashCMD = RegexParameterSearch.contains_slashCMD(input.textRaw);
 		//TODO: add better slash command handler - should the user be allowed to overwrite this with a personal command?
 		if (is_slashCMD){
 			//define NL-Processor for slash CMDs
@@ -61,7 +61,7 @@ public interface InterpretationStep {
 	 * Check if its a response to a previous question of the assistant or return null.
 	 */
 	public static NluResult getResponse(NluInput input){
-		if (input.input_type.matches("response")){
+		if (input.inputType.matches("response")){
 			Debugger.println("RESPONSE", 2); 						//debug
 			//System.out.println("RESPONSE: " + input.text); 					//debug
 			
@@ -91,7 +91,7 @@ public interface InterpretationStep {
 		//check personal commands first
 		Map<String, Object> filter = new HashMap<>();
 		filter.put("language", input.language);
-		filter.put("searchText", input.text_raw);
+		filter.put("searchText", input.textRaw);
 		UserDataInterface userData = input.user.getUserDataAccess();
 		JSONArray sentences = userData.getPersonalCommands(input.user, filter);
 		//to search personal AND system commands use: sentences = DB.getCommands(filter);
@@ -174,7 +174,7 @@ public interface InterpretationStep {
 			HashMap<String, Object> filter = new HashMap<>();
 			filter.put("language", input.language);
 			filter.put("includePublic", Boolean.TRUE);
-			filter.put("searchText", input.text_raw);
+			filter.put("searchText", input.textRaw);
 			//filter.put("userIds", "userA, userB, userC, ...");		//we could add more users here
 			filter.put("userIds", Config.assistantId);
 			JSONArray sentences = DB.getCommands(filter);

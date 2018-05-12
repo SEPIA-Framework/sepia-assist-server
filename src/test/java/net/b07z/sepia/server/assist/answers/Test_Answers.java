@@ -23,8 +23,8 @@ public class Test_Answers {
 		
 		//construct input and result
 		NluInput input = new NluInput();
-		input.last_cmd = "default";
-		input.last_cmd_N = 0;
+		input.lastCmd = "default";
+		input.lastCmdN = 0;
 		input.mood = 5;
 		input.language = "de";
 		

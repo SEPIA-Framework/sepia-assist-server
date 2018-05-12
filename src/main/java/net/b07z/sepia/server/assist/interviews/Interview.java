@@ -226,21 +226,21 @@ public class Interview {
 		String[] data = getResult.split(";;");
 		if (data[0].equals(ERROR_MISSING)){
 			if (data[2] != null && data[2].equals("<user_location>")){
-				Debugger.println("NO_RESULT: " + nluResult.input.text_raw + " - due to missing GPS", 3);		//debug
+				Debugger.println("NO_RESULT: " + nluResult.input.textRaw + " - due to missing GPS", 3);		//debug
 				return NoResult.get(nluResult, "default_miss_user_location_0a");
 			}else{
-				Debugger.println("NO_RESULT: " + nluResult.input.text_raw + " - due to missing DATA", 3);		//debug
+				Debugger.println("NO_RESULT: " + nluResult.input.textRaw + " - due to missing DATA", 3);		//debug
 				return NoResult.get(nluResult, "default_miss_info_0a");
 			}
 		}else if (data[0].equals(ERROR_API_FAIL)){
 			if (data[1].equals(TYPE_GEOCODING) && data[2].matches("<user_location>|<user_home>|<user_work>")){
-				Debugger.println("NO_RESULT: " + nluResult.input.text_raw + " - due to failed API request: " + data[1] + ";;" + data[2], 3);	//debug
+				Debugger.println("NO_RESULT: " + nluResult.input.textRaw + " - due to failed API request: " + data[1] + ";;" + data[2], 3);	//debug
 				return NoResult.get(nluResult, "error_geo_location_personal_0a");
 			}else if (data[1].equals(TYPE_GEOCODING)){
-				Debugger.println("NO_RESULT: " + nluResult.input.text_raw + " - due to failed API request: " + data[1] + ";;" + data[2], 3);	//debug
+				Debugger.println("NO_RESULT: " + nluResult.input.textRaw + " - due to failed API request: " + data[1] + ";;" + data[2], 3);	//debug
 				return NoResult.get(nluResult, "error_geo_location_0a");
 			}else{
-				Debugger.println("NO_RESULT: " + nluResult.input.text_raw + " - due to failed API request: " + data[1] + ";;" + data[2], 3);	//debug
+				Debugger.println("NO_RESULT: " + nluResult.input.textRaw + " - due to failed API request: " + data[1] + ";;" + data[2], 3);	//debug
 				return NoResult.get(nluResult, "error_0a");
 			}
 		}

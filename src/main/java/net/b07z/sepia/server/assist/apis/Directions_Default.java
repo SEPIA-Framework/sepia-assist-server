@@ -297,7 +297,7 @@ public class Directions_Default implements ApiInterface{
 			googleMapsURL = makeGoogleMapsURL(start, end, wp, googleTravelType, googleViews);
 			
 			//APPLE
-			if (CLIENTS.isAppleCompatible(NLU_result.input.client_info)){
+			if (CLIENTS.isAppleCompatible(NLU_result.input.clientInfo)){
 				appleMapsURL = makeAppleMapsURL(start, end, wp, googleTravelType);
 			}
 			

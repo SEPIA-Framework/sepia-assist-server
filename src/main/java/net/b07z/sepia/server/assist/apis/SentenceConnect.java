@@ -85,9 +85,9 @@ public class SentenceConnect implements ApiInterface{
 				String s = (String) o;
 				//TODO: making a clean input would be better
 				nluResult.input.clearParameterResultStorage();
-				nluResult.input.input_type = "question";
+				nluResult.input.inputType = "question";
 				nluResult.input.text = s;
-				nluResult.input.text_raw = s;
+				nluResult.input.textRaw = s;
 				//norm - we don't need this, its in the interpretation chain
 				//nluResult.input.text = normalizer.normalize_text(s);
 				

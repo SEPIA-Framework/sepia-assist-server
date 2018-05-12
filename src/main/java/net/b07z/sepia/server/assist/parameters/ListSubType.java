@@ -117,7 +117,7 @@ public class ListSubType implements Parameter_Handler{
 		//reconstruct original phrase to get proper item names
 		if (!subType.isEmpty()){
 			Normalizer normalizer = Config.inputNormalizers.get(language);
-			subType = normalizer.reconstructPhrase(nluInput.text_raw, subType);
+			subType = normalizer.reconstructPhrase(nluInput.textRaw, subType);
 		}
 
 		//store it

@@ -131,7 +131,7 @@ public class NluKeywordAnalyzer implements NluInterface {
 						
 		//Repeat me - overwrites all other commands!
 		if (NluTools.stringContains(text, "(^saythis|" + Pattern.quote(Config.assistantName) + " saythis)")){
-			String this_text = input.text_raw.replaceFirst(".*?\\bsaythis|.*?\\bSaythis", "").trim();
+			String this_text = input.textRaw.replaceFirst(".*?\\bsaythis|.*?\\bSaythis", "").trim();
 			
 			//make it THE command
 			possibleCMDs.add(CMD.REPEAT_ME);

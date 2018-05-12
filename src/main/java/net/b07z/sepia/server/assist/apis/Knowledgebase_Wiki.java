@@ -365,7 +365,7 @@ public class Knowledgebase_Wiki implements ApiInterface{
 							api.htmlInfo = "<div><b>Wikipedia: <a href='" + wikiURL + "'>" + wikiTitle + "</a></b><br><br>" + relatedInfo + "</div>";
 						}
 					}else{
-						if (CLIENTS.hasWebView(NLU_result.input.client_info)){
+						if (CLIENTS.hasWebView(NLU_result.input.clientInfo)){
 							api.htmlInfo = "<object type='text/html' style='width: 100%; height: 300%; overflow-y: hidden;' data='" + wikiURL_m + "'></object>";
 						}else{
 							api.htmlInfo = wikiURL_m;

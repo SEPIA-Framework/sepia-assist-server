@@ -94,7 +94,7 @@ public class WebSearchRequest implements Parameter_Handler{
 		
 		//reconstruct original phrase
 		Normalizer normalizer = Config.inputNormalizers.get(language);
-		search = normalizer.reconstructPhrase(nlu_input.text_raw, search);
+		search = normalizer.reconstructPhrase(nlu_input.textRaw, search);
 		
 		return search;
 	}

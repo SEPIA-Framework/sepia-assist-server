@@ -201,7 +201,7 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 				kb_search=kb_search.replaceFirst("\\b(ist$|war$|waren$|sind$|suchen$|finden$|bei wikipedia$|bei wiki$)", "").trim();
 			}
 			//recover original
-			kb_search = normalizer.reconstructPhrase(input.text_raw, kb_search);
+			kb_search = normalizer.reconstructPhrase(input.textRaw, kb_search);
 			//score
 			if (!kb_search.matches("")){
 				possibleScore.set(index, possibleScore.get(index)+1);
@@ -532,7 +532,7 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 				possibleScore.set(index, possibleScore.get(index)+1);
 			}
 			//recover original
-			dict_search = normalizer.reconstructPhrase(input.text_raw, dict_search);
+			dict_search = normalizer.reconstructPhrase(input.textRaw, dict_search);
 			
 			HashMap<String, String> pv = new HashMap<String, String>();
 				pv.put(PARAMETERS.SEARCH, dict_search.trim());
@@ -1040,7 +1040,7 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 		}
 		
 		//DEMO Mode
-		if (input.demo_mode){
+		if (input.demoMode){
 			String demoElements = "sportschuhe|sport schuhe|fussballschuhe|"
 					+ "t-shirt|shirt|tshirts|t-shirts|shirts|"
 					+ "zalando|"
@@ -1051,7 +1051,7 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 					+ "brauche|brauchen|bestellung|bestelle|bestellen|kaufen|kaufe|besorgen|"
 					+ "zutaten suchen|"
 					+ "rezept|rezepte|(zu |man |ein )essen|abendessen|mittagessen|"
-					+ "florian|dragan";
+					+ "florian";
 			
 			if (NluTools.stringContains(text, demoElements)){
 				String this_text = text;

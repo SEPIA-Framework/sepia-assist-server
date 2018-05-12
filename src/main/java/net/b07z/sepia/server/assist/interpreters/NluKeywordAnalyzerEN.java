@@ -195,7 +195,7 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 				kb_search=kb_search.replaceFirst("\\b(is$|was$|were$|are$|on wikipedia$|in wikipedia$)", "").trim();
 			}
 			//recover original
-			kb_search = normalizer.reconstructPhrase(input.text_raw, kb_search);
+			kb_search = normalizer.reconstructPhrase(input.textRaw, kb_search);
 			//score
 			if (!kb_search.matches("")){
 				possibleScore.set(index, possibleScore.get(index)+1);
@@ -526,7 +526,7 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 				}
 			}
 			//recover original
-			dict_search = normalizer.reconstructPhrase(input.text_raw, dict_search);
+			dict_search = normalizer.reconstructPhrase(input.textRaw, dict_search);
 			
 			HashMap<String, String> pv = new HashMap<String, String>();
 				pv.put(PARAMETERS.SEARCH, dict_search.trim());
@@ -966,7 +966,7 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 		}
 		
 		//DEMO Mode
-		if (input.demo_mode){
+		if (input.demoMode){
 			//you can put stuff here for demos
 		}
 		

@@ -71,7 +71,7 @@ public class GenericParameter implements Parameter_Handler{
 	public String build(String input) {
 		//build default result
 		JSONObject itemResultJSON = new JSONObject();
-			JSON.add(itemResultJSON, InterviewData.INPUT_RAW, nluInput.text_raw);
+			JSON.add(itemResultJSON, InterviewData.INPUT_RAW, nluInput.textRaw);
 			JSON.add(itemResultJSON, InterviewData.VALUE, input);
 			JSON.add(itemResultJSON, "isGeneric", true);
 		

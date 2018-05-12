@@ -325,7 +325,7 @@ public class DateAndTime implements Parameter_Handler{
 	@Override
 	public String build(String input) {
 		//check for proper user time
-		if (nluInput.user_time_local.isEmpty()){
+		if (nluInput.userTimeLocal.isEmpty()){
 			return Interview.ERROR_MISSING + ";;" + Interview.TYPE_INPUT_INFO + ";;" + "<user_time_local>";
 		}
 		
@@ -368,7 +368,7 @@ public class DateAndTime implements Parameter_Handler{
 		
 		//check for <user_time>
 		if (input.equals("<user_time>")){
-			input = nluInput.user_time_local;
+			input = nluInput.userTimeLocal;
 			String[] dateSplit = input.split(Config.defaultSdfSeparatorRegex, 2);
 			day = dateSplit[0];
 			time = dateSplit[1];
@@ -398,11 +398,11 @@ public class DateAndTime implements Parameter_Handler{
 		HashMap<String, Long> diff = null;
 		if (time.isEmpty()){
 			//calculate difference to same time of other date
-			String nowTime = nluInput.user_time_local.split(Config.defaultSdfSeparatorRegex)[1];
-			diff = DateTimeConverters.dateDifference(nluInput.user_time_local, input + Config.defaultSdfSeparator + nowTime);
+			String nowTime = nluInput.userTimeLocal.split(Config.defaultSdfSeparatorRegex)[1];
+			diff = DateTimeConverters.dateDifference(nluInput.userTimeLocal, input + Config.defaultSdfSeparator + nowTime);
 		}else{
 			//calculate exact difference
-			diff = DateTimeConverters.dateDifference(nluInput.user_time_local, input);
+			diff = DateTimeConverters.dateDifference(nluInput.userTimeLocal, input);
 		}
 		
 		//build default result

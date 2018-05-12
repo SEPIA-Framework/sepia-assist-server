@@ -47,7 +47,7 @@ public class EventsManager {
 		Calendar myDate = DateTimeConverters.getUserCalendar(input);
 		if (myDate == null){
 			localTimeIsKnown = false;
-			Debugger.println("buildCommonEvents() - Local calendar could not be set for client: " + input.client_info, 1);
+			Debugger.println("buildCommonEvents() - Local calendar could not be set for client: " + input.clientInfo, 1);
 			myDate = Calendar.getInstance();		//should be user-local date
 		}
 		int dow = myDate.get(Calendar.DAY_OF_WEEK);

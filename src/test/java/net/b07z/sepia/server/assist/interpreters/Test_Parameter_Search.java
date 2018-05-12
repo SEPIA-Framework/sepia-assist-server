@@ -9,6 +9,7 @@ import net.b07z.sepia.server.assist.interpreters.RegexParameterSearch;
 import net.b07z.sepia.server.assist.parameters.DateAndTime;
 import net.b07z.sepia.server.assist.server.ConfigTestServer;
 import net.b07z.sepia.server.assist.users.User;
+import net.b07z.sepia.server.core.tools.JSON;
 
 public class Test_Parameter_Search {
 
@@ -17,9 +18,9 @@ public class Test_Parameter_Search {
 		//fake input
 		NluInput input = ConfigTestServer.getFakeInput("test", "de");
 		User user = ConfigTestServer.getTestUser(ConfigTestServer.email_id1, input, false, true);
-		input.user_location = "<country>Germany<city>Essen<street>Somestreet 1<code>45138<latitude>51.6<longitude>7.1";
+		input.userLocation = JSON.make("country", "Germany", "city", "Essen", "street", "Somestreet 1", "latitude", 51.6, "longitude", 7.1).toString();
 		input.user = user;
-		input.user_time_local = "2016.01.01_00:00:01";
+		input.userTimeLocal = "2016.01.01_00:00:01";
 		
 		//test sentence
 		System.out.println("-----SENTENCE TESTING------");

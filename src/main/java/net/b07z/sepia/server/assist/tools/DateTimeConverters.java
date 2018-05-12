@@ -35,7 +35,7 @@ public class DateTimeConverters {
 	 * Returns null if the user_time_local is missing.
 	 */
 	public static Calendar getUserCalendar(NluInput input){
-		String user_time_local = input.user_time_local;
+		String user_time_local = input.userTimeLocal;
 		return getUserCalendar(user_time_local);
 	}
 	/**
@@ -198,7 +198,7 @@ public class DateTimeConverters {
 	 * @return todays date at user location as string or empty string (if client does not submit it)
 	 */
 	public static String getToday(String format, NluInput nlu_input){
-		String user_time = nlu_input.user_time_local;
+		String user_time = nlu_input.userTimeLocal;
 		return getToday(format, user_time);
 	}	
 	/**
@@ -233,7 +233,7 @@ public class DateTimeConverters {
 	 * @return todays date + x at user location as string or empty string (if client does not submit it)
 	 */
 	public static String getToday_plus_X_minutes(String format, NluInput nlu_input, int X){
-		String user_time_local = nlu_input.user_time_local;
+		String user_time_local = nlu_input.userTimeLocal;
 		if (user_time_local != null && !user_time_local.isEmpty()){
 			return getDate_plus_X_minutes(format, user_time_local, X);
 		}else{
@@ -248,7 +248,7 @@ public class DateTimeConverters {
 	 * @return todays date + x at user location as string or empty string (if client does not submit it)
 	 */
 	public static String getToday_plus_X_seconds(String format, NluInput nlu_input, int X){
-		String user_time_local = nlu_input.user_time_local;
+		String user_time_local = nlu_input.userTimeLocal;
 		if (user_time_local != null && !user_time_local.isEmpty()){
 			return getDate_plus_X_seconds(format, user_time_local, X);
 		}else{
@@ -463,7 +463,7 @@ public class DateTimeConverters {
 	 */
 	public static long getIntuitiveDaysDifference(NluInput nluInput, long diffDays, long diffHours, long diffMinutes, long diffSeconds){
 		//check time-difference to next day
-		HashMap<String, Long> diffToMidnight = DateTimeConverters.getTimeUntilMidnight(nluInput.user_time_local.split(Config.defaultSdfSeparatorRegex)[1]);
+		HashMap<String, Long> diffToMidnight = DateTimeConverters.getTimeUntilMidnight(nluInput.userTimeLocal.split(Config.defaultSdfSeparatorRegex)[1]);
 		long secToMidnight = diffToMidnight.get("total_s");
 		long correctedDiffDays = diffDays;
 		if ((diffHours * 60l * 60l + diffMinutes * 60l + diffSeconds) > secToMidnight){
