@@ -1,6 +1,6 @@
 package net.b07z.sepia.server.assist.assistant;
 
-import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.json.simple.JSONObject;
@@ -165,7 +165,7 @@ public class LOCATION {
 	 */
 	public static JSONObject getInfoBySearch(String searchTerm, NluInput nluInput){
 		JSONObject jo = new JSONObject();
-		HashMap<String, Object> result = GeoCoding.get_coordinates(searchTerm, nluInput.language);
+		Map<String, Object> result = GeoCoding.getCoordinates(searchTerm, nluInput.language);
 		if (result.get(LAT) != null)	JSON.add(jo, LAT, result.get(LAT));
 		if (result.get(LNG) != null)	JSON.add(jo, LNG, result.get(LNG));
 		if (result.get(STREET_NBR) != null)	JSON.add(jo, STREET_NBR, result.get(STREET_NBR));

@@ -9,7 +9,6 @@ import org.json.simple.JSONObject;
 import net.b07z.sepia.server.assist.answers.AnswerStatics;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.assistant.LOCATION;
-import net.b07z.sepia.server.assist.data.Address;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interpreters.RegexParameterSearch;
@@ -126,6 +125,8 @@ public class LocationStart implements Parameter_Handler{
 		String specificLocation_tag = User.containsUserSpecificLocation(input, user);
 		if (!specificLocation_tag.isEmpty()){
 			JSONObject specificLocationJSON = LOCATION.getFullAddressJSON(user, specificLocation_tag);
+			//System.out.println("SPEC. LOCATION: " + specificLocation_tag); 		//DEBUG
+			//System.out.println("SPEC. LOCATION JSON: " + specificLocationJSON); 	//DEBUG
 			if (specificLocationJSON != null && !specificLocationJSON.isEmpty()){
 				String testLAT = (String) specificLocationJSON.get(LOCATION.LAT);
 				String testLNG = (String) specificLocationJSON.get(LOCATION.LNG);

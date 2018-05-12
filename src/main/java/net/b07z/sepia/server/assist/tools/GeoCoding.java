@@ -2,6 +2,7 @@ package net.b07z.sepia.server.assist.tools;
 
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -11,6 +12,7 @@ import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.Statistics;
 import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 import net.b07z.sepia.server.core.tools.URLBuilder;
 
@@ -27,10 +29,10 @@ public class GeoCoding {
 	/**
 	 * Default method to get latitude, longitude from address name. 
 	 * @param address - string with an address, optimally Street, City, Country
-	 * @return HashMap with different parameters ("latitude", "longitude", ...), see LOCATION class statics.
+	 * @return Map with different parameters ("latitude", "longitude", ...), see LOCATION class statics.
 	 */
-	public static HashMap<String, Object> get_coordinates(String address, String language){
-		HashMap<String, Object> result = new HashMap<String, Object>();
+	public static Map<String, Object> getCoordinates(String address, String language){
+		Map<String, Object> result = new HashMap<>();
 		//different implementations:
 		//result = graphhopper_get_coordinates(address, language);
 		result = google_get_coordinates(address, language);
@@ -44,10 +46,10 @@ public class GeoCoding {
 	 * Default method to get an address from latitude longitude coordinates. 
 	 * @param latitude - e.g. 51.45
 	 * @param longitude - e.g. 7.02
-	 * @return HashMap with different parameters ("street", "city", "country", ...), see LOCATION class statics.
+	 * @return Map with different parameters ("street", "city", "country", ...), see LOCATION class statics.
 	 */
-	public static HashMap<String, Object> get_address(String latitude, String longitude, String language){
-		HashMap<String, Object> result = new HashMap<String, Object>();
+	public static Map<String, Object> getAddress(String latitude, String longitude, String language){
+		Map<String, Object> result = new HashMap<>();
 		//different implementations:
 		//result = graphhopper_get_address(latitude, longitude, language);
 		result = google_get_address(latitude, longitude, language);
@@ -75,7 +77,7 @@ public class GeoCoding {
 	 * @param language - language code
 	 */
 	public static void test_get_coordinates(String address, String language){
-		HashMap<String, Object> result = new HashMap<String, Object>();
+		Map<String, Object> result = new HashMap<String, Object>();
 		//different implementations:
 		result = graphhopper_get_coordinates(address, language);
 		System.out.println("------GRAPHHOPPER-------");
@@ -129,6 +131,11 @@ public class GeoCoding {
 	
 	//Graphhopper implementation for get_coordinates
 	private static HashMap<String, Object> graphhopper_get_coordinates(String address, String language){
+		//requirements
+		if (Is.nullOrEmpty(Config.graphhopper_key)){
+			Debugger.println("GeoCoding - Graphhopper API-key is missing! Please add one via the config file to use the service.", 1);
+			return null;
+		}
 		HashMap<String, Object> result = new HashMap<String, Object>();
 		try {
 			String add_params = "&debug=false&limit=1&key=" + Config.graphhopper_key;
@@ -161,15 +168,23 @@ public class GeoCoding {
 			
 		} catch (Exception e) {
 			e.printStackTrace();
+			return null;
+			/*
 			result.put(LOCATION.LAT, null);			result.put(LOCATION.LNG, null);
 			result.put(LOCATION.COUNTRY, null);		result.put(LOCATION.STATE, null);		result.put(LOCATION.POSTAL_CODE, null);			
 			result.put(LOCATION.CITY, null);		result.put(LOCATION.STREET, null);		result.put(LOCATION.STREET_NBR, null);
+			*/
 		}
 		return result;
 	}
 	
 	//Graphhopper implementation for get_address
 	private static HashMap<String, Object> graphhopper_get_address(String latitude, String longitude, String language) {
+		//requirements
+		if (Is.nullOrEmpty(Config.graphhopper_key)){
+			Debugger.println("GeoCoding - Graphhopper API-key is missing! Please add one via the config file to use the service.", 1);
+			return null;
+		}
 		// TODO implement
 		HashMap<String, Object> result = new HashMap<String, Object>();
 		//copy from input
@@ -183,11 +198,19 @@ public class GeoCoding {
 	
 
 	//Google implementation for get_coordinates
-	private static HashMap<String, Object> google_get_coordinates(String address, String language){
-		HashMap<String, Object> result = new HashMap<String, Object>();
+	private static Map<String, Object> google_get_coordinates(String address, String language){
+		//requirements
+		if (Is.nullOrEmpty(Config.google_maps_key)){
+			Debugger.println("GeoCoding - Google API-key is missing! Please add one via the config file to use Maps.", 1);
+			return null;
+		} 
+		Map<String, Object> result = new HashMap<String, Object>();
 		try {
 			String add_region = "&region=" + language + "&language=" + language;		//TODO: split region and language?
-			String add_key = "&key=" + Config.google_maps_key;
+			String add_key = "";
+			if (!Config.google_maps_key.equals("test")){
+				add_key = "&key=" + Config.google_maps_key;
+			}
 			String url = "https://maps.googleapis.com/maps/api/geocode/json?address=" 
 					+ URLEncoder.encode(address, "UTF-8") 
 					+ add_region
@@ -289,10 +312,17 @@ public class GeoCoding {
 	
 	//Google implementation for get_address
 	private static HashMap<String, Object> google_get_address(String latitude, String longitude, String language) {
+		//requirements
+		if (Is.nullOrEmpty(Config.google_maps_key)){
+			Debugger.println("GeoCoding - Google API-key is missing! Please add one via the config file to use Maps.", 1);
+			return null;
+		}
 		HashMap<String, Object> result = new HashMap<String, Object>();
-		
 		try {
-			String add_key = "&key=" + Config.google_maps_key;
+			String add_key = "";
+			if (!Config.google_maps_key.equals("test")){
+				add_key = "&key=" + Config.google_maps_key;
+			}
 			String add_region = "&region=" + language + "&language=" + language;		//TODO: split region and language?
 			String url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" 
 					+ latitude + "," + longitude 
@@ -382,9 +412,13 @@ public class GeoCoding {
 	
 	//Google implementation for get_close_POI
 	private static JSONArray google_get_POI(String search, String latitude, String longitude, String language, String types) {
+		//requirements
+		if (Is.nullOrEmpty(Config.google_maps_key)){
+			Debugger.println("GeoCoding - Google API-key is missing! Please add one via the config file to use Maps.", 1);
+			return new JSONArray();
+		}
 		JSONArray places = new JSONArray();
 		int N = 8; //max results 		
-		
 		try {
 			//use GPS and radius?
 			String addGPS = "";
@@ -397,12 +431,17 @@ public class GeoCoding {
 			if (types != null){
 				addTypes = types;
 			}
+			String addKey = "";
+			if (!Config.google_maps_key.equals("test")){
+				addKey = "&key=" + Config.google_maps_key;
+			}
 			String url = URLBuilder.getString("https://maps.googleapis.com/maps/api/place/textsearch/json",
 					"?query=", search,
 					"&language=", language,
-					"&types=", addTypes,
+					"&types=", addTypes
 					//"&opennow=", true,
-					"&key=", Config.google_maps_key);
+			);
+			url += addKey;
 			url += addGPS;
 			//System.out.println("google_get_POI - URL: " + url); 								//debug
 			

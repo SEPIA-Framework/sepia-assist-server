@@ -34,8 +34,8 @@ import net.b07z.sepia.server.core.tools.Security;
 public class Setup {
 	
 	//Cluster paths - note: keep in sync with all server configs
-	private static String pathToAssistConfig = "Xtensions/";
-	//private static String pathToAssistConfig = "../sepia-assist-server/Xtensions/";
+	//private static String pathToAssistConfig = "Xtensions/";
+	private static String pathToAssistConfig = "../sepia-assist-server/Xtensions/";
 	private static String pathToTeachConfig = "../sepia-teach-server/Xtensions/";
 	private static String pathToWebSocketConfig = "../sepia-websocket-server-java/Xtensions/";
 	

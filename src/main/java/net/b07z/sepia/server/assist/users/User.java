@@ -539,7 +539,7 @@ public final class User {
 		if (input.isEmpty()){
 			return "";
 		}
-		String match = NluTools.stringFindFirst(input, "<user_location>|<user_home>|<user_work>");
+		String match = NluTools.stringFindFirst(input, "<user_location>|<user_home>|<user_work>"); 		//TODO: make it work for all user addresses?
 		if (!match.isEmpty()){
 			if (user != null){
 				//load from account - because Home and work are special they are easier to load :-)
@@ -551,17 +551,20 @@ public final class User {
 				)){
 					//use geo locator to get lat long and store it.
 					String geo_search = LOCATION.getFullAddress(user, match, ", ");
-					if (!geo_search.isEmpty()){
+					if (geo_search != null && !geo_search.isEmpty()){
+						
 						//GET COORDINATES, CHECK THEM AND ADD THEM TO USER ACCOUNT
 						//System.out.println("do geo search for: " + geo_search);		//debug
+						
 						//GET
-						HashMap<String, Object> geo_info = GeoCoding.get_coordinates(geo_search, user.language);
+						Map<String, Object> geo_info = GeoCoding.getCoordinates(geo_search, user.language);
 						Object latitude = geo_info.get(LOCATION.LAT);
 						Object longitude = geo_info.get(LOCATION.LNG);
 						String f_city = (String) geo_info.get(LOCATION.CITY);
 						String f_country = (String) geo_info.get(LOCATION.COUNTRY);
 						String f_street = (String) geo_info.get(LOCATION.STREET);
 						//System.out.println("found: " + latitude + ", " + longitude + ", city: " + f_city + ", country: " + f_country);		//debug
+						
 						//CHECK
 						String city = user.getUserSpecificLocation(match, LOCATION.CITY);
 						String country = user.getUserSpecificLocation(match, LOCATION.COUNTRY);
@@ -579,6 +582,14 @@ public final class User {
 								//&& street.toLowerCase().trim().equals(f_street.toLowerCase().trim())
 								&& (streetNoMatchProb < 0.5f)
 									){
+								
+								//Update data on-the-fly to have it available NOW ... then save it to DB
+								taggedAdr.latitude = latitude.toString();
+								taggedAdr.longitude = longitude.toString();
+								taggedAdr.buildJSON();		//we need to update this because the "key"-lookup is done in JSON - TODO: upgrade
+								
+								//TODO: here we need to replace stuff with the new system (make it work for all addresses?)
+								
 								//SAVE HOME
 								if (match.equals("<user_home>")){
 									user.getUserDataAccess().setOrUpdateSpecialAddress(user, Address.USER_HOME_TAG, null, JSON.make(
@@ -589,9 +600,7 @@ public final class User {
 									taggedAdr.latitude = latitude.toString();
 									taggedAdr.longitude = longitude.toString();
 									taggedAdr.street = f_street;
-								
-								//TODO: here we need to replace stuff with the new system
-								
+							
 								//SAVE WORK
 								}else if (match.equals("<user_work>")){
 									user.getUserDataAccess().setOrUpdateSpecialAddress(user, Address.USER_WORK_TAG, null, JSON.make(
