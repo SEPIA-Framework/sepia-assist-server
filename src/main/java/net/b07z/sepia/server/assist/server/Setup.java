@@ -319,6 +319,8 @@ public class Setup {
 			}else{
 				Debugger.println("Stored data in config: " + scf.assist, 3);
 			}
+		}else{
+			Debugger.println("Writing account data failed! Probably a database error or you need to delete the user first.", 1);
 		}
 		//refresh ID
 		Config.superuserId = cr.guuid;
@@ -351,6 +353,8 @@ public class Setup {
 			}else{
 				Debugger.println("Stored data in config: " + scf.assist, 3);
 			}
+		}else{
+			Debugger.println("Writing account data failed! Probably a database error or you need to delete the user first.", 1);
 		}
 		//refresh IDs
 		Config.assistantId = cr.guuid;
