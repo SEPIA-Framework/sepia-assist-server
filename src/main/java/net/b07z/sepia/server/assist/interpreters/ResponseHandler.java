@@ -1,7 +1,7 @@
 package net.b07z.sepia.server.assist.interpreters;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import net.b07z.sepia.server.assist.apis.ApiInfo;
 import net.b07z.sepia.server.assist.apis.ApiInterface;
@@ -125,7 +125,7 @@ public class ResponseHandler implements NluInterface{
 		String tweaked = response;		//by default it is the pure response
 		
 		//get all non-final, optional parameters and remove them
-		ArrayList<ApiInterface> services = ConfigServices.getCustomOrSystemServices(input, input.user, command);
+		List<ApiInterface> services = ConfigServices.getCustomOrSystemServices(input, input.user, command);
 		ApiInfo info = services.get(0).getInfo(nluResult.language);
 		for (Parameter p : info.optionalParameters){
 			//is parameter already final?

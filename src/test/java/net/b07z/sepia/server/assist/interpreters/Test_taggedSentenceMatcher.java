@@ -3,6 +3,7 @@ package net.b07z.sepia.server.assist.interpreters;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -89,7 +90,7 @@ public class Test_taggedSentenceMatcher {
 			InterviewServicesMap.get().put(devServiceCMD, devService);
 		//ConfigServices.loadInterviewServicesMap();
 		//ParameterConfig.setup();
-		ArrayList<ApiInterface> services = ConfigServices.getCustomOrSystemServices(input, user, result.getCommand());
+		List<ApiInterface> services = ConfigServices.getCustomOrSystemServices(input, user, result.getCommand());
 		if (!services.isEmpty()){
 			InterviewInterface interview = new AbstractInterview();
 			interview.setCommand(result.getCommand());

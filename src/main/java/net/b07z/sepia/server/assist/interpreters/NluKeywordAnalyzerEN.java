@@ -79,6 +79,25 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 			possibleParameters.add(pv);
 		}
 		
+		//TODO: We can simplify this class by moving all regular expressions to the getInfo method of the services and then
+		//we could simply iterate over the InterviewServicesMap and use the abstract regular expressions matcher to build 
+		//the result for each command, e.g.:
+		/*
+		for (Entry<String, List<String>> es : InterviewServicesMap.get().entrySet()){
+			String cmd = es.getKey();
+			List<ApiInterface> defaultServicesForCmd = ConfigServices.buildServices(cmd);
+			for (ApiInterface service : defaultServicesForCmd){
+				index = NluKeywordAnalyzer.abstractRegExAnalyzer(text, input, service,
+						possibleCMDs, possibleScore, possibleParameters, index);
+			}
+		}
+		*/
+		//... because the order of the commands matters and exceptions might apply we could create a custom list as well 
+		
+		//--------------------------------------------------
+		
+		//What follows now is a list of regular expressions for certain commands that trigger parameter searches ...
+		
 		//news
 		if (NluTools.stringContains(text, "news|whats new|whats up|whats going on|headline|headlines|"
 				+ "results|result|score|scores|baseball|hockey|basketball|football|tennis|golf|soccer|"
@@ -884,7 +903,7 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 		//----- CUSTOM SERVICES -----
 		
 		//Abstract analyzer (should come at the end because of lower priority?)
-		ArrayList<ApiInterface> customServices = ConfigServices.getCustomServicesList(input, input.user);
+		List<ApiInterface> customServices = ConfigServices.getCustomServicesList(input, input.user);
 		for (ApiInterface service : customServices){
 			index = NluKeywordAnalyzer.abstractRegExAnalyzer(text, input, service,
 					possibleCMDs, possibleScore, possibleParameters, index);
@@ -894,7 +913,7 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 		
 		//Abstract analyzer (should come at the end because of lower priority?)
 		if (Config.enableSDK){
-			ArrayList<ApiInterface> assistantServices = ConfigServices.getCustomServicesList(input, Config.getAssistantUser());
+			List<ApiInterface> assistantServices = ConfigServices.getCustomServicesList(input, Config.getAssistantUser());
 			for (ApiInterface service : assistantServices){
 				index = NluKeywordAnalyzer.abstractRegExAnalyzer(text, input, service,
 						possibleCMDs, possibleScore, possibleParameters, index);

@@ -61,7 +61,7 @@ public class NluKeywordAnalyzer implements NluInterface {
 			
 			//get all parameters
 			List<Parameter> paramsList = serviceInfo.getAllParameters();
-			Map<String, String> pv = new HashMap<>(); 		//TODO: pass this down to avoid additional checking?
+			Map<String, String> pv = new HashMap<>(); 		//TODO: pass this down to avoid additional checking? Is it still relevant with parameter cache?
 			if (!paramsList.isEmpty()){
 				String[] params = new String[paramsList.size()];
 				int i = 0;

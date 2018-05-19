@@ -5,6 +5,8 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import net.b07z.sepia.server.assist.apis.ApiInterface;
 import net.b07z.sepia.server.assist.apis.Open_Dashboard;
 import net.b07z.sepia.server.assist.assistant.Assistant;
@@ -25,13 +27,14 @@ import net.b07z.sepia.server.core.tools.SandboxClassLoader;
 
 /**
  * This class connects commands to interviews and interviews to services.
+ * @see InterviewServicesMap
  * 
  * @author Florian Quirin
  *
  */
 public class ConfigServices {
 	
-	private static String CUSTOM_PACKAGE = "services";
+	private static String CUSTOM_PACKAGE = "net.b07z.sepia.sdk.services";
 	
 	/**
 	 * Get package path to custom services (full name).
@@ -47,8 +50,8 @@ public class ConfigServices {
 	
 	//custom services
 	//see also UserData Objects
-	public static HashMap<String, SandboxClassLoader> classLoaders = new HashMap<>();
-	private static ArrayList<String> blackList;
+	public static Map<String, SandboxClassLoader> classLoaders = new HashMap<>();
+	private static List<String> blackList;
 	public static SandboxClassLoader getCustomClassLoader(String className){
 		if (classLoaders.containsKey(className)){
 			return classLoaders.get(className);
@@ -87,23 +90,25 @@ public class ConfigServices {
 	 * @param user - User
 	 * @param nluInput - NLU input
 	 */
-	public static ArrayList<ApiInterface> getCustomServicesList(NluInput nluInput, User user){
-		ArrayList<ApiInterface> services = new ArrayList<>();
+	public static List<ApiInterface> getCustomServicesList(NluInput nluInput, User user){
+		List<ApiInterface> services = new ArrayList<>();
 
 		List<CmdMap> customMap = restoreOrLoadCustomCommandMapping(nluInput, user);
 		for (CmdMap cm : customMap){
-			ArrayList<String> cmList = (ArrayList<String>) cm.getServices();
+			List<String> cmList = (ArrayList<String>) cm.getServices();
 			services.addAll(buildCustomServices(user, cmList));
 		}
 		return services;
 	}
 	/**
-	 * Get connected services for a command by first searching user custom services and then system services.
-	 * @param user - User
-	 * @param cmd - command
+	 * Get connected services for a command. If the command is a system default command (is not of the format "[userId].[cmd_name]")
+	 * it returns the default {@link InterviewServicesMap} as list, else it looks for personal/custom/sdk commands in the 
+	 * assistant- or user-data.
+	 * @param user - User with personal commands or null for auto-select assistant
+	 * @param cmd - {@link CMD} entry or custom command in format "[userId].[cmd_name]"
 	 */
-	public static ArrayList<ApiInterface> getCustomOrSystemServices(NluInput nluInput, User user, String cmd){
-		ArrayList<ApiInterface> services = null;
+	public static List<ApiInterface> getCustomOrSystemServices(NluInput nluInput, User user, String cmd){
+		List<ApiInterface> services = null;
 		//SYSTEM
 		if (!cmd.contains(".")){		//if (!cmd.matches("(" + Config.user_id_prefix + "|gig)\\d\\d\\d\\d+\\..*")){
 			services = buildServices(cmd);
@@ -112,7 +117,7 @@ public class ConfigServices {
 			List<CmdMap> customMap;
 			
 			//ASSISTANT
-			if (cmd.startsWith(Config.assistantId + ".")){
+			if (cmd.startsWith(Config.assistantId + ".") || user == null){
 				customMap = restoreOrLoadCustomCommandMapping(nluInput, Config.getAssistantUser());
 				
 			//CUSTOM
@@ -123,7 +128,7 @@ public class ConfigServices {
 			//search service for command
 			for (CmdMap cm : customMap){
 				if (cm.getCommand().equals(cmd)){
-					ArrayList<String> cmList = (ArrayList<String>) cm.getServices();
+					List<String> cmList = (ArrayList<String>) cm.getServices();
 					//System.out.println("getCustomOrSystemServices - FOUND CUSTOM SERVICE(S): " + cmList); 		//debug
 					services = buildCustomServices(user, cmList);
 				}
@@ -165,8 +170,8 @@ public class ConfigServices {
 	 * @param user 
 	 * @param refList - list of services
 	 */
-	public static ArrayList<ApiInterface> buildCustomServices(User user, ArrayList<String> refList){
-		ArrayList<ApiInterface> apiList = new ArrayList<>();
+	public static List<ApiInterface> buildCustomServices(User user, List<String> refList){
+		List<ApiInterface> apiList = new ArrayList<>();
 		for (String className : refList){
 			try{
 				ApiInterface service = (ApiInterface) getCustomClassLoader(className).loadClass(className).newInstance();
@@ -186,8 +191,8 @@ public class ConfigServices {
 	 * Take a String list of services assigned to an interview and build the classes. 
 	 * @param refList - list of services (String)
 	 */
-	public static ArrayList<ApiInterface> buildServices(ArrayList<String> refList){
-		ArrayList<ApiInterface> apiList = new ArrayList<>();
+	public static List<ApiInterface> buildServices(List<String> refList){
+		List<ApiInterface> apiList = new ArrayList<>();
 		for (String a : refList){
 			apiList.add((ApiInterface) ClassBuilder.construct(a));
 		}
@@ -196,13 +201,13 @@ public class ConfigServices {
 	/**
 	 * Return a list of services connected to a command (CMD...)
 	 */
-	public static ArrayList<ApiInterface> buildServices(String command){
+	public static List<ApiInterface> buildServices(String command){
 		//exceptions
 		if (command.equals(CMD.ABORT) || command.equals(CMD.NO_RESULT) || command.equals(CMD.OPEN_LINK)){
 			return new ArrayList<ApiInterface>();
 		}
 
-		ArrayList<String> refList = InterviewServicesMap.get().get(command);
+		List<String> refList = InterviewServicesMap.get().get(command);
 		if (refList == null || refList.isEmpty()){
 			Debugger.println("Command: '" + command + "' has no services connected to be handled by interview module!", 1);
 			return new ArrayList<ApiInterface>();

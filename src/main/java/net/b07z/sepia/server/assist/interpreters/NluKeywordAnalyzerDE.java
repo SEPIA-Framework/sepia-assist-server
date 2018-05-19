@@ -76,6 +76,25 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 			possibleParameters.add(pv);
 		}
 		
+		//TODO: We can simplify this class by moving all regular expressions to the getInfo method of the services and then
+		//we could simply iterate over the InterviewServicesMap and use the abstract regular expressions matcher to build 
+		//the result for each command, e.g.:
+		/*
+		for (Entry<String, List<String>> es : InterviewServicesMap.get().entrySet()){
+			String cmd = es.getKey();
+			List<ApiInterface> defaultServicesForCmd = ConfigServices.buildServices(cmd);
+			for (ApiInterface service : defaultServicesForCmd){
+				index = NluKeywordAnalyzer.abstractRegExAnalyzer(text, input, service,
+						possibleCMDs, possibleScore, possibleParameters, index);
+			}
+		}
+		*/
+		//... because the order of the commands matters and exceptions might apply we could create a custom list as well 
+		
+		//--------------------------------------------------
+		
+		//What follows now is a list of regular expressions for certain commands that trigger parameter searches ...
+		
 		//news + sports results
 		if (NluTools.stringContains(text, "\\w*news|nachrichten|neuigkeiten|was gibt es neues|was geht ab|schlagzeile|schlagzeilen|"
 				+ "los in der welt|(bring|moechte) .* (neusten stand|up to date|up-to-date)|wissen .* mitreden|"
@@ -975,8 +994,11 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 		
 		//---------------------------
 		
-		//Control Devices/Programs
-		//TODO: this is kind of a "if everything else failed try this" method ... IMPROVE IT!
+		//Control Devices/Programs --- 
+		
+		//TODO: this is kind of a "if everything else failed try this" method 
+		//we need a complete rework here ... IMPROVE IT!
+		
 		if (!possibleCMDs.contains(CMD.KNOWLEDGEBASE) && !possibleCMDs.contains(CMD.WEB_SEARCH)  
 										&& !possibleCMDs.contains(CMD.DIRECTIONS) 	&& !possibleCMDs.contains(CMD.TV_PROGRAM)){
 										//&& !possibleCMDs.contains(CMD.MUSIC) 		&& !possibleCMDs.contains(CMD.MUSIC_RADIO)){

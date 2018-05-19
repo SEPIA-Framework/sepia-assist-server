@@ -1,6 +1,6 @@
 package net.b07z.sepia.server.assist.interviews;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import net.b07z.sepia.server.assist.apis.ApiInterface;
 import net.b07z.sepia.server.assist.apis.ApiResult;
@@ -31,7 +31,7 @@ public class ConvertResult {
 		nluResult.setParameter(newParameter, newValue);
 		nluResult.removeParameter(oldParameter);
 		
-		ArrayList<ApiInterface> services = ConfigServices.getCustomOrSystemServices(nluResult.input, nluResult.input.user, cmd);
+		List<ApiInterface> services = ConfigServices.getCustomOrSystemServices(nluResult.input, nluResult.input.user, cmd);
 		//this should not be the case here but to be sure ...
 		if (services == null || services.isEmpty()){
 			return NoResult.get(nluResult);

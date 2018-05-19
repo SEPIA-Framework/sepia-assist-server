@@ -1,6 +1,6 @@
 package net.b07z.sepia.server.assist.endpoints;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.json.simple.JSONObject;
 
@@ -143,7 +143,7 @@ public class AssistEndpoint {
 		//TODO: add a check if the user is allowed to use API xy
 		
 		//interview module with services
-		ArrayList<ApiInterface> services = ConfigServices.getCustomOrSystemServices(input, input.user, cmd);
+		List<ApiInterface> services = ConfigServices.getCustomOrSystemServices(input, input.user, cmd);
 		if (!services.isEmpty()){
 			InterviewInterface interview = new AbstractInterview();
 			interview.setCommand(cmd);
