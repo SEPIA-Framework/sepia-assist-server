@@ -23,11 +23,12 @@ public class DuckDnsWorker implements WorkerInterface {
 	
 	//DuckDNS settings - worker will only run if token and domain are set
 	public static String configFile = Config.xtensionsFolder + "DynamicDNS/duck-dns.properties"; 
+	public static String workerName = "DuckDNS-worker"; 
 	private String token = "";
 	private String domain = "";
 	
 	//common
-	String name = "DuckDNS-worker";
+	String name = workerName;
 	Thread worker;
 	int workerStatus = -1;				//-1: offline, 0: ready to start, 1: waiting for next action, 2: in action
 	private String statusDesc = "";		//text description of status

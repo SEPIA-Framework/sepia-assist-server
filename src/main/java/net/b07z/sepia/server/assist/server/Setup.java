@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.data.Name;
@@ -13,6 +12,7 @@ import net.b07z.sepia.server.assist.database.DynamoDB;
 import net.b07z.sepia.server.assist.database.Elasticsearch;
 import net.b07z.sepia.server.assist.database.GUID;
 import net.b07z.sepia.server.assist.users.ACCOUNT;
+import net.b07z.sepia.server.assist.workers.DuckDnsWorker;
 import net.b07z.sepia.server.core.data.Role;
 import net.b07z.sepia.server.core.database.AnswerImporter;
 import net.b07z.sepia.server.core.database.DatabaseInterface;
@@ -35,9 +35,9 @@ public class Setup {
 	
 	//Cluster paths - note: keep in sync with all server configs
 	//private static String pathToAssistConfig = "Xtensions/";
-	private static String pathToAssistConfig = "../sepia-assist-server/Xtensions/";
-	private static String pathToTeachConfig = "../sepia-teach-server/Xtensions/";
-	private static String pathToWebSocketConfig = "../sepia-websocket-server-java/Xtensions/";
+	private static String pathToAssistConfig = "../sepia-assist-server/" + Config.xtensionsFolder;
+	private static String pathToTeachConfig = "../sepia-teach-server/" + Config.xtensionsFolder;
+	private static String pathToWebSocketConfig = "../sepia-websocket-server-java/" + Config.xtensionsFolder;
 	
 	private enum ServerType{
 		custom,
@@ -79,6 +79,7 @@ public class Setup {
 		boolean accounts = false;
 		boolean answers = false;
 		boolean commands = false;
+		boolean duckDns = false;
 		
 		//setup arguments
 		ServerType st = ServerType.test;
@@ -104,6 +105,8 @@ public class Setup {
 				all = false;				answers = true;
 			}else if (arg.equals("commands")){
 				all = false;				commands = true;
+			}else if (arg.toLowerCase().equals("duckdns")){
+				all = false;				duckDns = true;
 			}
 		}
 		System.out.println("Setup for '" + st.name() + "' server (" + Config.configFile + ")");
@@ -155,13 +158,13 @@ public class Setup {
 				while (adminPwd.length() < 8){
 					adminPwd = InputPrompt.askString("Admin: ", false);
 					if (adminPwd.length() < 8){
-						System.out.println("Password is too short! Try again.");
+						System.out.println("Password is too short! Try again. (CRTL+C to abort)");
 					}
 				}
 				while (assistantPwd.length() < 8){
 					assistantPwd = InputPrompt.askString("Assistant: ", false);
 					if (assistantPwd.length() < 8){
-						System.out.println("Password is too short! Try again.");
+						System.out.println("Password is too short! Try again. (CRTL+C to abort)");
 					}
 				}
 			}
@@ -182,6 +185,36 @@ public class Setup {
 		if (all || commands){
 			//TODO: implement command import
 			importSentences();
+		}
+		
+		//DuckDNS
+		if (duckDns){
+			System.out.println("\nSetting up DuckDNS: ");
+				
+			//Ask for passwords
+			String duckDnsToken = "";
+			String duckDnsDomain = "";
+			System.out.println("\nPlease enter your DuckDNS domain (defined at https://www.duckdns.org):");
+			while (duckDnsDomain.length() < 3){
+				duckDnsDomain = InputPrompt.askString("DuckDNS Domain: ", false);
+				duckDnsDomain = duckDnsDomain.replaceFirst("http(s|):\\u005c\\u005c", "").trim();
+				if (duckDnsDomain.length() < 3){
+					System.out.println("This domain name seems to be invalid, please try again. (CRTL+C to abort)");
+				}
+			}
+			while (duckDnsToken.length() < 16){
+				duckDnsToken = InputPrompt.askString("DuckDNS Token: ", false);
+				if (duckDnsToken.length() < 16){
+					System.out.println("This token seems to be invalid, please try again. (CRTL+C to abort)");
+				}
+			}
+			writeDuckDnsSettings(duckDnsDomain, duckDnsToken, scf);
+			
+			//create admin and assistant user
+			System.out.println("\nSetup of DuckDNS worker complete.");
+			System.out.println("Domain: " + duckDnsDomain);
+			System.out.println("Token: " + duckDnsToken);
+			//writeSuperUser(scf, adminEmail, adminPwd);
 		}
 		
 		/*
@@ -308,11 +341,11 @@ public class Setup {
 		));
 		if (DB.writeAccountDataDirectly(cr.guuid, data)){ 			//TODO: needs testing for DynamoDB (roles structure changed)
 			//store data in config file
-			if (!FilesAndStreams.replaceLineInFile(scf.assist, "\\buniversal_superuser_id=.*", 
+			if (!FilesAndStreams.replaceLineInFile(scf.assist, "^universal_superuser_id=.*", 
 							"universal_superuser_id=" + cr.guuid)
-					|| !FilesAndStreams.replaceLineInFile(scf.assist, "\\buniversal_superuser_email=.*", 
+					|| !FilesAndStreams.replaceLineInFile(scf.assist, "^universal_superuser_email=.*", 
 							"universal_superuser_email=" + cr.email)
-					|| !FilesAndStreams.replaceLineInFile(scf.assist, "\\buniversal_superuser_pwd=.*", 
+					|| !FilesAndStreams.replaceLineInFile(scf.assist, "^universal_superuser_pwd=.*", 
 							"universal_superuser_pwd=" + cr.pwdHash)
 				){
 				throw new RuntimeException("Failed to write data to config-file: " + scf.assist);
@@ -342,11 +375,11 @@ public class Setup {
 		));
 		if (DB.writeAccountDataDirectly(cr.guuid, data)){ 
 			//store data in config file
-			if (!FilesAndStreams.replaceLineInFile(scf.assist, "\\bassistant_id=.*", 
+			if (!FilesAndStreams.replaceLineInFile(scf.assist, "^assistant_id=.*", 
 							"assistant_id=" + cr.guuid)
-					|| !FilesAndStreams.replaceLineInFile(scf.assist, "\\bassistant_email=.*", 
+					|| !FilesAndStreams.replaceLineInFile(scf.assist, "^assistant_email=.*", 
 							"assistant_email=" + cr.email)
-					|| !FilesAndStreams.replaceLineInFile(scf.assist, "\\bassistant_pwd=.*", 
+					|| !FilesAndStreams.replaceLineInFile(scf.assist, "^assistant_pwd=.*", 
 							"assistant_pwd=" + cr.pwdHash)
 				){
 				throw new RuntimeException("Failed to write data to config-file: " + scf.assist);
@@ -378,6 +411,44 @@ public class Setup {
 		DatabaseInterface db = new Elasticsearch();			//NOTE: hard-coded
 		AnswerImporter aim = new AnswerImporter(db);
 		aim.loadFolder(Config.answersPath, false); 		//NOTE: make sure this comes after creation of users 		
+	}
+	
+	/**
+	 * DuckDNS setup.
+	 */
+	private static boolean writeDuckDnsSettings(String domain, String token, ServerConfigFiles scf){
+		//store data in DuckDNS config file
+		boolean duckDnsFileSuccess = FilesAndStreams.replaceLineInFile(
+				DuckDnsWorker.configFile,
+				"^domain=.*",	
+				"domain=" + domain
+		) && FilesAndStreams.replaceLineInFile(
+				DuckDnsWorker.configFile, 
+				"^token=.*",	
+				"token=" + token
+		);
+		if (!duckDnsFileSuccess){
+			throw new RuntimeException("Failed to write DuckDNS settings to file! Please check settings and try again.");
+		}
+		//add worker to assistant config
+		boolean assistFileSuccess = FilesAndStreams.replaceLineInFile(scf.assist, 
+				"^background_workers=.*", 
+				(oldLine) -> {
+					//add worker and make sure its not in there twice (remove then add again)
+					String newLine = oldLine.replaceFirst("(,|)\\s*" + DuckDnsWorker.workerName + "\\b", "").trim();
+					if (newLine.isEmpty()){
+						newLine = "DuckDNS-worker";
+					}else{
+						newLine += ",DuckDNS-worker";
+					}
+					return newLine;
+				}
+		);
+		if (!assistFileSuccess){
+			Debugger.println("Failed to write data to assist config (" + scf.assist + "). "
+					+ "Please add this worker manually: " + DuckDnsWorker.workerName, 1);
+		}
+		return true;
 	}
 	
 	//--------- Helpers ----------
@@ -435,7 +506,7 @@ public class Setup {
 			File f = new File(filePath);
 			if(!f.exists() || f.isDirectory()) { 
 				Debugger.println("Cluster-key - Config-file not found (please update manually): " + filePath, 1);
-			}else if (!FilesAndStreams.replaceLineInFile(filePath, "\\bcluster_key=.*", "cluster_key=" + newClusterKey)){
+			}else if (!FilesAndStreams.replaceLineInFile(filePath, "^cluster_key=.*", "cluster_key=" + newClusterKey)){
 				Debugger.println("Cluster-key - Error writing config-file (please update manually): " + filePath, 1);
 				//throw new RuntimeException("Cluster-key - Error writing config-file (please update manually): " + filePath);
 			}else{
