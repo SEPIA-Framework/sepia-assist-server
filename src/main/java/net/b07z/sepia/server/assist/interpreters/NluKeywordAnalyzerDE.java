@@ -800,12 +800,14 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 			possibleCMDs.add(CMD.SEARCH_RETAIL);
 			possibleScore.add(1);	index++;
 			//increase score for these by 2
+			/*
 			if (NluTools.stringContains(this_text, "(saturn|media(\\s|)(markt|maerkte)|amazon)")){
 				possibleScore.set(index, possibleScore.get(index)+2);
 			//increase by 1 'cause we have to believe ^^
 			}else{
 				possibleScore.set(index, possibleScore.get(index)+1);
 			}
+			*/
 			//retail parameters
 			search_retail_parameters(this_text, language);
 			String color = retail_parameters.get("color");
