@@ -197,7 +197,7 @@ public class Setup {
 			System.out.println("\nPlease enter your DuckDNS domain (defined at https://www.duckdns.org):");
 			while (duckDnsDomain.length() < 3){
 				duckDnsDomain = InputPrompt.askString("DuckDNS Domain: ", false);
-				duckDnsDomain = duckDnsDomain.replaceFirst("http(s|):\\u005c\\u005c", "").trim();
+				duckDnsDomain = duckDnsDomain.replaceFirst(".*http(s|)://", "").trim();
 				if (duckDnsDomain.length() < 3){
 					System.out.println("This domain name seems to be invalid, please try again. (CRTL+C to abort)");
 				}
@@ -208,13 +208,11 @@ public class Setup {
 					System.out.println("This token seems to be invalid, please try again. (CRTL+C to abort)");
 				}
 			}
+			//write duck-dns config and add DuckDNS-worker to assist-server
 			writeDuckDnsSettings(duckDnsDomain, duckDnsToken, scf);
-			
-			//create admin and assistant user
 			System.out.println("\nSetup of DuckDNS worker complete.");
 			System.out.println("Domain: " + duckDnsDomain);
-			System.out.println("Token: " + duckDnsToken);
-			//writeSuperUser(scf, adminEmail, adminPwd);
+			//System.out.println("Token: " + duckDnsToken);
 		}
 		
 		/*
