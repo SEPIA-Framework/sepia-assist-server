@@ -1,10 +1,10 @@
 package net.b07z.sepia.server.assist.chats;
 
-import net.b07z.sepia.server.assist.apis.API;
-import net.b07z.sepia.server.assist.apis.ApiResult;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.server.Config;
+import net.b07z.sepia.server.assist.services.ServiceBuilder;
+import net.b07z.sepia.server.assist.services.ServiceResult;
 import net.b07z.sepia.server.core.assistant.ACTIONS;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.tools.Converters;
@@ -149,9 +149,9 @@ public class Help {
 		return data;
 	}
 
-	public static ApiResult get(NluResult NLU_result){
+	public static ServiceResult get(NluResult NLU_result){
 		//initialize result
-		API api = new API(NLU_result);
+		ServiceBuilder api = new ServiceBuilder(NLU_result);
 		
 		//get answer
 		api.answer = Config.answers.getAnswer(NLU_result, "chat_help_0a");
@@ -170,7 +170,7 @@ public class Help {
 		api.context = CMD.CHAT;		//how do we handle chat contexts? Just like that and do the reset with cmd_summary?
 		
 		//finally build the API_Result
-		ApiResult result = api.buildApiResult();
+		ServiceResult result = api.buildResult();
 		
 		//return result_JSON.toJSONString();
 		return result;

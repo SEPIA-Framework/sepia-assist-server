@@ -4,9 +4,6 @@ import java.util.List;
 
 import org.json.simple.JSONObject;
 
-import net.b07z.sepia.server.assist.apis.ApiInterface;
-import net.b07z.sepia.server.assist.apis.ApiResult;
-import net.b07z.sepia.server.assist.apis.Open_CustomLink;
 import net.b07z.sepia.server.assist.database.CollectStuff;
 import net.b07z.sepia.server.assist.events.EventsManager;
 import net.b07z.sepia.server.assist.interpreters.InterpretationChain;
@@ -22,6 +19,9 @@ import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.ConfigServices;
 import net.b07z.sepia.server.assist.server.Start;
 import net.b07z.sepia.server.assist.server.Statistics;
+import net.b07z.sepia.server.assist.services.OpenCustomLink;
+import net.b07z.sepia.server.assist.services.ServiceInterface;
+import net.b07z.sepia.server.assist.services.ServiceResult;
 import net.b07z.sepia.server.assist.users.Authenticator;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.assistant.CMD;
@@ -120,7 +120,7 @@ public class AssistEndpoint {
 		tic = System.currentTimeMillis();			//track answer time
 		
 		//choose API and get the result of the API as JSON String
-		ApiResult answer;
+		ServiceResult answer;
 		String cmd = result.getCommand();
 		if (!cmd.equals(CMD.NO_RESULT)){
 			Debugger.println("USER " + input.user.getUserID() + " used SERVICE " + cmd + " - TS: " + System.currentTimeMillis() + " - LANGUAGE: " + input.language + " - CLIENT: " + input.clientInfo + " - API: " + Config.apiVersion, 3);
@@ -143,7 +143,7 @@ public class AssistEndpoint {
 		//TODO: add a check if the user is allowed to use API xy
 		
 		//interview module with services
-		List<ApiInterface> services = ConfigServices.getCustomOrSystemServices(input, input.user, cmd);
+		List<ServiceInterface> services = ConfigServices.getCustomOrSystemServices(input, input.user, cmd);
 		if (!services.isEmpty()){
 			InterviewInterface interview = new AbstractInterview();
 			interview.setCommand(cmd);
@@ -168,7 +168,7 @@ public class AssistEndpoint {
 			
 		//Open Link
 		} else if (cmd.matches(CMD.OPEN_LINK)){
-			answer = Open_CustomLink.get(result);
+			answer = OpenCustomLink.get(result);
 			
 		//Custom no result
 		} else if (cmd.matches("custom_no_result")){

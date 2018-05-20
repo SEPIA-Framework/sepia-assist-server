@@ -2,9 +2,9 @@ package net.b07z.sepia.server.assist.interviews;
 
 import java.util.List;
 
-import net.b07z.sepia.server.assist.apis.ApiInterface;
-import net.b07z.sepia.server.assist.apis.ApiResult;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
+import net.b07z.sepia.server.assist.services.ServiceInterface;
+import net.b07z.sepia.server.assist.services.ServiceResult;
 
 /**
  * The interview interface that is used to negotiate missing parameters.
@@ -22,7 +22,7 @@ public interface InterviewInterface {
 	/**
 	 * Set services used by this interview. If this is not used the interview module tries to load them from mapping.
 	 */
-	public void setServices(List<ApiInterface> services);
+	public void setServices(List<ServiceInterface> services);
 	
 	/**
 	 * Get the Interview_Result for this interview. Should interview the user until all required parameters are available.
@@ -35,7 +35,7 @@ public interface InterviewInterface {
 	/**
 	 * Take an interview result and get the according service results.
 	 */
-	public ApiResult getServiceResults(InterviewResult interviewResult);
+	public ServiceResult getServiceResults(InterviewResult interviewResult);
 	
 	/**
 	 * Get info of interview module.

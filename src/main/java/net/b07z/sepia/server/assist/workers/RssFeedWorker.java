@@ -4,9 +4,9 @@ import java.util.HashSet;
 
 import org.json.simple.JSONObject;
 
-import net.b07z.sepia.server.assist.apis.News_RssFeeds;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.Statistics;
+import net.b07z.sepia.server.assist.services.NewsRssFeeds;
 import net.b07z.sepia.server.assist.tools.RssFeedReader;
 import net.b07z.sepia.server.core.tools.Debugger;
 
@@ -53,7 +53,7 @@ public class RssFeedWorker implements WorkerInterface {
 		if (Config.rssReader == null){
 			Config.rssReader = new RssFeedReader();
 		}
-		this.refreshFeeds = News_RssFeeds.getAllFeeds();
+		this.refreshFeeds = NewsRssFeeds.getAllFeeds();
 	}
 	
 	@Override
@@ -185,7 +185,7 @@ public class RssFeedWorker implements WorkerInterface {
     	//get feeds
     	int goodFeeds = 0;
     	for (String feedName : refreshFeeds){
-			String url = News_RssFeeds.feedUrls.get(feedName);
+			String url = NewsRssFeeds.feedUrls.get(feedName);
 	        JSONObject feed = newRssReader.getFeed(url, feedName, maxHeadlinesPerFeed, true);
 	        if (!feed.isEmpty()){
 	        	goodFeeds++;

@@ -9,7 +9,6 @@ import java.util.TreeMap;
 
 import org.json.simple.JSONObject;
 
-import net.b07z.sepia.server.assist.apis.ApiInterface;
 import net.b07z.sepia.server.assist.interviews.AbstractInterview;
 import net.b07z.sepia.server.assist.interviews.InterviewResult;
 import net.b07z.sepia.server.assist.interviews.InterviewServicesMap;
@@ -17,6 +16,7 @@ import net.b07z.sepia.server.assist.interviews.InterviewInterface;
 import net.b07z.sepia.server.assist.server.ConfigServices;
 import net.b07z.sepia.server.assist.server.ConfigTestServer;
 import net.b07z.sepia.server.assist.server.Start;
+import net.b07z.sepia.server.assist.services.ServiceInterface;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.tools.DateTime;
 import net.b07z.sepia.server.core.tools.JSON;
@@ -90,7 +90,7 @@ public class Test_taggedSentenceMatcher {
 			InterviewServicesMap.get().put(devServiceCMD, devService);
 		//ConfigServices.loadInterviewServicesMap();
 		//ParameterConfig.setup();
-		List<ApiInterface> services = ConfigServices.getCustomOrSystemServices(input, user, result.getCommand());
+		List<ServiceInterface> services = ConfigServices.getCustomOrSystemServices(input, user, result.getCommand());
 		if (!services.isEmpty()){
 			InterviewInterface interview = new AbstractInterview();
 			interview.setCommand(result.getCommand());

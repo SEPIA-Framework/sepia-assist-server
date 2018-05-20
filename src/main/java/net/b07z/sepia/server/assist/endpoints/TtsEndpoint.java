@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import org.json.simple.JSONObject;
 
-import net.b07z.sepia.server.assist.apis.ApiResult;
 import net.b07z.sepia.server.assist.interpreters.InterpretationStep;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
@@ -12,6 +11,7 @@ import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.ConfigServices;
 import net.b07z.sepia.server.assist.server.Start;
 import net.b07z.sepia.server.assist.server.Statistics;
+import net.b07z.sepia.server.assist.services.ServiceResult;
 import net.b07z.sepia.server.assist.tts.TtsInput;
 import net.b07z.sepia.server.assist.tts.TtsInterface;
 import net.b07z.sepia.server.assist.tts.TtsResult;
@@ -195,12 +195,12 @@ public class TtsEndpoint {
 				if (text.startsWith("<weather>")){
 					input.text = "weather;" + PARAMETERS.PLACE + "=" + question;
 					NluResult res = InterpretationStep.getDirectCommand(input);
-					ApiResult api = ConfigServices.getMasterService(CMD.WEATHER).getResult(res);
+					ServiceResult api = ConfigServices.getMasterService(CMD.WEATHER).getResult(res);
 					text = api.getAnswerStringClean();
 				}else if (text.startsWith("<wikipedia>")){
 					input.text = "knowledgebase;" + PARAMETERS.SEARCH + "=" + question;
 					NluResult res = InterpretationStep.getDirectCommand(input);
-					ApiResult api = ConfigServices.getMasterService(CMD.KNOWLEDGEBASE).getResult(res);
+					ServiceResult api = ConfigServices.getMasterService(CMD.KNOWLEDGEBASE).getResult(res);
 					text = api.getAnswerStringClean();
 				}
 			}

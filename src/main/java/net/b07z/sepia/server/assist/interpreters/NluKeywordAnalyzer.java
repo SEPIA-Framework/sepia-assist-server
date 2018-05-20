@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import net.b07z.sepia.server.assist.apis.ApiInfo;
-import net.b07z.sepia.server.assist.apis.ApiInterface;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.parameters.AbstractParameterSearch;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.ConfigServices;
+import net.b07z.sepia.server.assist.services.ServiceInfo;
+import net.b07z.sepia.server.assist.services.ServiceInterface;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 
@@ -41,11 +41,11 @@ public class NluKeywordAnalyzer implements NluInterface {
 	 * @param index - integer indicating the current position in the possibleCMDs list
 	 * @return new index position in possibleCMDs, will be unchanged to input if custom service regEx is not found in 'text'
 	 */
-	public static int abstractRegExAnalyzer(String text, NluInput input, ApiInterface service,
+	public static int abstractRegExAnalyzer(String text, NluInput input, ServiceInterface service,
 						List<String> possibleCMDs, List<Integer> possibleScore, List<Map<String, String>> possibleParameters,
 						int index){
 		//get service info
-		ApiInfo serviceInfo = service.getInfo(input.language);
+		ServiceInfo serviceInfo = service.getInfo(input.language);
 		String regEx = serviceInfo.getCustomTriggerRegX(input.language);
 		
 		//has regEx at all?
@@ -123,8 +123,8 @@ public class NluKeywordAnalyzer implements NluInterface {
 		*/
 		
 		//Abstract analyzer (should come at the end because of lower priority?)
-		List<ApiInterface> services = ConfigServices.getCustomServicesList(input, input.user);
-		for (ApiInterface service : services){
+		List<ServiceInterface> services = ConfigServices.getCustomServicesList(input, input.user);
+		for (ServiceInterface service : services){
 		index = abstractRegExAnalyzer(text, input, service,
 				possibleCMDs, possibleScore, possibleParameters, index);
 		}

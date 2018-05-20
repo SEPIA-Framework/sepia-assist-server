@@ -3,11 +3,11 @@ package net.b07z.sepia.server.assist.users;
 import java.util.ArrayList;
 import org.json.simple.JSONObject;
 
-import net.b07z.sepia.server.assist.apis.ApiManager;
 import net.b07z.sepia.server.assist.data.Name;
 import net.b07z.sepia.server.assist.database.DB;
 import net.b07z.sepia.server.assist.database.Elasticsearch;
 import net.b07z.sepia.server.assist.server.Statistics;
+import net.b07z.sepia.server.assist.services.ServiceAccessManager;
 import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.JSON;
@@ -31,7 +31,7 @@ public class AccountElasticsearch implements AccountInterface{
 	//----------Main methods----------
 
 	@Override
-	public int getInfos(User user, ApiManager api, String... keys) {
+	public int getInfos(User user, ServiceAccessManager api, String... keys) {
 		
 		long tic = System.currentTimeMillis();
 		
@@ -124,13 +124,13 @@ public class AccountElasticsearch implements AccountInterface{
 	}
 	
 	@Override
-	public Object getInfoObject(User user, ApiManager api, String key) {
+	public Object getInfoObject(User user, ServiceAccessManager api, String key) {
 		getInfos(user, api, key);
 		return user.info.get(key);
 	}
 
 	@Override
-	public int setInfos(User user, ApiManager api, JSONObject data) {
+	public int setInfos(User user, ServiceAccessManager api, JSONObject data) {
 		long tic = System.currentTimeMillis();
 		if (data.isEmpty()){
 			Debugger.println("setInfo - No data was given. This will not return an error but it should not happen!", 1);	//debug
@@ -184,14 +184,14 @@ public class AccountElasticsearch implements AccountInterface{
 	}
 
 	@Override
-	public int setInfoObject(User user, ApiManager api, String key, Object object) {
+	public int setInfoObject(User user, ServiceAccessManager api, String key, Object object) {
 		JSONObject data = new JSONObject();
 		JSON.putWithDotPath(data, key, object);
 		return setInfos(user, api, data);
 	}
 	
 	@Override
-	public int deleteInfos(User user, ApiManager api, String... keys) {
+	public int deleteInfos(User user, ServiceAccessManager api, String... keys) {
 		/* this is too risky because it can delete essential parts of the account object  
 		if (keys != null && keys.length == 1){
 			return getDB().deleteFromDocument(DB.USERS, "all", user.getUserID(), keys[0]);

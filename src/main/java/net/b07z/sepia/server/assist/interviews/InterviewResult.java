@@ -1,7 +1,7 @@
 package net.b07z.sepia.server.assist.interviews;
 
-import net.b07z.sepia.server.assist.apis.ApiResult;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
+import net.b07z.sepia.server.assist.services.ServiceResult;
 
 /**
  * This class acts as a bridge between API_Result (that may be a question or comment) and NLU_Result.
@@ -11,17 +11,17 @@ import net.b07z.sepia.server.assist.interpreters.NluResult;
  */
 public class InterviewResult {
 	
-	ApiResult apiResult;
+	ServiceResult apiResult;
 	NluResult nluResult;
 	InterviewInfo iInfo;
 	boolean isComplete = false;
 	
-	public InterviewResult(Interview interview, ApiResult apiResult){
+	public InterviewResult(Interview interview, ServiceResult apiResult){
 		this.nluResult = interview.nluResult;
 		this.isComplete = interview.isFinished;
 		this.apiResult = apiResult;
 	}
-	public InterviewResult(ApiResult apiResult){
+	public InterviewResult(ServiceResult apiResult){
 		this.apiResult = apiResult;
 	}
 	public InterviewResult(Interview interview){
@@ -32,7 +32,7 @@ public class InterviewResult {
 	/**
 	 * If the interview results in a question, comment, exception, abort, etc. then it will contain an API result.
 	 */
-	public ApiResult getApiComment(){
+	public ServiceResult getApiComment(){
 		return apiResult;
 	}
 	

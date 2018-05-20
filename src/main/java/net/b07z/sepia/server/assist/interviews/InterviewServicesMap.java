@@ -6,27 +6,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import net.b07z.sepia.server.assist.apis.Alarms_Basic;
-import net.b07z.sepia.server.assist.apis.ApiInfo;
-import net.b07z.sepia.server.assist.apis.ApiInterface;
-import net.b07z.sepia.server.assist.apis.Chat_Preprocessor;
-import net.b07z.sepia.server.assist.apis.Dictionary_Linguee;
-import net.b07z.sepia.server.assist.apis.Directions_Default;
-import net.b07z.sepia.server.assist.apis.Events_Service;
-import net.b07z.sepia.server.assist.apis.Feedback_NPS;
-import net.b07z.sepia.server.assist.apis.FoodDelivery_Basic;
-import net.b07z.sepia.server.assist.apis.Fun_Count;
-import net.b07z.sepia.server.assist.apis.Knowledgebase_Wiki;
-import net.b07z.sepia.server.assist.apis.Lists_Basic;
-import net.b07z.sepia.server.assist.apis.Location_Mapsearch;
-import net.b07z.sepia.server.assist.apis.Music_Radio_Mixed;
-import net.b07z.sepia.server.assist.apis.News_RssFeeds;
-import net.b07z.sepia.server.assist.apis.SentenceConnect;
-import net.b07z.sepia.server.assist.apis.ShoppingFashion_Affilinet;
-import net.b07z.sepia.server.assist.apis.SmartDevice_Default;
-import net.b07z.sepia.server.assist.apis.TV_Program_Default;
-import net.b07z.sepia.server.assist.apis.Weather_DarkSky;
-import net.b07z.sepia.server.assist.apis.Websearch_Default;
+import net.b07z.sepia.server.assist.services.Alarms;
+import net.b07z.sepia.server.assist.services.ChatPreprocessor;
+import net.b07z.sepia.server.assist.services.ControlPreprocessor;
+import net.b07z.sepia.server.assist.services.DictionaryTranslateBasic;
+import net.b07z.sepia.server.assist.services.DirectionsGoogleMaps;
+import net.b07z.sepia.server.assist.services.EventsWrapper;
+import net.b07z.sepia.server.assist.services.FunCountToThree;
+import net.b07z.sepia.server.assist.services.Wikipedia;
+import net.b07z.sepia.server.assist.services.Lists;
+import net.b07z.sepia.server.assist.services.LocationSearchBasic;
+import net.b07z.sepia.server.assist.services.MusicRadioMixed;
+import net.b07z.sepia.server.assist.services.NewsRssFeeds;
+import net.b07z.sepia.server.assist.services.SentenceConnect;
+import net.b07z.sepia.server.assist.services.ServiceInfo;
+import net.b07z.sepia.server.assist.services.ServiceInterface;
+import net.b07z.sepia.server.assist.services.WeatherDarkSky;
+import net.b07z.sepia.server.assist.services.WebsearchBasic;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
 import net.b07z.sepia.server.core.tools.Debugger;
@@ -67,9 +63,9 @@ public class InterviewServicesMap {
 			Debugger.println("CMD: " + command, 2);
 			nCmd++;
 			for (String s : es.getValue()){
-				ApiInterface service = (ApiInterface) ClassBuilder.construct(s);
+				ServiceInterface service = (ServiceInterface) ClassBuilder.construct(s);
 				//pseudo test
-				ApiInfo info = service.getInfo("");
+				ServiceInfo info = service.getInfo("");
 				Debugger.println(" -- " + service.getClass().getSimpleName() + " - type: " + info.contentType, 2);
 				nServ++;
 			}
@@ -108,101 +104,103 @@ public class InterviewServicesMap {
 		
 		//TODO: rearrange the order! If this map is used to iterate and the scores for each service are equal the first one wins.
 		
+		String redirect = RedirectResult.class.getCanonicalName();
+		
 		//BANKING
 		ArrayList<String> banking = new ArrayList<String>();
-			banking.add(RedirectResult.class.getCanonicalName());
+			banking.add(redirect);
 			systemInterviewServicesMap.put(CMD.BANKING, banking);
 		//CAR WELCOME UPDATE
 		ArrayList<String> carWelcome = new ArrayList<String>();
-			carWelcome.add(RedirectResult.class.getCanonicalName());
+			carWelcome.add(redirect);
 			systemInterviewServicesMap.put(CMD.CAR_WELCOME_UPDATE, carWelcome);
 		//CHAT
 		ArrayList<String> chat = new ArrayList<String>();
-			chat.add(Chat_Preprocessor.class.getCanonicalName());
+			chat.add(ChatPreprocessor.class.getCanonicalName());
 			systemInterviewServicesMap.put(CMD.CHAT, chat);
 		//CONTROL DEVICES
 		ArrayList<String> controlDevice = new ArrayList<String>();
-			controlDevice.add(RedirectResult.class.getCanonicalName()); //.add("apis.Control_Preprocessor");
+			controlDevice.add(ControlPreprocessor.class.getCanonicalName()); //.add("apis.ControlPreprocessor");
 			systemInterviewServicesMap.put(CMD.CONTROL, controlDevice);
-		//SMARTHOME CONTROL
+		//SMART-DEVICE CONTROL
 		ArrayList<String> controlSmarthome = new ArrayList<String>();
-			controlSmarthome.add(SmartDevice_Default.class.getCanonicalName()); //.add("apis.Control_Preprocessor");
+			controlSmarthome.add(ControlPreprocessor.class.getCanonicalName());
 			systemInterviewServicesMap.put(CMD.SMARTDEVICE, controlSmarthome);
 		//COUNT - EASTER-EGG
 		ArrayList<String> count = new ArrayList<String>();
-			count.add(Fun_Count.class.getCanonicalName());
+			count.add(FunCountToThree.class.getCanonicalName());
 			systemInterviewServicesMap.put(CMD.COUNT, count);
 		//DICTIONARY
 		ArrayList<String> dict = new ArrayList<String>();
-			dict.add(Dictionary_Linguee.class.getCanonicalName());
+			dict.add(DictionaryTranslateBasic.class.getCanonicalName());
 			systemInterviewServicesMap.put(CMD.DICT_TRANSLATE, dict);
 		//DIRECTIONS
 		ArrayList<String> directions = new ArrayList<String>();
-			directions.add(Directions_Default.class.getCanonicalName());
+			directions.add(DirectionsGoogleMaps.class.getCanonicalName());
 			systemInterviewServicesMap.put(CMD.DIRECTIONS, directions);
 		//LOCATIONS
 		ArrayList<String> locations = new ArrayList<String>();
-			locations.add(Location_Mapsearch.class.getCanonicalName());
+			locations.add(LocationSearchBasic.class.getCanonicalName());
 			systemInterviewServicesMap.put(CMD.LOCATION, locations);
 		//MOBILITY
 		ArrayList<String> mobility = new ArrayList<String>();
-			mobility.add(Directions_Default.class.getCanonicalName()); //Mobility_Qixxit
+			mobility.add(DirectionsGoogleMaps.class.getCanonicalName()); //Mobility_Qixxit
 			systemInterviewServicesMap.put(CMD.MOBILITY, mobility);
 		//KONWLEDGEBASE
 		ArrayList<String> kb = new ArrayList<String>();
-			kb.add(Knowledgebase_Wiki.class.getCanonicalName());
+			kb.add(Wikipedia.class.getCanonicalName());
 			systemInterviewServicesMap.put(CMD.KNOWLEDGEBASE, kb);
 		//MOVIES
 		ArrayList<String> movies = new ArrayList<String>();
-			movies.add(RedirectResult.class.getCanonicalName()); //.add("apis.Movies_iTunes");
+			movies.add(redirect); //.add("apis.Movies_iTunes");
 			systemInterviewServicesMap.put(CMD.MOVIES, movies);
 		//TV program
 		ArrayList<String> tvProgram = new ArrayList<String>();
-			tvProgram.add(TV_Program_Default.class.getCanonicalName());
+			tvProgram.add(redirect);									//TvProgramUrlDe.class.getCanonicalName()
 			systemInterviewServicesMap.put(CMD.TV_PROGRAM, tvProgram);
 		//LISTS
 		ArrayList<String> list = new ArrayList<String>();
-			list.add(Lists_Basic.class.getCanonicalName());
+			list.add(Lists.class.getCanonicalName());
 			systemInterviewServicesMap.put(CMD.LISTS, list);
 		//FLIGHTS
 		ArrayList<String> flights = new ArrayList<String>();
-			flights.add(RedirectResult.class.getCanonicalName()); 	//flights.add("apis.Flights_Expedia_v2");
+			flights.add(redirect); 										//Flights
 			systemInterviewServicesMap.put(CMD.FLIGHTS, flights);
 		//HOTELS
 		ArrayList<String> hotels = new ArrayList<String>();
-			hotels.add(RedirectResult.class.getCanonicalName()); //.add("apis.Hotels_Expedia");
+			hotels.add(redirect); 										//Hotels
 			systemInterviewServicesMap.put(CMD.HOTELS, hotels);
 		//TICKETS
 		ArrayList<String> tickets = new ArrayList<String>();
-			tickets.add(RedirectResult.class.getCanonicalName()); //.add("apis.Tickets_Default");
+			tickets.add(redirect); 										//Tickets
 			systemInterviewServicesMap.put(CMD.TICKETS, tickets);
 		//MUSIC RADIO
 		ArrayList<String> radio = new ArrayList<String>();
-			radio.add(Music_Radio_Mixed.class.getCanonicalName());
+			radio.add(MusicRadioMixed.class.getCanonicalName());
 			systemInterviewServicesMap.put(CMD.MUSIC_RADIO, radio);
 		//NEWS
 		ArrayList<String> news = new ArrayList<String>();
-			news.add(News_RssFeeds.class.getCanonicalName());
+			news.add(NewsRssFeeds.class.getCanonicalName());
 			systemInterviewServicesMap.put(CMD.NEWS, news);
 		//FASHION SHOPPING
 		ArrayList<String> fashion = new ArrayList<String>();
-			fashion.add(ShoppingFashion_Affilinet.class.getCanonicalName());
+			fashion.add(redirect);										//ShoppingFashionAffilinet.class.getCanonicalName()
 			systemInterviewServicesMap.put(CMD.FASHION, fashion);
 		//FOOD DELIVERY
 		ArrayList<String> food = new ArrayList<String>();
-			food.add(FoodDelivery_Basic.class.getCanonicalName());
+			food.add(redirect);											//FoodDeliveryUrl.class.getCanonicalName()
 			systemInterviewServicesMap.put(CMD.FOOD, food);
 		//WEATHER
 		ArrayList<String> weather = new ArrayList<String>();
-			weather.add(Weather_DarkSky.class.getCanonicalName());
+			weather.add(WeatherDarkSky.class.getCanonicalName());
 			systemInterviewServicesMap.put(CMD.WEATHER, weather);
 		//WEBSEARCH
 		ArrayList<String> websearch = new ArrayList<String>();
-			websearch.add(Websearch_Default.class.getCanonicalName());
+			websearch.add(WebsearchBasic.class.getCanonicalName());
 			systemInterviewServicesMap.put(CMD.WEB_SEARCH, websearch);
 		//TIMER
 		ArrayList<String> timer = new ArrayList<String>();
-			timer.add(Alarms_Basic.class.getCanonicalName());
+			timer.add(Alarms.class.getCanonicalName());
 			systemInterviewServicesMap.put(CMD.TIMER, timer);
 		//SENTENCE
 		ArrayList<String> sentence_connect = new ArrayList<String>();
@@ -214,11 +212,11 @@ public class InterviewServicesMap {
 			systemInterviewServicesMap.put(CMD.REPEAT_ME, parrot);
 		//FEEDBACK - NPS
 		ArrayList<String> feedback_nps = new ArrayList<String>();
-			feedback_nps.add(Feedback_NPS.class.getCanonicalName());
+			feedback_nps.add(redirect);									//FeedbackNPS.class.getCanonicalName()
 			systemInterviewServicesMap.put(CMD.FEEDBACK_NPS, feedback_nps);
 		//EVENTS SERVICE
 		ArrayList<String> events = new ArrayList<String>();
-			events.add(Events_Service.class.getCanonicalName());
+			events.add(EventsWrapper.class.getCanonicalName());
 			systemInterviewServicesMap.put(CMD.EVENTS_PERSONAL, events);
 			
 		Debugger.println("finished loading services mapping for "+ systemInterviewServicesMap.size() + " interview modules.", 3);

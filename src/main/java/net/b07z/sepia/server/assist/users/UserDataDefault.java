@@ -11,13 +11,13 @@ import java.util.Set;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import net.b07z.sepia.server.assist.apis.ApiInfo;
-import net.b07z.sepia.server.assist.apis.ApiInterface;
 import net.b07z.sepia.server.assist.assistant.Assistant;
 import net.b07z.sepia.server.assist.data.Address;
 import net.b07z.sepia.server.assist.database.DB;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.Statistics;
+import net.b07z.sepia.server.assist.services.ServiceInfo;
+import net.b07z.sepia.server.assist.services.ServiceInterface;
 import net.b07z.sepia.server.core.data.Answer;
 import net.b07z.sepia.server.core.data.CmdMap;
 import net.b07z.sepia.server.core.data.UserDataList;
@@ -180,7 +180,7 @@ public class UserDataDefault implements UserDataInterface {
 	//--- CUSTOM SERVICE ---
 
 	@Override
-	public void registerCustomService(User user, ApiInfo serviceInfo, ApiInterface clazz){
+	public void registerCustomService(User user, ServiceInfo serviceInfo, ServiceInterface clazz){
 		String command = serviceInfo.intendedCommand;
 		if (command == null || command.isEmpty() || !command.matches(Config.userIdPrefix + "\\d\\d\\d\\d+\\..*")){
 			throw new RuntimeException("NO (VALID) INTENDED COMMAND!");

@@ -7,13 +7,13 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.answers.AnswerTools;
-import net.b07z.sepia.server.assist.apis.API;
-import net.b07z.sepia.server.assist.apis.ApiInterface;
-import net.b07z.sepia.server.assist.apis.ApiResult;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.parameters.Confirm;
 import net.b07z.sepia.server.assist.server.Config;
+import net.b07z.sepia.server.assist.services.ServiceBuilder;
+import net.b07z.sepia.server.assist.services.ServiceInterface;
+import net.b07z.sepia.server.assist.services.ServiceResult;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.DateTime;
@@ -30,14 +30,14 @@ public class AbstractInterview implements InterviewInterface{
 		
 	//info
 	String command;						//command connected to this interview
-	List<ApiInterface> services;		//the services used (order matters!)
+	List<ServiceInterface> services;		//the services used (order matters!)
 		
 	@Override
 	public void setCommand(String command) {
 		this.command = command;
 	}
 	@Override
-	public void setServices(List<ApiInterface> services){
+	public void setServices(List<ServiceInterface> services){
 		this.services = services;
 	}
 	
@@ -72,11 +72,11 @@ public class AbstractInterview implements InterviewInterface{
 			//check parameter
 			if (input.isEmpty() && !assistant.isFinal(p.getName())){
 				//empty means ask at least once, max 3 times, after that abort
-				ApiResult question = assistant.ask(p);
+				ServiceResult question = assistant.ask(p);
 				return new InterviewResult(question);
 			
 			}else if (!assistant.isFinal(p.getName())){
-				ApiResult comment = assistant.buildParameterOrComment(p, iInfo);
+				ServiceResult comment = assistant.buildParameterOrComment(p, iInfo);
 				//null is the expected 'all good' result ^^
 				if (comment != null){
 					return new InterviewResult(comment);
@@ -98,7 +98,7 @@ public class AbstractInterview implements InterviewInterface{
 			}
 			boolean isFinal = assistant.isFinal(p.getName());
 			if (!isFinal && !input.isEmpty()){
-				ApiResult comment = assistant.buildParameterOrComment(p, iInfo);
+				ServiceResult comment = assistant.buildParameterOrComment(p, iInfo);
 				if (comment != null){
 					return new InterviewResult(comment);
 				}
@@ -135,7 +135,7 @@ public class AbstractInterview implements InterviewInterface{
 								choiceToAskFor.setQuestion(newQuestion);
 							}
 							//interrupt loop and return question
-							ApiResult question = assistant.ask(choiceToAskFor);
+							ServiceResult question = assistant.ask(choiceToAskFor);
 							return new InterviewResult(question);
 						}
 					}
@@ -161,7 +161,7 @@ public class AbstractInterview implements InterviewInterface{
 
 				if (p != null){
 					//System.out.println("dynamic parameter build: " + dynamicParameters); 		//DEBUG
-					ApiResult comment = assistant.buildParameterOrComment(p, iInfo);
+					ServiceResult comment = assistant.buildParameterOrComment(p, iInfo);
 					if (comment != null){
 						return new InterviewResult(comment);
 					}
@@ -184,12 +184,12 @@ public class AbstractInterview implements InterviewInterface{
 	}
 	
 	@Override
-	public ApiResult getServiceResults(InterviewResult interviewResult){
+	public ServiceResult getServiceResults(InterviewResult interviewResult){
 		InterviewInfo iInfo = interviewResult.getInterviewInfo();
 		Interview assistant = new Interview(interviewResult);
 				
 		//get single service results
-		List<ApiResult> results = assistant.getServiceResults(iInfo.getServices());
+		List<ServiceResult> results = assistant.getServiceResults(iInfo.getServices());
 		
 		//LEGACY SUPPORT: if service is tagged as 'stand-alone' simply take the result
 		if ((results.size() == 1) && results.get(0).getApiInfo().worksStandalone){
@@ -198,7 +198,7 @@ public class AbstractInterview implements InterviewInterface{
 		}
 		
 		//build result - cards are collected from services, answer(s) (parameters) too, the rest is build here 
-		API servicesResult = new API(assistant.nluResult);
+		ServiceBuilder servicesResult = new ServiceBuilder(assistant.nluResult);
 		String status = "";
 		String customAnswer = "";
 		JSONArray cards = new JSONArray();
@@ -206,17 +206,17 @@ public class AbstractInterview implements InterviewInterface{
 		JSONObject resultInfo = new JSONObject();
 		int n = 0;
 		// - collect
-		for (ApiResult r : results){
+		for (ServiceResult r : results){
 			//first service is the MASTER - get answer parameters ...
 			if (n == 0){
 				//the MASTER service MUST supply these parameters:
 				resultInfo = r.getResultInfo();
 				status = r.getStatus();
 				//the MASTER can take over full control here using the "stand-alone" features:
-				if (status.equals(API.INCOMPLETE)){
+				if (status.equals(ServiceBuilder.INCOMPLETE)){
 					Parameter p = r.getIncompleteParameter();
 					if (p != null){
-						ApiResult question = assistant.ask(p);
+						ServiceResult question = assistant.ask(p);
 						//an answer should be able to use data and actions as well, so copy them over from result
 						JSONArray resultCards = r.getCardInfo();
 						if (resultCards != null && !resultCards.isEmpty()){
@@ -259,9 +259,9 @@ public class AbstractInterview implements InterviewInterface{
 		String ansTag;
 		if (!customAnswer.isEmpty()){
 			ansTag = customAnswer;
-		}else if (status.equals(API.SUCCESS)){
+		}else if (status.equals(ServiceBuilder.SUCCESS)){
 			ansTag = iInfo.getSuccessAnswer();
-		}else if (status.equals(API.OKAY)){
+		}else if (status.equals(ServiceBuilder.OKAY)){
 			ansTag = iInfo.getOkayAnswer();
 		}else{
 			ansTag = iInfo.getFailAnswer();
@@ -301,15 +301,15 @@ public class AbstractInterview implements InterviewInterface{
 		// . . .
 		
 		//TODO: add success criteria
-		if (!cards.isEmpty() || status.equals(API.SUCCESS)){
-			servicesResult.status = API.SUCCESS;
+		if (!cards.isEmpty() || status.equals(ServiceBuilder.SUCCESS)){
+			servicesResult.status = ServiceBuilder.SUCCESS;
 		}
 		
 		//clean up to minimize data stream
 		servicesResult.removeParameter(PARAMETERS.FINAL); 		//TODO: replace with "all" tag?
 		
 		//finally build the meta API_Result
-		ApiResult result = servicesResult.buildApiResult();
+		ServiceResult result = servicesResult.buildResult();
 				
 		//System.out.println("INTERVIEW-MODULE RESULT: " + result.getResultJSON()); 					//debug
 		return result;

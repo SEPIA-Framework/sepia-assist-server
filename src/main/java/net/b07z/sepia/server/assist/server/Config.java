@@ -9,7 +9,6 @@ import java.util.Properties;
 import net.b07z.sepia.server.assist.answers.AnswerLoaderElasticsearch;
 import net.b07z.sepia.server.assist.answers.AnswerLoader;
 import net.b07z.sepia.server.assist.answers.AnswerLoaderFile;
-import net.b07z.sepia.server.assist.apis.ApiManager;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.database.ConfigDynamoDB;
 import net.b07z.sepia.server.assist.database.ConfigElasticSearch;
@@ -29,6 +28,7 @@ import net.b07z.sepia.server.assist.interpreters.NormalizerLight;
 import net.b07z.sepia.server.assist.interpreters.NormalizerLightDE;
 import net.b07z.sepia.server.assist.interpreters.NormalizerLightEN;
 import net.b07z.sepia.server.assist.interpreters.NormalizerLightTR;
+import net.b07z.sepia.server.assist.services.ServiceAccessManager;
 import net.b07z.sepia.server.assist.tools.RssFeedReader;
 import net.b07z.sepia.server.assist.tts.TtsAcapelaWeb;
 import net.b07z.sepia.server.assist.users.AccountDynamoDB;
@@ -139,7 +139,7 @@ public class Config {
 	}
 	
 	//Default users and managers
-	public static ApiManager superuserApiMng = new ApiManager("API_BOSS", "dev12345"); 	//universal API manager for internal procedures
+	public static ServiceAccessManager superuserApiMng = new ServiceAccessManager("API_BOSS", "dev12345"); 	//universal API manager for internal procedures
 	private static Authenticator superuserToken;
 	private static User superUser;
 	public static String superuserId = "uid1000";						//**for DB sentences check also Defaults.USER

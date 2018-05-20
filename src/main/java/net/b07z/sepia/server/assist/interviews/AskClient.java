@@ -1,11 +1,11 @@
 package net.b07z.sepia.server.assist.interviews;
 
 import net.b07z.sepia.server.assist.answers.AnswerTools;
-import net.b07z.sepia.server.assist.apis.API;
-import net.b07z.sepia.server.assist.apis.ApiResult;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.parameters.YesNo;
 import net.b07z.sepia.server.assist.server.Config;
+import net.b07z.sepia.server.assist.services.ServiceBuilder;
+import net.b07z.sepia.server.assist.services.ServiceResult;
 import net.b07z.sepia.server.core.assistant.ACTIONS;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Converters;
@@ -33,9 +33,9 @@ public class AskClient {
 	 * @param wildcards - parameters given to the question to fill out wildcards
 	 * @return
 	 */
-	public static ApiResult question(String questionKey, String missingInputParam, NluResult nluResult, Object... wildcards){
+	public static ServiceResult question(String questionKey, String missingInputParam, NluResult nluResult, Object... wildcards){
 		//initialize result
-		API api = new API(nluResult);
+		ServiceBuilder api = new ServiceBuilder(nluResult);
 		
 		//debug
 		//System.out.println("Dialog stage/Last CMD rep.: " + NLU_result.input.dialog_stage + "/" + NLU_result.input.last_cmd_N);
@@ -77,7 +77,7 @@ public class AskClient {
 		}
 		
 		//finally build the API_Result
-		ApiResult result = api.buildApiResult();
+		ServiceResult result = api.buildResult();
 
 		//return result_JSON.toJSONString();
 		return result;
@@ -89,9 +89,9 @@ public class AskClient {
 	 * registers the increase token, compares it to the database and calls the old API (the one that needs the access) again with the new
 	 * access level. 
 	 */
-	public static ApiResult increaseAccessLevel(NluResult nluResult){
+	public static ServiceResult increaseAccessLevel(NluResult nluResult){
 		//initialize result
-		API api = new API(nluResult);
+		ServiceBuilder api = new ServiceBuilder(nluResult);
 		
 		//debug
 		//System.out.println("Dialog stage/Last CMD rep.: " + NLU_result.input.dialog_stage + "/" + NLU_result.input.last_cmd_N);
@@ -109,7 +109,7 @@ public class AskClient {
 		api.cmdSummary = nluResult.cmdSummary;		//cmd_summary is very important here because it's needed to fuse answer and initial command later
 		
 		//finally build the API_Result
-		ApiResult result = api.buildApiResult();
+		ServiceResult result = api.buildResult();
 
 		//return result_JSON.toJSONString();
 		return result;

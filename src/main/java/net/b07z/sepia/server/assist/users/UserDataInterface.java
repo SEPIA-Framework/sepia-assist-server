@@ -7,9 +7,9 @@ import java.util.Set;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import net.b07z.sepia.server.assist.apis.ApiInfo;
-import net.b07z.sepia.server.assist.apis.ApiInterface;
 import net.b07z.sepia.server.assist.data.Address;
+import net.b07z.sepia.server.assist.services.ServiceInfo;
+import net.b07z.sepia.server.assist.services.ServiceInterface;
 import net.b07z.sepia.server.core.data.Answer;
 import net.b07z.sepia.server.core.data.CmdMap;
 import net.b07z.sepia.server.core.data.UserDataList;
@@ -65,7 +65,7 @@ public interface UserDataInterface {
 	 * @param clazz - newly created class
 	 * @return saved successfully? true/false
 	 */
-	public void registerCustomService(User user, ApiInfo serviceInfo, ApiInterface clazz);
+	public void registerCustomService(User user, ServiceInfo serviceInfo, ServiceInterface clazz);
 	/**
 	 * Get a user specific list of custom command-to-services mappings. 
 	 * @param user - get custom services of who?

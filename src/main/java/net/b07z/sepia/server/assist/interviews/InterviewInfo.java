@@ -6,10 +6,10 @@ import java.util.Map;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import net.b07z.sepia.server.assist.apis.API;
-import net.b07z.sepia.server.assist.apis.ApiInfo;
-import net.b07z.sepia.server.assist.apis.ApiInterface;
 import net.b07z.sepia.server.assist.data.Parameter;
+import net.b07z.sepia.server.assist.services.ServiceBuilder;
+import net.b07z.sepia.server.assist.services.ServiceInfo;
+import net.b07z.sepia.server.assist.services.ServiceInterface;
 import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.JSON;
 
@@ -30,14 +30,14 @@ public class InterviewInfo {
 	public List<Parameter> optionalParameters;		//parameters that are optional and get replaced by default or ignored if not set
 	public List<List<Parameter>> listOfRequiredChoices;	//list of list with "one of these" parameters
 	public List<String> listOfChoiceQuestions;					//list with the questions to the required choices
-	private List<ApiInterface> services; 			//services used
+	private List<ServiceInterface> services; 			//services used
 	private Map<String, String> customAnswerMap;	//use this to add answers to your service
 	private List<String> answerParameters;			//list of parameters that are used to build the answer. The order matters!
 	
 	/**
 	 * InterviewInfo can be generated out of a command and an API_Info of a service module.
 	 */
-	public InterviewInfo(String cmd, ApiInfo apiInfo){
+	public InterviewInfo(String cmd, ServiceInfo apiInfo){
 		this.cmd = cmd;
 		this.requiredParameters = apiInfo.requiredParameters;
 		this.optionalParameters = apiInfo.optionalParameters;
@@ -57,14 +57,14 @@ public class InterviewInfo {
 	/**
 	 * Store the services.
 	 */
-	public InterviewInfo setServices(List<ApiInterface> services){
+	public InterviewInfo setServices(List<ServiceInterface> services){
 		this.services = services;
 		return this;
 	}
 	/**
 	 * Get the services.
 	 */
-	public List<ApiInterface> getServices(){
+	public List<ServiceInterface> getServices(){
 		return services;
 	}
 	
@@ -72,21 +72,21 @@ public class InterviewInfo {
 	 * Get default "success" answer.
 	 */
 	public String getSuccessAnswer(){
-		return customAnswerMap.get(API.SUCCESS);
+		return customAnswerMap.get(ServiceBuilder.SUCCESS);
 	}
 	/**
 	 * Get default "fail" answer.
 	 */
 	public String getFailAnswer(){
-		return customAnswerMap.get(API.FAIL);
+		return customAnswerMap.get(ServiceBuilder.FAIL);
 	}
 	/**
 	 * Get default "okay" answer. If not exists get "fail" answer.
 	 */
 	public String getOkayAnswer(){
-		String ans = customAnswerMap.get(API.OKAY);
+		String ans = customAnswerMap.get(ServiceBuilder.OKAY);
 		if (ans == null || ans.isEmpty()){
-			ans = customAnswerMap.get(API.FAIL);
+			ans = customAnswerMap.get(ServiceBuilder.FAIL);
 		}
 		return ans;
 	}
@@ -115,7 +115,7 @@ public class InterviewInfo {
 		
 		//services
 		JSONArray jas = new JSONArray();
-		for (ApiInterface ai : services){
+		for (ServiceInterface ai : services){
 			JSON.add(jas, ai.getClass().getName());
 		}
 		JSON.add(info, "services", jas);

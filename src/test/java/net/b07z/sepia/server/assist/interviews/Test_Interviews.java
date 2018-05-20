@@ -3,7 +3,6 @@ package net.b07z.sepia.server.assist.interviews;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.answers.DefaultReplies;
-import net.b07z.sepia.server.assist.apis.ApiResult;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluInterface;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
@@ -14,6 +13,7 @@ import net.b07z.sepia.server.assist.interviews.InterviewInterface;
 import net.b07z.sepia.server.assist.parameters.ParameterConfig;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.ConfigTestServer;
+import net.b07z.sepia.server.assist.services.ServiceResult;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
@@ -75,7 +75,7 @@ public class Test_Interviews {
 		
 		//Interview 1
 		InterviewResult iResult = assistant.getMissingParameters(nlu_res);
-		ApiResult result;
+		ServiceResult result;
 		if (iResult.isComplete()){
 			result = assistant.getServiceResults(iResult);
 		}else{
@@ -138,7 +138,7 @@ public class Test_Interviews {
 		
 		//Interview 1
 		InterviewResult iResult = assistant.getMissingParameters(nlu_res);
-		ApiResult result;
+		ServiceResult result;
 		if (iResult.isComplete()){
 			result = assistant.getServiceResults(iResult);
 			//check
@@ -182,7 +182,7 @@ public class Test_Interviews {
 		
 		//Interview 1
 		InterviewResult iResult = assistant.getMissingParameters(nlu_res);
-		ApiResult result;
+		ServiceResult result;
 		if (iResult.isComplete()){
 			result = assistant.getServiceResults(iResult);
 			//check

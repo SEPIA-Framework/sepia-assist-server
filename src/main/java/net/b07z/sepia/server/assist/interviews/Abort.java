@@ -1,9 +1,9 @@
 package net.b07z.sepia.server.assist.interviews;
 
-import net.b07z.sepia.server.assist.apis.API;
-import net.b07z.sepia.server.assist.apis.ApiResult;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.server.Config;
+import net.b07z.sepia.server.assist.services.ServiceBuilder;
+import net.b07z.sepia.server.assist.services.ServiceResult;
 import net.b07z.sepia.server.core.tools.Converters;
 
 /**
@@ -14,9 +14,9 @@ import net.b07z.sepia.server.core.tools.Converters;
  */
 public class Abort {
 	
-	public static ApiResult get(NluResult NLU_result){
+	public static ServiceResult get(NluResult NLU_result){
 		//initialize result
-		API api = new API(NLU_result);
+		ServiceBuilder api = new ServiceBuilder(NLU_result);
 		
 		//make answer - if more than one direct answer choose randomly
 		api.answer = Config.answers.getAnswer(NLU_result, "abort_0a");
@@ -25,7 +25,7 @@ public class Abort {
 		api.status = "success";
 				
 		//finally build the API_Result
-		ApiResult result = api.buildApiResult();
+		ServiceResult result = api.buildResult();
 				
 		//return result_JSON.toJSONString();
 		return result;

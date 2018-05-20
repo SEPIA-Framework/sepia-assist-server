@@ -1,12 +1,12 @@
 package net.b07z.sepia.server.assist.interviews;
 
-import net.b07z.sepia.server.assist.apis.API;
-import net.b07z.sepia.server.assist.apis.ApiInfo;
-import net.b07z.sepia.server.assist.apis.ApiInterface;
-import net.b07z.sepia.server.assist.apis.ApiResult;
-import net.b07z.sepia.server.assist.apis.ApiInfo.Content;
-import net.b07z.sepia.server.assist.apis.ApiInfo.Type;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
+import net.b07z.sepia.server.assist.services.ServiceBuilder;
+import net.b07z.sepia.server.assist.services.ServiceInfo;
+import net.b07z.sepia.server.assist.services.ServiceInterface;
+import net.b07z.sepia.server.assist.services.ServiceResult;
+import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
+import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
@@ -17,17 +17,17 @@ import net.b07z.sepia.server.core.tools.Debugger;
  * @author Florian Quirin
  *
  */
-public class Repeat_Me implements ApiInterface{
+public class Repeat_Me implements ServiceInterface{
 	
 	//info
-	public ApiInfo getInfo(String language){
-		return new ApiInfo(Type.other, Content.action, true);
+	public ServiceInfo getInfo(String language){
+		return new ServiceInfo(Type.other, Content.action, true);
 	}
 
 	//result
-	public ApiResult getResult(NluResult NLU_result){
+	public ServiceResult getResult(NluResult NLU_result){
 		//initialize result
-		API api = new API(NLU_result);
+		ServiceBuilder api = new ServiceBuilder(NLU_result);
 		
 		//get text
 		String text = NLU_result.getParameter(PARAMETERS.REPEAT_THIS);
@@ -45,7 +45,7 @@ public class Repeat_Me implements ApiInterface{
 		api.status = "success";
 		
 		//build the API_Result
-		ApiResult result = api.buildApiResult();
+		ServiceResult result = api.buildResult();
 		
 		//return result.result_JSON.toJSONString();
 		return result;

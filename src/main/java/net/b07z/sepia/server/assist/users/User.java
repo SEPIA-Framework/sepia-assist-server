@@ -8,7 +8,6 @@ import java.util.Map;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import net.b07z.sepia.server.assist.apis.ApiManager;
 import net.b07z.sepia.server.assist.assistant.LOCATION;
 import net.b07z.sepia.server.assist.data.Address;
 import net.b07z.sepia.server.assist.data.Name;
@@ -16,6 +15,7 @@ import net.b07z.sepia.server.assist.data.SentenceMatch;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.server.Config;
+import net.b07z.sepia.server.assist.services.ServiceAccessManager;
 import net.b07z.sepia.server.assist.tools.GeoCoding;
 import net.b07z.sepia.server.core.data.Role;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
@@ -196,7 +196,7 @@ public final class User {
 	 * @param api - API_Manager for the API that is calling this ...
 	 * @return nick name or first name or default
 	 */
-	public String getName(ApiManager api){
+	public String getName(ServiceAccessManager api){
 		String name = defaultName;
 		if (userName == null && !checked.containsKey(ACCOUNT.USER_NAME)){
 			loadInfoFromAccount(api, ACCOUNT.USER_NAME);
@@ -369,7 +369,7 @@ public final class User {
 	 * @param keys - info array to look for in database
 	 * @return resultCode (0 - no error, 1 - can't reach database, 2 - access denied, 3 - no account found, 4 - other error)
 	 */
-	public int loadInfoFromAccount(ApiManager api, Object... keys){
+	public int loadInfoFromAccount(ServiceAccessManager api, Object... keys){
 		//filter keys for already loaded and add to checked
 		ArrayList<String> filtered = new ArrayList<String>();
 		for (Object o : keys){
@@ -394,7 +394,7 @@ public final class User {
 	 * @param data - JSON with (full or partial) document data to set/update
 	 * @return resultCode (0 - no error, 1 - can't reach database, 2 - access denied, 3 - no account found, 4 - other error)
 	 */
-	public int saveInfoToAccount(ApiManager api, JSONObject data){
+	public int saveInfoToAccount(ServiceAccessManager api, JSONObject data){
 		int resultCode = accountData.setInfos(this, api, data);
 		return resultCode;
 	}
@@ -406,7 +406,7 @@ public final class User {
 	 * @param object - object to save at key position
 	 * @return resultCode (0 - no error, 1 - can't reach database, 2 - access denied, 3 - no account found, 4 - other error)
 	 */
-	public int saveInfoToAccount(ApiManager api, String key, Object object){
+	public int saveInfoToAccount(ServiceAccessManager api, String key, Object object){
 		int resultCode = accountData.setInfoObject(this, api, key, object);
 		return resultCode;
 	}
@@ -417,7 +417,7 @@ public final class User {
 	 * @param keys - fields in account to delete. Can use "." to delete single fields from objects.
 	 * @return resultCode (0 - no error, 1 - can't reach database, 2 - access denied, 3 - no account found, 4 - other error)
 	 */
-	public int deleteInfoFromAccount(ApiManager api, Object... keys){
+	public int deleteInfoFromAccount(ServiceAccessManager api, Object... keys){
 		ArrayList<String> filtered = new ArrayList<String>();
 		for (Object o : keys){
 			String s = (String) o;

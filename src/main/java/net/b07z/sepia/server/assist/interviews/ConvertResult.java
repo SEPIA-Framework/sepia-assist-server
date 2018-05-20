@@ -2,10 +2,10 @@ package net.b07z.sepia.server.assist.interviews;
 
 import java.util.List;
 
-import net.b07z.sepia.server.assist.apis.ApiInterface;
-import net.b07z.sepia.server.assist.apis.ApiResult;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.server.ConfigServices;
+import net.b07z.sepia.server.assist.services.ServiceInterface;
+import net.b07z.sepia.server.assist.services.ServiceResult;
 
 /**
  * Switch from one service result to another.
@@ -25,13 +25,13 @@ public class ConvertResult {
 	 * @param newParameter - new parameter for the new service
 	 * @param newValue - new value of the new parameter, can be the old one or a modified version
 	 */
-	public static ApiResult switchService(String cmd, NluResult nluResult, 
+	public static ServiceResult switchService(String cmd, NluResult nluResult, 
 							String oldParameter, String newParameter, String newValue){
 		//rewrite NLU_Result
 		nluResult.setParameter(newParameter, newValue);
 		nluResult.removeParameter(oldParameter);
 		
-		List<ApiInterface> services = ConfigServices.getCustomOrSystemServices(nluResult.input, nluResult.input.user, cmd);
+		List<ServiceInterface> services = ConfigServices.getCustomOrSystemServices(nluResult.input, nluResult.input.user, cmd);
 		//this should not be the case here but to be sure ...
 		if (services == null || services.isEmpty()){
 			return NoResult.get(nluResult);

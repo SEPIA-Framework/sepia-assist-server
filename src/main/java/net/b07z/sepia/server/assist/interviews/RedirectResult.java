@@ -1,13 +1,13 @@
 package net.b07z.sepia.server.assist.interviews;
 
-import net.b07z.sepia.server.assist.apis.API;
-import net.b07z.sepia.server.assist.apis.ApiInfo;
-import net.b07z.sepia.server.assist.apis.ApiInterface;
-import net.b07z.sepia.server.assist.apis.ApiResult;
-import net.b07z.sepia.server.assist.apis.ApiInfo.Content;
-import net.b07z.sepia.server.assist.apis.ApiInfo.Type;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.server.Config;
+import net.b07z.sepia.server.assist.services.ServiceBuilder;
+import net.b07z.sepia.server.assist.services.ServiceInfo;
+import net.b07z.sepia.server.assist.services.ServiceInterface;
+import net.b07z.sepia.server.assist.services.ServiceResult;
+import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
+import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
@@ -18,12 +18,12 @@ import net.b07z.sepia.server.core.tools.Debugger;
  * @author Florian Quirin
  *
  */
-public class RedirectResult implements ApiInterface{
+public class RedirectResult implements ServiceInterface{
 	
 	@Override
-	public ApiInfo getInfo(String language) {
+	public ServiceInfo getInfo(String language) {
 		//type
-		ApiInfo info = new ApiInfo(Type.plain, Content.data, true);
+		ServiceInfo info = new ServiceInfo(Type.plain, Content.data, true);
 		
 		//Parameters:
 		//nada
@@ -36,7 +36,7 @@ public class RedirectResult implements ApiInterface{
 		return info;
 	}
 	@Override
-	public ApiResult getResult(NluResult NLU_result) {
+	public ServiceResult getResult(NluResult NLU_result) {
 		return get( NLU_result);
 	}
 	
@@ -44,7 +44,7 @@ public class RedirectResult implements ApiInterface{
 	 * Get "redirect" result with default key "redirect_result_0a".
 	 * @return
 	 */
-	public static ApiResult get(NluResult NLU_result){
+	public static ServiceResult get(NluResult NLU_result){
 		return get(NLU_result, "redirect_result_0a");
 	}
 	/**
@@ -53,9 +53,9 @@ public class RedirectResult implements ApiInterface{
 	 * @param answer_key - link to answer database like "redirect_result_0a"
 	 * @return
 	 */
-	public static ApiResult get(NluResult NLU_result, String answer_key){
+	public static ServiceResult get(NluResult NLU_result, String answer_key){
 		//initialize result
-		API api = new API(NLU_result);
+		ServiceBuilder api = new ServiceBuilder(NLU_result);
 		
 		Debugger.println("cmd: redirect_result", 2);		//debug
 		Debugger.println("SERVICE REDIRECT: '" + NLU_result.getCommand() + "' - text: " + NLU_result.input.textRaw, 3);		//debug
@@ -73,10 +73,10 @@ public class RedirectResult implements ApiInterface{
 		api.context = CMD.RESULT_REDIRECT;	//do we want to reset the context here? I think we should 'cause its really a completely unknown command
 		
 		//reset input to type: question (tell the client that this is not a question anymore if it was one)
-		api.responseType = API.RESPONSE_INFO;
+		api.responseType = ServiceBuilder.RESPONSE_INFO;
 		
 		//finally build the API_Result
-		ApiResult result = api.buildApiResult();
+		ServiceResult result = api.buildResult();
 		
 		//return result.result_JSON.toJSONString();
 		return result;

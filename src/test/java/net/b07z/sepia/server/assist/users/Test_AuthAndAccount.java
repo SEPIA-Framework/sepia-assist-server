@@ -5,13 +5,13 @@ import java.util.List;
 
 import org.json.simple.JSONObject;
 
-import net.b07z.sepia.server.assist.apis.ApiManager;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.data.Address;
 import net.b07z.sepia.server.assist.data.Name;
 import net.b07z.sepia.server.assist.database.DB;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.Start;
+import net.b07z.sepia.server.assist.services.ServiceAccessManager;
 import net.b07z.sepia.server.core.data.Role;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
 import net.b07z.sepia.server.core.tools.Debugger;
@@ -155,7 +155,7 @@ public class Test_AuthAndAccount {
 				
 		//create user and API manager
 		User user = new User(null, authToken);
-		ApiManager apiMan = Config.superuserApiMng; 		//TODO: this is not really implemented yet
+		ServiceAccessManager apiMan = Config.superuserApiMng; 		//TODO: this is not really implemented yet
 		
 		//get roles previously defined
 		System.out.println("\n" + user.userName.nick + " has roles: " + user.getUserRoles().toString());
@@ -203,7 +203,7 @@ public class Test_AuthAndAccount {
 		//--------- USER TESTS -----------
 		
 		System.out.println("\nTest user class:");
-		ApiManager apiManager = Config.superuserApiMng;
+		ServiceAccessManager apiManager = Config.superuserApiMng;
 		
 		//create fresh user
 		authToken = getAuthToken(guuid, "", loginToken, client);

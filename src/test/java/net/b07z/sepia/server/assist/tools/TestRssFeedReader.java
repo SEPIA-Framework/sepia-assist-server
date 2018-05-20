@@ -5,7 +5,7 @@ import java.util.Map.Entry;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import net.b07z.sepia.server.assist.apis.News_RssFeeds;
+import net.b07z.sepia.server.assist.services.NewsRssFeeds;
 import net.b07z.sepia.server.core.tools.JSON;
 import net.b07z.sepia.server.core.tools.Timer;
 
@@ -35,7 +35,7 @@ public class TestRssFeedReader {
 		
 		int tested = 0;
 		int good = 0;
-		for (Entry<String, String> e : News_RssFeeds.feedUrls.entrySet()){
+		for (Entry<String, String> e : NewsRssFeeds.feedUrls.entrySet()){
 			System.out.println("\nPRODUCTION FEED: " + e.getValue() + "\n");
 			JSONObject feed = rss.getFeed(e.getValue(), e.getKey(), maxEntries, cacheIt);
 			tested++;

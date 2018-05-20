@@ -1,10 +1,10 @@
 package net.b07z.sepia.server.assist.interviews;
 
-import net.b07z.sepia.server.assist.apis.API;
-import net.b07z.sepia.server.assist.apis.ApiResult;
 import net.b07z.sepia.server.assist.assistant.CmdBuilder;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.server.Config;
+import net.b07z.sepia.server.assist.services.ServiceBuilder;
+import net.b07z.sepia.server.assist.services.ServiceResult;
 import net.b07z.sepia.server.core.assistant.ACTIONS;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.tools.Converters;
@@ -26,7 +26,7 @@ public class NoResult {
 	 * @param NLU_result
 	 * @return
 	 */
-	public static ApiResult get(NluResult NLU_result){
+	public static ServiceResult get(NluResult NLU_result){
 		return get(NLU_result, "no_answer_0a");
 	}
 	/**
@@ -35,9 +35,9 @@ public class NoResult {
 	 * @param answer_key - link to answer database like "no_answer_0a"
 	 * @return
 	 */
-	public static ApiResult get(NluResult NLU_result, String answer_key){
+	public static ServiceResult get(NluResult NLU_result, String answer_key){
 		//initialize result
-		API api = new API(NLU_result);
+		ServiceBuilder api = new ServiceBuilder(NLU_result);
 		
 		Debugger.println("cmd: No Result", 2);		//debug
 		Debugger.println("NO_RESULT: " + NLU_result.input.textRaw + " - LANGUAGE: " + NLU_result.language + " - CLIENT: " + NLU_result.input.clientInfo + " - API: " + Config.apiVersion, 3);		//debug
@@ -67,10 +67,10 @@ public class NoResult {
 		api.context = CMD.NO_RESULT;	//do we want to reset the context here? I think we should 'cause its really a completely unknown command
 		
 		//reset input to type: question (tell the client that this is not a question anymore if it was one)
-		api.responseType = API.RESPONSE_INFO;
+		api.responseType = ServiceBuilder.RESPONSE_INFO;
 		
 		//finally build the API_Result
-		ApiResult result = api.buildApiResult();
+		ServiceResult result = api.buildResult();
 		
 		//return result.result_JSON.toJSONString();
 		return result;

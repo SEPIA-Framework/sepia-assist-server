@@ -12,12 +12,12 @@ import javax.servlet.http.Part;
 
 import org.json.simple.JSONObject;
 
-import net.b07z.sepia.server.assist.apis.ApiInfo;
-import net.b07z.sepia.server.assist.apis.ApiInterface;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.ConfigServices;
 import net.b07z.sepia.server.assist.server.Start;
 import net.b07z.sepia.server.assist.server.Statistics;
+import net.b07z.sepia.server.assist.services.ServiceInfo;
+import net.b07z.sepia.server.assist.services.ServiceInterface;
 import net.b07z.sepia.server.assist.users.Authenticator;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.assist.users.UserDataInterface;
@@ -119,11 +119,11 @@ public class SdkEndpoint {
 	        try{
 	        	//validate service
 	        	String className = ConfigServices.getCustomPackage() + "." + userId + "." + fileName.replaceFirst("\\.class", "");
-	        	ApiInterface service = (ApiInterface) ConfigServices.addCustomClassLoader(className).loadClass(className).newInstance();
+	        	ServiceInterface service = (ServiceInterface) ConfigServices.addCustomClassLoader(className).loadClass(className).newInstance();
 	        	//loader.close();
 	        	
 	        	//remove all 'old' commands
-	        	ApiInfo info = service.getInfo(user.language);
+	        	ServiceInfo info = service.getInfo(user.language);
 	        	UserDataInterface userData = user.getUserDataAccess();
 	        	long deletedTriggers = userData.deletePersonalSdkCommands(user, info.intendedCommand, null);
 	        	

@@ -2,7 +2,7 @@ package net.b07z.sepia.server.assist.users;
 
 import org.json.simple.JSONObject;
 
-import net.b07z.sepia.server.assist.apis.ApiManager;
+import net.b07z.sepia.server.assist.services.ServiceAccessManager;
 
 /**
  * Interface for any account management class.
@@ -23,7 +23,7 @@ public interface AccountInterface {
 	 * 
 	 * @return error code (0 - no error, 1 - can't reach database, 2 - access denied (or invalid parameters), 3 - no account found, 4 - other error (e.g. wrong key combination)
 	 */
-	public int getInfos(User user, ApiManager api, String... keys);
+	public int getInfos(User user, ServiceAccessManager api, String... keys);
 	
 	/**
 	 * Set a bunch of user values in account database at the same time to reduce traffic. 
@@ -36,7 +36,7 @@ public interface AccountInterface {
 	 * 
 	 * @return error code (0 - no error, 1 - can't reach database, 2 - access denied, 3 - no account found, 4 - other error (e.g. wrong key combination))
 	 */
-	public int setInfos(User user, ApiManager api, JSONObject data);
+	public int setInfos(User user, ServiceAccessManager api, JSONObject data);
 	
 	/**
 	 * Get any user specific object from account database.
@@ -48,7 +48,7 @@ public interface AccountInterface {
 	 * 
 	 * @return info object or null if it is not found
 	 */
-	public Object getInfoObject(User user, ApiManager api, String key);
+	public Object getInfoObject(User user, ServiceAccessManager api, String key);
 	
 	/**
 	 * Set any user specific object in account database.
@@ -61,7 +61,7 @@ public interface AccountInterface {
 	 * 
 	 * @return error code (0 - no error, 1 - can't reach database, 2 - access denied, 3 - no account found, 4 - other error)
 	 */
-	public int setInfoObject(User user, ApiManager api, String key, Object object);
+	public int setInfoObject(User user, ServiceAccessManager api, String key, Object object);
 	
 	/**
 	 * Delete one or more fields from database.
@@ -71,7 +71,7 @@ public interface AccountInterface {
 	 * @param keys - fields in the database (can include '.' to access single fields in objects)
 	 * @return error code (0 - no error, 1 - can't reach database, 2 - access denied, 3 - no account found, 4 - other error (e.g. wrong key combination)) 
 	 */
-	public int deleteInfos(User user, ApiManager api, String... keys);
+	public int deleteInfos(User user, ServiceAccessManager api, String... keys);
 	
 	/**
 	 * Write basic statistics for a user like last log-in and total usage etc. ...

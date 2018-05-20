@@ -5,12 +5,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import net.b07z.sepia.server.assist.apis.ApiInterface;
-import net.b07z.sepia.server.assist.apis.ApiResult;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.parameters.Parameter_Handler;
 import net.b07z.sepia.server.assist.server.ConfigServices;
+import net.b07z.sepia.server.assist.services.ServiceInterface;
+import net.b07z.sepia.server.assist.services.ServiceResult;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
@@ -98,7 +98,7 @@ public class Interview {
 	 * @param failMsg - reference to an answer that will be given on the 3rd try, e.g. "Sorry I didn't get it! Try again later."
 	 * @return API_Result to send back to client
 	 */
-	public ApiResult ask(String parameter, String question, String failMsg){
+	public ServiceResult ask(String parameter, String question, String failMsg){
 		if (nluResult.input.isRepeatedAnswerToParameter(parameter) < 2){
 			return AskClient.question(question, parameter, nluResult);
 		}else{
@@ -108,13 +108,13 @@ public class Interview {
 	/**
 	 * Same as ask(String parameter, String question, String failMsg) but using "abort_0b" for failMsg.
 	 */
-	public ApiResult ask(String parameter, String question){
+	public ServiceResult ask(String parameter, String question){
 		return ask(parameter, question, "abort_0b");
 	}
 	/**
 	 * Shortcut to "ask(String parameter, String question, String failMsg)" with default "failMsg". Automatically chooses custom or default question. 
 	 */
-	public ApiResult ask(Parameter parameter){
+	public ServiceResult ask(Parameter parameter){
 		String questionFail = parameter.getQuestionFailAnswer();
 		String question = parameter.getQuestion();
 		if (question.isEmpty()){
@@ -167,10 +167,10 @@ public class Interview {
 	 * Get all API_Results from services.
 	 * @param refList - list of services (String)
 	 */
-	public List<ApiResult> getServiceResultsFromStringList(List<String> refList){
-		List<ApiResult> res = new ArrayList<>();
+	public List<ServiceResult> getServiceResultsFromStringList(List<String> refList){
+		List<ServiceResult> res = new ArrayList<>();
 		for (String a : refList){
-			ApiInterface api = (ApiInterface) ClassBuilder.construct(a);
+			ServiceInterface api = (ServiceInterface) ClassBuilder.construct(a);
 			res.add(api.getResult(nluResult));
 		}
 		return res;
@@ -179,9 +179,9 @@ public class Interview {
 	 * Get all API_Results from services.
 	 * @param apiList - list of services (API_Interface)
 	 */
-	public List<ApiResult> getServiceResults(List<ApiInterface> apiList){
-		List<ApiResult> res = new ArrayList<>();
-		for (ApiInterface api : apiList){
+	public List<ServiceResult> getServiceResults(List<ServiceInterface> apiList){
+		List<ServiceResult> res = new ArrayList<>();
+		for (ServiceInterface api : apiList){
 			res.add(api.getResult(nluResult));
 		}
 		return res;
@@ -195,7 +195,7 @@ public class Interview {
 	 * @param getResult - result that has been received by "getLocation", "getTime", etc. and that contains an "action"
 	 * @param customReply - a direct reply (&lt;direct&gt;my reply) or reply tag (e.g. custom_add_request_0a) of the answer that should be given. Use empty for default.  
 	 */
-	public ApiResult handleInterviewAction(String getResult, String customReply){
+	public ServiceResult handleInterviewAction(String getResult, String customReply){
 		String[] data = getResult.split(";;");
 		//System.out.println("handleInterviewAction - res: " + getResult); 		//debug
 		if (data[0].equals(ACTION_ADD)){
@@ -222,7 +222,7 @@ public class Interview {
 	 * @param getResult - result that has been received by "getLocation", "getTime", etc. and that contains an "action"
 	 * @param customReply - a direct reply (&lt;direct&gt;my reply) or reply tag (e.g. custom_add_request_0a) of the answer that should be given. Use empty for default.
 	 */
-	public ApiResult handleInterviewError(String getResult, String customReply){
+	public ServiceResult handleInterviewError(String getResult, String customReply){
 		String[] data = getResult.split(";;");
 		if (data[0].equals(ERROR_MISSING)){
 			if (data[2] != null && data[2].equals("<user_location>")){
@@ -260,7 +260,7 @@ public class Interview {
 	 * This method is called by an interview module when there is non-final input. It tries to build the default-format result
 	 * for the "Parameter". Additional service-specific methods might be added via "InterviewInfo". 
 	 */
-	public ApiResult buildParameterOrComment(Parameter p, InterviewInfo iInfo){
+	public ServiceResult buildParameterOrComment(Parameter p, InterviewInfo iInfo){
 		//1) parameter extraction
 		//-a) response handler does parameter search. TODO: Force parameter search here on direct input?
 		//...

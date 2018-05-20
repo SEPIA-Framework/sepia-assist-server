@@ -4,13 +4,13 @@ import java.util.Calendar;
 
 import org.json.simple.JSONObject;
 
-import net.b07z.sepia.server.assist.apis.API;
 import net.b07z.sepia.server.assist.assistant.CmdBuilder;
 import net.b07z.sepia.server.assist.assistant.LOCATION;
 import net.b07z.sepia.server.assist.events.EventLabels.Constants;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.parameters.SportsLeague;
 import net.b07z.sepia.server.assist.server.Config;
+import net.b07z.sepia.server.assist.services.ServiceBuilder;
 import net.b07z.sepia.server.assist.tools.DateTimeConverters;
 import net.b07z.sepia.server.assist.users.ACCOUNT;
 import net.b07z.sepia.server.assist.workers.OpenLigaWorker;
@@ -38,7 +38,7 @@ public class EventsManager {
 	 */
 	public static JSONObject buildCommonEvents(NluInput input){
 		//event actions
-		API actionBuilder = new API();  //use this only to build actions
+		ServiceBuilder actionBuilder = new ServiceBuilder();  //use this only to build actions
 		
 		//User local environment
 		//
@@ -260,7 +260,7 @@ public class EventsManager {
 	/**
 	 * Add a default command-button to actions
 	 */
-	private static void addCommandButton(API actionBuilder, String title, String cmd){
+	private static void addCommandButton(ServiceBuilder actionBuilder, String title, String cmd){
 		actionBuilder.addAction(ACTIONS.BUTTON_CMD);
 		actionBuilder.putActionInfo("title", title);
 		actionBuilder.putActionInfo("info", "direct_cmd");
@@ -273,7 +273,7 @@ public class EventsManager {
 	/**
 	 * Add a scheduled message
 	 */
-	private static void addScheduledMessage(API actionBuilder, String eventId, long triggerDelayMS, String message){
+	private static void addScheduledMessage(ServiceBuilder actionBuilder, String eventId, long triggerDelayMS, String message){
 		actionBuilder.addAction(ACTIONS.SCHEDULE_MSG);
 		actionBuilder.putActionInfo("info", "entertainWhileIdle");		//TODO: one could distinguish messages that are only triggered when the app is not in foreground vs. important notes etc ...
 		actionBuilder.putActionInfo("eventId", eventId);

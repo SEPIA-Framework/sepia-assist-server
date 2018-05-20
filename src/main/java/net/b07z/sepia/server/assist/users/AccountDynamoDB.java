@@ -5,11 +5,11 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 
-import net.b07z.sepia.server.assist.apis.ApiManager;
 import net.b07z.sepia.server.assist.data.Name;
 import net.b07z.sepia.server.assist.database.DB;
 import net.b07z.sepia.server.assist.database.DynamoDB;
 import net.b07z.sepia.server.assist.server.Statistics;
+import net.b07z.sepia.server.assist.services.ServiceAccessManager;
 import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
@@ -37,7 +37,7 @@ public class AccountDynamoDB implements AccountInterface{
 	//----------Main methods----------
 
 	//get one or more data elements from database
-	public int getInfos(User user, ApiManager api, String... keys) {
+	public int getInfos(User user, ServiceAccessManager api, String... keys) {
 		
 		long tic = System.currentTimeMillis();
 		
@@ -159,13 +159,13 @@ public class AccountDynamoDB implements AccountInterface{
 	}
 	
 	//get object from database - use the bunch read method and directly recover the object
-	public Object getInfoObject(User user, ApiManager api, String key) {
+	public Object getInfoObject(User user, ServiceAccessManager api, String key) {
 		getInfos(user, api, key);
 		return user.info.get(key);
 	}
 
 	//set items in database
-	public int setInfos(User user, ApiManager api, JSONObject data) {
+	public int setInfos(User user, ServiceAccessManager api, JSONObject data) {
 		long tic = System.currentTimeMillis();
 		if (data.isEmpty()){
 			Debugger.println("setInfo - No data was given. This will not return an error but it should not happen!", 1);	//debug
@@ -229,12 +229,12 @@ public class AccountDynamoDB implements AccountInterface{
 	}
 
 	//set object in database - use the bunch write method with single key and object
-	public int setInfoObject(User user, ApiManager api, String key, Object object) {
+	public int setInfoObject(User user, ServiceAccessManager api, String key, Object object) {
 		return setInfos(user, api, JSON.make(key, object));
 	}
 	
 	@Override
-	public int deleteInfos(User user, ApiManager api, String... keys) {
+	public int deleteInfos(User user, ServiceAccessManager api, String... keys) {
 		//Note: we don't actually delete objects, we just set the field value to empty string
 		JSONObject dataAsJson = new JSONObject();
 		for (String k : keys)

@@ -40,6 +40,12 @@ import net.b07z.sepia.server.core.tools.Security;
 import spark.Request;
 import spark.Response;
 
+/**
+ * Main class that starts the server.
+ * 
+ * @author Florian Quirin
+ *
+ */
 public class Start {
 
 	//stuff

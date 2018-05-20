@@ -1,8 +1,8 @@
 package net.b07z.sepia.server.assist.interviews;
 
-import net.b07z.sepia.server.assist.apis.ApiResult;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interpreters.NluTools;
+import net.b07z.sepia.server.assist.services.ServiceResult;
 
 /**
  * The API to reconstruct the last command and sends it again.
@@ -39,8 +39,8 @@ public class Repeat_Last {
 		return new_result;
 	}
 	
-	public static ApiResult failed(NluResult NLU_result) {
-		ApiResult result = NoResult.get(NLU_result, "repeat_0a");
+	public static ServiceResult failed(NluResult NLU_result) {
+		ServiceResult result = NoResult.get(NLU_result, "repeat_0a");
 		return result;
 	}
 }

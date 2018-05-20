@@ -3,8 +3,6 @@ package net.b07z.sepia.server.assist.interpreters;
 import java.util.HashMap;
 import java.util.List;
 
-import net.b07z.sepia.server.assist.apis.ApiInfo;
-import net.b07z.sepia.server.assist.apis.ApiInterface;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.parameters.Confirm;
 import net.b07z.sepia.server.assist.parameters.DateAndTime;
@@ -12,6 +10,8 @@ import net.b07z.sepia.server.assist.parameters.ParameterConfig;
 import net.b07z.sepia.server.assist.parameters.Parameter_Handler;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.ConfigServices;
+import net.b07z.sepia.server.assist.services.ServiceInfo;
+import net.b07z.sepia.server.assist.services.ServiceInterface;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
@@ -125,8 +125,8 @@ public class ResponseHandler implements NluInterface{
 		String tweaked = response;		//by default it is the pure response
 		
 		//get all non-final, optional parameters and remove them
-		List<ApiInterface> services = ConfigServices.getCustomOrSystemServices(input, input.user, command);
-		ApiInfo info = services.get(0).getInfo(nluResult.language);
+		List<ServiceInterface> services = ConfigServices.getCustomOrSystemServices(input, input.user, command);
+		ServiceInfo info = services.get(0).getInfo(nluResult.language);
 		for (Parameter p : info.optionalParameters){
 			//is parameter already final?
 			if (nluResult.isParameterFinal(p.getName())){
