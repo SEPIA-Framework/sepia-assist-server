@@ -58,13 +58,13 @@ public class LocationSearchBasic implements ServiceInterface{
 	}
 
 	//result
-	public ServiceResult getResult(NluResult NLU_result){
+	public ServiceResult getResult(NluResult nluResult){
 		//initialize result
-		ServiceBuilder api = new ServiceBuilder(NLU_result);
+		ServiceBuilder api = new ServiceBuilder(nluResult);
 		
 		//get parameters
-		String place = NLU_result.getParameter(PARAMETERS.SEARCH); 		//TODO: change to PLACE?
-		String poi = NLU_result.getParameter(PARAMETERS.POI);
+		String place = nluResult.getParameter(PARAMETERS.SEARCH); 		//TODO: change to PLACE?
+		String poi = nluResult.getParameter(PARAMETERS.POI);
 		String search;
 		
 		Debugger.println("cmd: location, place: " + place + ", poi: " + poi, 2);		//debug
@@ -73,19 +73,19 @@ public class LocationSearchBasic implements ServiceInterface{
 		String end_param;
 		if (poi.isEmpty() && !place.isEmpty()){
 			search = place;
-			user_spec_location = LOCATION.getUserSpecificLocation_4_Maps(NLU_result.input.user, search);
+			user_spec_location = LOCATION.getUserSpecificLocation_4_Maps(nluResult.input.user, search);
 			end_param = user_spec_location[0];
 		}else if (place.isEmpty() && !poi.isEmpty()){
 			search = poi;
-			user_spec_location = LOCATION.getUserSpecificLocation_4_Maps(NLU_result.input.user, ""); //just fake
+			user_spec_location = LOCATION.getUserSpecificLocation_4_Maps(nluResult.input.user, ""); //just fake
 			end_param = "";
 		}else if (!place.isEmpty() && !poi.isEmpty()){
 			search = place; 	//temporary
-			user_spec_location = LOCATION.getUserSpecificLocation_4_Maps_with_POI(NLU_result.input.user, place);
+			user_spec_location = LOCATION.getUserSpecificLocation_4_Maps_with_POI(nluResult.input.user, place);
 			end_param = user_spec_location[0];
 		}else{
 			search = "";
-			user_spec_location = LOCATION.getUserSpecificLocation_4_Maps(NLU_result.input.user, ""); //just fake
+			user_spec_location = LOCATION.getUserSpecificLocation_4_Maps(nluResult.input.user, ""); //just fake
 			end_param = "";
 		}
 		
@@ -93,7 +93,7 @@ public class LocationSearchBasic implements ServiceInterface{
 		
 		//reconstruct original phrase to get proper item names
 		Normalizer normalizer = Config.inputNormalizers.get(api.language);
-		String end_to_say = normalizer.reconstructPhrase(NLU_result.input.textRaw, end);
+		String end_to_say = normalizer.reconstructPhrase(nluResult.input.textRaw, end);
 		
 		//check place for personal locations
 		if (!end_param.isEmpty()){
@@ -104,18 +104,18 @@ public class LocationSearchBasic implements ServiceInterface{
 			if (end.isEmpty() || end_to_say.isEmpty()){
 				if (LOCATION.canBeAddedToAccount(end_param)){
 					//return No_Result.get(NLU_result, "default_miss_info_0b");
-					NLU_result.setParameter(PARAMETERS.TYPE, "addresses");
-					NLU_result.setParameter(PARAMETERS.ACTION, "add");
-					return ConfigServices.dashboard.getResult(NLU_result);
+					nluResult.setParameter(PARAMETERS.TYPE, "addresses");
+					nluResult.setParameter(PARAMETERS.ACTION, "add");
+					return ConfigServices.dashboard.getResult(nluResult);
 				}else{
-					return NoResult.get(NLU_result, "default_miss_info_0a");
+					return NoResult.get(nluResult, "default_miss_info_0a");
 				}
 			}
 		}
 		
 		//check again
 		if (end.isEmpty() && poi.isEmpty()){
-			return AskClient.question("location_ask_0a", "search", NLU_result);
+			return AskClient.question("location_ask_0a", "search", nluResult);
 		}else{
 			//check for individual locations
 			/*
@@ -138,7 +138,7 @@ public class LocationSearchBasic implements ServiceInterface{
 		}
 		
 		//get answer
-		api.answer = Config.answers.getAnswer(NLU_result, "location_1a", end_to_say);
+		api.answer = Config.answers.getAnswer(nluResult, "location_1a", end_to_say);
 		api.answerClean = Converters.removeHTML(api.answer);
 		
 		//make action: browser url call
@@ -146,7 +146,7 @@ public class LocationSearchBasic implements ServiceInterface{
 		String appleMapsURL = "";
 		try {
 			//iOS Apple Maps
-			if (CLIENTS.isAppleCompatible(NLU_result.input.clientInfo)){
+			if (CLIENTS.isAppleCompatible(nluResult.input.clientInfo)){
 				appleMapsURL = "http://maps.apple.com/?" +
 						"q=" + URLEncoder.encode(endSimple, "UTF-8");
 			}

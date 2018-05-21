@@ -10,12 +10,13 @@ import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
 
 /**
- * Default Dashboard handler.
+ * Default dashboard/menu handler. This is kind of a special "service" that can be used in other services as well to
+ * trigger for example a client action that opens the addresses menu as a helper to show the user what he can do. 
  * 
  * @author Florian Quirin
  *
  */
-public class Open_Dashboard implements ServiceInterface{
+public class OpenDashboard implements ServiceInterface{
 	
 	//info
 	public ServiceInfo getInfo(String language){
