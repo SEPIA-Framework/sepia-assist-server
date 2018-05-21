@@ -28,7 +28,7 @@ Thumbs.db
 Desktop.ini
 
 # Project
-Xtensions/Backup/
+Xtensions/Backups/*.*
 
 # Avoid ignoring Maven wrapper jar file (.jar files are usually ignored)
 !/.mvn/wrapper/maven-wrapper.jar
