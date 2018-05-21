@@ -1,7 +1,9 @@
 package net.b07z.sepia.server.assist.services;
 
 import net.b07z.sepia.server.assist.assistant.CmdBuilder;
+import net.b07z.sepia.server.assist.data.Card;
 import net.b07z.sepia.server.assist.data.Parameter;
+import net.b07z.sepia.server.assist.data.Card.ElementType;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.parameters.NewsSection;
@@ -9,6 +11,7 @@ import net.b07z.sepia.server.assist.parameters.NewsSection.NSection;
 import net.b07z.sepia.server.assist.parameters.NewsType.NType;
 import net.b07z.sepia.server.assist.parameters.SportsLeague;
 import net.b07z.sepia.server.assist.parameters.SportsTeam;
+import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.Statistics;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
@@ -157,6 +160,16 @@ public class SoccerBundesligaInfo implements ServiceInterface{
 			api.addAction(ACTIONS.OPEN_IN_APP_BROWSER);
 			api.putActionInfo("url", url);
 			api.hasAction = true;
+			
+			//card for URL
+			Card card = new Card(Card.TYPE_SINGLE);
+			card.addElement(ElementType.link, 
+					JSON.make("title", "Sport1" + ":", "desc", "<i>\"" + getLocal(NSection.soccer, api.language) + "\"</i>"),
+					null, null, "", 
+					url, 
+					Config.urlWebImages + "cards/search.png", 
+					null, null);
+			api.addCard(card.getJSON());
 			
 			//answer
 			api.setCustomAnswer(soccerResultsAns);

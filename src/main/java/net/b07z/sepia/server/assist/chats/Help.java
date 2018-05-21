@@ -8,9 +8,12 @@ import net.b07z.sepia.server.assist.services.ServiceResult;
 import net.b07z.sepia.server.core.assistant.ACTIONS;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.tools.Converters;
+import net.b07z.sepia.server.core.tools.JSON;
 
 /**
- * Help me! Do some helpful stuff here ^_^
+ * Help me! Do some helpful stuff here ^_^.<br>
+ * NOTE: This "service" does not implement the ServiceInterface since it is usually called by one of 
+ * the chat-services only to get the result object.
  * 
  * @author Florian Quirin
  *
@@ -67,15 +70,15 @@ public class Help {
 					+ "<ul>"
 						+ "<li>Wäsche waschen auf meine To-Do Liste setzen</li>"
 						+ "<li>Milch auf meine Einkaufsliste setzen</li>"
-						+ "<li>Eine neue liste erstellen</li>"
+						+ "<li>Eine neue Liste erstellen</li>"
 						+ "<li>Zeig mir die Supermarkt Liste</li>"
 					+ "</ul>"
+					/*
 					+ "<h3>Essen bestellen</h3>"
 					+ "<ul>"
 						+ "<li>Ich würde gerne was essen</li>"
 						+ "<li>Ich habe Hunger</li>"
 					+ "</ul>"
-					/*
 					+ "<h3>Shopping</h3>"
 					+ "<ul>"
 						+ "<li>Ich brauche neue Schuhe von Nike/Adidas</li>"
@@ -126,11 +129,11 @@ public class Help {
 						+ "<li>Create a new list</li>"
 						+ "<li>Show me my supermarket list</li>"
 					+ "</ul>"
+					/*
 					+ "<h3>Food delivery</h3>"
 					+ "<ul>"
 						+ "<li>I'd like to eat something</li>"
 					+ "</ul>"
-					/*
 					+ "<h3>Shopping</h3>"
 					+ "<ul>"
 						+ "<li>I need new shoes</li>"
@@ -149,12 +152,12 @@ public class Help {
 		return data;
 	}
 
-	public static ServiceResult get(NluResult NLU_result){
+	public static ServiceResult get(NluResult nluResult){
 		//initialize result
-		ServiceBuilder api = new ServiceBuilder(NLU_result);
+		ServiceBuilder api = new ServiceBuilder(nluResult);
 		
 		//get answer
-		api.answer = Config.answers.getAnswer(NLU_result, "chat_help_0a");
+		api.answer = Config.answers.getAnswer(nluResult, "chat_help_0a");
 		api.answerClean = Converters.removeHTML(api.answer);
 		
 		//add help action
@@ -162,9 +165,10 @@ public class Help {
 			
 		api.addAction(ACTIONS.SHOW_HTML_RESULT);
 		api.putActionInfo("data", data);
+		api.putActionInfo("options", JSON.make("targetView", "bigResults"));
 		api.hasAction = true;
 		
-		api.status = "success";
+		api.setStatusSuccess();
 		
 		//anything else?
 		api.context = CMD.CHAT;		//how do we handle chat contexts? Just like that and do the reset with cmd_summary?

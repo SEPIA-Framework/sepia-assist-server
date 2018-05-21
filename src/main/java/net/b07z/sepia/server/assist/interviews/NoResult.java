@@ -31,26 +31,26 @@ public class NoResult {
 	}
 	/**
 	 * Get "no answer" with custom answer key.
-	 * @param NLU_result
+	 * @param nluResult
 	 * @param answer_key - link to answer database like "no_answer_0a"
 	 * @return
 	 */
-	public static ServiceResult get(NluResult NLU_result, String answer_key){
+	public static ServiceResult get(NluResult nluResult, String answer_key){
 		//initialize result
-		ServiceBuilder api = new ServiceBuilder(NLU_result);
+		ServiceBuilder api = new ServiceBuilder(nluResult);
 		
 		Debugger.println("cmd: No Result", 2);		//debug
-		Debugger.println("NO_RESULT: " + NLU_result.input.textRaw + " - LANGUAGE: " + NLU_result.language + " - CLIENT: " + NLU_result.input.clientInfo + " - API: " + Config.apiVersion, 3);		//debug
+		Debugger.println("NO_RESULT: " + nluResult.input.textRaw + " - LANGUAGE: " + nluResult.language + " - CLIENT: " + nluResult.input.clientInfo + " - API: " + Config.apiVersion, 3);		//debug
 		
 		//get answer
-		api.answer = Config.answers.getAnswer(NLU_result, answer_key);		//default is "no_answer_0a"
+		api.answer = Config.answers.getAnswer(nluResult, answer_key);		//default is "no_answer_0a"
 		api.answerClean = Converters.removeHTML(api.answer);
 		
 		//websearch action
 		api.addAction(ACTIONS.BUTTON_CMD);
 		api.putActionInfo("title", "Websearch");
 		api.putActionInfo("info", "direct_cmd");
-		api.putActionInfo("cmd", CmdBuilder.getWebSearch(NLU_result.input.textRaw));
+		api.putActionInfo("cmd", CmdBuilder.getWebSearch(nluResult.input.textRaw));
 		api.putActionInfo("options", JSON.make(ACTIONS.SKIP_TTS, true));
 		
 		//help button
@@ -58,7 +58,7 @@ public class NoResult {
 		
 		//teach UI button
 		api.addAction(ACTIONS.BUTTON_TEACH_UI);
-		api.putActionInfo("input", NLU_result.input.textRaw);
+		api.putActionInfo("info", JSON.make("input", nluResult.input.textRaw));
 		
 		//no result makes ILA sad :-(
 		//api.mood = Assistant.mood_decrease(api.mood);

@@ -486,7 +486,7 @@ chat_deny_0a;;     rep=0|mood=5;;		Ist doch gar nicht so. ;;char=neutral
 chat_with_pleasure_0a;;     rep=0|mood=5;;		Gerne! ;;char=neutral
 chat_nobody_knows_0a;;	rep=0|mood=5;;	Das weiß wohl niemand ;;char=neutral
 no_answer_0a;;		rep=0|mood=5;;		Hab ich nicht verstanden, könntest du das noch einmal neu formulieren? ;;char=neutral
-no_answer_0a;;		rep=0|mood=5;;		<user_name>, ich bin mir nicht ganz sicher. Kannst du das noch einmal anders sagen? ;;char=polite,neutral
+no_answer_0a;;		rep=0|mood=5;;		<user_name>, ich bin mir nicht ganz sicher. Kannst du das noch einmal anders formulieren? ;;char=polite,neutral
 no_answer_0a;;		rep=0|mood=5;;		Tut mir leid, bin unsicher was du meinst. Könntest du das umformulieren? ;;char=neutral
 no_answer_0a;;		rep=0|mood=5;;		Tut mir leid <user_name>, ich bin nicht sicher was du meinst. ;;char=neutral
 no_answer_0a;;		rep=0|mood=5;;		Sorry <user_name>, hab nicht verstanden was du sagen willst. ;;char=cool,neutral
