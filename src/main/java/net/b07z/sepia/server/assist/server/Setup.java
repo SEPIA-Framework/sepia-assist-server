@@ -38,6 +38,7 @@ public class Setup {
 	private static String pathToAssistConfig = "../sepia-assist-server/" + Config.xtensionsFolder;
 	private static String pathToTeachConfig = "../sepia-teach-server/" + Config.xtensionsFolder;
 	private static String pathToWebSocketConfig = "../sepia-websocket-server-java/" + Config.xtensionsFolder;
+	private static String pathToLetsEncryptScripts = "../letsencrypt/";
 	
 	private enum ServerType{
 		custom,
@@ -60,7 +61,9 @@ public class Setup {
 		String teach;
 		String webSocket;
 		
-		public List<String> getAll(){
+		String duckdns;
+		
+		public List<String> getAllServers(){
 			return Arrays.asList(assist, teach, webSocket);
 		}
 	}
@@ -428,6 +431,20 @@ public class Setup {
 		if (!duckDnsFileSuccess){
 			throw new RuntimeException("Failed to write DuckDNS settings to file! Please check settings and try again.");
 		}
+		//store data in DuckDNS file for Let's Encrypt
+		boolean duckDnsLetsEncryptFileSuccess = FilesAndStreams.replaceLineInFile(
+				scf.duckdns,
+				"^DOMAIN=.*",	
+				"DOMAIN=" + domain
+		) && FilesAndStreams.replaceLineInFile(
+				scf.duckdns, 
+				"^TOKEN=.*",	
+				"TOKEN=" + token
+		);
+		if (!duckDnsLetsEncryptFileSuccess){
+			Debugger.println("Failed to write data to Let's Encrypt config (" + scf.duckdns + "). "
+					+ "Please add DOMAIN and TOKEN manually!", 1);
+		}
 		//add worker to assistant config
 		boolean assistFileSuccess = FilesAndStreams.replaceLineInFile(scf.assist, 
 				"^background_workers=.*", 
@@ -489,6 +506,8 @@ public class Setup {
 		scf.teach= pathToTeachConfig + "teach." + fileNameCenter + ".properties";
 		scf.webSocket = pathToWebSocketConfig + "websocket." + fileNameCenter + ".properties";
 		
+		scf.duckdns = pathToLetsEncryptScripts + "duck-dns-settings.sh";
+		
 		return scf;
 	}
 	
@@ -500,7 +519,7 @@ public class Setup {
 		String newClusterKey = Security.hashClientPassword(Security.getRandomUUID());
 		
 		//store data in config files
-		for (String filePath : scf.getAll()){
+		for (String filePath : scf.getAllServers()){
 			File f = new File(filePath);
 			if(!f.exists() || f.isDirectory()) { 
 				Debugger.println("Cluster-key - Config-file not found (please update manually): " + filePath, 1);
