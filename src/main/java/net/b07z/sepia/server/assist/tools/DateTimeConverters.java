@@ -232,10 +232,10 @@ public class DateTimeConverters {
 	 * @param X - add this many minutes
 	 * @return todays date + x at user location as string or empty string (if client does not submit it)
 	 */
-	public static String getToday_plus_X_minutes(String format, NluInput nlu_input, int X){
+	public static String getTodayPlusX_minutes(String format, NluInput nlu_input, long X){
 		String user_time_local = nlu_input.userTimeLocal;
 		if (user_time_local != null && !user_time_local.isEmpty()){
-			return getDate_plus_X_minutes(format, user_time_local, X);
+			return getDatePlusX_minutes(format, user_time_local, X);
 		}else{
 			return "";
 		}
@@ -247,10 +247,10 @@ public class DateTimeConverters {
 	 * @param X - add this many minutes
 	 * @return todays date + x at user location as string or empty string (if client does not submit it)
 	 */
-	public static String getToday_plus_X_seconds(String format, NluInput nlu_input, int X){
+	public static String getTodayPlusX_seconds(String format, NluInput nlu_input, long X){
 		String user_time_local = nlu_input.userTimeLocal;
 		if (user_time_local != null && !user_time_local.isEmpty()){
-			return getDate_plus_X_seconds(format, user_time_local, X);
+			return getDatePlusX_seconds(format, user_time_local, X);
 		}else{
 			return "";
 		}
@@ -262,9 +262,9 @@ public class DateTimeConverters {
 	 * @param X - add this many minutes
 	 * @return todays date + x at user location as string or empty string (if client does not submit it)
 	 */
-	public static String getDate_plus_X_minutes(String format, String date_input, int X){
-		int S = X * 60;
-		return getDate_plus_X_seconds(format, date_input, S);
+	public static String getDatePlusX_minutes(String format, String date_input, long X){
+		long S = X * 60;
+		return getDatePlusX_seconds(format, date_input, S);
 	}
 	/**
 	 * Adding x seconds to a date by parsing a date_input string in default format (Config.default_sdf) and adding seconds.
@@ -273,7 +273,7 @@ public class DateTimeConverters {
 	 * @param X - add this many seconds
 	 * @return todays date + x at user location (local time) as string or empty string (if client does not submit it)
 	 */
-	public static String getDate_plus_X_seconds(String format, String date_input, int X){
+	public static String getDatePlusX_seconds(String format, String date_input, long X){
 		if (date_input != null && !date_input.isEmpty()){
 			//parse local date
 			SimpleDateFormat def_sdf = new SimpleDateFormat(Config.defaultSdf);
@@ -300,7 +300,7 @@ public class DateTimeConverters {
 	 * @return tomorrows date at user location as string
 	 */
 	public static String getTomorrow(String format, NluInput nlu_input){
-		return getToday_plus_X_minutes(format, nlu_input, 1440);
+		return getTodayPlusX_minutes(format, nlu_input, 1440);
 	}	
 	/**
 	 * Get the user's day-after-tomorrow-date in the desired format. If users system time is not available it returns an empty string.
@@ -309,7 +309,7 @@ public class DateTimeConverters {
 	 * @return day-after-tomorrows date at user location as string
 	 */
 	public static String getDayAfterTomorrow(String format, NluInput nlu_input){
-		return getToday_plus_X_minutes(format, nlu_input, 2880);
+		return getTodayPlusX_minutes(format, nlu_input, 2880);
 	}
 	
 	/**
@@ -337,7 +337,7 @@ public class DateTimeConverters {
 			int daysInFuture = day - currentDay;
 			if (daysInFuture < 1) daysInFuture += 7;
 			//make new one
-			String targetDate = getToday_plus_X_minutes(format, nlu_input, daysInFuture*24*60);
+			String targetDate = getTodayPlusX_minutes(format, nlu_input, daysInFuture*24*60);
 			//System.out.println("TODAY IS " + parameters.Date.getDay(String.valueOf(currentDay), nlu_input.language) + " (" + getToday(Config.default_sdf, nlu_input) + ")");
 			//System.out.println("TARGET IS " + parameters.Date.getDay(String.valueOf(day), nlu_input.language) + "(" + targetDate + ")");
 			return targetDate;

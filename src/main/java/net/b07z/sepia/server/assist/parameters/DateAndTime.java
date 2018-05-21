@@ -596,20 +596,20 @@ public class DateAndTime implements Parameter_Handler{
 		//System.out.println("y: " + y + ", MM: " + m + ", w: " + w + 
 		//		", d: " + d + ", h: " + h + ", min: " + min + ", sec: " + sec); 		//DEBUG
 		
-		int Xy = (y.isEmpty())? 0 : Integer.parseInt(y.replaceAll("\\D", "").trim()) * 52 * 7 * 24 * 60 * 60;
-		int XMM = (m.isEmpty())? 0 : Integer.parseInt(m.replaceAll("\\D", "").trim()) * 30 * 24 * 60 * 60;
-		int Xw = (w.isEmpty())? 0 : Integer.parseInt(w.replaceAll("\\D", "").trim()) * 7 * 24 * 60 * 60;
-		int Xd = (d.isEmpty())? 0 : Integer.parseInt(d.replaceAll("\\D", "").trim()) * 24 * 60 * 60;
-		int Xh = (h.isEmpty())? 0 : (Integer.parseInt(h.replaceAll("\\D", "").trim()) * 60 * 60);
-		int Xm = (min.isEmpty())? 0 : (Integer.parseInt(min.replaceAll("\\D", "").trim()) * 60);
-		int Xs = (sec.isEmpty())? 0 : (Integer.parseInt(sec.replaceAll("\\D", "").trim()));
-		int totalOffset = (Xy + XMM + Xw + Xd + Xh + Xm + Xs);
+		long Xy = (y.isEmpty())? 0 : Integer.parseInt(y.replaceAll("\\D", "").trim()) * 52l * 7l * 24l * 60l * 60l;
+		long XMM = (m.isEmpty())? 0 : Integer.parseInt(m.replaceAll("\\D", "").trim()) * 30l * 24l * 60l * 60l;
+		long Xw = (w.isEmpty())? 0 : Integer.parseInt(w.replaceAll("\\D", "").trim()) * 7l * 24l * 60l * 60l;
+		long Xd = (d.isEmpty())? 0 : Integer.parseInt(d.replaceAll("\\D", "").trim()) * 24l * 60l * 60l;
+		long Xh = (h.isEmpty())? 0 : (Integer.parseInt(h.replaceAll("\\D", "").trim()) * 60l * 60l);
+		long Xm = (min.isEmpty())? 0 : (Integer.parseInt(min.replaceAll("\\D", "").trim()) * 60l);
+		long Xs = (sec.isEmpty())? 0 : (Integer.parseInt(sec.replaceAll("\\D", "").trim()));
+		long totalOffset = (Xy + XMM + Xw + Xd + Xh + Xm + Xs);
 		
 		String date = "";
 		if (totalOffset > 0){
 			//Has base date?
 			if (dayDate.isEmpty()){
-				dayDate = DateTimeConverters.getToday("yyyy.MM.dd_HH:mm:ss", nluInput);
+				dayDate = DateTimeConverters.getToday(Config.defaultSdf, nluInput);
 			}
 			//CONVERT - in case default changes
 			if (!dayDate.matches(Config.defaultSdfRegex)){
@@ -617,7 +617,9 @@ public class DateAndTime implements Parameter_Handler{
 				dayDate = DateTimeConverters.convertDateFormat(dayDate, "yyyy.MM.dd_HH:mm:ss", Config.defaultSdf);
 			}
 			//ADD
-			date = DateTimeConverters.getDate_plus_X_seconds(Config.defaultSdf, dayDate, totalOffset);
+			//System.out.println("Total offset (s): " + totalOffset); 	//DEBUG
+			//System.out.println("Day date: " + dayDate); 				//DEBUG
+			date = DateTimeConverters.getDatePlusX_seconds(Config.defaultSdf, dayDate, totalOffset);
 			
 		}else{
 			//CONVERT - in case default changes
