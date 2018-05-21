@@ -56,9 +56,9 @@ public class Alarms implements ServiceInterface{
 		info.addParameter(p1).addParameter(p2).addParameter(p3).addParameter(p4).addParameter(p5);
 		
 		//Answers:
-		info.addSuccessAnswer("<direct>Der nächste Alarm ist in <1>")
-			.addOkayAnswer("<direct>Es gibt scheinbar keinen aktiven <3> zur Zeit.")
-			.addFailAnswer("<direct>Dazu kann ich gerade nix finden irgendwie, versuch es bitte gleich noch mal.");
+		info.addSuccessAnswer("alarms_0a")
+			.addOkayAnswer("alarms_0b")
+			.addFailAnswer("alarms_0c");
 		info.addCustomAnswer("answerSetAlarmNear", answerSetAlarmNear)
 			.addCustomAnswer("answerSetAlarmFar", answerSetAlarmFar)
 			.addCustomAnswer("answerSetTimer", answerSetTimer)
@@ -82,24 +82,24 @@ public class Alarms implements ServiceInterface{
 		
 		return info;
 	}
-	static final String answerToDo = "<direct>Daran wird noch gearbeitet, sorry.";
-	static final String answerSetAlarmNear = "<direct>Ok, Alarm ist auf <2> <1> Uhr gestellt.";
-	static final String answerSetAlarmFar = "<direct>Ok, Alarm ist auf <1> Uhr am <2> gestellt.";
-	static final String answerSetTimer = "<direct>Ok, Timer wird gestellt auf <1>.";
-	static final String answerNextTimer = "<direct>Hier sind deine Timer, der nächste ist in <1>.";
-	static final String answerNextAlarm = "<direct>Hier sind deine Wecker, der nächste is um <1> Uhr am <2>.";
-	static final String answerShowTimers = "<direct>Hier sind deine Timer, zur Zeit ist keiner aktiv.";
-	static final String answerShowAlarms = "<direct>Hier sind deine Wecker, zur Zeit ist keiner aktiv.";
-	static final String answerRemoveTimers = "<direct>Ok, Timer wird gestoppt.";
-	static final String answerRemoveAlarms = "<direct>Ok, Wecker wurde entfernt.";
-	static final String askAlarmClock = "<direct>Für wann soll ich den Alarm stellen?";
-	static final String askTimerClock = "<direct>Wie lange soll der Timer laufen?";
-	static final String askReminderName = "<direct>Wie soll die Erinnerung heißen?";
-	static final String timeIsPast = "<direct>Sorry <user_name>, aber der Zeitpunkt liegt meinem Kalender nach in der Vergangenheit.";
-	static final String listTooLong = "<direct>Oh, die Liste ist leider voll bis obenhin.";
-	static final String areYouSureTimer = "<direct>Bist du sicher, dass du den nächsten Timer stoppen willst?";
-	static final String areYouSureAlarm = "<direct>Bist du sicher, dass du den nächsten Wecker entfernen willst?";
-	static final String okNo = "<direct>Ok, dann lasse ich mal alles so.";
+	static final String answerToDo = "default_under_construction_0a";
+	static final String answerSetAlarmNear = "alarms_set_1a"; 			//"<direct>Ok, Alarm ist auf <2> <1> Uhr gestellt.";
+	static final String answerSetAlarmFar = "alarms_set_1b";			//"<direct>Ok, Alarm ist auf <1> Uhr am <2> gestellt.";
+	static final String answerSetTimer = "alarms_set_1c";				//"<direct>Ok, Timer wird gestellt auf <1>.";
+	static final String answerNextTimer = "alarms_show_1a"; 			//"<direct>Hier sind deine Timer, der nächste ist in <1>.";
+	static final String answerNextAlarm = "alarms_show_1b"; 			//"<direct>Hier sind deine Wecker, der nächste is um <1> Uhr am <2>.";
+	static final String answerShowTimers = "alarms_show_1c"; 			//"<direct>Hier sind deine Timer, zur Zeit ist keiner aktiv.";
+	static final String answerShowAlarms = "alarms_show_1d"; 			//"<direct>Hier sind deine Wecker, zur Zeit ist keiner aktiv.";
+	static final String answerRemoveTimers = "alarms_stop_1a"; 			//"<direct>Ok, Timer wird gestoppt.";
+	static final String answerRemoveAlarms = "alarms_stop_1b"; 			//"<direct>Ok, Wecker wurde entfernt.";
+	static final String askAlarmClock = "alarms_ask_0a"; 				//"<direct>Für wann soll ich den Alarm stellen?";
+	static final String askTimerClock = "alarms_ask_timer_0a"; 			//"<direct>Wie lange soll der Timer laufen?";
+	static final String askReminderName = "alarms_ask_reminder_0a"; 	//"<direct>Wie soll die Erinnerung heißen?";
+	static final String timeIsPast = "alarms_abort_is_past_0a"; 		//"<direct>Sorry <user_name>, aber der Zeitpunkt liegt meinem Kalender nach in der Vergangenheit.";
+	static final String listTooLong = "alarms_abort_list_full_0a"; 		//"<direct>Oh, die Liste ist leider voll bis obenhin.";
+	static final String areYouSureTimer = "alarms_confirm_delete_timer_0a"; //"<direct>Bist du sicher, dass du den nächsten Timer stoppen willst?";
+	static final String areYouSureAlarm = "alarms_confirm_delete_0a"; 		//"<direct>Bist du sicher, dass du den nächsten Wecker entfernen willst?";
+	static final String okNo = "default_abort_no_change_0a"; 			//"<direct>Ok, dann lasse ich mal alles so.";
 	
 	@Override
 	public ServiceResult getResult(NluResult nluResult) {

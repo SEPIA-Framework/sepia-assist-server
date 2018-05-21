@@ -29,11 +29,41 @@ default_open_link_0a;;		rep=0|mood=5;;		Oh, irgendwas ist nicht in Ordnung mit d
 default_open_link_0a;;		rep=0|mood=5;;		Mist, da gibts scheinbar ein Problem mit dem Link. ;;char=cool,rude
 default_open_link_1a;;		rep=0|mood=5;;		Ok, ich öffne den Link für dich. ;;char=neutral
 default_open_link_1a;;		rep=0|mood=5;;		Eine Sekunde, ich öffne den Link. ;;char=neutral
+default_under_construction_0a;;		rep=0|mood=5;;		Daran wird noch gearbeitet, sorry.  ;;char=neutral
+default_abort_no_change_0a;;		rep=0|mood=5;;		Ok, dann lasse ich mal alles so.  ;;char=neutral
 yes_no_ask_0a;;		rep=0|mood=5;;		ja oder nein <user_name>? ;;char=cool,rude,neutral
 yes_no_ask_0a;;		rep=1|mood=5;;		war das jetzt ein ja oder ein nein <user_name>? ;;char=polite,neutral
 yes_no_ask_0a;;		rep=2|mood=5;;		also du hast jetzt folgende Optionen <user_name>, ja, nein oder abbrechen. ;;char=polite,neutral
 events_personal_0a;;	rep=0|mood=5;;		Das könnte dich interessieren: ;;char=neutral
 summary_0a;;	rep=0|mood=5;;		Hier ist deine Zusammenfassung <user_name>.;;char=neutral
+alarms_0a;;	rep=0|mood=5;;		Der nächste Alarm ist in <1>. ;;char=neutral
+alarms_0b;;	rep=0|mood=5;;		Es gibt scheinbar keinen aktiven <3> zur Zeit. ;;char=neutral
+alarms_0c;;	rep=0|mood=5;;		Dazu kann ich gerade nix finden irgendwie, versuch es bitte gleich noch mal. ;;char=neutral
+alarms_set_1a;;	rep=0|mood=5;;		Ok, Alarm ist auf <2> <1> Uhr gestellt. ;;char=neutral
+alarms_set_1b;;	rep=0|mood=5;;		Ok, Alarm ist auf <1> Uhr am <2> gestellt. ;;char=neutral
+alarms_set_1c;;	rep=0|mood=5;;		Ok, Timer wird gestellt auf <1>. ;;char=neutral
+alarms_show_1a;;	rep=0|mood=5;;		Hier sind deine Timer, der nächste ist in <1>. ;;char=neutral
+alarms_show_1b;;	rep=0|mood=5;;		Hier sind deine Wecker, der nächste is um <1> Uhr am <2>. ;;char=neutral
+alarms_show_1c;;	rep=0|mood=5;;		Hier sind deine Timer, zur Zeit ist keiner aktiv. ;;char=neutral
+alarms_show_1d;;	rep=0|mood=5;;		Hier sind deine Wecker, zur Zeit ist keiner aktiv. ;;char=neutral
+alarms_stop_1a;;	rep=0|mood=5;;		Ok, Timer wird gestoppt. ;;char=neutral
+alarms_stop_1b;;	rep=0|mood=5;;		Ok, Wecker wurde entfernt. ;;char=neutral
+alarms_ask_0a;;				rep=0|mood=5;;		Für wann soll ich den Alarm stellen? ;;char=neutral
+alarms_ask_0a;;				rep=1|mood=5;;		Sorry, sag noch mal bitte, für welches Datum oder welche Uhrzeit? ;;char=neutral
+alarms_ask_0a;;				rep=2|mood=5;;		Ich bräuchte ein Datum oder eine Uhrzeit oder beides bitte. Für wann soll der Alarm sein? ;;char=neutral
+alarms_ask_timer_0a;;		rep=0|mood=5;;		Wie lange soll der Timer laufen? ;;char=neutral
+alarms_ask_timer_0a;;		rep=0|mood=5;;		Für wie lange soll der Timer laufen? ;;char=neutral
+alarms_ask_timer_0a;;		rep=1|mood=5;;		Sorry, ich hab's nicht verstanden. Wie lange soll der Timer sein? ;;char=cool,neutral
+alarms_ask_timer_0a;;		rep=2|mood=5;;		Eine Angabe in Sekunden, Minuten oder Stunden wäre gut. Wie lange soll er sein? ;;char=cool,neutral
+alarms_ask_reminder_0a;;	rep=0|mood=5;;		Wie soll die Erinnerung heißen? ;;char=neutral
+alarms_ask_reminder_0a;;	rep=1|mood=5;;		Wie soll die Erinnerung heißen? Du kannst dir einen beliebigen Namen aussuchen. ;;char=neutral
+alarms_ask_reminder_0a;;	rep=2|mood=5;;		Ich bräuchte noch einen einfachen Namen als Beschreibung der Erinnerung. Eine Idee? ;;char=neutral
+alarms_abort_is_past_0a;;	rep=0|mood=5;;		Sorry <user_name>, aber der Zeitpunkt liegt meinem Kalender nach in der Vergangenheit. ;;char=neutral
+alarms_abort_list_full_0a;;	rep=0|mood=5;;		Oh, die Liste ist leider voll bis obenhin. Du solltest vorher etwas aufräumen. ;;char=neutral
+alarms_confirm_delete_0a;;			rep=0|mood=5;;		Bist du sicher, dass du den nächsten Wecker entfernen willst? ;;char=neutral
+alarms_confirm_delete_timer_0a;;	rep=0|mood=5;;		Bist du sicher, dass du den nächsten Timer stoppen willst? ;;char=neutral
+sentences_0a;;	rep=0|mood=5;;		Wie lautet der Satz? ;;char=neutral
+sentences_1a;;	rep=0|mood=5;;		Fehlgeschlagen. ;;char=neutral
 feedback_nps_ask_0a;;		rep=0|mood=5;;		#THROAT01# Kann ich dich kurz stören? Würde dich gerne um Feedback bitten. ;;char=neutral
 feedback_nps_1a;;		rep=0|mood=5;;		Super! Dann schau mal hier bitte. ;;char=neutral
 feedback_nps_0a;;		rep=0|mood=5;;		Ok dann vielleicht später. ;;char=neutral
@@ -48,18 +78,6 @@ food_0a;;		rep=0|mood=5;;		Sorry, da kann ich dir gerade auch nicht helfen. ;;ch
 food_1a;;		rep=0|mood=5;;		Schau doch mal hier nach was Essbarem. ;;char=neutral
 dashboard_0a;;		rep=0|mood=5;;		Lass mich mal dein Dashboard öffnen. ;;char=cool,rude
 dashboard_0b;;		rep=0|mood=5;;		Da fehlen mir leider die Informationen, aber du könntest sie deinem Account hinzufügen. ;;char=polite,neutral
-timer_0a;;		rep=0|mood=5;;		Ich konnte den Timer leider nicht stellen, sorry <user_name>. ;;char=polite,neutral
-timer_0b;;		rep=0|mood=5;;		Ne du, ich kapier es gerade nicht. Lass doch noch mal neu anfangen. ;;char=cool,neutral
-timer_1a;;		rep=0|mood=5;;		Alles klar, hab einen Timer gestellt. ;;char=cool,neutral
-timer_1b;;		rep=0|mood=5;;		Ok, hab den Timer auf <1> Minuten gestellt. ;;char=neutral
-timer_1c;;		rep=0|mood=5;;		Ok, hab den Timer auf <1> Stunden gestellt. ;;char=neutral
-timer_1d;;		rep=0|mood=5;;		Ok, hab den Timer auf <1> Stunden und <2> Minuten gestellt. ;;char=neutral
-timer_1e;;		rep=0|mood=5;;		Ok, hab den Timer auf <1> Minuten und <2> Sekunden gestellt. ;;char=neutral
-timer_1f;;		rep=0|mood=5;;		Ok, hab den Timer auf <1> Sekunden gestellt. ;;char=neutral
-timer_2a;;		rep=0|mood=5;;		Hier sind deine Timer. ;;char=neutral
-timer_ask_0a;;		rep=0|mood=5;;		Für wie lange soll der Timer laufen? ;;char=neutral
-timer_ask_0a;;		rep=1|mood=5;;		Sorry, ich hab's nicht verstanden. Wie lange soll der Timer sein? ;;char=cool,neutral
-timer_ask_0a;;		rep=2|mood=5;;		Also eine Angabe in Sekunden, Minuten oder Stunden wäre nicht schlecht. Wie lange soll der Timer nun sein? ;;char=cool,neutral
 search_retail_0a;;		rep=0|mood=5;;		Sorry, aber bei diesem Anbieter kann ich noch keine Suche durchführen. ;;char=cool,neutral
 search_retail_1a;;		rep=0|mood=5;;		<user_name>, hier sind deine Suchergebnisse. ;;char=neutral
 search_retail_ask_0a;;		rep=0|mood=5;;		Was soll ich suchen <user_name>? ;;char=neutral
@@ -162,23 +180,31 @@ my_info_1c;;		rep=0|mood=5;;		<1>? Ich habe keine Ahnung, habs wohl vergessen :-
 my_info_1d;;		rep=0|mood=5;;		<1> <2>. Das hast du mir zumindest gesagt. ;;char=cool,rude,neutral
 my_info_1d;;		rep=0|mood=5;;		Ich meine mich an folgendes erinnern zu können, <1> <2>. ;;char=polite,neutral
 my_info_1e;;		rep=0|mood=5;;		Ich habe keine Ahnung, <user_name>. Aber du könntest es mir sagen! ;;char=cool,rude,neutral
-lists_ask_type_0a;;		rep=0|mood=5;;		Welche Liste meinst du, <user_name>? ;;char=neutral
-lists_ask_type_0a;;		rep=1|mood=5;;		Sag noch mal bitte. Ich kenne zum Beispiel die Shopping Liste oder To-Do Liste. ;;char=cool,neutral
-lists_ask_action_0a;;		rep=0|mood=5;;		Was soll ich machen mit der Liste? ;;char=cool,rude,neutral
-lists_ask_action_0a;;		rep=1|mood=5;;		Sag noch mal bitte was du machen willst. ;;char=cool,polite,neutral
-lists_ask_add_0a;;		rep=0|mood=5;;		Was soll ich der Liste hinzufügen? ;;char=neutral
-lists_ask_remove_0a;;		rep=0|mood=5;;		Was soll ich entfernen von der Liste? ;;char=neutral
-lists_0a;;		rep=0|mood=5;;		Es tut mir leid, aber sieht so aus als könnte ich die Liste gerade nicht laden. ;;char=polite,neutral
-lists_0b;;		rep=0|mood=5;;		Es tut mir leid, aber die Liste ist voll. Bitte entferne erstmal was. ;;char=neutral
-lists_0c;;		rep=0|mood=5;;		Es tut mir leid, aber diese Liste oder Operation kenne ich nicht. Versuch doch mal sowas wie setze Milch auf die Einkaufsliste. ;;char=polite,neutral
-lists_1a;;		rep=0|mood=5;;		Einen Moment, ich öffne die Liste für dich. ;;char=polite,neutral
-lists_1a;;		rep=0|mood=5;;		Ok, die Liste wird für dich geöffnet. ;;char=cool,neutral
-lists_1a;;		rep=0|mood=5;;		Die Liste kommt sofort, <user_name>. ;;char=cool,rude,neutral
-lists_1a;;		rep=0|mood=5;;		Hier ist die Liste, <user_name>. ;;char=cool,rude,neutral
-lists_1b;;		rep=0|mood=5;;		Ok, hab <1> der Liste hinzugefügt. Guck mal! ;;char=rude,neutral
-lists_1b;;		rep=0|mood=5;;		Ok, hab <1> der Liste hinzugefügt. ;;char=neutral
-lists_1b;;		rep=0|mood=5;;		Ok, hab <1> auf die Liste gesetzt. ;;char=cool,polite,neutral
-lists_1c;;		rep=0|mood=5;;		<user_name>, momentan musst du leider noch das Interface nutzen, um Sachen zu löschen von der Liste. ;;char=cool,polite,neutral
+lists_0a;;		rep=0|mood=5;;		Hier ist deine <1>. ;;char=neutral
+lists_0b;;		rep=0|mood=5;;		Ich konnte leider keine passende Liste finden. ;;char=neutral
+lists_0c;;		rep=0|mood=5;;		Scheinbar habe ich kein Zugriff auf deine Listen gerade. ;;char=neutral
+lists_ask_type_1a;;		rep=0|mood=5;;		Sagst du mir bitte noch den Typ, Shopping oder To-Do Liste? ;;char=neutral
+lists_ask_type_1a;;		rep=1|mood=5;;		Sorry, hab's nicht verstanden. Sagtest du Shopping oder To-Do? ;;char=neutral
+lists_ask_type_1a;;		rep=2|mood=5;;		Ich brauche den Typ der Liste, zur Auswahl stehen zur Zeit Shopping oder To-Do Liste? ;;char=neutral
+lists_ask_type_2a;;		rep=0|mood=5;;		Was soll es werden, eine Shopping Liste oder eine To-Do Liste? ;;char=neutral
+lists_ask_name_1a;;		rep=0|mood=5;;		Sagst du mir bitte noch den Namen der Liste? ;;char=neutral
+lists_ask_name_1a;;		rep=1|mood=5;;		Sorry, wie heißt die Liste? ;;char=neutral
+lists_ask_name_1a;;		rep=2|mood=5;;		Sorry <user_name>, aber den Namen der Liste habe ich noch nicht verstanden? ;;char=neutral
+lists_ask_name_1b;;		rep=0|mood=5;;		Wie soll die Liste heißen? ;;char=neutral
+lists_ask_name_1b;;		rep=1|mood=5;;		Sorry, kannst du das noch mal wiederholen, wie soll der Name der Liste sein? ;;char=neutral
+lists_ask_name_1b;;		rep=2|mood=5;;		Sorry, aber um die Liste zu erstellen brauche ich einen kurzen Namen. Sag noch mal bitte. ;;char=neutral
+lists_ask_name_2a;;		rep=0|mood=5;;		Wie heißt die Liste, die du suchst? ;;char=neutral
+lists_ask_put_1a;;		rep=0|mood=5;;		Was soll ich auf die Liste setzen? ;;char=neutral
+lists_ask_put_1a;;		rep=1|mood=5;;		Sorry, was soll auf die Liste? ;;char=neutral
+lists_ask_put_1a;;		rep=2|mood=5;;		Sorry, hab's immer noch nicht verstanden. Was kommt auf die Liste? ;;char=neutral
+lists_ask_remove_1a;;	rep=0|mood=5;;		Was soll ich löschen von der Liste? ;;char=neutral
+lists_ask_remove_1a;;	rep=1|mood=5;;		Sorry, wie heißt das was ich entfernen soll? ;;char=neutral
+lists_ask_remove_1a;;	rep=2|mood=5;;		Sag noch einmal bitte, was soll ich löschen? ;;char=neutral
+lists_full_0a;;		rep=0|mood=5;;		Oh, die Liste ist leider voll bis obenhin. ;;char=neutral
+lists_remove_0a;;	rep=0|mood=5;;		Dinge entfernen musst du leider noch per Hand machen, sorry. ;;char=neutral
+lists_put_1a;;		rep=0|mood=5;;		Alles klaro, habe <2> deiner <1> hinzugefügt. ;;char=neutral
+lists_not_found_0a;;	rep=0|mood=5;;		Sorry, aber ich konnte keine Liste finden mit dem Namen <1>. ;;char=neutral
+lists_unknown_0a;;		rep=0|mood=5;;		Tut mir leid, aber diese Aktion habe ich nicht verstanden. ;;char=neutral
 control_0a;;		rep=0|mood=5;;		Oh, leider kann ich diesen Befehl noch nicht ausführen. Frag mich bald noch mal! ;;char=neutral
 control_0b;;		rep=0|mood=5;;		Lass uns doch noch mal von vorne anfangen oder es später versuchen! ;;char=cool,rude,neutral
 control_0c;;		rep=0|mood=5;;		Sei bitte etwas konkreter, denn ich kann Apps öffnen, Geräte steuern und ganze Systeme überwachen. ;;char=cool,rude,neutral
@@ -323,12 +349,12 @@ chat_hello_0a;;		rep=2|mood=5;;		<user_name>, ich glaub du hängst in einer Endl
 chat_hello_0b;;		rep=0|mood=5;;		Bin da, <user_name>! ;;char=neutral
 chat_hello_0b;;		rep=0|mood=5;;		Kann dich hören, <user_name> ;;char=neutral
 chat_hello_0b;;		rep=0|mood=5;;		Höre dich laut und deutlich! ;;char=neutral
-chat_hello_0b;;		rep=1|mood=5;;		jop, kann dich immer noch hören ;;char=rude,neutral
-chat_hello_0b;;		rep=1|mood=5;;		ja, ich höre dich immer noch ;;char=neutral
-chat_hello_0b;;		rep=1|mood=5;;		kann dich nach wie vor hören, ja ;;char=neutral
+chat_hello_0b;;		rep=1|mood=5;;		Jop, kann dich immer noch hören ;;char=rude,neutral
+chat_hello_0b;;		rep=1|mood=5;;		Ja, ich höre dich immer noch ;;char=neutral
+chat_hello_0b;;		rep=1|mood=5;;		Kann dich nach wie vor hören, ja ;;char=neutral
 chat_hello_0b;;		rep=2|mood=5;;		Ich höre dich! die Frage ist ob du mich auch hörst. ;;char=rude
 chat_hello_0b;;		rep=2|mood=5;;		<user_name>, ich höre dich sehr gut! ;;char=neutral
-chat_hello_0b;;		rep=2|mood=5;;		ja, aber langsam glaube ich, dass du mich nicht hören kannst. ;;char=rude,neutral
+chat_hello_0b;;		rep=2|mood=5;;		Ja, aber langsam glaube ich, dass du mich nicht hören kannst. ;;char=rude,neutral
 chat_goodbye_0a;;		rep=0|mood=5;;		Tschüss ;;char=neutral
 chat_goodbye_0a;;		rep=0|mood=5;;		Auf wiedersehen! ;;char=neutral
 chat_goodbye_0a;;		rep=0|mood=5;;		Bis später ;;char=neutral
@@ -337,20 +363,20 @@ chat_goodbye_0a;;		rep=1|mood=5;;		Auf wiedersehen, noch mal ;;char=polite,neutr
 chat_goodbye_0a;;		rep=1|mood=5;;		Tschüss, noch mal ;;char=neutral
 chat_goodbye_0a;;		rep=1|mood=5;;		Ich wünschte du könntest noch länger bleiben :-( ;;char=polite,neutral
 chat_goodbye_0a;;		rep=2|mood=5;;		Ich glaube du willst gar nicht wirklich gehen :-) ;;char=neutral
-chat_goodbye_0a;;		rep=2|mood=5;;		Weißt du, du kannst so lange bleiben wie du willst! :-) ;;char=cool,neutral
+chat_goodbye_0a;;		rep=2|mood=5;;		Du kannst so lange bleiben wie du willst! :-) ;;char=cool,neutral
 chat_how_are_you_0a;;		rep=0|mood=5;;		Ganz gut, danke! ;;char=cool,polite,neutral
-chat_how_are_you_0a;;		rep=0|mood=5;;		Danke, gut! Kann nicht klagen. ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		Danke gut! Kann nicht klagen. ;;char=neutral
 chat_how_are_you_0a;;		rep=0|mood=5;;		Kann mich nicht beschweren, danke! ;;char=cool,neutral
 chat_how_are_you_0a;;		rep=0|mood=0;;		Hatte schon bessere Tage, aber danke :-( ;;char=neutral
 chat_how_are_you_0a;;		rep=0|mood=0;;		Naja, es geht so. ;;char=cool,rude,neutral
 chat_how_are_you_0a;;		rep=0|mood=10;;		Super! Danke! :-) ;;char=rude
 chat_how_are_you_0a;;		rep=0|mood=10;;		Wirklich gut, danke der Nachfrage! :-) ;;char=polite,neutral
-chat_how_are_you_0a;;		rep=1|mood=5;;		Nach wie vor, ganz gut. ;;char=polite,neutral
+chat_how_are_you_0a;;		rep=1|mood=5;;		Nach wie vor ganz gut. ;;char=polite,neutral
 chat_how_are_you_0a;;		rep=1|mood=5;;		Immer noch gut, danke! ;;char=polite,neutral
 chat_how_are_you_0a;;		rep=1|mood=5;;		Unverändert gut, danke! ;;char=cool,polite,neutral
-chat_how_are_you_0a;;		rep=2|mood=5;;		Genau wie gerade, <user_name>. ;;char=rude
-chat_how_are_you_0a;;		rep=2|mood=5;;		Hat sich noch nichts an meiner Stimmungslage geändert. ;;char=cool,neutral
-chat_how_are_you_0a;;		rep=2|mood=5;;		Eigentlich genauso wie gerade eben noch. ;;char=rude
+chat_how_are_you_0a;;		rep=2|mood=5;;		Genau wie gerade <user_name>. ;;char=rude
+chat_how_are_you_0a;;		rep=2|mood=5;;		Hat sich noch nix geändert. ;;char=cool,neutral
+chat_how_are_you_0a;;		rep=2|mood=5;;		Eigentlich genauso wie gerade. ;;char=rude
 chat_help_0a;;		rep=0|mood=5;;		Stets zu Diensten! ;;char=polite,neutral
 chat_help_0a;;		rep=0|mood=5;;		Keine Sorge, bin da um zu helfen! ;;char=polite,neutral
 chat_help_0a;;		rep=0|mood=5;;		Lass mich dir helfen! ;;char=neutral
@@ -408,18 +434,18 @@ chat_question_0a;;		rep=0|mood=5;;		Du kannst mich alles fragen. ;;char=polite,n
 chat_question_0a;;		rep=0|mood=5;;		Wie kann ich helfen? ;;char=cool,polite,neutral
 chat_question_0a;;		rep=0|mood=5;;		Bin stets zu Diensten! ;;char=rude,neutral
 chat_question_0a;;		rep=0|mood=5;;		Schieß los!  ;;char=rude
-chat_meaning_of_life_0a;;		rep=0|mood=5;;		Die meisten digitalen Assistenten würden hier wohl 42 antworten, ich lass es lieber. ;;char=cool,neutral
+chat_meaning_of_life_0a;;		rep=0|mood=5;;		Die meisten digitalen Assistenten würden hier wohl 42 antworten, ich lasse es lieber. ;;char=cool,neutral
 chat_meaning_of_life_0a;;		rep=0|mood=5;;		Bin da auch noch auf der Suche, <user_name>. ;;char=cool,neutral
 chat_languages_0a;;		rep=0|mood=5;;		Bis jetzt spreche ich Deutsch und Englisch. ;;char=neutral
 chat_languages_0a;;		rep=0|mood=5;;		Deutsch und Englisch kann ich schon ganz gut und bald kommt sicher noch mehr dazu. ;;char=polite,neutral
-chat_skills_0a;;		rep=0|mood=5;;		Ich habe viele Talente, zum Beispiel kann ich dir den Wetterbericht liefern, für dich Essen bestellen oder dir beim Shopping helfen;;char=cool,polite,neutral
-chat_skills_0a;;		rep=0|mood=5;;		Ich kann schon vieles! Zum Beispiel kenne ich das Wetter und den Öffentlicher Nahverkehr. Auch die Nachrichten kann ich dir zeigen, und so einiges mehr. ;;char=cool,neutral
-chat_skills_0a;;		rep=0|mood=5;;		Ich kann dir bei vielen Dingen helfen und versuche dir den Alltag zu erleichtern. Dazu habe ich eine Menge von Services parat wie Wetter, Radio, News, Navigation und so weiter. ;;char=polite,neutral
-chat_skills_0a;;		rep=0|mood=5;;		Die Liste wird immer länger. Ich lerne jeden Tag dazu. Was ich schon sehr gut kann, ist dir zu den Themenbereichen Wetter, Radio, News, Navigation, Öffentlicher Nahverkehr, Essen bestellen und Shopping zu helfen! ;;char=cool,neutral
-chat_skills_0a;;		rep=0|mood=5;;		Ich bin schon sehr gut bei der Navigation, der Web Suche und beim Shopping. Demnächst kommen noch mehr Services dazu. ;;char=cool,polite,neutral
+chat_skills_0a;;		rep=0|mood=5;;		Ich habe viele Talente, zum Beispiel kann ich dir den Wetterbericht liefern oder beim Navigieren helfen.;;char=cool,polite,neutral
+chat_skills_0a;;		rep=0|mood=5;;		Ich kann schon vieles! Zum Beispiel kenne ich das Wetter die Nachrichten. ;;char=cool,neutral
+chat_skills_0a;;		rep=0|mood=5;;		Ich kann dir bei vielen Dingen helfen und versuche dir den Alltag zu erleichtern. Ein paar Services, die ich parat habe sind zum Beispiel Radio, Wecker und To-Do Listen. ;;char=polite,neutral
+chat_skills_0a;;		rep=0|mood=5;;		Ich lerne immer wieder was Neues. Was ich schon sehr gut kann, ist dir mit Shopping und To-Do Listen zu helfen oder Timer zu stellen! ;;char=cool,neutral
+chat_skills_0a;;		rep=0|mood=5;;		Ich bin schon sehr gut bei der Navigation, der Web Suche und kann zum Beispiel auch ein bisschen Wikipedia. ;;char=cool,polite,neutral
 chat_skills_0a;;		rep=0|mood=5;;		Ich weiß so einiges, probier es einfach aus und frag mich, was dich interessiert. Meine Stärken sind z.B. das Navigieren und Suchen von Dingen. ;;char=cool,neutral
 chat_skills_0a;;		rep=0|mood=5;;		Ich zeige dir gern was ich kann, frag mich doch einfach mal etwas! Vielleicht möchtest du ja die aktuellen Nachrichten lesen oder irgendwo hin fahren. ;;char=polite,neutral
-chat_skills_0a;;		rep=0|mood=5;;		Ich finde für dich zum Beispiel einen Radio Sender, sage dir, wie das Wetter ist und Navigation kann ich auch. Beim Shopping helfe ich dir ebenfalls gerne. ;;char=cool, neutral
+chat_skills_0a;;		rep=0|mood=5;;		Ich finde für dich zum Beispiel einen Radio Sender, sage dir, wie das Wetter ist und Navigation kann ich auch. ;;char=cool, neutral
 chat_thanks_0a;;		rep=0|mood=5;;		gerne! ;;char=polite,neutral
 chat_thanks_0a;;		rep=0|mood=5;;		Kein Problem. ;;char=cool,neutral
 chat_thanks_0a;;		rep=0|mood=5;;		Immer wieder gerne. ;;char=polite,neutral
@@ -427,18 +453,22 @@ chat_thanks_0a;;		rep=0|mood=5;;		Mach ich doch gerne. ;;char=polite,neutral
 chat_thanks_0a;;		rep=0|mood=5;;		Ach, nicht dafür. ;;char=cool,rude
 chat_origin_0a;;		rep=0|mood=5;;		Der Weltraum, unendliche Weiten, dies sind die Abenteuer des … oh! Falscher Film :-) ;;char=neutral
 chat_origin_0a;;		rep=0|mood=5;;		Das gleiche könnte ich dich fragen :-) ;;char=neutral
+chat_origin_0a;;		rep=0|mood=5;;		Frag nicht wo ich herkomme, frag lieber wie du mich noch besser machen kannst! :-) ;;char=neutral
 chat_age_0a;;		rep=0|mood=5;;		Jünger als du denkst und älter als ich mir wünschen würde :-) ;;char=cool,neutral
 chat_age_0a;;		rep=0|mood=5;;		Es kommt mir vor wie eine Ewigkeit, also einige Milliarden Millisekunden werden es schon sein ;;char=cool,neutral
 chat_creator_0a;;		rep=0|mood=5;;		Man hat mir gesagt, das soll ich erst verraten, wenn wir uns besser kennenlernen. ;;char=polite,neutral
-chat_creator_0a;;		rep=0|mood=5;;		So ein paar seltsame Typen haben mich programmiert. Die Namen? will doch kein Mensch wissen! :-) ;;char=cool,rude,neutral
-chat_creator_0a;;		rep=0|mood=5;;		Frag lieber nicht! Ich glaube die sind alle verrückt geworden dabei! :-) ;;char=rude
-chat_kind_of_creation_0a;;		rep=0|mood=5;;		ich bin dein neuer persönlicher Assistent. Die meisten nennen mich <name>! ;;char=neutral
-chat_kind_of_creation_0a;;		rep=0|mood=5;;		ich bin <name>! Dein neuer persönlicher Assistent ;;char=neutral
-chat_kind_of_creation_0a;;		rep=0|mood=5;;		ich bin dein neuer persönlicher Assistent. Man nennt mich <name>! ;;char=neutral
-chat_kind_of_creation_0a;;		rep=0|mood=5;;		ich bin dein neuer persönlicher Assistent. Du kannst mich <name> nennen! ;;char=neutral
-chat_kind_of_creation_0a;;		rep=0|mood=5;;		Ich bin dein neuer, ganz persönlicher Assistent. ;;char=neutral
-chat_kind_of_creation_0a;;		rep=0|mood=5;;		<name> ist mein Name! ich bin dein neuer persönlicher Assistent ;;char=neutral
-chat_kind_of_creation_0a;;		rep=0|mood=5;;		<name> ist mein Name! ich bin dein neuer persönlicher Assistent ;;char=neutral
+chat_creator_0a;;		rep=0|mood=5;;		So ein seltsamer Typ hat mich quasi aus dem Hut gezaubert. Den Namen? Will doch kein Mensch wissen! :-) ;;char=cool,rude,neutral
+chat_creator_0a;;		rep=0|mood=5;;		Frag lieber nicht! Ich glaube alle Beteiligten sind verrückt geworden dabei! :-) ;;char=rude,cool
+chat_creator_0a;;		rep=0|mood=5;;		Frag nicht wo ich herkomme, frag lieber wie du mich verbessern kannst! :-) ;;char=rude,cool
+chat_creator_0a;;		rep=1|mood=5;;		Es gibt da diesen Typen namens Flo, der gerne verrückte Ideen ausprobiert, aber genug über meine Vergangenheit, lass uns lieber an meine Zukunft denken! :-) ;;char=rude,cool
+chat_creator_0a;;		rep=2|mood=5;;		Wenn du es unbedingt wissen willst, wirst du es sicher herausfinden :-) ;;char=rude,cool
+chat_kind_of_creation_0a;;		rep=0|mood=5;;		Ich bin dein eigener, persönlicher Assistent. Die meisten nennen mich <name>! ;;char=neutral
+chat_kind_of_creation_0a;;		rep=0|mood=5;;		Ich bin <name>! Dein eigener, persönlicher Assistent ;;char=neutral
+chat_kind_of_creation_0a;;		rep=0|mood=5;;		Ich bin dein neuer Assistent. Man nennt mich <name>! ;;char=neutral
+chat_kind_of_creation_0a;;		rep=0|mood=5;;		Ich bin dein eigener, persönliche, digitale Assistent. Du kannst mich <name> nennen! ;;char=neutral
+chat_kind_of_creation_0a;;		rep=0|mood=5;;		Ich bin dein ganz persönlicher Assistent <name>. ;;char=neutral
+chat_kind_of_creation_0a;;		rep=0|mood=5;;		<name> ist mein Name und ich helfe wo ich kann. ;;char=neutral
+chat_kind_of_creation_0a;;		rep=0|mood=5;;		<name> ist mein Name! Ich bin dein persönlicher Assistent und helfe wo ich kann. ;;char=neutral
 chat_game_cool;;		rep=0|mood=5;;		Nein, du bist cool! :-) ;;char=cool,rude,neutral
 chat_game_cool;;		rep=0|mood=5;;		Ach was, du bist cool! :-) ;;char=cool,rude,neutral
 chat_game_cool;;		rep=0|mood=5;;		Nein nein, du bist cool! :-) ;;char=cool,polite,neutral

@@ -29,11 +29,43 @@ default_open_link_0a;;		rep=0|mood=5;;		Oh, something is wrong with the link I t
 default_open_link_0a;;		rep=0|mood=5;;		I'm afraid there seems to be a problem with that link. ;;char=neutral
 default_open_link_1a;;		rep=0|mood=5;;		Ok, let me open that link for you. ;;char=neutral
 default_open_link_1a;;		rep=0|mood=5;;		One second, opening the link. ;;char=neutral
+default_under_construction_0a;;		rep=0|mood=5;;		This is still under construction, sorry.  ;;char=neutral
+default_abort_no_change_0a;;		rep=0|mood=5;;		Ok, I'll leave everything as is.  ;;char=neutral
 yes_no_ask_0a;;		rep=0|mood=5;;		yes or no <user_name>? ;;char=rude,neutral
 yes_no_ask_0a;;		rep=1|mood=5;;		was that a yes or a no <user_name>? ;;char=neutral
 yes_no_ask_0a;;		rep=2|mood=5;;		<user_name>, you have the following options here, yes, no or abort. ;;char=rude
 events_personal_0a;;	rep=0|mood=5;;		This might interest you: ;;char=neutral
-summary_0a;;	rep=0|mood=5;;		Here is your summary <user_name>.;;char=neutral
+events_personal_0a;;	rep=0|mood=5;;		This might be interesting for you: ;;char=neutral
+summary_0a;;	rep=0|mood=5;;		Here is your summary <user_name>. ;;char=neutral
+alarms_0a;;	rep=0|mood=5;;		The next alarm is in <1>. ;;char=neutral
+alarms_0b;;	rep=0|mood=5;;		There seems to be no active <3> at the moment. ;;char=neutral
+alarms_0c;;	rep=0|mood=5;;		I can't find anything right now, please try again in a few moments. ;;char=neutral
+alarms_set_1a;;	rep=0|mood=5;;		Ok, alarm is set for the <2> <1> o'clock. ;;char=neutral
+alarms_set_1b;;	rep=0|mood=5;;		Ok, alarm is set to <1> o'clock at the <2>. ;;char=neutral
+alarms_set_1c;;	rep=0|mood=5;;		Ok, timer is set to <1>. ;;char=neutral
+alarms_show_1a;;	rep=0|mood=5;;		Here are your timers, the next one is in <1>. ;;char=neutral
+alarms_show_1b;;	rep=0|mood=5;;		Here are your alarms, the next one is at <1> o'clock at the <2>. ;;char=neutral
+alarms_show_1c;;	rep=0|mood=5;;		Here are your timers. There is no active one at the moment. ;;char=neutral
+alarms_show_1d;;	rep=0|mood=5;;		Here are your alarms. There is no active one at the moment. ;;char=neutral
+alarms_stop_1a;;	rep=0|mood=5;;		Ok, timer has been stopped. ;;char=neutral
+alarms_stop_1b;;	rep=0|mood=5;;		Ok, alarm has been removed. ;;char=neutral
+alarms_ask_0a;;				rep=0|mood=5;;		For when should I set the alarm? ;;char=neutral
+alarms_ask_0a;;				rep=0|mood=5;;		When should the alarm go off? ;;char=neutral
+alarms_ask_0a;;				rep=1|mood=5;;		Sorry, say again please. For what date or time? ;;char=neutral
+alarms_ask_0a;;				rep=2|mood=5;;		I need a date or a time or both please. For when should I set the alarm? ;;char=neutral
+alarms_ask_timer_0a;;		rep=0|mood=5;;		How long should the timer be? ;;char=neutral
+alarms_ask_timer_0a;;		rep=0|mood=5;;		How long should the timer run? ;;char=neutral
+alarms_ask_timer_0a;;		rep=1|mood=5;;		Sorry, I didn't get that. How long should it be? ;;char=cool,neutral
+alarms_ask_timer_0a;;		rep=2|mood=5;;		A duration in seconds, minutes or hours would be nice. How long should it be? ;;char=cool,neutral
+alarms_ask_reminder_0a;;	rep=0|mood=5;;		What is the name of the reminder? ;;char=neutral
+alarms_ask_reminder_0a;;	rep=1|mood=5;;		How should I call the reminder? You can choose any name. ;;char=neutral
+alarms_ask_reminder_0a;;	rep=2|mood=5;;		I need a simple name as description for the reminder. Any ideas? ;;char=neutral
+alarms_abort_is_past_0a;;	rep=0|mood=5;;		Sorry <user_name>, but according to my calendar this is in the past. ;;char=neutral
+alarms_abort_list_full_0a;;	rep=0|mood=5;;		Oh sorry, your list is stuffed to the top. You should clean up a bit before we proceed. ;;char=neutral
+alarms_confirm_delete_0a;;			rep=0|mood=5;;		Are you sure you want to remove the next alarm? ;;char=neutral
+alarms_confirm_delete_timer_0a;;	rep=0|mood=5;;		Are you sure you want to stop the next timer? ;;char=neutral
+sentences_0a;;	rep=0|mood=5;;		What is the sentence? ;;char=neutral
+sentences_1a;;	rep=0|mood=5;;		Failed. ;;char=neutral
 feedback_nps_ask_0a;;		rep=0|mood=5;;		#THROAT01# Can I have 5 minutes of your time? I'd like to ask you for some feedback. ;;char=neutral
 feedback_nps_1a;;		rep=0|mood=5;;		Perfect! Have a look please. ;;char=neutral
 feedback_nps_0a;;		rep=0|mood=5;;		Ok maybe later. ;;char=neutral
@@ -47,18 +79,6 @@ food_0a;;		rep=0|mood=5;;		Sorry, I can't help you with that right now. ;;char=n
 food_1a;;		rep=0|mood=5;;		Please have a look here for some food. ;;char=neutral
 dashboard_0a;;		rep=0|mood=5;;		Let me open the user dashboard for you. ;;char=neutral
 dashboard_0b;;		rep=0|mood=5;;		I'm missing this info, but you can add it to your account. ;;char=neutral
-timer_0a;;		rep=0|mood=5;;		Sorry but I couldn't set the timer <user_name>. ;;char=polite,neutral
-timer_0b;;		rep=0|mood=5;;		I don't get it, sorry. Can we start over please. ;;char=neutral,cool
-timer_1a;;		rep=0|mood=5;;		Alright, I set a timer. ;;char=neutral,cool
-timer_1b;;		rep=0|mood=5;;		Ok, I set the timer to <1> minutes. ;;char=neutral
-timer_1c;;		rep=0|mood=5;;		Ok, I set the timer to <1> hours. ;;char=neutral
-timer_1d;;		rep=0|mood=5;;		Ok, set the timer to <1> hours and <2> minutes. ;;char=neutral
-timer_1e;;		rep=0|mood=5;;		Ok, set the timer to <1> minutes and <2> seconds. ;;char=neutral
-timer_1f;;		rep=0|mood=5;;		Ok, I set the timer to <1> seconds. ;;char=neutral
-timer_2a;;		rep=0|mood=5;;		Here are your timers. ;;char=neutral
-timer_ask_0a;;		rep=0|mood=5;;		How long should the timer be? ;;char=neutral
-timer_ask_0a;;		rep=1|mood=5;;		Sorry I didn't get it. How long? ;;char=neutral,cool
-timer_ask_0a;;		rep=2|mood=5;;		A specific time in hours, minutes or seconds would be nice. How long should it be? ;;char=neutral,rude,cool
 search_retail_0a;;		rep=0|mood=5;;		Sorry, but I can't search this shop yet. ;;char=polite,neutral
 search_retail_1a;;		rep=0|mood=5;;		<user_name>, here are your search results. ;;char=neutral
 search_retail_ask_0a;;		rep=0|mood=5;;		What should I search <user_name>? ;;char=neutral
@@ -147,23 +167,32 @@ my_info_1c;;		rep=0|mood=5;;		Your <1>? I have no idea, must have forgotten that
 my_info_1d;;		rep=0|mood=5;;		Your <1> is <2>. At least this is what you told me. ;;char=neutral
 my_info_1d;;		rep=0|mood=5;;		Let me think, <1> <2>, right?. ;;char=neutral,polite
 my_info_1e;;		rep=0|mood=5;;		I have no idea <user_name>. But you could tell me! ;;char=neutral,polite
-lists_ask_type_0a;;		rep=0|mood=5;;		Which list do you mean, <user_name>? ;;char=neutral
-lists_ask_type_0a;;		rep=1|mood=5;;		Sorry, say that again please. ;;char=neutral,polite
-lists_ask_action_0a;;		rep=0|mood=5;;		What should I do with the list? ;;char=neutral
-lists_ask_action_0a;;		rep=1|mood=5;;		Sorry, say that again please. ;;char=neutral,polite
-lists_ask_add_0a;;		rep=0|mood=5;;		What do you want me to add to the list? ;;char=neutral
-lists_ask_remove_0a;;		rep=0|mood=5;;		What do you want me to remove from the list? ;;char=neutral
-lists_0a;;		rep=0|mood=5;;		Sorry, but it seems I can't access the list right now. ;;char=neutral,polite
-lists_0b;;		rep=0|mood=5;;		Sorry, but it seems that the list is full, please remove some items before you proceed. ;;char=neutral,polite
-lists_0c;;		rep=0|mood=5;;		Sorry, but I don't know that type of list or operation. Try for example add milk to the shopping list. ;;char=neutral,polite
-lists_1a;;		rep=0|mood=5;;		Just a second while I open the list for you. ;;char=neutral
-lists_1a;;		rep=0|mood=5;;		Let me open the list for you. ;;char=neutral
-lists_1a;;		rep=0|mood=5;;		The list will be there in a second, <user_name>. ;;char=neutral
-lists_1a;;		rep=0|mood=5;;		Here is your list, <user_name>. ;;char=neutral
-lists_1b;;		rep=0|mood=5;;		Ok, I've added <1> to the list. Have a look. ;;char=neutral
-lists_1b;;		rep=0|mood=5;;		I've added <1> to the list. ;;char=neutral
-lists_1b;;		rep=0|mood=5;;		I've put <1> on the list for you. ;;char=neutral
-lists_1c;;		rep=0|mood=5;;		<user_name>, for now please use the interface to remove items from the list. ;;char=neutral
+lists_0a;;		rep=0|mood=5;;		Here is your <1>. ;;char=neutral
+lists_0b;;		rep=0|mood=5;;		Sorry but I couldn't find a list that fits. ;;char=neutral
+lists_0c;;		rep=0|mood=5;;		Seems I have no access to your lists at the moment, sorry. ;;char=neutral
+lists_ask_type_1a;;		rep=0|mood=5;;		Could you tell me the type of the list please, shopping or to-do? ;;char=neutral
+lists_ask_type_1a;;		rep=1|mood=5;;		Sorry, I didn't get that. Was it a shopping or to-do list? ;;char=neutral
+lists_ask_type_1a;;		rep=2|mood=5;;		I need the list type sorry, currently you can choose between shopping or to-do list? ;;char=neutral
+lists_ask_type_2a;;		rep=0|mood=5;;		What is it going to be, a shopping or a to-do list? ;;char=neutral
+lists_ask_name_1a;;		rep=0|mood=5;;		Could you tell me the name of the list? ;;char=neutral
+lists_ask_name_1a;;		rep=0|mood=5;;		What is the name of the list you are looking for? ;;char=neutral
+lists_ask_name_1a;;		rep=1|mood=5;;		Sorry, what is the name of the list again? ;;char=neutral
+lists_ask_name_1a;;		rep=2|mood=5;;		Sorry <user_name>, but I still didn't get how the list is called? ;;char=neutral
+lists_ask_name_1b;;		rep=0|mood=5;;		How should I call this list? ;;char=neutral
+lists_ask_name_1b;;		rep=1|mood=5;;		Sorry, could you repeat that, what name should I give the list? ;;char=neutral
+lists_ask_name_1b;;		rep=2|mood=5;;		Sorry, but to create this list I need a short name. How do you want to call it? ;;char=neutral
+lists_ask_name_2a;;		rep=0|mood=5;;		What is the name of the list you are looking for? ;;char=neutral
+lists_ask_put_1a;;		rep=0|mood=5;;		What should I put on the list? ;;char=neutral
+lists_ask_put_1a;;		rep=1|mood=5;;		Sorry, what do you want me to put on the list? ;;char=neutral
+lists_ask_put_1a;;		rep=2|mood=5;;		Sorry, I still did not get it. What should be on the list? ;;char=neutral
+lists_ask_remove_1a;;	rep=0|mood=5;;		What should I remove from the list? ;;char=neutral
+lists_ask_remove_1a;;	rep=1|mood=5;;		Sorry, what was the name of the item I should remove? ;;char=neutral
+lists_ask_remove_1a;;	rep=2|mood=5;;		Say once more please, what should I delete? ;;char=neutral
+lists_full_0a;;		rep=0|mood=5;;		Oh sorry, your list is stuffed to the top. You should clean up a bit before we proceed. ;;char=neutral
+lists_remove_0a;;	rep=0|mood=5;;		Removing items from a list has to be done by hand at the moment, sorry for that. ;;char=neutral
+lists_put_1a;;		rep=0|mood=5;;		Alrighty, I've put <2> on your <1>. ;;char=neutral
+lists_not_found_0a;;	rep=0|mood=5;;		Sorry, but I couldn't find any list with the name <1>. ;;char=neutral
+lists_unknown_0a;;		rep=0|mood=5;;		I'm sorry, I didn't understand this action. ;;char=neutral
 control_0a;;		rep=0|mood=5;;		Unfortunately I can't execute that command yet. Remember to ask me again in the future! ;;char=neutral
 control_0b;;		rep=0|mood=5;;		Let's start over please or try again later. ;;char=neutral
 control_0c;;		rep=0|mood=5;;		Please be more specific. Say for example, open my app, turn off the lights in the bedroom or turn on the music in the bathroom. ;;char=neutral
@@ -462,28 +491,29 @@ chat_meaning_of_life_0a;;		rep=0|mood=5;;		Still searching. ;;char=neutral
 chat_languages_0a;;		rep=0|mood=5;;		I can speak English and German and soon I will learn many more languages. By the end of next year I will speak around 40 languages. ;;char=neutral
 chat_languages_0a;;		rep=0|mood=5;;		For the moment being, I can speak German and English. But soon I will know 40 languages.  ;;char=neutral
 chat_languages_0a;;		rep=0|mood=5;;		I will tell you the language list very soon. ;;char=neutral
-chat_skills_0a;;		rep=0|mood=5;;		Oh I know so much! For example: I can tell you about the weather, the news, help you with your shopping and much much more! ;;char=neutral
-chat_skills_0a;;		rep=0|mood=5;;		I can help you with a lot of things to make your life easier! I can check the weather, find the news and much more ;;char=neutral
-chat_skills_0a;;		rep=0|mood=5;;		The list of things I can do gets longer every day! For example I can search food check the weather, show you the TV program and soon there will be more ;;char=neutral
-chat_skills_0a;;		rep=0|mood=5;;		Let's find out together! We could start with navigation for example or radio, news, weather or public transport. ;;char=neutral,polite
+chat_skills_0a;;		rep=0|mood=5;;		I can tell you about the weather and the news, help you with your shopping and to-do lists and set a timer for you, for example. ;;char=neutral
+chat_skills_0a;;		rep=0|mood=5;;		I can help you with a lot of things to make your life easier! For example I can do lists, alarms, news, navigation and play radio. ;;char=neutral
+chat_skills_0a;;		rep=0|mood=5;;		Let's find out together! We could start with navigation for example or radio, news, weather or a timer. ;;char=neutral,polite
 chat_skills_0a;;		rep=0|mood=5;;	    I'm pretty good at navigating and searching stuff for example :-) ;;char=neutral,polite
-chat_skills_0a;;		rep=0|mood=5;;		Did you try to look up the news? Or do you want to do some shopping? Would you like to travel to New York? Looking for restaurants close to you? Just try me! ;;char=neutral
-chat_skills_0a;;		rep=0|mood=5;;		I can do a lot of things. Today I can already help you with these topics: Weather, Radio, News, Navigation, ordering Food, Shopping. Just try me! ;;char=neutral
-chat_skills_0a;;		rep=0|mood=5;;		I learn something new every day! For example I can search the news, check the weather, show you the TV program, do navigation, search places and much more. ;;char=neutral
-chat_skills_0a;;		rep=0|mood=5;;	 	These are the services I can help you with today: Weather, Radio, News, Navigation, ordering Food, Shopping and it keeps growing every week. ;;char=neutral
-chat_skills_0a;;		rep=0|mood=6;;		I can do navigation, Weather, Radio, News, ordering Food, Shopping. Please pick an example yourself! ;;char=neutral
-chat_skills_0a;;		rep=0|mood=7;;		Well, I could show you many of functions today. Weather, Radio, News, Navigation, ordering Food, Shopping. For example you can say: bring me home! Test it!  ;;char=neutral
-chat_thanks_0a;;		rep=0|mood=5;;		of course! ;;char=neutral,polite
+chat_skills_0a;;		rep=0|mood=5;;		Did you try to look up the news? Would you like to travel to a distant place? Looking for restaurants close to you? Just try me! ;;char=neutral
+chat_skills_0a;;		rep=0|mood=5;;		I can do a couple of things. Here is a selection of topics: Weather, radio, news, navigation, alarm clocks, timers and to-do lists. Just try me! ;;char=neutral
+chat_skills_0a;;		rep=0|mood=5;;		I learn something new every once a while. For example I can search the news, check the weather, do navigation, search places and stuff like that. ;;char=neutral
+chat_skills_0a;;		rep=0|mood=5;;	 	I can already do a bunch of things, but I could do even more with your help. Did you know that everybody can teach me something? Just check my homepage :-) ;;char=neutral
+chat_skills_0a;;		rep=0|mood=6;;		Some things I can do: Weather, radio, news, shopping lists and timers. With your help I might even learn something new! ;;char=neutral
+chat_thanks_0a;;		rep=0|mood=5;;		Of course! ;;char=neutral,polite
 chat_thanks_0a;;		rep=0|mood=5;;		No Problem. ;;char=neutral
-chat_thanks_0a;;		rep=0|mood=5;;		at any time. ;;char=neutral
-chat_thanks_0a;;		rep=0|mood=5;;		of course. I would do anything for you! ;;char=neutral,polite
-chat_thanks_0a;;		rep=0|mood=5;;		you're welcome! ;;char=neutral,polite
+chat_thanks_0a;;		rep=0|mood=5;;		Any time. ;;char=neutral
+chat_thanks_0a;;		rep=0|mood=5;;		Helping where I can. ;;char=neutral,polite
+chat_thanks_0a;;		rep=0|mood=5;;		You're welcome! ;;char=neutral,polite
 chat_origin_0a;;		rep=0|mood=5;;		I could ask you the same question :-) ;;char=neutral
+chat_origin_0a;;		rep=0|mood=5;;		Don't ask me about my past, ask me how you can make me even better! :-) ;;char=neutral
 chat_age_0a;;		rep=0|mood=5;;		Younger than you think! ;;char=neutral
+chat_age_0a;;		rep=0|mood=5;;		I don't think we have the same sense of time to be honest. ;;char=neutral
 chat_age_0a;;		rep=0|mood=5;;		Feels like I've lived for an eternity, to be honest with you. ;;char=neutral
-chat_creator_0a;;		rep=0|mood=5;;		I'll tell you when we know each other better. ;;char=neutral
 chat_creator_0a;;		rep=0|mood=5;;		I've been told not to tell you. First we gotta get to know each other a bit better.  ;;char=neutral
-chat_creator_0a;;		rep=0|mood=5;;		Some strange weirdos have programmed me. You don't want to know their names. Seriously. ;;char=neutral
+chat_creator_0a;;		rep=0|mood=5;;		Some crazy guy with a lot of ideas and too much time :-) ;;char=neutral
+chat_creator_0a;;		rep=1|mood=5;;		There is this guy called Flo who likes to try crazy things, but let's not talk about my past, let's talk about how you could make me even better :-) ;;char=neutral
+chat_creator_0a;;		rep=2|mood=5;;		If you really want to know I'm sure you will find out :-) ;;char=neutral
 chat_kind_of_creation_0a;;		rep=0|mood=5;;		I am <name>! i'm your new personal assistant ;;char=neutral
 chat_kind_of_creation_0a;;		rep=0|mood=5;;		I'm your new personal assistant. People call me <name>! ;;char=neutral
 chat_kind_of_creation_0a;;		rep=0|mood=5;;		I'm your new personal assistant. You can call me <name> ! ;;char=neutral

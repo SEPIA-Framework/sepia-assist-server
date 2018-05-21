@@ -89,9 +89,9 @@ public class Lists implements ServiceInterface{
 		info.getAtLeastOneOf(askTypeCommon, p1, p4); 		//either type or sub-type is required, if both are missing ask for type
 				
 		//Answers:
-		info.addSuccessAnswer("<direct>Hier ist deine <1>")
-			.addOkayAnswer("<direct>Ich konnte leider keine passende Liste finden.")
-			.addFailAnswer("<direct>Scheinbar habe ich kein Zugriff auf deine Listen gerade.")
+		info.addSuccessAnswer("lists_0a")		//here is <1>
+			.addOkayAnswer("lists_0b")			//not found
+			.addFailAnswer("lists_0c")			//no access
 			.addCustomAnswer("askType", askTypeCommon)
 			.addCustomAnswer("askTypeOrTitle", askTypeOrTitle) 		//overwrites "lists_ask_type_0a"
 			.addCustomAnswer("askTitleCreate", askTitleCreate)
@@ -108,26 +108,19 @@ public class Lists implements ServiceInterface{
 		
 		return info;
 	}
-	static final String askTypeCommon = "<direct>Sagst du mir bitte noch den Typ, Shopping oder To-Do Liste?";
-	static final String askTypeOrTitle = "<direct>Sagst du mir bitte noch den Namen der Liste?";	//previously "lists_ask_type_0a"
-	static final String askTitleCreate = "<direct>Wie soll die Liste heißen?";
-	static final String askItemAdd = "<direct>Was soll ich auf die Liste setzen?";
-	static final String askItemRemove = "<direct>Was soll ich löschen von der Liste?";
-	static final String askListTypeAgain = "<direct>Was soll es werden, eine Shopping Liste oder eine To-Do Liste?";  //<-- potential endless loop? see below
-	static final String askListTypeAgainShow = "<direct>Wie heißt die Liste, die du suchst?";
-	static final String listTooLong = "<direct>Oh, die Liste ist leider voll bis obenhin.";
-	static final String removeByHand = "<direct>Dinge entfernen musst du leider noch per Hand machen, sorry.";
-	static final String addedStuff = "<direct>Alles klaro, habe <2> deiner <1> hinzugefügt.";
-	static final String listNotFound = "<direct>Sorry, aber ich konnte keine Liste finden mit dem Namen <1>.";
-	static final String unknownAction = "<direct>Tut mir leid, aber diese Aktion habe ich nicht verstanden.";
-	//no valid list/action: lists_0c
-	//ask action: lists_ask_action_0a
-	//lists_ask_add_0a
-	//lists_ask_remove_0a
-	//comm. error: lists_0a
-	//list too long: lists_0b
-	//remove by hand: lists_1c
-	//I've added stuff: lists_1b
+	static final String askTypeCommon = "lists_ask_type_1a";		//shop or todo?
+	static final String askTypeOrTitle = "lists_ask_name_1a";		//name for search?
+	static final String askTitleCreate = "lists_ask_name_1b";		//name for creation?
+	static final String askItemAdd = "lists_ask_put_1a";			//ask put on list
+	static final String askItemRemove = "lists_ask_remove_1a";		//ask remove
+	static final String askListTypeAgain = "lists_ask_type_2a";  	//shop or todo?		<-- potential endless loop? see below
+	static final String askListTypeAgainShow = "lists_ask_name_2a";	//name and show?
+	static final String listTooLong = "lists_full_0a";				//full
+	static final String removeByHand = "lists_remove_0a";			//remove by hand plz
+	static final String addedStuff = "lists_put_1a"; 			//"<direct>Alles klaro, habe <2> deiner <1> hinzugefügt.";
+	static final String listNotFound = "lists_not_found_0a"; 	//"<direct>Sorry, aber ich konnte keine Liste finden mit dem Namen <1>.";
+	static final String unknownAction = "lists_unknown_0a";		//action not found
+
 	
 	//result
 	public ServiceResult getResult(NluResult nluResult){
@@ -182,7 +175,7 @@ public class Lists implements ServiceInterface{
 		//------------------------------------------------------------------------------------------------------->
 		//this might never be triggered anymore since we have 'info.getAtLeastOneOf(askTypeOrTitle, p1, p4)' now
 		if (isActionShow && missingTitle && missingIndexType){
-			//ask for item
+			//ask for type or name
 			api.setIncompleteAndAsk(PARAMETERS.LIST_SUBTYPE, askListTypeAgainShow);
 			ServiceResult result = api.buildResult();
 			return result;

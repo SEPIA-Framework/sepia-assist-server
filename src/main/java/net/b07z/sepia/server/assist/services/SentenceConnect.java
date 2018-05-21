@@ -57,9 +57,9 @@ public class SentenceConnect implements ServiceInterface{
 		
 		return info;
 	}
-	private static final String askSentence = "<direct>Wie lautet der Satz?";
+	private static final String askSentence = "sentences_0a";	//"<direct>Wie lautet der Satz?";
 	private static final String successAns = "<silent>";
-	private static final String failAns = "<direct>Fehlgeschlagen";
+	private static final String failAns = "sentences_1a";		//"<direct>Fehlgeschlagen";
 	
 	@Override
 	public ServiceResult getResult(NluResult nluResult) {

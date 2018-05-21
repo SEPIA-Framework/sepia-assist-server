@@ -70,7 +70,7 @@ public class SoccerBundesligaInfo implements ServiceInterface{
 		
 		return info;
 	}
-	private static final String soccerResultsAns = "news_1b";
+	private static final String soccerResultsAns = "news_1b"; 		//TODO: improve
 	private static final String soccerTableAns = "news_1c";
 
 	//result

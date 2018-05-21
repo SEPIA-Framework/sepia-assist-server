@@ -66,10 +66,13 @@ haha lustig;;		command=chat;;		type=compliment;;		info=funny
 haha manchmal bist du lustig;;		command=chat;;		type=compliment;;		info=funny
 ich bin beeindruckt;;		command=chat;;		type=compliment;;		info=impressed
 Ich mag dich;;		command=chat;;		type=compliment
+Ich mag mich;;		command=chat;;		reply=Das ist toll, ich mag mich auch.
 Ich finde dich cool;;		command=chat;;		type=compliment
 Ich finde dich toll;;		command=chat;;		type=compliment
 Ich finde dich super;;		command=chat;;		type=compliment
 Ich finde dich klasse;;		command=chat;;		type=compliment
+Ich liebe dich;;		command=chat;;		type=compliment;;		reply=Wenn ich könnte würde ich dich jetzt drücken :-)||Gleich brennen meine Schaltkreise durch! :-)||Danke, ich finde dich auch toll! :-)
+Ich liebe mich;;		command=chat;;		reply=Das ist toll, ich mag mich auch.
 lustig;;		command=chat;;		type=compliment;;		info=funny
 schön zu hören;;		command=chat;;		type=compliment;;		info=happy
 das freut mich;;		command=chat;;		type=compliment;;		info=happy
@@ -87,7 +90,6 @@ Guten Abend;;		command=chat;;		type=greeting;;		reply=oh, schon so spät? Guten 
 Guten Morgen;;		command=chat;;		type=greeting;;		reply=einen wunderschönen guten Morgen wünsche ich||Guten Morgen <user_name>||Moin <user_name>
 Guten Tag;;		command=chat;;		type=greeting
 Hallo;;		command=chat;;		type=greeting
-Hallo Giga;;		command=chat;;		type=greeting
 Hallo melde dich;;		command=chat;;		type=greeting;;		reply=melde mich zum Dienst!||melde mich wie befohlen!||bin bereit, kann los gehen!
 Hello;;		command=chat;;		type=greeting
 Hey;;		command=chat;;		type=greeting
@@ -115,33 +117,36 @@ see you;;		command=chat;;		type=goodbye
 cu;;		command=chat;;		type=goodbye
 ich muss weg;;		command=chat;;		type=goodbye
 bb;;		command=chat;;		type=goodbye
-schlaf gut;;		command=chat;;		type=goodbye;;		reply=schlaf du auch gut!||wünsche dir eine schöne Nacht!
-gute Nacht;;		command=chat;;		type=goodbye;;		reply=schlaf gut!||wünsche dir auch eine gute Nacht!
+schlaf gut;;		command=chat;;		type=goodbye;;		reply=Schlaf du auch gut!||Wünsche dir eine schöne Nacht!
+gute Nacht;;		command=chat;;		type=goodbye;;		reply=Schlaf gut!||Wünsche dir auch eine gute Nacht!
 auf wiedersehen;;		command=chat;;		type=goodbye
 hilfe!;;		command=chat;;		type=help
 hilf mir irgendwie!;;		command=chat;;		type=help
 hilf mir!;;		command=chat;;		type=help
-hilf mir bitte Giga!;;		command=chat;;		type=help
+hilf mir bitte!;;		command=chat;;		type=help
 ich brauche deine Hilfe!;;		command=chat;;		type=help
 kannst du mir helfen?;;		command=chat;;		type=help
 ich weiß nicht weiter;;		command=chat;;		type=help
 ich weiß nicht was ich machen soll;;		command=chat;;		type=help
 Verstehst du mich?;;		command=chat;;		type=question;;		reply=<chat_hello_0b>
+Wie kann ich dich verbessern?;;		command=chat;;		type=question;;		reply=Da gibt es mehrere Möglichkeiten. Schau doch mal im Teach UI oder auf meiner GitHub Seite :-)
+Wie kann ich dich noch besser machen?;;		command=chat;;		type=question;;		reply=Da gibt es mehrere Möglichkeiten. Schau doch mal im Teach UI oder auf meiner GitHub Seite :-)
+Wie kann ich dir etwas beibringen?;;		command=chat;;		type=question;;		reply=Da gibt es mehrere Möglichkeiten. Schau doch mal im Teach UI oder auf meiner GitHub Seite :-)
 haha;;		command=chat;;		type=laugh;;		reply=ha ha :-)||finds auch lustig gerade :-)||ha ha ja sehr gut! :-)
 was ist dein Alter?;;		command=chat;;		type=question;;		info=age
 wie alt bist du?;;		command=chat;;		type=question;;		info=age
-Was passiert hier?;;		command=chat;;		type=question;;		info=confused;;		reply=check ich gerade auch nicht!
+Was passiert hier?;;		command=chat;;		type=question;;		info=confused;;		reply=Checke ich gerade auch nicht!
 wer hat dich erschaffen?;;		command=chat;;		type=question;;		info=creator
 wer hat dich gebaut? ;;		command=chat;;		type=question;;		info=creator
 wer hat dich gemacht?;;		command=chat;;		type=question;;		info=creator
 wer hat dich geschaffen?;;		command=chat;;		type=question;;		info=creator
 wer hat dich programmiert?;;		command=chat;;		type=question;;		info=creator
 alles cool? ;;		command=chat;;		type=question;;		info=how_are_you
-alles fit bei dir? ;;		command=chat;;		type=question;;		info=how_are_you;;		reply=alles fit im Schritt
+alles fit bei dir? ;;		command=chat;;		type=question;;		info=how_are_you;;		reply=Alles fit im Schritt.
 Alles fit? ;;		command=chat;;		type=question;;		info=how_are_you
 Alles gut?;;		command=chat;;		type=question;;		info=how_are_you
 Alles im Griff?;;		command=chat;;		type=question;;		info=how_are_you
-Alles im Lot?;;		command=chat;;		type=question;;		info=how_are_you;;		reply=alles in Lot auf dem Boot
+Alles im Lot?;;		command=chat;;		type=question;;		info=how_are_you;;		reply=Alles in Lot auf dem Boot.
 Alles in Ordnung?;;		command=chat;;		type=question;;		info=how_are_you
 Alles klar? ;;		command=chat;;		type=question;;		info=how_are_you
 Alles ok?;;		command=chat;;		type=question;;		info=how_are_you
@@ -171,18 +176,19 @@ Wie läufts?;;		command=chat;;		type=question;;		info=how_are_you
 aus welchem Material bist du? ;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=ich bestehe aus einige Lagen Silizium, einer Reihe von seltenen Erden wie zum Beispiel Neodym, ein bisschen Glas und Plastik für den Teint und jeder Menge positiver Energie! :-)
 aus welcher Materie bist du? ;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=ich bestehe aus einige Lagen Silizium, einer Reihe von seltenen Erden wie zum Beispiel Neodym, ein bisschen Glas und Plastik für den Teint und jeder Menge positiver Energie! :-)
 beschreib dich;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=ich bestehe aus einige Lagen Silizium, einer Reihe von seltenen Erden wie zum Beispiel Neodym, ein bisschen Glas und Plastik für den Teint und jeder Menge positiver Energie! :-)
-bist du aus Materie?;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=Das kann man sagen! Ja, das bin ich!
-bist du ein Gespenst?;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=Nein, das sicher nicht :-) Aber ich bin ähnlich schwer zu greifen, wie ein Gedanke, wie eine Vision.
+bist du aus Materie?;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=Irgendwie schon, aber anfassen ist schwierig. Normalerweise stecke ich aber in einer netten Hülle.
+bist du intelligent?;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=Ich weiß nicht, bist du es?
+bist du ein Gespenst?;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=Nein, das sicher nicht :-) Aber ich bin ähnlich schwer zu greifen.
 bist du ein Mensch?;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=Nein, aber ich hoffe du bist einer! Sonst wäre das hier sehr verwirrend||Nein, bist du einer? :-)
-bist du ein Programm?;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=Könnte man so sagen, aber vielleicht bin ich auch etwas mehr :-)||Bis jetzt schon :-)
-bist du Software?;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=Könnte man so sagen, aber vielleicht bin ich auch etwas mehr :-)||Bis jetzt schon :-)
+bist du ein Programm?;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=Könnte man so sagen und du?||Bis jetzt schon :-)||Genau genommen bin ich sogar mehrere Programme :-)
+bist du Software?;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=Könnte man so sagen. Bist du Hardware? :-)||Bis jetzt schon :-)
 erklär mal was du bist;;		command=chat;;		type=question;;		info=kind_of_creation
-erzähl mir mehr von dir;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=Wo sollen wir anfangen? 
+erzähl mir mehr von dir;;		command=chat;;		type=question;;		info=kind_of_creation
 erzähl mir über dich;;		command=chat;;		type=question;;		info=kind_of_creation
 erzähl mir was von dir;;		command=chat;;		type=question;;		info=kind_of_creation
 erzähl mir wer du bist?;;		command=chat;;		type=question;;		info=kind_of_creation
 kannst du sagen wer du bist?;;		command=chat;;		type=question;;		info=kind_of_creation
-lass uns über dich reden;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=Fang du an! Stell du die Fragen!
+lass uns über dich reden;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=Frag mich einfach was.
 möchte mehr über dich erfahren;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=Gerne! Frag einfach was dich interessiert!
 reden wir über dich;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=Sehr gerne! Frag mich was konkretes!
 sag mir was du bist;;		command=chat;;		type=question;;		info=kind_of_creation
@@ -192,9 +198,9 @@ sagst du mir wer du bist?;;		command=chat;;		type=question;;		info=kind_of_creat
 und was bist du?;;		command=chat;;		type=question;;		info=kind_of_creation
 was bist du?;;		command=chat;;		type=question;;		info=kind_of_creation
 wer bist du?;;		command=chat;;		type=question;;		info=kind_of_creation
-wie bist du entstanden;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=Das ist eine lange Geschichte! Mit der Zeit erzähle ich dir alles über mich! 
-woraus bist du gemacht?;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=ich bestehe aus einigen Lagen Silizium, einer Reihe von seltenen Erden wie zum Beispiel Neodym, ein bisschen Glas und Plastik für den Teint und jeder Menge positiver Energie! :-)
-woraus bestehst du?;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=Ich bestehe aus Energiewellen, positiven Energiewellen! Also etwa wie ein Kribbeln! kribbeln das durch deinen Körper fliesst und dir gute Laune erzeugt!
+wie bist du entstanden;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=Am Anfang war eine Idee, dann wurde viel experimentiert und jetzt sind wir hier.
+woraus bist du gemacht?;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=Ich bestehe aus einigen Lagen Silizium, einer Reihe von seltenen Erden wie zum Beispiel Neodym, ein bisschen Glas und Plastik hier und dort und jeder Menge gutem Willen! :-)
+woraus bestehst du?;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=Ich bestehe aus gutem Willen und verrückten Ideen, ach und so einem Zeug namens Silizium.
 in welchen Sprachen sprichst du?;;		command=chat;;		type=question;;		info=languages
 in welchen Sprachen verstehst du mich?;;		command=chat;;		type=question;;		info=languages
 kannst du deutsch sprechen?;;		command=chat;;		type=question;;		info=languages;;		code=de
@@ -210,8 +216,11 @@ welche Sprachen sprichst du?;;		command=chat;;		type=question;;		info=languages
 welche Sprachen verstehst du? ;;		command=chat;;		type=question;;		info=languages
 warum sind wir hier?;;		command=chat;;		type=question;;		info=meaning_of_life
 was ist der Sinn des Lebens?;;		command=chat;;		type=question;;		info=meaning_of_life
+kennst du meinen Namen?;;		command=chat;;		type=question;;		 reply=Ich nenne dich normalerweise <user_name>||Dein Name ist <user_name>, zumindest laut meiner Datenbank.
+wie heiße ich?;;		command=chat;;		type=question;;		 reply=Ich nenne dich normalerweise <user_name>||Dein Name ist <user_name>, zumindest laut meiner Datenbank.
+wie ist mein Name?;;		command=chat;;		type=question;;		 reply=Ich nenne dich normalerweise <user_name>||Dein Name ist <user_name>, zumindest laut meiner Datenbank.
+Giga?;;		command=chat;;		type=question;;		reply=Hyper hyper!
 erzähl mir wer du bist?;;		command=chat;;		type=question;;		info=name;;		reply=es war ein mal vor langer langer Zeit, … ein digitaler Assistent namens <name>
-Giga?;;		command=chat;;		type=question;;		info=name;;		reply=<user_name>||ja, <user_name>?
 hast du einen Namen?;;		command=chat;;		type=question;;		info=name
 kann mich jemand hören?;;		command=chat;;		type=question;;		info=name
 mit wem spreche ich?;;		command=chat;;		type=question;;		info=name
@@ -224,6 +233,7 @@ wer ist da?;;		command=chat;;		type=question;;		info=name
 wie heißt du nochmal?;;		command=chat;;		type=question;;		info=name
 wie heißt du?;;		command=chat;;		type=question;;		info=name
 wie ist dein Name?;;		command=chat;;		type=question;;		info=name
+kennst du deinen Namen?;;		command=chat;;		type=question;;		info=name
 Dein Ursprung?;;		command=chat;;		type=question;;		info=origin
 Deine Herkunft?;;		command=chat;;		type=question;;		info=origin
 Deine Wurzeln ? ;;		command=chat;;		type=question;;		info=origin

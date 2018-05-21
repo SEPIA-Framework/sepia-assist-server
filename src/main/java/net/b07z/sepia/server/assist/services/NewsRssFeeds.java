@@ -316,13 +316,10 @@ public class NewsRssFeeds implements ServiceInterface{
 		info.addSuccessAnswer("news_1a")
 			.addFailAnswer("abort_0c")
 			.addAnswerParameters("topic") 		//be sure to use the same parameter names as in resultInfo
-			.addCustomAnswer("soccerResults", soccerResultsAns)
-			.addCustomAnswer("soccerTable", soccerTableAns);
+			;
 		
 		return info;
 	}
-	private static final String soccerResultsAns = "news_1b";
-	private static final String soccerTableAns = "news_1c";
 
 	//result
 	public ServiceResult getResult(NluResult nluResult){
