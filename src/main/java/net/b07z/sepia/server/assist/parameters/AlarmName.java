@@ -90,7 +90,8 @@ public class AlarmName implements Parameter_Handler{
 					found = found.replaceFirst("(\\w+)e$", "$1en");
 				}
 				found = found.replaceAll("\\b(der|die|das|des|den|ein|einen|eine|mein|meinen|meine|dass) (" + alarm + ")\\b", "").trim();
-				found = found.replaceFirst("(.*)(zu)( |)(\\w+)$\\b", "$1$3$4").replaceAll("\\s+", " ").trim();
+				//reformat grammar
+				found = found.replaceFirst("(.*)(zu)( |)(\\w+)$\\b", "$1 $4").replaceAll("\\s+", " ").trim();
 
 			}else if (NluTools.stringContains(input, "\\w+ (" + alarm + ")")){
 				found = input.replaceFirst("(.*) (" + alarm + ")\\b.*", "$1");

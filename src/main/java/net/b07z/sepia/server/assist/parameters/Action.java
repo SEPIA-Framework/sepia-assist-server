@@ -137,14 +137,15 @@ public class Action implements Parameter_Handler{
 					+ "(?<!(wie ))hoch|rauf|hoeher|groesser|erhoehen|aufdrehen|erhoehe|verstaerken|verstaerke|heller|(?<!(ist ))schneller|(?<!(ist ))staerker|waermer|warm|lauter|laut";
 			decrease = "(mach|dreh) .*\\b(runter|aus)|"
 					+ "runterdrehen|runter|kleiner|niedriger|erniedrigen|erniedrige|abschwaechen|schwaecher|schwaeche|dunkler|dimmen|dimme|(?<!(wie ))langsam|langsamer|kaelter|(?<!(wie ))kalt|leiser|leise";
-			set = "setzen|setze|stelle|stellen|aendern|aendere|auswaehlen|waehlen|waehle";
+			set = "setzen|setze|stelle|stellen|auswaehlen|waehlen|waehle|"
+					+ "erinnere|weck(e|)";
 			toggle = "umschalten|schalten|schalte";
 			show = "anzeigen|zeig|zeigen|check|checken|was sagt|wieviel";
 			add = "fuege .*\\bhinzu|hinzufuegen|ergaenze|ergaenzen|eintragen|trage .*\\bein|"
-					+ "auf .*\\b(\\w*list(e|)|\\w*zettel|\\w*note(s|))";
+					+ "auf .*\\b(\\w*list(e|)|\\w*zettel|\\w*note(s|))";		//tricky one for lists ... user can "mean" add, but not say it (milk on my list)
 			remove = "entferne|entfernen|loesche|loeschen|nimm .*\\bvon";
 			create = "erstellen|erstelle";
-			edit = "bearbeite(n|)(?! (" + add + "))";
+			edit = "(aendern|aendere|bearbeite(n|))(?! (" + add + "))"; 		//we need this now to compensate for the more exotic "add" actions
 			
 		//English and other
 		}else{
@@ -161,14 +162,15 @@ public class Action implements Parameter_Handler{
 			decrease = "(make|switch|turn) .*\\b(down)|"
 					+ "^\\w+\\b (down$)|"
 					+ "downwards|smaller|lower|decrease|reduce|weaker|darker|dim|slow|(?<!(is ))slower|colder|cold|quieter|quiet";
-			set = "set|put|change|select|choose";
+			set = "set|put|select|choose|"
+					+ "remind (\\w+) to|wake";
 			toggle = "toggle|switch";
 			show = "show|shows|display|check|what does .* say|how much";
 			add = "add|enter|"
-					+ "on .*\\b(\\w*list|\\w*note(s|))";
+					+ "on .*\\b(\\w*list|\\w*note(s|))";		//tricky one for lists ... user can "mean" add, but not say it (milk on my list)
 			remove = "remove|delete|take .*\\boff";
 			create = "create|make";
-			edit = "edit(?! (" + add + "))";
+			edit = "(change|edit)(?! (" + add + "))";			//we need this now to compensate for the more exotic "add" actions
 		}
 		
 		String extracted = NluTools.stringFindFirst(input, set + "|" + on + "|" + off + "|" + pause + "|"
