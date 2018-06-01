@@ -843,10 +843,7 @@ public class AuthenticationElasticsearch implements AuthenticationInterface{
 		if (client == null || client.isEmpty()){
 			client = Config.defaultClientInfo;
 		}
-		//String token_path = ACCOUNT.TOKENS + "." + client.replaceFirst("_v\\d.*?\\d(_|$)", "_").trim().replaceFirst("_$", "").trim();
-		String tokenId = client.replaceFirst("_v\\d.*?(_|$)", "_").trim().replaceFirst("_$", "").replaceAll("[\\W]", "").trim();
-		//System.out.println("CLIENT TOKEN: " + token_path); 		//debug
-		return tokenId;
+		return CLIENTS.getBaseClient(client);
 	}
 	
 	//-----------------------Common tools--------------------------

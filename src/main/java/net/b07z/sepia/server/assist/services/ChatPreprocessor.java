@@ -13,7 +13,6 @@ import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.core.assistant.ACTIONS;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
-import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
 
 /**
@@ -228,8 +227,8 @@ public class ChatPreprocessor implements ServiceInterface{
 		
 		//finish:
 		
-		//get clean answer
-		api.answerClean = Converters.removeHTML(api.answer);
+		//get clean answer - removed to use default "cleaner" from "buildResult()"
+		//api.answerClean = Converters.removeHTML(api.answer);
 		
 		//anything else?
 		api.context = CMD.CHAT;				//how do we handle chat contexts? Just like that and do the rest with cmd_summary?

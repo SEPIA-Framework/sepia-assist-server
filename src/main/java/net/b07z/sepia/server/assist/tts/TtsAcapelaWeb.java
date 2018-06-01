@@ -288,14 +288,6 @@ public class TtsAcapelaWeb implements TtsInterface {
 			int tone = (int) (tone_set[mod_mood_index] * toneFactor);
 			int volume = volume_set[mod_mood_index];
 						
-			//--------------HACKKKKKK----------------
-			/*
-			if (voice.matches("claudia22k_happy")){
-				return TTS_HACK.audioURL(read_this);
-			}
-			*/
-			//---------------------------------------
-			
 			//modify string - I moved the speed and pitch here to use the relative speed tag and make it consistent with embedded
 			read_this = "\\rspd=" + speed + "\\ " + "\\vct=" + tone + "\\ " + read_this;
 			//System.out.println(read_this);
