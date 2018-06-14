@@ -259,9 +259,26 @@ public class WeatherDarkSky implements ServiceInterface{
 		//System.out.println("weather url: " + url);		//debug
 		long tic = System.currentTimeMillis();
 		JSONObject response = Connectors.httpGET(url.trim());
-		Statistics.addExternalApiHit("Weather DarkSky");
-		Statistics.addExternalApiTime("Weather DarkSky", tic);
 		//System.out.println("weather RESULT: " + response.toJSONString());		//debug
+		
+		//Check API result
+		if (!Connectors.httpSuccess(response)){
+			Statistics.addExternalApiHit("Weather DarkSky error");
+			Statistics.addExternalApiTime("Weather DarkSky error", tic);
+			
+			//set all parameters to empty to avoid AnswerLoader complaints
+			api.resultInfoFill();
+			api.setStatusFail();
+			
+			//build the API_Result and goodbye
+			ServiceResult result = api.buildResult(); 
+			return result;
+		}else{
+			Statistics.addExternalApiHit("Weather DarkSky");
+			Statistics.addExternalApiTime("Weather DarkSky", tic);
+		}
+		
+		//Build service answer
 		try{
 			JSONObject dataOut = new JSONObject();
 			JSONObject detailsOut = new JSONObject();
@@ -477,6 +494,7 @@ public class WeatherDarkSky implements ServiceInterface{
 			
 			//set all parameters to empty to avoid AnswerLoader complaints
 			api.resultInfoFill();
+			api.setStatusFail();
 			
 			//build the API_Result and goodbye
 			ServiceResult result = api.buildResult(); 

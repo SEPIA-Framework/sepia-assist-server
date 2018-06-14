@@ -1,6 +1,7 @@
 package net.b07z.sepia.server.assist.tools;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -32,6 +33,8 @@ import net.b07z.sepia.server.core.tools.JSON;
  *
  */
 public class RssFeedReader {
+	
+	public static long oldNewsAgeMs = 1000 * 60 * 60 * 24 * 3; 		//3 days in milliseconds
 	
 	//HashMap<String, JSONObject> feedCache;
 	//HashMap<String, Long> feedCacheTS;
@@ -103,6 +106,7 @@ public class RssFeedReader {
 		String errorRedirect = "";
         JSONObject feedResult = new JSONObject();
         JSONArray feedEntries = new JSONArray();
+        List<JSONObject> feedEntriesOlder = new ArrayList<>();
         
         try {
 	        try (CloseableHttpClient client = HttpClients.createMinimal()) {
@@ -161,6 +165,10 @@ public class RssFeedReader {
 	    				JSON.add(jo, "title", title);
 	    				JSON.add(jo, "link", link);
 	    				Date d = se.getPublishedDate();
+	    				long age = -1;
+	    				if (d != null){
+	    					age = System.currentTimeMillis() - d.getTime();
+	    				}
 	    				JSON.add(jo, "pubDate", (d != null)? DateTime.getGMT(d, Config.defaultSdf) : "");
 	    				SyndContent descCont = se.getDescription();
 	    				String desc = (descCont != null)? descCont.getValue() : "";
@@ -178,10 +186,40 @@ public class RssFeedReader {
 	    						.replaceAll("\\s+", " ").trim();
 	    				JSON.add(jo, "description", desc);
 	    				
-	    				JSON.add(feedEntries, jo);
+	    				//filter by date and add
+	    				if (age >= 0 && age < oldNewsAgeMs) {
+	    					JSON.add(feedEntries, jo);
+	    					i++;
+	    				}else{
+	    					JSON.put(jo, "age", age);
+	    					feedEntriesOlder.add(jo);
+	    				}
 	    				//System.out.println("jo: " + jo.toJSONString());					//DEBUG
-	    				i++;
 	    			}
+	    			
+	    			//check if we have enough "new" news. If not fill with older
+	    			if (feedEntries.size() < maxEntries){
+	    				//sort old list
+	    				feedEntriesOlder.sort((jo1, jo2) -> {
+	    					long a1 = (long) jo1.get("age");
+	    					long a2 = (long) jo2.get("age");
+	    					// -1 - less than, 1 - greater than, 0 - equal
+	    			        return a1 < a2 ? -1 : (a1 > a2) ? 1 : 0;
+	    				});
+	    				//add newest first
+	    				i = feedEntries.size();
+		    			for (Object e : feedEntriesOlder){
+		    				if (i > maxEntries){
+		    					break;
+		    				}
+		    				JSONObject je = (JSONObject) e;
+		    				je.remove("age");
+		    				//System.out.println(je.get("title") + " - " + je.get("age"));
+		    				JSON.add(feedEntries, je);
+		    				i++;
+		    			}
+	    			}
+	    			
 	    			JSON.add(feedResult, "data", feedEntries);
 	    			
 	    			//cache

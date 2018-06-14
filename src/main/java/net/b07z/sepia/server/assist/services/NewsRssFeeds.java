@@ -149,10 +149,12 @@ public class NewsRssFeeds implements ServiceInterface{
 		//feedUrls.put("CinemaxX", "https://www.cinemaxx.de/Site/GetRSS/Filme");
 		feedUrls.put("CinemaxX", "https://www.presseportal.de/rss/pm_9588.rss2");
 		feedUrls.put("Filmstarts.de - aktuell", "http://rss.filmstarts.de/fs/kinos/aktuelle?format=xml");
+		feedUrls.put("Filmstarts.de - bald", "http://rss.filmstarts.de/fs/kinos/bald?format=xml");
 		feedUrls.put("Filmstarts.de - Serien", "http://rss.filmstarts.de/fs/news/serien?format=xml");
 		//feedUrls.put("Serienjunkies - Kalender", "http://www.serienjunkies.de/docs/serienkalender-aktuell.html#feed");
-		feedUrls.put("cinema.de - Trailer", "http://www.cinema.de/kino/trailer/video/rss.xml");
+		//feedUrls.put("cinema.de - Trailer", "http://www.cinema.de/kino/trailer/video/rss.xml");
 		feedUrls.put("SPIEGEL Kino", "http://www.spiegel.de/kultur/kino/index.rss");
+		feedUrls.put("Kino.de - Film-News", "https://www.kino.de/rss/movienews");
 		feedUrls.put("deutsche startups", "https://www.deutsche-startups.de/feed/");
 	}
 	public static final HashMap<String, String> feedNames = new HashMap<>();
@@ -185,10 +187,12 @@ public class NewsRssFeeds implements ServiceInterface{
 		feedNames.put("MUSIC NEWS", "<span style='color:#ba1a56;'>MUSIC </span><span style='color:#000000;'>NEWS</span>");
 		feedNames.put("CinemaxX", "<span style='color:#b90049;'><i>Cinemax<b>X</b></i></span>");
 		feedNames.put("Filmstarts.de - aktuell", "<span style='color:#3d59ba;'>Filmstarts.de</span><span style='color:#000000;'> - aktuell</span>");
+		feedNames.put("Filmstarts.de - bald", "<span style='color:#3d59ba;'>Filmstarts.de</span><span style='color:#000000;'> - bald</span>");
 		feedNames.put("Filmstarts.de - Serien", "<span style='color:#3d59ba;'>Filmstarts.de</span><span style='color:#000000;'> - Serien</span>");
 		//feedNames.put("Serienjunkies - Kalender","<span style='color:#414F5D;'>Serienjunkies</span><span style='color:#000000;'> - Kalender</span>");
-		feedNames.put("cinema.de - Trailer", "<span style='color:#000000;'>cinema.</span><span style='color:#009ee1;'>de</span><span style='color:#000000;'> - Trailer</span>");
+		//feedNames.put("cinema.de - Trailer", "<span style='color:#000000;'>cinema.</span><span style='color:#009ee1;'>de</span><span style='color:#000000;'> - Trailer</span>");
 		feedNames.put("SPIEGEL Kino", "<span style='color:#950000;'><b>SPIEGEL</b> Kino</span>");
+		feedNames.put("Kino.de - Film-News", "<span style='color:#039cfd;'>Kino.de</span><span style='color:#000000;'> - Film-News</span>");
 		feedNames.put("deutsche startups", "<span style='color:#3b65b1;'>deutsche startups</span>");
 	}
 	
@@ -246,12 +250,15 @@ public class NewsRssFeeds implements ServiceInterface{
 	static{
 		cinemaNews_de.add("CinemaxX");
 		cinemaNews_de.add("Filmstarts.de - aktuell");
-		cinemaNews_de.add("cinema.de - Trailer");
+		cinemaNews_de.add("Filmstarts.de - bald");
+		cinemaNews_de.add("Kino.de - Film-News");
+		//cinemaNews_de.add("cinema.de - Trailer");
 		cinemaNews_de.add("SPIEGEL Kino");
 	}
 	public static final ArrayList<String> tvNews_de = new ArrayList<>();
 	static{
 		tvNews_de.add("Filmstarts.de - Serien");
+		tvNews_de.add("Kino.de - Film-News");
 		//tvNews_de.add("Serienjunkies - Kalender");
 	}
 	public static final ArrayList<String> startUpNews_de = new ArrayList<>();
@@ -404,7 +411,7 @@ public class NewsRssFeeds implements ServiceInterface{
 		for (String feedName : feeds){
 			String nameHTML = feedNames.get(feedName);
 			String url = feedUrls.get(feedName);
-	        JSONObject feed = Config.rssReader.getFeed(url, feedName, 8, Config.cacheRssResults);
+	        JSONObject feed = Config.rssReader.getFeed(url, feedName, 8, Config.cacheRssResults); 	//NOTE: maxEntries does not work when loading from cache (aka worker)
 	        if (!feed.isEmpty()){
 	        	JSON.add(feed, "name", nameHTML);
 	        	if (feed.get("image").toString().isEmpty()){
