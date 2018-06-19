@@ -1,0 +1,37 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>net.b07z.sepia.server.assist</groupId>
+  <artifactId>sepia-assist-API</artifactId>
+  <version>2.0.0</version>
+  <name>SEPIA assistant API</name>
+  <description>Cloud server API for personal digital assistants</description>
+  
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.8</maven.compiler.source>
+	<maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
+	
+  <dependencies>
+    <dependency>
+        <groupId>net.b07z.sepia.websockets</groupId>
+        <artifactId>sepia-websockets</artifactId>
+        <version>1.1.0</version>
+    </dependency>
+    <dependency>
+        <groupId>net.b07z.sepia.server.core</groupId>
+        <artifactId>sepia-core-tools</artifactId>
+        <version>2.0.0</version>
+    </dependency>
+  	<dependency>
+		<groupId>javax.mail</groupId>
+		<artifactId>mail</artifactId>
+		<version>1.5.0-b01</version>
+	</dependency>
+  	<dependency>
+	    <groupId>com.rometools</groupId>
+	    <artifactId>rome</artifactId>
+	    <version>1.7.4</version>
+	</dependency>
+  </dependencies>
+</project>

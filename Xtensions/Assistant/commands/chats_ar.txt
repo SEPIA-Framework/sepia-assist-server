@@ -1,0 +1,2 @@
+مرحبا;;		command=chat;;		type=greeting
+

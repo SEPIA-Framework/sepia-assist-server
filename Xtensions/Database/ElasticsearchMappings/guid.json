@@ -1,0 +1,16 @@
+{
+    "settings": {
+        "number_of_shards": 1,
+        "auto_expand_replicas": "0-all"
+    },
+    "mappings": {
+        "sequence": {
+            "_all": {"enabled": 0},
+            "dynamic": "strict",
+            "properties": {
+                "near_id": { "type": "long" },
+                "offset": { "type": "long" }
+            }
+        }
+    }
+}

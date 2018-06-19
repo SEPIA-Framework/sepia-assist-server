@@ -1,0 +1,2 @@
+Olá;;		command=chat;;		type=greeting
+

@@ -1,0 +1,3 @@
+Goede dag;;		command=chat;;		type=greeting
+Hallo;;		command=chat;;		type=greeting
+

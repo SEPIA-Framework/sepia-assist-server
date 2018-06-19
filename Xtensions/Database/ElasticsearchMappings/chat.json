@@ -1,0 +1,37 @@
+{
+  "settings":{
+    "index": {
+      "analysis": {
+        "analyzer": {
+          "keylower": {
+            "tokenizer": "keyword",
+            "filter": "lowercase"
+          }
+        }
+      }
+    }
+  },
+  "mappings" : {
+    "channels" : {
+      "properties" : {
+        "channel_id" : { "type" : "string", "analyzer": "keylower" },
+        "channel_key" : { "type" : "string", "analyzer": "keylower" },
+		"channel_name" : { "type" : "string" },
+        "members" : { "type" : "string" },
+		"assistants" : { "type" : "string" },
+        "public" : { "type": "boolean" },
+		"owner" : { "type" : "string", "analyzer": "keylower" }
+		"info" : { "type" : "object" }
+      }
+    },
+	"channel_data" : {
+      "properties" : {
+		"channel_id" : { "type" : "string", "analyzer": "keylower" },
+		"message" : { "type" : "string" },
+        "sender_id" : { "type" : "string", "analyzer": "keylower" },
+		"date" : { "type" : "date" },
+        "data" : { "type" : "object" }
+      }
+    }
+  }
+}
