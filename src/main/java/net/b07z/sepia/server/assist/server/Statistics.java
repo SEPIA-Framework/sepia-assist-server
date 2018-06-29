@@ -3,6 +3,7 @@ package net.b07z.sepia.server.assist.server;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+import net.b07z.sepia.server.assist.messages.Clients;
 import net.b07z.sepia.server.assist.workers.Workers;
 import net.b07z.sepia.server.core.server.BasicStatistics;
 
@@ -61,6 +62,7 @@ public class Statistics extends BasicStatistics {
 				"KDB write Time: " + ((double)kdb_write_time)/(kdb_write_hits_a-kdb_w_hits_err) + "ms (" + kdb_write_time + "ms)" + "<br>" +
 				"KDB conf. errors: " + kdb_errors + "<br>" +
 				"<br>" +
+				"WebSocket connection info:<br>" + Clients.getAssistantSocketClientStats() +
 				Start.addToStatistics() +
 				"<br>"
 				;

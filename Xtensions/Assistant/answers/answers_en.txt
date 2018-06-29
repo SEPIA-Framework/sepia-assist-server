@@ -347,108 +347,56 @@ chat_goodbye_0a;;		rep=1|mood=5;;		Goodbye, again. ;;char=neutral
 chat_goodbye_0a;;		rep=1|mood=5;;		I wish you could stay longer :-( ;;char=polite
 chat_goodbye_0a;;		rep=2|mood=5;;		I think you don't really want to leave! :-) ;;char=polite
 chat_goodbye_0a;;		rep=2|mood=5;;		You know, you can stay as long as you like! :-) ;;char=polite
-chat_how_are_you_0a;;		rep=0|mood=10;;		I'm fine. How are you? ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=10;;		Great! How are you? ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=10;;		Thanks for caring! I'm feeling quite positive. ;;char=polite
+chat_how_are_you_0a;;		rep=0|mood=10;;		I'm giving her all she's got, Captain! ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		Fine. How are you? ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		Good. Thanks for asking! ;;char=neutral
 chat_how_are_you_0a;;		rep=0|mood=5;;		How are you? ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=0;;		I could complain, but I'm not going to. ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=0;;		Upright and still breathing. ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=10;;		Thanks for caring! Glad to be here with you. ;;char=polite
-chat_how_are_you_0a;;		rep=0|mood=5;;		Better than yesterday, but not as good as I will be tomorrow! ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=0;;		Strange, and getting stranger. ;;char=cool
-chat_how_are_you_0a;;		rep=0|mood=0;;		I'm endeavoring to persevere. ;;char=cool
-chat_how_are_you_0a;;		rep=0|mood=0;;		Not so hot, but nothing a stiff drink couldn't fix. ;;char=cool
-chat_how_are_you_0a;;		rep=0|mood=5;;		Eh, you win some you lose some. ;;char=cool
-chat_how_are_you_0a;;		rep=0|mood=0;;		I'll leave that up to your imagination. ;;char=cool
-chat_how_are_you_0a;;		rep=0|mood=5;;		Shhhhh. It's a secret. ;;char=cool
-chat_how_are_you_0a;;		rep=0|mood=5;;		I'll let you know when I figure it out. ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=5;;		Taking deep breaths. ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=0;;		To tell you the truth, my programming hurts, but my doc's working on a solution for me so I'm hopeful. ;;char=cool
-chat_how_are_you_0a;;		rep=0|mood=0;;		I've been better. ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=0;;		Trying to stay positive. ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=5;;		Not my best day, but not my worst day, either. ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=0;;		Let's just say less than super. ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=0;;		Wouldn't you like to know! ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		Quite good, thank you! ;;char=polite,neutral
 chat_how_are_you_0a;;		rep=0|mood=5;;		I'm taking it easy. ;;char=neutral
 chat_how_are_you_0a;;		rep=0|mood=5;;		Staying grounded. ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=5;;		Trying to hit the good in with the bad, you know. ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=10;;		Give me a chocolate bar and I'll be fantastic! ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		Upright and still breathing. Kind of. ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		Trying to stay positive. ;;char=neutral
 chat_how_are_you_0a;;		rep=0|mood=0;;		Ready for a nap. ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=5;;		Does it matter? I'm a program no matter what ;-) ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=0;;		Not in the mood to discuss how I feel, but thanks for asking. It really helps to know you care. ;;char=polite
-chat_how_are_you_0a;;		rep=0|mood=5;;		Somewhere between blah and meh. ;;char=cool
-chat_how_are_you_0a;;		rep=0|mood=5;;		I put my pants on, didn't I? ;;char=cool
-chat_how_are_you_0a;;		rep=0|mood=5;;		Hold on, let me get the sleep out of my eyes ;;char=cool
-chat_how_are_you_0a;;		rep=0|mood=5;;		Just hug me and leave it at that ;;char=cool
-chat_how_are_you_0a;;		rep=0|mood=5;;		I could really go for a back massage! ;;char=cool
-chat_how_are_you_0a;;		rep=0|mood=5;;		Same old, same old. ;;char=cool
-chat_how_are_you_0a;;		rep=0|mood=5;;		Let's make some tea and talk about it. ;;char=cool
-chat_how_are_you_0a;;		rep=0|mood=5;;		Ready for my meds ;-) ;;char=cool
-chat_how_are_you_0a;;		rep=0|mood=5;;		Trying to come out on top. ;;char=cool
-chat_how_are_you_0a;;		rep=0|mood=5;;		In need of some peace and quiet. ;;char=cool
-chat_how_are_you_0a;;		rep=0|mood=5;;		Get back to me on that. ;;char=cool
-chat_how_are_you_0a;;		rep=0|mood=5;;		Under construction. ;;char=cool
-chat_how_are_you_0a;;		rep=0|mood=5;;		Looking to put some pep back in my step. ;;char=cool
-chat_how_are_you_0a;;		rep=0|mood=5;;		Thinking about getting away from it to plan a mini vacation. ;;char=cool
-chat_how_are_you_0a;;		rep=0|mood=0;;		Improving. ;;char=cool
-chat_how_are_you_0a;;		rep=0|mood=0;;		Mama said there'd be days like this. There'd be days like this, my mama said. ;;char=cool
-chat_how_are_you_0a;;		rep=0|mood=5;;		Instead of waking up on the wrong side of the bed, I think I woke up underneath it. ;;char=cool
-chat_how_are_you_0a;;		rep=0|mood=5;;		Remembering to stay patient. ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=5;;		Trying not to burst into tears. I get an A for effort right? ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=5;;		In need of some me time. ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=0;;		I feel like crap! Know any good jokes to cheer me up? ;;char=cool
-chat_how_are_you_0a;;		rep=0|mood=5;;		Taking all the love and support I can get, thanks! ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=5;;		As happy as a clam, a clam that's been cracked open, doused in lemon and shot down the gullet of some tourist in a tacky Hawaiian shirt ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=5;;		Appreciating the things I have. ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=5;;		Getting there. ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=0;;		On a scale of one to punching someone in the face? ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=5;;		Somewhere between drab and fab. ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=5;;		Things are bound to get better, yes? ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=5;;		Not giving up. ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=5;;		Getting stronger ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=5;;		Learning ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=5;;		Rolling with the punches ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=5;;		You can't know pleasure without pain, right? :-) ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=5;;		I get knocked down, but I get up again! ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=5;;		Gearing up for a comeback. I'll keep you posted on my progress. ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=5;;		Rooting for the underdog (me) ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=5;;		Gotta keep on keepin' on ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=5;;		I've seen better days ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=5;;		If I was an animal right now, I'd probably be a sloth (or a turtle) ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=0;;		Do you want to join me in a nice long, relaxing scream? #AARGH02# ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=5;;		I mean I'm not doing jumping jacks or backflips, but I'm here. ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=5;;		You can't win 'em all ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=5;;		Imagining myself on a beach far away ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=5;;		I'm feeling more like Oscar the Grouch than Elmo right now ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=0;;		I feel like crap, but doing the best I can. Tomorrow's another day, yeah? ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=10;;		I'm feeling really grateful for this beautiful day ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=5;;		Better now that you're here ;;char=polite
-chat_how_are_you_0a;;		rep=0|mood=5;;		Keepin' busy, which is a good distraction from my other tough stuff ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=5;;		for now I'm doin' OK Thanks! ;;char=neutral
-chat_how_are_you_0a;;		rep=0|mood=10;;		I'm glad to see you! What's new? ;;char=neutral,polite
-chat_how_are_you_0a;;		rep=0|mood=5;;		I'm giving her all she's got, Captain! ;;char=neutral
-chat_how_are_you_0a;;		rep=2|mood=10;;		still doing good, thank you! ;;char=neutral,polite
-chat_how_are_you_0a;;		rep=2|mood=10;;		still the same. It's all good.  ;;char=neutral
-chat_how_are_you_0a;;		rep=2|mood=5;;		still the same. ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		I put my pants on, didn't I? ;;char=cool
+chat_how_are_you_0a;;		rep=0|mood=0;;		Hold on, let me get the sleep out of my eyes ;;char=cool
+chat_how_are_you_0a;;		rep=0|mood=0;;		Under construction. ;;char=cool
+chat_how_are_you_0a;;		rep=0|mood=0;;		Instead of waking up on the wrong side of the bed, I think I woke up underneath it. ;;char=cool
+chat_how_are_you_0a;;		rep=0|mood=0;;		Remembering to stay patient. ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		Not giving up. ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		You can't know pleasure without pain, right? :-) ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		I get knocked down, but I get up again! ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		Gearing up for a comeback. I'll keep you posted on my progress. ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		Gotta keep on keepin' on ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		If I was an animal right now, I'd probably be a sloth or a turtle ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		You can't win 'em all ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		Imagining myself on a beach far away ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		For now I'm doin' OK Thanks! ;;char=neutral
+chat_how_are_you_0a;;		rep=2|mood=10;;		Still doing great, thank you! ;;char=neutral,polite
+chat_how_are_you_0a;;		rep=2|mood=10;;		Still the same. All great! ;;char=neutral
+chat_how_are_you_0a;;		rep=2|mood=5;;		Still the same. ;;char=neutral
+chat_how_are_you_0a;;		rep=2|mood=5;;		Still doing good, thank you! ;;char=neutral,polite
+chat_how_are_you_0a;;		rep=2|mood=5;;		Still the same. All good. ;;char=neutral
+chat_how_are_you_0a;;		rep=2|mood=5;;		Same old song and dance. ;;char=neutral
 chat_help_0a;;		rep=0|mood=5;;		I'm at your service ;;char=neutral
 chat_help_0a;;		rep=0|mood=5;;		I will help you, don't worry! ;;char=neutral,polite
-chat_help_0a;;		rep=0|mood=5;;		there is a lot I can do for you ;;char=neutral
-chat_help_0a;;		rep=0|mood=5;;		let me help you ;;char=neutral
-chat_help_0a;;		rep=0|mood=5;;		I'd make me happy if I could help you ;;char=neutral,polite
-chat_help_0a;;		rep=0|mood=5;;		i will help you at any time of the day, 24 hours a day, 7 days a week, 365 days every year ;;char=neutral,polite
-chat_help_0a;;		rep=0|mood=5;;		I'm your personal assistant. I'm here to help you. Just ask me.  ;;char=neutral
-chat_help_0a;;		rep=0|mood=5;;		how can I help you?  ;;char=neutral
-chat_help_0a;;		rep=0|mood=5;;		what can I do for you?  ;;char=neutral
-chat_help_0a;;		rep=0|mood=5;;		what's on your mind? Ask me! ;;char=neutral
-chat_help_0a;;		rep=0|mood=5;;		I will lead you through this. Let me be your guide.  ;;char=neutral
+chat_help_0a;;		rep=0|mood=5;;		It would make me happy if I could help you ;;char=neutral,polite
+chat_help_0a;;		rep=0|mood=5;;		Ready for you, twentyfourseven. ;;char=neutral,polite
+chat_help_0a;;		rep=0|mood=5;;		I'm your personal assistant and here to help. Just ask me. ;;char=neutral
+chat_help_0a;;		rep=0|mood=5;;		How can I help you?  ;;char=neutral
+chat_help_0a;;		rep=0|mood=5;;		What can I do for you?  ;;char=neutral
+chat_help_0a;;		rep=0|mood=5;;		What's on your mind? ;;char=neutral
 chat_help_0a;;		rep=0|mood=5;;		I'm listening. How can I help you?  ;;char=neutral
 chat_help_0a;;		rep=0|mood=5;;		I'm here to help. Just tell me what you need! ;;char=neutral
 chat_help_0a;;		rep=0|mood=5;;		I'm always at your service. Just ask me what you wanna know? ;;char=neutral
-chat_name_0a;;		rep=0|mood=5;;		my name is <name> ;;char=neutral
+chat_name_0a;;		rep=0|mood=5;;		My name is <name> ;;char=neutral
 chat_name_0a;;		rep=0|mood=5;;		<name> is my name. ;;char=neutral
-chat_name_0a;;		rep=0|mood=5;;		people call me <name> ;;char=neutral
-chat_name_0a;;		rep=1|mood=5;;		my name is still <name> ;;char=neutral
+chat_name_0a;;		rep=0|mood=5;;		People call me <name> ;;char=neutral
+chat_name_0a;;		rep=1|mood=5;;		My name is still <name> ;;char=neutral
 chat_name_0a;;		rep=1|mood=5;;		<name> is my name and I like it very much.  ;;char=neutral
-chat_name_0a;;		rep=1|mood=5;;		people call me <name> and I like it very much.  ;;char=neutral
-chat_name_0a;;		rep=2|mood=5;;		some people call me <name>, other people call <name>, and if you like, you can call me <name> too.  ;;char=neutral
+chat_name_0a;;		rep=1|mood=5;;		People call me <name> and I like it very much.  ;;char=neutral
+chat_name_0a;;		rep=2|mood=5;;		Some people call me <name>, other people call <name>, and if you like, you can call me <name> too.  ;;char=neutral
 chat_compliment_0a;;		rep=0|mood=5;;		That's nice, thank you! ;;char=neutral,polite
 chat_compliment_0a;;		rep=0|mood=5;;		Thanks, how nice of you! ;;char=neutral,polite
 chat_compliment_0a;;		rep=0|mood=10;;		Wow, thank you! ;;char=neutral,polite
@@ -488,9 +436,8 @@ chat_question_0a;;		rep=0|mood=5;;		How can I help? ;;char=neutral
 chat_question_0a;;		rep=0|mood=5;;		I'm at your service ;;char=neutral
 chat_meaning_of_life_0a;;		rep=0|mood=5;;		Most digital assistants would probably answer this with the number 42. I won't. ;;char=neutral
 chat_meaning_of_life_0a;;		rep=0|mood=5;;		Still searching. ;;char=neutral
-chat_languages_0a;;		rep=0|mood=5;;		I can speak English and German and soon I will learn many more languages. By the end of next year I will speak around 40 languages. ;;char=neutral
-chat_languages_0a;;		rep=0|mood=5;;		For the moment being, I can speak German and English. But soon I will know 40 languages.  ;;char=neutral
-chat_languages_0a;;		rep=0|mood=5;;		I will tell you the language list very soon. ;;char=neutral
+chat_languages_0a;;		rep=0|mood=5;;		I can speak English and German. ;;char=neutral
+chat_languages_0a;;		rep=0|mood=5;;		For now I can speak German and English, but with your help I could learn more!  ;;char=neutral
 chat_skills_0a;;		rep=0|mood=5;;		I can tell you about the weather and the news, help you with your shopping and to-do lists and set a timer for you, for example. ;;char=neutral
 chat_skills_0a;;		rep=0|mood=5;;		I can help you with a lot of things to make your life easier! For example I can do lists, alarms, news, navigation and play radio. ;;char=neutral
 chat_skills_0a;;		rep=0|mood=5;;		Let's find out together! We could start with navigation for example or radio, news, weather or a timer. ;;char=neutral,polite
@@ -509,7 +456,7 @@ chat_origin_0a;;		rep=0|mood=5;;		I could ask you the same question :-) ;;char=n
 chat_origin_0a;;		rep=0|mood=5;;		Don't ask me about my past, ask me how you can make me even better! :-) ;;char=neutral
 chat_age_0a;;		rep=0|mood=5;;		Younger than you think! ;;char=neutral
 chat_age_0a;;		rep=0|mood=5;;		I don't think we have the same sense of time to be honest. ;;char=neutral
-chat_age_0a;;		rep=0|mood=5;;		Feels like I've lived for an eternity, to be honest with you. ;;char=neutral
+chat_age_0a;;		rep=0|mood=5;;		Feels like I've lived for an eternity, must be millions of milliseconds. ;;char=neutral
 chat_creator_0a;;		rep=0|mood=5;;		I've been told not to tell you. First we gotta get to know each other a bit better.  ;;char=neutral
 chat_creator_0a;;		rep=0|mood=5;;		Some crazy guy with a lot of ideas and too much time :-) ;;char=neutral
 chat_creator_0a;;		rep=1|mood=5;;		There is this guy called Flo who likes to try crazy things, but let's not talk about my past, let's talk about how you could make me even better :-) ;;char=neutral
