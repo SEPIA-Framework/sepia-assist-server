@@ -130,7 +130,8 @@ public class Start {
 				"defaultAssistAPI", Config.endpointUrl,
 				"defaultTeachAPI", Config.teachApiUrl,
 				"clusterKey", Config.clusterKey,
-				"defaultAssistantUserId", Config.assistantId
+				"defaultAssistantUserId", Config.assistantId,
+				"privacyPolicy", Config.privacyPolicyLink
 		);
 		//common microservices API-Keys - TODO: move? or add geo-coders?
 		JSON.put(coreToolsConfig, "DeutscheBahnOpenApiKey", Config.deutscheBahnOpenApi_key);
@@ -138,7 +139,7 @@ public class Start {
 		
 		//Check core-tools settings
 		if (!ConfigDefaults.areCoreToolsSet()){
-			new RuntimeException("Core-tools are NOT set properly!");
+			throw new RuntimeException("Core-tools are NOT set properly!");
 		}
 	}
 	

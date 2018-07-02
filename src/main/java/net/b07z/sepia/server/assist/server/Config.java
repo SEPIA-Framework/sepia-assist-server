@@ -53,6 +53,7 @@ import net.b07z.sepia.server.core.tools.FilesAndStreams;
 public class Config {
 	public static final String SERVERNAME = "SEPIA-Assist-API"; 		//public server name
 	public static final String apiVersion = "v2.0.0";					//API version
+	public static String privacyPolicyLink = "";						//Link to privacy policy
 	
 	//helper for dynamic class creation (e.g. from strings in config-file) - TODO: reduce dependencies further 
 	public static final String parentPackage = Config.class.getPackage().getName().substring(0, Config.class.getPackage().getName().lastIndexOf('.'));
@@ -369,6 +370,8 @@ public class Config {
 			clusterKey = settings.getProperty("cluster_key");
 			allowInternalCalls = Boolean.valueOf(settings.getProperty("allow_internal_calls"));
 			allowGlobalDevRequests = Boolean.valueOf(settings.getProperty("allow_global_dev_requests"));
+			//policies
+			privacyPolicyLink =  settings.getProperty("privacy_policy");
 			//modules
 			String authAndAccountModule = settings.getProperty("module_account");
 			if (authAndAccountModule != null){

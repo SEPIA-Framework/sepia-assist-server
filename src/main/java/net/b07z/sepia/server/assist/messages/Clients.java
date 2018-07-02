@@ -27,6 +27,8 @@ public class Clients {
 	public static SocketClientHandler webSocketMessenger;
 	public static Thread webSocketMessengerThread;
 	
+	private static SocketClient assistantSocket;
+	
 	/**
 	 * Setup and run webSocket messenger. Creates a new thread to maintain the connection.
 	 */
@@ -44,7 +46,7 @@ public class Clients {
 				try{ Thread.sleep(newWait); } catch (InterruptedException e) {}
 			}
 			//note: assistant name has to be stored in the account just like with normal users
-			SocketClient assistantSocket = new AssistantSocketClient(
+			assistantSocket = new AssistantSocketClient(
 				JSON.make("userId", Config.assistantId, "pwd", Config.assistantPwd)
 			);
 			webSocketMessenger = new SocketClientHandler(assistantSocket);
@@ -59,6 +61,17 @@ public class Clients {
 	public static void killSocketMessenger(){
 		webSocketMessenger.setTryReconnect(false);
 		webSocketMessenger.close();
+	}
+	
+	/**
+	 * Get statistics about WebSocket client used for the assistant.
+	 */
+	public static String getAssistantSocketClientStats(){
+		if (assistantSocket != null){
+			return assistantSocket.getStats(); 
+		}else{
+			return "No active assistant sockets.";
+		}
 	}
 	
 	/**
