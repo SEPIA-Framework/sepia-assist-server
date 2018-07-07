@@ -6,6 +6,7 @@ import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.assistant.CmdBuilder;
 import net.b07z.sepia.server.assist.assistant.LOCATION;
+import net.b07z.sepia.server.assist.data.Address;
 import net.b07z.sepia.server.assist.events.EventLabels.Constants;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.parameters.SportsLeague;
@@ -74,8 +75,9 @@ public class EventsManager {
 			input.user.loadInfoFromAccount(Config.superuserApiMng, ACCOUNT.USER_HOME, ACCOUNT.USER_WORK);
 		}
 		boolean homeIsKnown = true;
-		double latHome = Converters.obj2Double(input.user.getHomeLocation(LOCATION.LAT));
-		double lngHome = Converters.obj2Double(input.user.getHomeLocation(LOCATION.LNG));
+		Address homeAdr = input.user.getTaggedAddress(Address.USER_HOME_TAG, false);		//load from account
+		double latHome = Converters.obj2Double(homeAdr.latitude);
+		double lngHome = Converters.obj2Double(homeAdr.longitude);
 		if (latHome == Double.NEGATIVE_INFINITY || lngHome == Double.NEGATIVE_INFINITY){
 			homeIsKnown = false;
 		}
@@ -84,8 +86,9 @@ public class EventsManager {
 			distanceToHome = Math.sqrt(Math.pow(lat-latHome,2) + Math.pow(lng-lngHome,2));
 		}
 		boolean workIsKnown = true;
-		double latWork = Converters.obj2Double(input.user.getWorkLocation(LOCATION.LAT));
-		double lngWork = Converters.obj2Double(input.user.getWorkLocation(LOCATION.LNG));
+		Address workAdr = input.user.getTaggedAddress(Address.USER_WORK_TAG, false);		//load from account
+		double latWork = Converters.obj2Double(workAdr.latitude);
+		double lngWork = Converters.obj2Double(workAdr.longitude);
 		if (latWork == Double.NEGATIVE_INFINITY || lngWork == Double.NEGATIVE_INFINITY){
 			workIsKnown = false;
 		}
@@ -176,7 +179,8 @@ public class EventsManager {
 		if (localTimeIsKnown && ((!isWeekend && isLunchTime) || (isWeekend && isWeekendLunchTime))){
 			//lunch
 			addCommandButton(actionBuilder, EventLabels.getLabel(Constants.lunch, input.language), 
-					CmdBuilder.getFood("")
+					//CmdBuilder.getFood("")
+					CmdBuilder.getRestaurantLocation()
 			);
 			//recipe of the day (change active time to morning?)
 			actionBuilder.addAction(ACTIONS.BUTTON_IN_APP_BROWSER);

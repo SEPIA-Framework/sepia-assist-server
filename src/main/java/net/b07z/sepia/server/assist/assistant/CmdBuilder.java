@@ -56,6 +56,10 @@ public class CmdBuilder {
 	public static String getBrunchLocation(){
 		return CMD.LOCATION + ";;" + PARAMETERS.SEARCH + "=<user_location>;;poi=brunch;;";
 	}
+	
+	public static String getRestaurantLocation(){
+		return CMD.LOCATION + ";;" + PARAMETERS.SEARCH + "=<user_location>;;poi=restaurant;;";
+	}
 
 	public static String getNews(String newsSection){
 		String cmdSum =  CMD.NEWS + ";;";

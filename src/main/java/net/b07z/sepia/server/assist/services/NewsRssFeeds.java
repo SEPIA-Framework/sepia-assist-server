@@ -144,7 +144,7 @@ public class NewsRssFeeds implements ServiceInterface{
 		//feedUrls.put("Yahoo LoL", "https://sports.yahoo.com/league-of-legends/rss");
 		feedUrls.put("t3n", "https://t3n.de/rss.xml");
 		feedUrls.put("Business Punk", "http://www.business-punk.com/feed/");
-		feedUrls.put("RollingStone", "https://www.rollingstone.com/music/rss");
+		feedUrls.put("RollingStone", "https://www.rollingstone.com/music/feed/");
 		feedUrls.put("MUSIC NEWS", "http://www.music-news.com/rss/UK/news");
 		//feedUrls.put("CinemaxX", "https://www.cinemaxx.de/Site/GetRSS/Filme");
 		feedUrls.put("CinemaxX", "https://www.presseportal.de/rss/pm_9588.rss2");
