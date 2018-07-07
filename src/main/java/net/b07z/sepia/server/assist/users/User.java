@@ -675,7 +675,8 @@ public final class User {
 	}
 	
 	/**
-	 * Get a specific key parameter from user locations.
+	 * Get a specific key parameter from user locations.<br>
+	 * NOTE: Needs to be loaded first!
 	 * @param user_param - parameter found during "inputContainsUserLocation(..)" like <user_home> etc. ...
 	 * @param key - e.g. LOCATION.CITY, LOCATION.STREET, ...
 	 * @return key of home location or empty string
@@ -684,28 +685,31 @@ public final class User {
 		return replaceUserSpecificLocation(user_param, user_param, key);
 	}
 	/**
-	 * Get a specific key parameter from user home location.
+	 * Get a specific key parameter from user home location.<br>
+	 * NOTE: Needs to be loaded first!
 	 * @param key - e.g. LOCATION.CITY, LOCATION.STREET, ...
 	 * @return key of home location or empty string
 	 */
 	public String getHomeLocation(String key){
-		return replaceUserSpecificLocation("<user_home>", "<user_home>", key);
+		return getUserSpecificLocation("<user_home>", key);
 	}
 	/**
-	 * Get a specific key parameter from user work location.
+	 * Get a specific key parameter from user work location.<br>
+	 * NOTE: Needs to be loaded first!
 	 * @param key - e.g. LOCATION.CITY, LOCATION.STREET, ...
 	 * @return key of work location or empty string
 	 */
 	public String getWorkLocation(String key){
-		return replaceUserSpecificLocation("<user_work>", "<user_work>", key);
+		return getUserSpecificLocation("<user_work>", key);
 	}
 	/**
-	 * Get a specific key parameter from user current location.
+	 * Get a specific key parameter from user current location.<br>
+	 * NOTE: Needs to be loaded first!
 	 * @param key - e.g. LOCATION.CITY, LOCATION.STREET, ...
 	 * @return key of current location or empty string
 	 */
 	public String getCurrentLocation(String key){
-		return replaceUserSpecificLocation("", "", key);
+		return getUserSpecificLocation("", key);
 	}
 	
 	//---------------User CONTEXT methods
