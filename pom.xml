@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.b07z.sepia.server.assist</groupId>
   <artifactId>sepia-assist-API</artifactId>
-  <version>2.0.0</version>
+  <version>2.0.1</version>
   <name>SEPIA assistant API</name>
   <description>Cloud server API for personal digital assistants</description>
   
@@ -11,6 +11,47 @@
     <maven.compiler.source>1.8</maven.compiler.source>
 	<maven.compiler.target>1.8</maven.compiler.target>
   </properties>
+      
+  <build>
+	<plugins>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-dependency-plugin</artifactId>
+			<version>3.1.0</version>
+			<executions>
+				<execution>
+					<id>copy-dependencies</id>
+					<phase>prepare-package</phase>
+					<goals>
+						<goal>copy-dependencies</goal>
+					</goals>
+					<configuration>
+						<outputDirectory>
+							${project.build.directory}/libs
+						</outputDirectory>
+					</configuration>
+				</execution>
+			</executions>
+		</plugin>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-jar-plugin</artifactId>
+			<version>3.1.0</version>
+			<configuration>
+				<archive>
+					<manifest>
+						<addClasspath>true</addClasspath>
+						<classpathPrefix>libs/</classpathPrefix>
+						<mainClass>
+							net.b07z.sepia.server.assist.server.Start
+						</mainClass>
+					</manifest>
+				</archive>
+				<finalName>sepia-assist-v${project.version}</finalName>
+			</configuration>
+		</plugin>
+	</plugins>
+  </build>
 	
   <dependencies>
     <dependency>
@@ -21,7 +62,7 @@
     <dependency>
         <groupId>net.b07z.sepia.server.core</groupId>
         <artifactId>sepia-core-tools</artifactId>
-        <version>2.0.0</version>
+        <version>2.0.1</version>
     </dependency>
   	<dependency>
 		<groupId>javax.mail</groupId>
