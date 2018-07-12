@@ -684,12 +684,12 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 		}
 		
 		//locations
-		if (NluTools.stringContains(text, "where (is|are|am) .*|where can i .*| where we are| where i am|where .* (is|are|live|lives)|"
-				+ "(is there|are there|can i get) .*\\b(close|near|around|here|in)|"
-				+ "(search|show|find|look for|looking for) .*(\\b)("+ RegexParameterSearch.get_POI_list(language) +")|"
-				+ "(show|search|find|look for) .*(\\b)on (the map|maps)|"
-				//+ "(show|search|find|look for) .*(\\b)(close|near|around)( to| by|)( me|)$|"	//TODO: broken
-				+ "(show|search|find|look for) (on |)(the map|maps) .*|"
+		if (NluTools.stringContains(text, "where (is|lies|are|am) .*|where can (i|one) .*| where we are| where i am|where .* (is|are|live|lives|lies|lie|lay)|"
+				+ "(is there|are there|can (i|one) get) .*\\b(close|near|around|here|in)|"
+				+ "(search|show|find|look(up| for)|looking for) .*(\\b)("+ RegexParameterSearch.get_POI_list(language) +")|"
+				+ "(show|search|find|look(up| for|)) .*(\\b)on (the |a |)(map|maps)|"
+				//+ "(show|search|find|look for) .*(\\b)(close|near|around)( to| by|)( me|)$|"	//TODO: broken!??
+				//+ "(show|search|find|look for) (on |)((the|a) map|maps) .*|"
 				+ "(address|location .*)")
 					&& !possibleCMDs.contains(CMD.HOTELS)){
 			String this_text = text;
@@ -706,16 +706,6 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 			if (place.isEmpty() && poi.isEmpty()){
 				if (NluTools.stringContains(this_text, "where am i|where are we|where we are|where i am")){
 					place = "<user_location>";
-				}else{
-					this_text = this_text.replaceFirst(".*?\\b(where (is|are)|where can i find|"
-							+ "(search|show|find|look) (on |)(the map|maps)|address |location |"
-							+ "where|(search|show|find|look for))\\b", "").trim();
-					this_text = this_text.replaceFirst("^(for)\\b", "").trim();
-					this_text = this_text.replaceFirst("^(the|a)\\b", "").trim();
-					this_text = this_text.replaceFirst("\\b(is$|are$)", "").trim();
-					this_text = this_text.replaceFirst("\\b(on the map$|on maps$)", "").trim();
-					this_text = this_text.replaceFirst("\\b(close|near|around)( to| by|)( me|)$", "").trim();
-					place = RegexParameterSearch.replace_personal_locations(this_text, language).trim();
 				}
 			}
 			//still empty?

@@ -744,12 +744,12 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 		}
 		
 		//locations
-		if (NluTools.stringContains(text, "wo (ist|sind|bin|gibt es|liegt|liegen)|wo (befindet|befinden) sich| wo wir (hier |)sind| wo ich (hier |)bin|wo .* (ist|sind|wohnt|wohne)|"
+		if (NluTools.stringContains(text, "wo (ist|sind|bin|gibt es|liegt|liegen|befindet|befinden)| wo wir (hier |)sind| wo ich (hier |)bin|"
+				+ "wo .* (ist|sind|liegt|liegen|befinden|befindet|wohn(t|en|e))|"
 				+ "(gibt es(?! neues)|kriege ich|finde ich|kann man)\\b.*\\b(hier|in)|"
 				+ "(suche|zeig|finde) .*(\\b)("+ RegexParameterSearch.get_POI_list(language) +")|"
-				+ "(suche|zeig|finde) .*(\\b)auf (der karte|der map|maps)|"
-				//+ "(suche|zeig|finde) .*(\\b)in der naehe$|"			//TODO: broken
-				+ "(suche|zeig|finde) auf der (karte|map) .*|"
+				+ "(suche|zeig|finde|wo) .*(\\b)auf (der |einer |)(karte|map|maps)|"
+				//+ "(suche|zeig|finde) .*(\\b)in der naehe$|"			//TODO: broken!??
 				+ "adresse .*") 
 					&& !possibleCMDs.contains(CMD.HOTELS)){
 			String this_text = text;
@@ -766,16 +766,6 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 			if (place.isEmpty() && poi.isEmpty()){
 				if (NluTools.stringContains(this_text, "wo bin ich|wo ich (hier |)bin|wo sind wir|wo wir (hier |)sind")){
 					place = "<user_location>";
-				}else{
-					this_text = this_text.replaceFirst(".*?\\b(wo (ist|sind|liegt|liegen|gibt es|finde ich)( hier|)|wo (befindet|befinden) sich( hier|)|"
-							+ "(suche|zeig|finde) auf der (karte|map)|adresse |"
-							+ "wo|(suche|zeig|finde))\\b", "").trim();
-					this_text = this_text.replaceFirst("^(nach|von)\\b", "").trim();
-					this_text = this_text.replaceFirst("^(der|die|das|des|einer|eine|ein|einen|den|dem)\\b", "").trim();
-					this_text = this_text.replaceFirst("\\b(ist$|sind$|liegt$|liegen$)", "").trim();
-					this_text = this_text.replaceFirst("\\b(auf der karte$|auf der map$|auf maps$)", "").trim();
-					this_text = this_text.replaceFirst("\\b(in der naehe$)", "").trim();
-					place = RegexParameterSearch.replace_personal_locations(this_text, language).trim();
 				}
 			}
 			//still empty?
