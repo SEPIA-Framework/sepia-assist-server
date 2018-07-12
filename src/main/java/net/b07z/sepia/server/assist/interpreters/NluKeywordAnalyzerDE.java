@@ -242,7 +242,7 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 		}
 		
 		//web search
-		if (NluTools.stringContains(text, "(websuche|web suche|"
+		if (NluTools.stringContains(text, "(websuche|websearch|web suche|"
 						+ "(durchsuche|suche|schau|finde|zeig)( mir|)( mal| bitte|)( bitte| mal|)( im| das) (web|internet))|"
 						+ "^google|^bing|^yahoo|^duck duck|^duck duck go|"
 						+ "^(bild(ern|er|)|rezept(en|e|)|video(s|)|movie(s|)|film(en|e|)|aktie(n|)|aktien(wert|kurs)|buecher(n|)|buch)|"
@@ -258,8 +258,14 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 			//String this_text = text;
 			possibleCMDs.add(CMD.WEB_SEARCH);
 			possibleScore.add(1);	index++;
+			
 			//score a bit extra if you made it till here ^^
 			possibleScore.set(index, possibleScore.get(index)+1);
+			
+			//put some weight on the search engines and keywords for web-search:
+			if (NluTools.stringContains(text, "websearch|websuche|web|internet|google|bing|yahoo|duck duck")){
+				possibleScore.set(index, possibleScore.get(index)+2);
+			}
 
 			HashMap<String, String> pv = new HashMap<String, String>(); 		//TODO: pass this down to avoid additional checking
 			AbstractParameterSearch aps = new AbstractParameterSearch()

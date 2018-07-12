@@ -252,8 +252,14 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 			//String this_text = text;
 			possibleCMDs.add(CMD.WEB_SEARCH);
 			possibleScore.add(1);	index++;
+			
 			//score a bit extra if you made it till here ^^
 			possibleScore.set(index, possibleScore.get(index)+1);
+			
+			//put some weight on the search engines and keywords for web-search:
+			if (NluTools.stringContains(text, "websearch|web|internet|google|bing|yahoo|duck duck")){
+				possibleScore.set(index, possibleScore.get(index)+2);
+			}
 			
 			Map<String, String> pv = new HashMap<>(); 		//TODO: pass this down to avoid additional checking
 			AbstractParameterSearch aps = new AbstractParameterSearch()
