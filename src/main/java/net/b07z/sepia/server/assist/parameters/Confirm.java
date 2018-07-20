@@ -20,7 +20,7 @@ import net.b07z.sepia.server.core.tools.JSON;
  * @author Florian Quirin
  *
  */
-public class Confirm implements Parameter_Handler{
+public class Confirm implements ParameterHandler{
 
 	//-----data-----
 	public static final String PREFIX = "confirm_"; 		//prefix for special confirmation procedure

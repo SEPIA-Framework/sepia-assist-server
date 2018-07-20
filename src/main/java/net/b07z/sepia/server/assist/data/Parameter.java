@@ -4,7 +4,7 @@ import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.parameters.ParameterConfig;
-import net.b07z.sepia.server.assist.parameters.Parameter_Handler;
+import net.b07z.sepia.server.assist.parameters.ParameterHandler;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
 
 /**
@@ -101,11 +101,11 @@ public class Parameter {
 	/**
 	 * Get the handler for this parameter.
 	 */
-	public Parameter_Handler getHandler(){
+	public ParameterHandler getHandler(){
 		if (handlerName.isEmpty()){
-			return (Parameter_Handler) ClassBuilder.construct(ParameterConfig.getHandler(name));
+			return (ParameterHandler) ClassBuilder.construct(ParameterConfig.getHandler(name));
 		}else{
-			return (Parameter_Handler) ClassBuilder.construct(ParameterConfig.getHandler(handlerName));
+			return (ParameterHandler) ClassBuilder.construct(ParameterConfig.getHandler(handlerName));
 		}
 	}
 	

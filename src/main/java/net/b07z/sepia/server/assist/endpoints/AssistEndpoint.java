@@ -14,7 +14,7 @@ import net.b07z.sepia.server.assist.interviews.AbstractInterview;
 import net.b07z.sepia.server.assist.interviews.InterviewResult;
 import net.b07z.sepia.server.assist.interviews.InterviewInterface;
 import net.b07z.sepia.server.assist.interviews.NoResult;
-import net.b07z.sepia.server.assist.interviews.Repeat_Last;
+import net.b07z.sepia.server.assist.interviews.RepeatLast;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.ConfigServices;
 import net.b07z.sepia.server.assist.server.Start;
@@ -130,7 +130,7 @@ public class AssistEndpoint {
 		String no_res_fallback_key = "no_answer_0a";		//answer key for custom_no_result answer
 		if (cmd.matches(CMD.REPEAT)){
 			//we handle that with a "quasi"-API
-			NluResult new_result = Repeat_Last.reload(result);
+			NluResult new_result = RepeatLast.reload(result);
 			if (new_result == null){
 				cmd = "custom_no_result";
 				no_res_fallback_key = "repeat_0a";

@@ -179,7 +179,7 @@ public class Test_Tools {
 		//normalizer and URL encoder
 		test = "Bana New York'tan Chicago'ya gelen yol göstermek";
 		NormalizerLight norm = new NormalizerLight();
-		System.out.println(norm.normalize_text(test));
+		System.out.println(norm.normalizeText(test));
 		System.out.println(URLEncoder.encode(test, "UTF-8"));
 		System.out.println("------------------------------------------------");
 		

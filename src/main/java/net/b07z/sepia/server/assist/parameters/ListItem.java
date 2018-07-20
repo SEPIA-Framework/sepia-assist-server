@@ -21,7 +21,7 @@ import net.b07z.sepia.server.core.tools.JSON;
  * @author Florian Quirin
  *
  */
-public class ListItem implements Parameter_Handler{
+public class ListItem implements ParameterHandler{
 
 	User user;
 	NluInput nluInput;

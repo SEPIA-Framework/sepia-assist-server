@@ -10,7 +10,7 @@ import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.tools.JSON;
 
-public class Language implements Parameter_Handler{
+public class Language implements ParameterHandler{
 
 	//-----data-----
 	public static final String languageClasses_de = 

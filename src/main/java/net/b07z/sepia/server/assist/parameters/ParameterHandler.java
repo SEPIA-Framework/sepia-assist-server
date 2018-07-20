@@ -3,7 +3,7 @@ package net.b07z.sepia.server.assist.parameters;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 
-public interface Parameter_Handler {
+public interface ParameterHandler {
 	
 	/**
 	 * Setup the handler by adding some data (NLU_Result or NLU_Input) required to check for account specific data, context, environment, etc..
@@ -48,7 +48,8 @@ public interface Parameter_Handler {
 	public String remove(String input, String found);
 	
 	/**
-	 * Try to clean the result of a response without doing too much NLU. E.g.: in "search for XYZ" removes the "... for ".
+	 * Try to clean the result of a response without doing too much NLU. E.g.: in "search for XYZ" removes the "... for ".<br>
+	 * NOTE: The response tweaker will only be used if the extract method does not give a result.<br>
 	 * The result should be compatible input for the 'build' method.<br>
 	 * <br>
 	 * TODO: maybe the responseTweaker should be removed and its functionality placed into the 'build' method ...

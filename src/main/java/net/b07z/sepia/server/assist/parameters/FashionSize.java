@@ -10,7 +10,7 @@ import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.tools.JSON;
 
-public class FashionSize implements Parameter_Handler{
+public class FashionSize implements ParameterHandler{
 	
 	//-------data-------
 	public static String fashionSizes = "((\\d\\d\\d|\\d\\d|\\d)(\\.\\d+|,\\d+|)|xxxl|xxl|xl|l|m|s|xs|xxs|xxxs)";

@@ -23,7 +23,7 @@ import net.b07z.sepia.server.core.tools.JSON;
  * @author Florian Quirin
  *
  */
-public class ListType implements Parameter_Handler{
+public class ListType implements ParameterHandler{
 	
 	//-------data-------
 	public static HashMap<String, String> types_de = new HashMap<>();

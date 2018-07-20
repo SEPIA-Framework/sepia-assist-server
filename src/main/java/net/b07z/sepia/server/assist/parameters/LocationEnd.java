@@ -12,7 +12,7 @@ import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 
-public class LocationEnd implements Parameter_Handler{
+public class LocationEnd implements ParameterHandler{
 
 	User user;
 	String language;

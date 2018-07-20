@@ -13,7 +13,7 @@ import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.JSON;
 
-public class SearchSection implements Parameter_Handler{
+public class SearchSection implements ParameterHandler{
 
 	//-----data-----
 	public static HashMap<String, String> sections_de = new HashMap<>();

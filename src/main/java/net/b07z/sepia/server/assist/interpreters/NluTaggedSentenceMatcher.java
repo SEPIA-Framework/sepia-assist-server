@@ -63,7 +63,7 @@ public class NluTaggedSentenceMatcher implements NluInterface{
 		
 		//normalize search
 		Normalizer normalizer = Config.inputNormalizersLight.get(language);
-		search = normalizer.normalize_text(search);
+		search = normalizer.normalizeText(search);
 
 		//get command
 		TreeMap<String, String> commands_this = commands.get(language);

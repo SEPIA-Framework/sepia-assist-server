@@ -208,7 +208,7 @@ public class InterviewServicesMap {
 			systemInterviewServicesMap.put(CMD.SENTENCE_CONNECT, sentence_connect);
 		//PARROT (REPEAT USER)
 		ArrayList<String> parrot = new ArrayList<String>();
-			parrot.add(Repeat_Me.class.getCanonicalName());
+			parrot.add(RepeatMe.class.getCanonicalName());
 			systemInterviewServicesMap.put(CMD.REPEAT_ME, parrot);
 		//FEEDBACK - NPS
 		ArrayList<String> feedback_nps = new ArrayList<String>();

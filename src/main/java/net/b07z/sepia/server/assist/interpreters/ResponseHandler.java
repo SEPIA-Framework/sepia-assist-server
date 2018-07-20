@@ -7,7 +7,7 @@ import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.parameters.Confirm;
 import net.b07z.sepia.server.assist.parameters.DateAndTime;
 import net.b07z.sepia.server.assist.parameters.ParameterConfig;
-import net.b07z.sepia.server.assist.parameters.Parameter_Handler;
+import net.b07z.sepia.server.assist.parameters.ParameterHandler;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.ConfigServices;
 import net.b07z.sepia.server.assist.services.ServiceInfo;
@@ -47,7 +47,7 @@ public class ResponseHandler implements NluInterface{
 		//TODO: think about this again, does it make sense to use the same normalizer as for normal input?
 		Normalizer normalizer = Config.inputNormalizers.get(language);
 		if (normalizer != null){
-			response = normalizer.normalize_text(response);
+			response = normalizer.normalizeText(response);
 		}
 		
 		NluResult result = NluTools.cmdSummaryToResult(input, cmd_summary);
@@ -133,7 +133,7 @@ public class ResponseHandler implements NluInterface{
 				continue;
 			}
 			//else try to find it
-			Parameter_Handler handler = p.getHandler();
+			ParameterHandler handler = p.getHandler();
 			handler.setup(input);
 			//check if its a generic handler, because that one would not search for stuff if its not asked explicitly
 			if (handler.isGeneric() && !input.inputMiss.equals(p.getName())){
@@ -163,7 +163,7 @@ public class ResponseHandler implements NluInterface{
 		}
 		//now get the missing one:
 
-		Parameter_Handler handler = (Parameter_Handler) ClassBuilder.construct(ParameterConfig.getHandler(parameter));
+		ParameterHandler handler = (ParameterHandler) ClassBuilder.construct(ParameterConfig.getHandler(parameter));
 		handler.setup(input);
 		
 		//First try the normal 'extract' method:
@@ -185,7 +185,7 @@ public class ResponseHandler implements NluInterface{
 	//check for special (dynamic) parameters
 	public static NluResult confirmResponse(NluResult nluResult, String response, String parameter, String language, String command, NluInput input){
 		//Confirmation request
-		Parameter_Handler handler = (Parameter_Handler) ClassBuilder.construct(ParameterConfig.getHandler(PARAMETERS.CONFIRMATION));
+		ParameterHandler handler = (ParameterHandler) ClassBuilder.construct(ParameterConfig.getHandler(PARAMETERS.CONFIRMATION));
 		handler.setup(input);
 		String value = handler.extract(response);
 		nluResult.setParameter(parameter, value);

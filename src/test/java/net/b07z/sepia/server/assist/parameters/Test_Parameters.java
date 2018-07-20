@@ -42,7 +42,7 @@ public class Test_Parameters {
 			Normalizer normalizer = Config.inputNormalizers.get(language);
 			if (normalizer != null){
 				input.textRaw = text;
-				text = normalizer.normalize_text(text);
+				text = normalizer.normalizeText(text);
 				input.text = text;
 			}
 			
@@ -85,7 +85,7 @@ public class Test_Parameters {
 		}
 		public void buildParams(){
 			for (Parameter p : aps.parameters){
-				Parameter_Handler paramHandler = p.getHandler();
+				ParameterHandler paramHandler = p.getHandler();
 				paramHandler.setup(aps.nluInput);
 				String pName = p.getName();
 				String pExVal = pv.get(pName);

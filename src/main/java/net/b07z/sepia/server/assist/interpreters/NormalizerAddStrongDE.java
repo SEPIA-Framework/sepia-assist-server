@@ -8,7 +8,7 @@ package net.b07z.sepia.server.assist.interpreters;
  */
 public class NormalizerAddStrongDE implements Normalizer {
 
-	public String normalize_text(String text) {
+	public String normalizeText(String text) {
 		/*
 		String assiName = Config.assistant_name.toLowerCase();
 		String assiRegEx = "(" + Pattern.quote(assiName) + "|<assistant_name>" + ")";

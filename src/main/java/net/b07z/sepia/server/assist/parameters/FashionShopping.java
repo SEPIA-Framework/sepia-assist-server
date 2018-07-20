@@ -46,11 +46,11 @@ public class FashionShopping {
 			pv = new HashMap<>();
 		}
 		String thisText = nluInput.text; 		//extra normalization required?
-		Parameter_Handler brandHandler = null;
-		Parameter_Handler colorHandler = null;
-		Parameter_Handler sizeHandler = null;
-		Parameter_Handler genHandler = null;
-		Parameter_Handler itemHandler = null;
+		ParameterHandler brandHandler = null;
+		ParameterHandler colorHandler = null;
+		ParameterHandler sizeHandler = null;
+		ParameterHandler genHandler = null;
+		ParameterHandler itemHandler = null;
 		String brand = ""; 		//we need this further down
 		
 		//Brand

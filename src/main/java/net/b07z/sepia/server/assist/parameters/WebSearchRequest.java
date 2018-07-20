@@ -15,7 +15,7 @@ import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.JSON;
 
-public class WebSearchRequest implements Parameter_Handler{
+public class WebSearchRequest implements ParameterHandler{
 
 	User user;
 	String language;

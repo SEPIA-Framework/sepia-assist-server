@@ -52,7 +52,7 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 		// all lowerCase - remove all ',!? - handle ä ö ü ß ... trim
 		Normalizer normalizer = Config.inputNormalizers.get(language);
 		if (normalizer != null){
-			text = normalizer.normalize_text(text);
+			text = normalizer.normalizeText(text);
 			input.text = text; 				//TODO: is this ok here? Do it before?
 		}
 		
@@ -1035,6 +1035,8 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 		return result.certaintyLvl;
 	}
 	
+	//TODO: what follows is old legacy code that should be replaced with the Parameter system soon! ...
+	
 	/**
 	 * Search for locations once. If it has been done already this method does nothing. 
 	 * @param text - complete text to search
@@ -1043,11 +1045,6 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 	private void search_locations(String text, String language){
 		if (locations == null){
 			locations = RegexParameterSearch.get_locations(text, language);
-			/*
-			locations.put("location", locations.get("location"));
-			locations.put("location_start", locations.get("location_start"));
-			locations.put("location_end", locations.get("location_end"));
-			*/
 		}
 	}
 	/**
@@ -1076,18 +1073,6 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 			numbers.put("value1", num);
 		}
 	}
-	/**
-	 * Get the web search term. If it has been done already this method does nothing. 
-	 * @param text - complete text to search
-	 * @param language - language code
-	 */
-	/*
-	private void get_websearch(String text, String language){
-		if (websearches == null){
-			websearches = NLU_parameter_search.get_search(text, language);
-		}
-	}
-	*/
 	/**
 	 * Get the music parameters artist/creator and genre. 
 	 * uses: music_artist, music_genre

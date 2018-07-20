@@ -11,7 +11,7 @@ import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.JSON;
 
-public class NewsType implements Parameter_Handler{
+public class NewsType implements ParameterHandler{
 
 	//-----data-----
 	public static enum NType{

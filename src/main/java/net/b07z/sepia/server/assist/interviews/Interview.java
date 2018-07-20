@@ -7,7 +7,7 @@ import java.util.Set;
 
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
-import net.b07z.sepia.server.assist.parameters.Parameter_Handler;
+import net.b07z.sepia.server.assist.parameters.ParameterHandler;
 import net.b07z.sepia.server.assist.server.ConfigServices;
 import net.b07z.sepia.server.assist.services.ServiceInterface;
 import net.b07z.sepia.server.assist.services.ServiceResult;
@@ -272,7 +272,7 @@ public class Interview {
 		//-b) check if it is already a valid parameter. If not try to build the parameter result using input and account specific info (if necessary)
 		String input = p.getInput();
 		String parameter = p.getName();
-		Parameter_Handler handler = p.getHandler();
+		ParameterHandler handler = p.getHandler();
 		handler.setup(nluResult);
 		
 		//return buildParameterOrComment(input, parameter, handler);

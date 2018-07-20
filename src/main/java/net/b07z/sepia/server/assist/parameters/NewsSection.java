@@ -10,7 +10,7 @@ import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.tools.JSON;
 
-public class NewsSection implements Parameter_Handler{
+public class NewsSection implements ParameterHandler{
 
 	//-----data-----
 	//some statics (TODO: should be moved somewhere where every news service has access to them)

@@ -134,13 +134,13 @@ public class DataLoader {
 					i_valid++;
 					
 					//create a default and a slightly stronger normalized version and add both
-					String text_n1 = normalizer_default.normalize_text(text);
+					String text_n1 = normalizer_default.normalizeText(text);
 					if (!text_n1.isEmpty()){
 						//add
 						pool.put(text_n1, cmd);
 						i_stored++;
 					}
-					String text_n2 = normalizer_light.normalize_text(text);
+					String text_n2 = normalizer_light.normalizeText(text);
 					if (!text_n1.equals(text_n2) && !text_n2.isEmpty()){
 						//add
 						pool.put(text_n2, cmd);
@@ -211,7 +211,7 @@ public class DataLoader {
 							//normalize sentence 2 times with light and default - use language specific method
 							Normalizer normalizer_default = Config.inputNormalizers.get(language);
 							if (normalizer_default != null){
-								sent_n1 = normalizer_default.normalize_text(sent);
+								sent_n1 = normalizer_default.normalizeText(sent);
 								if (!sent_n1.isEmpty()){
 									//add
 									commands.put(sent_n1, cmd);
@@ -220,7 +220,7 @@ public class DataLoader {
 							}
 							Normalizer normalizer_light = Config.inputNormalizersLight.get(language);
 							if (normalizer_light != null){
-								sent_n2 = normalizer_light.normalize_text(sent);
+								sent_n2 = normalizer_light.normalizeText(sent);
 								if (!sent_n1.equals(sent_n2) && !sent_n2.isEmpty()){
 									//add
 									commands.put(sent_n2, cmd);

@@ -17,7 +17,7 @@ import net.b07z.sepia.server.core.tools.JSON;
  * @author Florian Quirin
  *
  */
-public class Sentences implements Parameter_Handler{
+public class Sentences implements ParameterHandler{
 	
 	User user;
 	NluInput nluInput;

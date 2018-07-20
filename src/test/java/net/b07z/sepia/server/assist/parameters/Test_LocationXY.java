@@ -36,7 +36,7 @@ public class Test_LocationXY {
 			Normalizer normalizer = Config.inputNormalizers.get(language);
 			if (normalizer != null){
 				input.textRaw = text;
-				text = normalizer.normalize_text(text);
+				text = normalizer.normalizeText(text);
 				input.text = text;
 			}
 			

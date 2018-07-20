@@ -27,7 +27,7 @@ public class ParameterConfig {
 		int nP = 0;
 		for (Entry<String, String> e : handlerToParameter.entrySet()){
 			String name = e.getKey();
-			Parameter_Handler ph = (Parameter_Handler) ClassBuilder.construct(ParameterConfig.getHandler(name));
+			ParameterHandler ph = (ParameterHandler) ClassBuilder.construct(ParameterConfig.getHandler(name));
 			//pseudo test
 			ph.buildSuccess();
 			Debugger.println("Parameter '" + name + "' is valid.", 2);

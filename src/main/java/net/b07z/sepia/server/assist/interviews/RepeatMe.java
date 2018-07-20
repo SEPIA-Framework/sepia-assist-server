@@ -17,7 +17,7 @@ import net.b07z.sepia.server.core.tools.Debugger;
  * @author Florian Quirin
  *
  */
-public class Repeat_Me implements ServiceInterface{
+public class RepeatMe implements ServiceInterface{
 	
 	//info
 	public ServiceInfo getInfo(String language){

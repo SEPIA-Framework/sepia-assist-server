@@ -96,7 +96,7 @@ public class NluKeywordAnalyzer implements NluInterface {
 		// all lowerCase - remove all ',!? - handle ä ö ü ß ... trim
 		Normalizer normalizer = Config.inputNormalizers.get(language);
 		if (normalizer != null){
-			text = normalizer.normalize_text(text);
+			text = normalizer.normalizeText(text);
 		}
 		
 		//first rough check for main keywords
