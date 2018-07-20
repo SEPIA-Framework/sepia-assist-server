@@ -1,78 +1,89 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>net.b07z.sepia.server.assist</groupId>
-  <artifactId>sepia-assist-API</artifactId>
-  <version>2.0.1</version>
-  <name>SEPIA assistant API</name>
-  <description>Cloud server API for personal digital assistants</description>
-  
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.8</maven.compiler.source>
-	<maven.compiler.target>1.8</maven.compiler.target>
-  </properties>
-      
-  <build>
-	<plugins>
-		<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-dependency-plugin</artifactId>
-			<version>3.1.0</version>
-			<executions>
-				<execution>
-					<id>copy-dependencies</id>
-					<phase>prepare-package</phase>
-					<goals>
-						<goal>copy-dependencies</goal>
-					</goals>
-					<configuration>
-						<outputDirectory>
-							${project.build.directory}/libs
-						</outputDirectory>
-					</configuration>
-				</execution>
-			</executions>
-		</plugin>
-		<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-jar-plugin</artifactId>
-			<version>3.1.0</version>
-			<configuration>
-				<archive>
-					<manifest>
-						<addClasspath>true</addClasspath>
-						<classpathPrefix>libs/</classpathPrefix>
-						<mainClass>
-							net.b07z.sepia.server.assist.server.Start
-						</mainClass>
-					</manifest>
-				</archive>
-				<finalName>sepia-assist-v${project.version}</finalName>
-			</configuration>
-		</plugin>
-	</plugins>
-  </build>
+	<modelVersion>4.0.0</modelVersion>
 	
-  <dependencies>
-    <dependency>
-        <groupId>net.b07z.sepia.websockets</groupId>
-        <artifactId>sepia-websockets</artifactId>
-        <version>1.1.0</version>
-    </dependency>
-    <dependency>
-        <groupId>net.b07z.sepia.server.core</groupId>
-        <artifactId>sepia-core-tools</artifactId>
-        <version>2.0.1</version>
-    </dependency>
-  	<dependency>
-		<groupId>javax.mail</groupId>
-		<artifactId>mail</artifactId>
-		<version>1.5.0-b01</version>
-	</dependency>
-  	<dependency>
-	    <groupId>com.rometools</groupId>
-	    <artifactId>rome</artifactId>
-	    <version>1.7.4</version>
-	</dependency>
-  </dependencies>
+	<groupId>net.b07z.sepia.server.assist</groupId>
+	<artifactId>sepia-assist-API</artifactId>
+	<version>2.0.1</version>
+	<name>SEPIA Assist API</name>
+	<description>Core server of the SEPIA Framework for personal digital assistants. Responsible for NLU, conversation, smart-service integration, user-accounts and more.</description>
+	<url>https://sepia-framework.github.io</url>
+	<packaging>jar</packaging>
+  
+  	<licenses>
+		<license>
+			<name>MIT License</name>
+			<url>http://www.opensource.org/licenses/mit-license.php</url>
+		</license>
+  	</licenses>
+  
+  	<properties>
+    	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    	<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+  	</properties>
+      
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.1.0</version>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>
+								${project.build.directory}/libs
+							</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.1.0</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>libs/</classpathPrefix>
+							<mainClass>
+								net.b07z.sepia.server.assist.server.Start
+							</mainClass>
+						</manifest>
+					</archive>
+					<finalName>sepia-assist-v${project.version}</finalName>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	
+	<dependencies>
+		<dependency>
+			<groupId>net.b07z.sepia.websockets</groupId>
+			<artifactId>sepia-websockets</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>net.b07z.sepia.server.core</groupId>
+			<artifactId>sepia-core-tools</artifactId>
+			<version>2.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>1.5.0-b01</version>
+		</dependency>
+		<dependency>
+			<groupId>com.rometools</groupId>
+			<artifactId>rome</artifactId>
+			<version>1.7.4</version>
+		</dependency>
+	</dependencies>
+
 </project>
