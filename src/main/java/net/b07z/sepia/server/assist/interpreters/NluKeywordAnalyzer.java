@@ -20,8 +20,7 @@ import net.b07z.sepia.server.core.assistant.PARAMETERS;
  * Simple (at least from the idea) yet effective keyword analyzer to interpret user input.<br>
  * This is the language independent version.<br>
  * The order of checks does matter, put commands with less priority at the bottom. If commands score the same probability the first is taken.<br>
- * Note: Never use this as a static interpreter! Always create new instances of it when needed (compared to the sentence matchers
- * that can be used globally). 
+ * Note: Don't reuse this, always create new instances of it when needed (compared to the sentence matchers that can be used globally). 
  *   
  * @author Florian Quirin
  *

@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import net.b07z.sepia.server.assist.services.Alarms;
 import net.b07z.sepia.server.assist.services.ChatPreprocessor;
@@ -72,6 +73,14 @@ public class InterviewServicesMap {
 		}
 		Debugger.println(nServ + " services for " + nCmd + " commands: All valid!", 3);
 		return true; 	//will fail if class not exists
+	}
+	
+	/**
+	 * Get all commands that are supported (mapped to a service) in the previously given insertion order.
+	 * The order matters because of the first-one-wins-at-equal-score rule.
+	 */
+	public static Set<String> getAllMappedCommands(){
+		return systemInterviewServicesMap.keySet();
 	}
 	
 	/**

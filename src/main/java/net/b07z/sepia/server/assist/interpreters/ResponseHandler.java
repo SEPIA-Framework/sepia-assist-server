@@ -255,7 +255,7 @@ public class ResponseHandler implements NluInterface{
 		//smart devices
 		}else if (p_type.matches(PARAMETERS.SMART_DEVICE)){
 			tweaked = RegexParameterSearch.get_control_type(response, language);	
-		}else if (p_type.matches(PARAMETERS.SMART_LOCATION)){
+		}else if (p_type.matches(PARAMETERS.ROOM)){
 			tweaked = RegexParameterSearch.get_control_location(response, language);
 		
 		//command specific:
