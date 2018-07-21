@@ -1,6 +1,7 @@
 package net.b07z.sepia.server.assist.interpreters;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -156,6 +157,21 @@ public class NluTools {
 	 */
 	public static int countWords(String text){
 		return text.split("\\s+").length;
+	}
+	
+	/**
+	 * Get a new string that starts at the given string (last match) and includes the next N words (or less).
+	 * Splits tokens at \\s+ to count words so you probably need to normalize first.
+	 * @param input - whole string
+	 * @param start - start word/token of new string
+	 * @param nextWords - including this many words (or less)
+	 * @return new string
+	 */
+	public static String getStringAndNextWords(String input, String start, int N){
+		String section = input.replaceFirst(".*\\b(" + start + ")", "$1").trim();
+		String[] words = section.split("\\s+");
+		String[] relevantWords = Arrays.copyOfRange(words, 0, Math.min(N+1, words.length));
+		return String.join(" ", relevantWords);
 	}
 	
 	/**

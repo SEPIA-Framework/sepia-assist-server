@@ -6,7 +6,7 @@ import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 
 /**
- * Class to collect a parameter handler result and store it, e.g. in NLU_Input
+ * Class to collect a parameter handler result and store it, e.g. in {@link NluInput}
  * 
  * @author Florian Quirin
  *

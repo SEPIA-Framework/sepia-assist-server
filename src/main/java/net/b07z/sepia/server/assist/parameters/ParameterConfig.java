@@ -44,7 +44,8 @@ public class ParameterConfig {
 		//NOTE: If you ever rename any of the handlers this breaks! (use the test method!)
 		handlerToParameter.put(PARAMETERS.YES_NO, Config.parentPackage + ".parameters.YesNo");
 		handlerToParameter.put(PARAMETERS.CONFIRMATION, Config.parentPackage + ".parameters.Confirm");
-		handlerToParameter.put(PARAMETERS.ACTION, Config.parentPackage + ".parameters.Action");
+		handlerToParameter.put(PARAMETERS.NUMBER, net.b07z.sepia.server.assist.parameters.Number.class.getCanonicalName());
+		handlerToParameter.put(PARAMETERS.ACTION, Action.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.ALARM_NAME, Config.parentPackage + ".parameters.AlarmName");
 		handlerToParameter.put(PARAMETERS.LOCATION_START, Config.parentPackage + ".parameters.LocationStart");
 		handlerToParameter.put(PARAMETERS.LOCATION_END, Config.parentPackage + ".parameters.LocationEnd");
@@ -71,6 +72,9 @@ public class ParameterConfig {
 		handlerToParameter.put(PARAMETERS.FOOD_CLASS, Config.parentPackage + ".parameters.FoodClass");
 		handlerToParameter.put(PARAMETERS.RADIO_STATION, Config.parentPackage + ".parameters.RadioStation");
 		handlerToParameter.put(PARAMETERS.MUSIC_GENRE, Config.parentPackage + ".parameters.MusicGenre");
+		handlerToParameter.put(PARAMETERS.SMART_DEVICE, net.b07z.sepia.server.assist.parameters.SmartDevice.class.getCanonicalName());
+		handlerToParameter.put(PARAMETERS.SMART_DEVICE_VALUE, net.b07z.sepia.server.assist.parameters.SmartDeviceValue.class.getCanonicalName());
+		handlerToParameter.put(PARAMETERS.ROOM, net.b07z.sepia.server.assist.parameters.Room.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.WEBSEARCH_REQUEST, Config.parentPackage + ".parameters.WebSearchRequest");
 		handlerToParameter.put(PARAMETERS.WEBSEARCH_ENGINE, Config.parentPackage + ".parameters.WebSearchEngine");
 		handlerToParameter.put(PARAMETERS.SEARCH_SECTION, Config.parentPackage + ".parameters.SearchSection");

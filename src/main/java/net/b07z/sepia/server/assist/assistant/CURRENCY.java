@@ -12,7 +12,7 @@ public class CURRENCY {
 	
 	//excahnge rates
 	private static double GBP_TO_EUR = 1.2769d;
-	private static double USD_TO_EUR = 0.87966d;
+	private static double USD_TO_EUR = 0.87966d; 		//TODO: need to keep this up-to-date if we want to use it!
 	
 	//Currencies
 	public static final String EURO = "euro";
@@ -22,7 +22,7 @@ public class CURRENCY {
 	public static final String POUND_GB = "pound_gb";
 
 	//check NLU_parameter_search.get_amount_of(...,"money",...) as well!
-	public static final String TAGS_DE = "(bitcoin|bitcoins|btc|euro|euros|eur|€|eurocent(s|)|cent(s|)|ct|"
+	public static final String TAGS_DE = "(bitcoin(s|)|ethereum(s|)|btc|eth|euro|euros|eur|€|eurocent(s|)|cent(s|)|ct|"
 						+ "(us |amerikanische(r|) |)dollar(s|)|usd|\\$|gb pfund|britische(s|) pfund|gbp|£|"
 						+ "yen|jpy|¥|yuan|renminbi|cny|cn¥|rmb|russischer rubel|rubel|rub|dirham|aed)";
 	public static final String TAGS_EN = "(bitcoin|bitcoins|btc|euro|euros|eur|€|eurocent(s|)|cent(s|)|ct|"

@@ -12,7 +12,7 @@ import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
 
-//TODO: this class is ancient, basically deprecated and replaced by the Parameter system, but there are still some functions of it in use!
+//TODO: this class is ancient, many methods are deprecated and replaced by the Parameter system, but there are still some functions of it in use!
 //Move everything to parameter classes!
 
 /**
@@ -93,10 +93,11 @@ public class RegexParameterSearch {
 	
 	/**
 	 * Get the first number in a string and return it as string. Tries to capture decimals too.
-	 * Returns a connected letter as well, e.g. "3b", "1h" or "2L" but also "10€"! You can use "[^0-9\\.,\\+\\-]" to remove it. 
+	 * Returns ONE connected letter as well, e.g. "3b", "1h" or "2L" but also "10€" and "80%"! You can use "[^0-9\\.,\\+\\-]" to remove it.
 	 * @param input - string with number inside
 	 * @return number as string or empty string
 	 */
+	@Deprecated
 	public static String get_number(String input){
 		String number = "";
 		number = NluTools.stringFindFirst(input, "(\\W|)(\\-|\\+|\\.|,|)\\d+(\\.|,|)\\d*(\\w|\\W|)"); 	//the \\w is for street numbers e.g. 3b
@@ -1627,6 +1628,7 @@ public class RegexParameterSearch {
 	 * @param language - language code
 	 * @return types like on, off, increase, decrease, set/toggle, complex - or empty string
 	 */
+	@Deprecated
 	public static String[] get_control_action(String input, String language){
 		String action = "";
 		String extracted = "";

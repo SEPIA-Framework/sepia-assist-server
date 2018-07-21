@@ -115,6 +115,51 @@ public class InterviewServicesMap {
 		
 		String redirect = RedirectResult.class.getCanonicalName();
 		
+		//NEWS
+		ArrayList<String> news = new ArrayList<String>();
+			news.add(NewsRssFeeds.class.getCanonicalName());
+			systemInterviewServicesMap.put(CMD.NEWS, news);
+		//WEATHER
+		ArrayList<String> weather = new ArrayList<String>();
+			weather.add(WeatherDarkSky.class.getCanonicalName());
+			systemInterviewServicesMap.put(CMD.WEATHER, weather);
+		//SMART-DEVICE CONTROL
+		ArrayList<String> controlSmarthome = new ArrayList<String>();
+			controlSmarthome.add(ControlPreprocessor.class.getCanonicalName());
+			systemInterviewServicesMap.put(CMD.SMARTDEVICE, controlSmarthome);
+		//DIRECTIONS
+		ArrayList<String> directions = new ArrayList<String>();
+			directions.add(DirectionsGoogleMaps.class.getCanonicalName());
+			systemInterviewServicesMap.put(CMD.DIRECTIONS, directions);
+		//FASHION SHOPPING
+		ArrayList<String> fashion = new ArrayList<String>();
+			fashion.add(redirect);										//ShoppingFashionAffilinet.class.getCanonicalName()
+			systemInterviewServicesMap.put(CMD.FASHION, fashion);
+		//FOOD DELIVERY
+		ArrayList<String> food = new ArrayList<String>();
+			food.add(redirect);											//FoodDeliveryUrl.class.getCanonicalName()
+			systemInterviewServicesMap.put(CMD.FOOD, food);
+		//KONWLEDGEBASE
+		ArrayList<String> kb = new ArrayList<String>();
+			kb.add(Wikipedia.class.getCanonicalName());
+			systemInterviewServicesMap.put(CMD.KNOWLEDGEBASE, kb);
+		//WEBSEARCH
+		ArrayList<String> websearch = new ArrayList<String>();
+			websearch.add(WebsearchBasic.class.getCanonicalName());
+			systemInterviewServicesMap.put(CMD.WEB_SEARCH, websearch);
+		//TIMER
+		ArrayList<String> timer = new ArrayList<String>();
+			timer.add(Alarms.class.getCanonicalName());
+			systemInterviewServicesMap.put(CMD.TIMER, timer);
+		//MUSIC RADIO
+		ArrayList<String> radio = new ArrayList<String>();
+			radio.add(MusicRadioMixed.class.getCanonicalName());
+			systemInterviewServicesMap.put(CMD.MUSIC_RADIO, radio);
+		//LISTS
+		ArrayList<String> list = new ArrayList<String>();
+			list.add(Lists.class.getCanonicalName());
+			systemInterviewServicesMap.put(CMD.LISTS, list);
+		
 		//BANKING
 		ArrayList<String> banking = new ArrayList<String>();
 			banking.add(redirect);
@@ -131,10 +176,6 @@ public class InterviewServicesMap {
 		ArrayList<String> controlDevice = new ArrayList<String>();
 			controlDevice.add(ControlPreprocessor.class.getCanonicalName()); //.add("apis.ControlPreprocessor");
 			systemInterviewServicesMap.put(CMD.CONTROL, controlDevice);
-		//SMART-DEVICE CONTROL
-		ArrayList<String> controlSmarthome = new ArrayList<String>();
-			controlSmarthome.add(ControlPreprocessor.class.getCanonicalName());
-			systemInterviewServicesMap.put(CMD.SMARTDEVICE, controlSmarthome);
 		//COUNT - EASTER-EGG
 		ArrayList<String> count = new ArrayList<String>();
 			count.add(FunCountToThree.class.getCanonicalName());
@@ -143,10 +184,6 @@ public class InterviewServicesMap {
 		ArrayList<String> dict = new ArrayList<String>();
 			dict.add(DictionaryTranslateBasic.class.getCanonicalName());
 			systemInterviewServicesMap.put(CMD.DICT_TRANSLATE, dict);
-		//DIRECTIONS
-		ArrayList<String> directions = new ArrayList<String>();
-			directions.add(DirectionsGoogleMaps.class.getCanonicalName());
-			systemInterviewServicesMap.put(CMD.DIRECTIONS, directions);
 		//LOCATIONS
 		ArrayList<String> locations = new ArrayList<String>();
 			locations.add(LocationSearchBasic.class.getCanonicalName());
@@ -155,10 +192,6 @@ public class InterviewServicesMap {
 		ArrayList<String> mobility = new ArrayList<String>();
 			mobility.add(DirectionsGoogleMaps.class.getCanonicalName()); //Mobility_Qixxit
 			systemInterviewServicesMap.put(CMD.MOBILITY, mobility);
-		//KONWLEDGEBASE
-		ArrayList<String> kb = new ArrayList<String>();
-			kb.add(Wikipedia.class.getCanonicalName());
-			systemInterviewServicesMap.put(CMD.KNOWLEDGEBASE, kb);
 		//MOVIES
 		ArrayList<String> movies = new ArrayList<String>();
 			movies.add(redirect); //.add("apis.Movies_iTunes");
@@ -167,10 +200,6 @@ public class InterviewServicesMap {
 		ArrayList<String> tvProgram = new ArrayList<String>();
 			tvProgram.add(redirect);									//TvProgramUrlDe.class.getCanonicalName()
 			systemInterviewServicesMap.put(CMD.TV_PROGRAM, tvProgram);
-		//LISTS
-		ArrayList<String> list = new ArrayList<String>();
-			list.add(Lists.class.getCanonicalName());
-			systemInterviewServicesMap.put(CMD.LISTS, list);
 		//FLIGHTS
 		ArrayList<String> flights = new ArrayList<String>();
 			flights.add(redirect); 										//Flights
@@ -183,34 +212,7 @@ public class InterviewServicesMap {
 		ArrayList<String> tickets = new ArrayList<String>();
 			tickets.add(redirect); 										//Tickets
 			systemInterviewServicesMap.put(CMD.TICKETS, tickets);
-		//MUSIC RADIO
-		ArrayList<String> radio = new ArrayList<String>();
-			radio.add(MusicRadioMixed.class.getCanonicalName());
-			systemInterviewServicesMap.put(CMD.MUSIC_RADIO, radio);
-		//NEWS
-		ArrayList<String> news = new ArrayList<String>();
-			news.add(NewsRssFeeds.class.getCanonicalName());
-			systemInterviewServicesMap.put(CMD.NEWS, news);
-		//FASHION SHOPPING
-		ArrayList<String> fashion = new ArrayList<String>();
-			fashion.add(redirect);										//ShoppingFashionAffilinet.class.getCanonicalName()
-			systemInterviewServicesMap.put(CMD.FASHION, fashion);
-		//FOOD DELIVERY
-		ArrayList<String> food = new ArrayList<String>();
-			food.add(redirect);											//FoodDeliveryUrl.class.getCanonicalName()
-			systemInterviewServicesMap.put(CMD.FOOD, food);
-		//WEATHER
-		ArrayList<String> weather = new ArrayList<String>();
-			weather.add(WeatherDarkSky.class.getCanonicalName());
-			systemInterviewServicesMap.put(CMD.WEATHER, weather);
-		//WEBSEARCH
-		ArrayList<String> websearch = new ArrayList<String>();
-			websearch.add(WebsearchBasic.class.getCanonicalName());
-			systemInterviewServicesMap.put(CMD.WEB_SEARCH, websearch);
-		//TIMER
-		ArrayList<String> timer = new ArrayList<String>();
-			timer.add(Alarms.class.getCanonicalName());
-			systemInterviewServicesMap.put(CMD.TIMER, timer);
+
 		//SENTENCE
 		ArrayList<String> sentence_connect = new ArrayList<String>();
 			sentence_connect.add(SentenceConnect.class.getCanonicalName());
