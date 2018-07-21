@@ -76,22 +76,19 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 			possibleParameters.add(pv);
 		}
 		
-		//TODO: We can simplify this class by moving all regular expressions to the getInfo method of the services and then
-		//we could simply iterate over the InterviewServicesMap and use the abstract regular expressions matcher to build 
-		//the result for each command, e.g.:
+		//----- SYSTEM SERVICES -----
+		
+		//TODO: We can simplify this class by moving all regular expressions to the getInfo method of the services
+		//and then use this:
 		/*
-		for (Entry<String, List<String>> es : InterviewServicesMap.get().entrySet()){
-			String cmd = es.getKey();
-			List<ApiInterface> defaultServicesForCmd = ConfigServices.buildServices(cmd);
-			for (ApiInterface service : defaultServicesForCmd){
-				index = NluKeywordAnalyzer.abstractRegExAnalyzer(text, input, service,
-						possibleCMDs, possibleScore, possibleParameters, index);
-			}
+		for (ServiceInterface service : ConfigServices.getAllSystemMasterServices()){
+			index = NluKeywordAnalyzer.abstractRegExAnalyzer(text, input, service,
+					possibleCMDs, possibleScore, possibleParameters, index);
 		}
 		*/
-		//... because the order of the commands matters and exceptions might apply we could create a custom list as well 
+		//... but sometimes we want to handle some exceptions and special conditions ... 
 		
-		//--------------------------------------------------
+		//---------------------------
 		
 		//What follows now is a list of regular expressions for certain commands that trigger parameter searches ...
 		
@@ -132,6 +129,22 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 			Map<String, String> pv = new HashMap<String, String>(); 		//TODO: pass this down to avoid additional checking
 			AbstractParameterSearch aps = new AbstractParameterSearch()
 					.setParameters(PARAMETERS.TIME, PARAMETERS.PLACE)
+					.setup(input, pv);
+			aps.getParameters();
+			possibleScore.set(index, possibleScore.get(index) + aps.getScore());
+			possibleParameters.add(pv);
+		}
+		
+		//smart device control
+		if (NluTools.stringContains(text, "licht(er|)|lampe(n|)|beleuchtung|leuchte(n|)|helligkeit|"
+				+ "heiz(er|ungen|ung|koerper|luefter|strahler)|temperatur(en|)"
+			)){
+			possibleCMDs.add(CMD.SMARTDEVICE);
+			possibleScore.add(1);	index++;
+
+			Map<String, String> pv = new HashMap<String, String>(); 		//TODO: pass this down to avoid additional checking
+			AbstractParameterSearch aps = new AbstractParameterSearch()
+					.setParameters(PARAMETERS.ACTION, PARAMETERS.SMART_DEVICE, PARAMETERS.SMART_DEVICE_VALUE, PARAMETERS.ROOM)
 					.setup(input, pv);
 			aps.getParameters();
 			possibleScore.set(index, possibleScore.get(index) + aps.getScore());
@@ -991,57 +1004,6 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 		}
 		
 		//---------------------------
-		
-		//Control Devices/Programs --- 
-		
-		//TODO: this is kind of a "if everything else failed try this" method 
-		//we need a complete rework here ... IMPROVE IT!
-		
-		if (!possibleCMDs.contains(CMD.KNOWLEDGEBASE) && !possibleCMDs.contains(CMD.WEB_SEARCH)  
-										&& !possibleCMDs.contains(CMD.DIRECTIONS) 	&& !possibleCMDs.contains(CMD.TV_PROGRAM)){
-										//&& !possibleCMDs.contains(CMD.MUSIC) 		&& !possibleCMDs.contains(CMD.MUSIC_RADIO)){
-			String this_text = text;
-			//search for control parameters
-			search_control_parameters(this_text, language);
-			String info = controls.get("control_info"); 		//e.g. location
-			String action = controls.get("control_action");
-			String number = controls.get("control_number");
-			String item = controls.get("control_type"); 		//e.g. type
-			if (!item.isEmpty()){
-				//add
-				possibleCMDs.add(CMD.CONTROL);
-				possibleScore.add(1);	index++;
-				//scores
-				if (!info.isEmpty()){
-					possibleScore.set(index, possibleScore.get(index)+1);
-				}
-				if (!number.isEmpty()){
-					//if (item.contains("<device_music>") && !info.isEmpty()){	//as there is a lot of cross-talk with music/radio we require at least a room here
-					possibleScore.set(index, possibleScore.get(index)+1);
-				}
-				if (!action.isEmpty()){
-					possibleScore.set(index, possibleScore.get(index)+1);
-				}
-				HashMap<String, String> pv = new HashMap<String, String>();
-					pv.put(PARAMETERS.TYPE, item.trim());
-					pv.put(PARAMETERS.ACTION, action.trim());
-					pv.put(PARAMETERS.INFO, info.trim());
-					pv.put(PARAMETERS.NUMBER, number.trim());
-				possibleParameters.add(pv);
-				
-			}else if (!action.isEmpty()){
-				//add
-				possibleCMDs.add(CMD.CONTROL);
-				possibleScore.add(1);	index++;
-				//
-				HashMap<String, String> pv = new HashMap<String, String>();
-					pv.put(PARAMETERS.TYPE, item.trim());
-					pv.put(PARAMETERS.ACTION, action.trim());
-					pv.put(PARAMETERS.INFO, info.trim());
-					pv.put(PARAMETERS.NUMBER, number.trim());
-				possibleParameters.add(pv);
-			}
-		}
 		
 		//Common search fallback
 		if (NluTools.stringContains(text, "suche(n|)|finde(n|)|zeig(en|)")
