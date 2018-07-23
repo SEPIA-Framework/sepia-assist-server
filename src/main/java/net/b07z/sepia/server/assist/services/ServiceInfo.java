@@ -27,8 +27,9 @@ public class ServiceInfo {
 		plain,		//text only or simple local script
 		program,	//gets info from another program that runs on the same machine
 		tunnel,	 	//tunnels the input through to another service (can be like REST)
+		systemModule,	//e.g. is the collected result of the interview module
 		other,		//types that are hard to specify
-		unspecified		//this should be only used for compatibility with old services
+		unspecified	//this should be only used for compatibility with old services
 	}
 	
 	//content and data types - defines the representation inside assistant

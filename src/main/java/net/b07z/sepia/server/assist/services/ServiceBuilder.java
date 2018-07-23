@@ -260,6 +260,7 @@ public class ServiceBuilder {
 		for (String ap : this.apiInfo.answerParameters){
 			if (this.resultInfo.get(ap) == null){
 				resultInfoPut(ap, "");
+				//resultInfoPut(ap, ap.toUpperCase());
 			}
 		}
 	}
@@ -383,7 +384,7 @@ public class ServiceBuilder {
 	/**
 	 * Build ApiResult from the info in API. Handles some specific procedures like context management to generate all necessary info.
 	 * 
-	 * @return ApiResult to be sent to user client.
+	 * @return {@link ServiceResult} to be sent to user client.
 	 */
 	public ServiceResult buildResult(){
 		//put some Stuff in more
@@ -397,12 +398,16 @@ public class ServiceBuilder {
 		//add the user, it's handy for chat apps
 		JSON.add(more, "user", nluResult.input.user.getUserID());
 		
-		//check clean answer
-		if (answerClean.isEmpty()){
-			answerClean = Converters.removeHTML(answer);
-		}else if (answerClean.equals("<silent>")){
-			answerClean = "";
+		//check clean answer - NOTE: this is usually done in the AbstractInterview handler
+		if (apiInfo.worksStandalone){
+			if (!answer.isEmpty() && answerClean.isEmpty()){
+				answerClean = Converters.removeHTML(answer);
+			}else if (answerClean.equals("<silent>")){
+				answerClean = "";
+			}
 		}
+		//TODO: but we might want to do this:
+		resultInfoFill();
 		
 		//finally build the API_Result
 		ServiceResult result = new ServiceResult(status, answer, answerClean, htmlInfo, cardInfo, actionInfo, hasInfo, hasCard, hasAction);

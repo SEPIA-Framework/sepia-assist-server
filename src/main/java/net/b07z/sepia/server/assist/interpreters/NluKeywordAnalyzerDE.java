@@ -137,7 +137,8 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 		
 		//smart device control
 		if (NluTools.stringContains(text, "licht(er|)|lampe(n|)|beleuchtung|leuchte(n|)|helligkeit|"
-				+ "heiz(er|ungen|ung|koerper|luefter|strahler)|temperatur(en|)"
+				+ "heiz(er|ungen|ung|koerper|luefter|strahler)|temperatur(en|)|"
+				+ "smart( |)home (control|steuerung)"
 			)){
 			possibleCMDs.add(CMD.SMARTDEVICE);
 			possibleScore.add(1);	index++;

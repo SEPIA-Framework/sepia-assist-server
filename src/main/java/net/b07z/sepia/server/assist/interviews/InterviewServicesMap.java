@@ -15,6 +15,7 @@ import net.b07z.sepia.server.assist.services.DirectionsGoogleMaps;
 import net.b07z.sepia.server.assist.services.EventsWrapper;
 import net.b07z.sepia.server.assist.services.FunCountToThree;
 import net.b07z.sepia.server.assist.services.Wikipedia;
+import net.b07z.sepia.server.assist.services.uc.SmartOpenHAB;
 import net.b07z.sepia.server.assist.services.Lists;
 import net.b07z.sepia.server.assist.services.LocationSearchBasic;
 import net.b07z.sepia.server.assist.services.MusicRadioMixed;
@@ -125,7 +126,7 @@ public class InterviewServicesMap {
 			systemInterviewServicesMap.put(CMD.WEATHER, weather);
 		//SMART-DEVICE CONTROL
 		ArrayList<String> controlSmarthome = new ArrayList<String>();
-			controlSmarthome.add(ControlPreprocessor.class.getCanonicalName());
+			controlSmarthome.add(SmartOpenHAB.class.getCanonicalName());
 			systemInterviewServicesMap.put(CMD.SMARTDEVICE, controlSmarthome);
 		//DIRECTIONS
 		ArrayList<String> directions = new ArrayList<String>();

@@ -12,8 +12,11 @@ import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.parameters.Confirm;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.services.ServiceBuilder;
+import net.b07z.sepia.server.assist.services.ServiceInfo;
 import net.b07z.sepia.server.assist.services.ServiceInterface;
 import net.b07z.sepia.server.assist.services.ServiceResult;
+import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
+import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.DateTime;
@@ -187,7 +190,7 @@ public class AbstractInterview implements InterviewInterface{
 	public ServiceResult getServiceResults(InterviewResult interviewResult){
 		InterviewInfo iInfo = interviewResult.getInterviewInfo();
 		Interview assistant = new Interview(interviewResult);
-				
+		
 		//get single service results
 		List<ServiceResult> results = assistant.getServiceResults(iInfo.getServices());
 		
@@ -197,8 +200,12 @@ public class AbstractInterview implements InterviewInterface{
 			return results.get(0);
 		}
 		
-		//build result - cards are collected from services, answer(s) (parameters) too, the rest is build here 
-		ServiceBuilder servicesResult = new ServiceBuilder(assistant.nluResult);
+		//build result - cards are collected from services, answer(s) (parameters) too, the rest is build here
+		
+		//TODO: if there is only one service per command (which is usually the case) this leads to double-execution of build result ...
+		
+		ServiceBuilder servicesResult = new ServiceBuilder(assistant.nluResult, 
+				new ServiceInfo(Type.systemModule, Content.apiInterface, false));
 		String status = "";
 		String customAnswer = "";
 		JSONArray cards = new JSONArray();
@@ -308,7 +315,7 @@ public class AbstractInterview implements InterviewInterface{
 		//clean up to minimize data stream
 		servicesResult.removeParameter(PARAMETERS.FINAL); 		//TODO: replace with "all" tag?
 		
-		//finally build the meta API_Result
+		//finally build the meta ServiceResult - this is the result of all collected services to one command (can be more than 1)
 		ServiceResult result = servicesResult.buildResult();
 				
 		//System.out.println("INTERVIEW-MODULE RESULT: " + result.getResultJSON()); 					//debug

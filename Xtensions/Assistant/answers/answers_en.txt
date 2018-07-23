@@ -199,13 +199,17 @@ control_0c;;		rep=0|mood=5;;		Please be more specific. Say for example, open my 
 control_1a;;		rep=0|mood=5;;		What do you want to control <user_name>? ;;char=neutral
 control_1a;;		rep=1|mood=5;;		Say again please! ;;char=neutral,polite
 control_1a;;		rep=2|mood=5;;		Sorry I think I can't help you with that. ;;char=neutral,polite
-smartdevice_0a;;		rep=0|mood=5;;		Currently I'm not connected to any smart home or car system. If you do so I can assist you with over 50 voice commands to control your environment. ;;char=neutral
-smartdevice_0a;;		rep=0|mood=5;;		You have no access to a smart home or car system. After you are connected you can control multiple devices just with your voice! ;;char=neutral,rude
+smartdevice_0a;;		rep=0|mood=5;;		Currently I'm not connected to any smart home. ;;char=neutral
+smartdevice_0a;;		rep=0|mood=5;;		You have no connection to a smart home right now. ;;char=neutral,rude
+smartdevice_0a;;		rep=1|mood=5;;		I still can't get a connection to your smart home system, sorry. ;;char=neutral,rude
+smartdevice_0a;;		rep=2|mood=5;;		I don't have access to a smart home right now, but after I'm connected you can control multiple devices just with your voice! ;;char=neutral,rude
+smartdevice_0b;;		rep=0|mood=5;;		Sorry I think I can't help you with that :-( ;; char=neutral,polite
+smartdevice_0c;;		rep=0|mood=5;;		Your Smart Home system has not been configured yet <user_name>. ;;char=neutral
 smartdevice_1a;;		rep=0|mood=5;;		What is the device you want to operate? ;;char=neutral
 smartdevice_1a;;		rep=1|mood=5;;		Say again please! ;;char=neutral,polite
 smartdevice_1a;;		rep=1|mood=5;;		What was that <user_name>? ;;char=neutral
 smartdevice_1a;;		rep=2|mood=5;;		<user_name>, I think I can't help you with that. ;;char=neutral
-smartdevice_1b;;		rep=0|mood=5;;		What do you want to do with the <1>? ;;char=neutral
+smartdevice_1b;;		rep=0|mood=5;;		What do you want to do with <1>? ;;char=neutral
 smartdevice_1b;;		rep=1|mood=5;;		Say again please! ;;char=neutral,polite
 smartdevice_1b;;		rep=1|mood=5;;		What was that? ;;char=neutral
 smartdevice_1b;;		rep=2|mood=5;;		<user_name>, I think I can't help you with that. ;;char=neutral
@@ -216,7 +220,8 @@ smartdevice_1c;;		rep=2|mood=5;;		<user_name>, I think I can't help you with tha
 smartdevice_1d;;		rep=0|mood=5;;		Give me a value please. ;;char=neutral,polite
 smartdevice_1d;;		rep=0|mood=5;;		What is the value?. ;;char=neutral
 smartdevice_1d;;		rep=1|mood=5;;		Repeat that number please! ;;char=neutral,polite
-smartdevice_1d;;		rep=2|mood=5;;		Sorry I think I can't help you with that :-( ;;char=neutral,polite
+smartdevice_1d;;		rep=2|mood=5;;		Sorry I think I can't help you with that :-( ;; char=neutral,polite
+smartdevice_2a;;		rep=0|mood=5;;		I've set <1> to <2>. ;;char=neutral
 tickets_1a;;		rep=0|mood=5;;		Okay, I'll search tickets for <1>. ;;char=neutral
 tickets_0a;;		rep=0|mood=5;;		Sorry, something went wrong during the search. Try again please. ;;char=neutral,polite
 tickets_ask_0a;;	rep=0|mood=5;;		For what should I search tickets? ;;char=neutral

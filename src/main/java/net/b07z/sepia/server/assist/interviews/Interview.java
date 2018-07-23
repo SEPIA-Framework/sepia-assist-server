@@ -18,7 +18,7 @@ import net.b07z.sepia.server.core.tools.Debugger;
 
 /**
  * This class is a helper to do the interviews necessary to get all important parameters.<br>
- * Use it to build the Interview_Result!<br>
+ * Use it to build the {@link InterviewResult}!<br>
  *  
  * @author Florian Quirin
  *
@@ -164,7 +164,7 @@ public class Interview {
 	}
 	
 	/**
-	 * Get all API_Results from services.
+	 * Get all {@link ServiceResult} from services.
 	 * @param refList - list of services (String)
 	 */
 	public List<ServiceResult> getServiceResultsFromStringList(List<String> refList){
@@ -176,8 +176,8 @@ public class Interview {
 		return res;
 	}
 	/**
-	 * Get all API_Results from services.
-	 * @param apiList - list of services (API_Interface)
+	 * Get all {@link ServiceResult} from services.
+	 * @param apiList - list of services ({@link ServiceInterface})
 	 */
 	public List<ServiceResult> getServiceResults(List<ServiceInterface> apiList){
 		List<ServiceResult> res = new ArrayList<>();
