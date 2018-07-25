@@ -25,6 +25,9 @@ default_miss_user_location_0a;;		rep=0|mood=5;;		<user_name>, I'm missing inform
 default_miss_user_location_0a;;		rep=0|mood=5;;		<user_name>, It seems I can't determine your location right now. ;;char=polite,neutral
 default_ask_incaccess_0a;;		rep=0|mood=5;;		I need an increased access level to do that. Can you authenticate yourself here please? ;;char=neutral,polite
 default_no_access_0a;;		rep=0|mood=5;;		Sorry <user_name> but I have no access rights to do that :-( ;;char=neutral,polite
+default_get_permission_0a;;		rep=0|mood=5;;		Sorry <user_name>, but you need a permission to use this service. ;;char=neutral
+default_get_permission_0a;;		rep=1|mood=5;;		If you want to use this service please ask your administrator first. ;;char=neutral
+default_get_permission_0a;;		rep=2|mood=5;;		No seriously <user_name>, you have to get permission first to access this service! ;;char=neutral
 default_open_link_0a;;		rep=0|mood=5;;		Oh, something is wrong with the link I think. ;;char=neutral,polite
 default_open_link_0a;;		rep=0|mood=5;;		I'm afraid there seems to be a problem with that link. ;;char=neutral
 default_open_link_1a;;		rep=0|mood=5;;		Ok, let me open that link for you. ;;char=neutral
@@ -199,12 +202,15 @@ control_0c;;		rep=0|mood=5;;		Please be more specific. Say for example, open my 
 control_1a;;		rep=0|mood=5;;		What do you want to control <user_name>? ;;char=neutral
 control_1a;;		rep=1|mood=5;;		Say again please! ;;char=neutral,polite
 control_1a;;		rep=2|mood=5;;		Sorry I think I can't help you with that. ;;char=neutral,polite
-smartdevice_0a;;		rep=0|mood=5;;		Currently I'm not connected to any smart home. ;;char=neutral
+smartdevice_0a;;		rep=0|mood=5;;		Currently I'm not connected to any smart home system. ;;char=neutral
 smartdevice_0a;;		rep=0|mood=5;;		You have no connection to a smart home right now. ;;char=neutral,rude
 smartdevice_0a;;		rep=1|mood=5;;		I still can't get a connection to your smart home system, sorry. ;;char=neutral,rude
 smartdevice_0a;;		rep=2|mood=5;;		I don't have access to a smart home right now, but after I'm connected you can control multiple devices just with your voice! ;;char=neutral,rude
-smartdevice_0b;;		rep=0|mood=5;;		Sorry I think I can't help you with that :-( ;; char=neutral,polite
+smartdevice_0b;;		rep=0|mood=5;;		Sorry I think I can't help you with that, there seems to be a problem with the smart home service :-( ;; char=neutral,polite
 smartdevice_0c;;		rep=0|mood=5;;		Your Smart Home system has not been configured yet <user_name>. ;;char=neutral
+smartdevice_0d;;		rep=0|mood=5;;		Sorry <user_name>, but you need a permission to use this smart home service. ;;char=neutral
+smartdevice_0d;;		rep=1|mood=5;;		If you want to use this smart home service please ask your administrator first. ;;char=neutral
+smartdevice_0d;;		rep=2|mood=5;;		No seriously <user_name>, you have to get permission first to access this service! ;;char=neutral
 smartdevice_1a;;		rep=0|mood=5;;		What is the device you want to operate? ;;char=neutral
 smartdevice_1a;;		rep=1|mood=5;;		Say again please! ;;char=neutral,polite
 smartdevice_1a;;		rep=1|mood=5;;		What was that <user_name>? ;;char=neutral

@@ -5,10 +5,13 @@ import java.util.TreeSet;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.parameters.Action;
+import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.data.Language;
+import net.b07z.sepia.server.core.data.Role;
+import net.b07z.sepia.server.core.tools.Is;
 
 public class SmartOpenHAB implements ServiceInterface {
 	
@@ -48,9 +51,9 @@ public class SmartOpenHAB implements ServiceInterface {
 		info.addParameter(p2).addParameter(p3).addParameter(p4);
 		
 		//Answers (these are the default answers, you can add a custom answer at any point in the module with api.setCustomAnswer(..)):
-		info.addSuccessAnswer("smartdevice_0c")
-			.addFailAnswer("smartdevice_0b")
-			.addOkayAnswer("smartdevice_0a")
+		info.addSuccessAnswer("smartdevice_0c")		//a default success answer, usually more specific answers will be set depending on the action
+			.addFailAnswer("smartdevice_0b")		//an error occurred or the services crashed (serious fail)
+			.addOkayAnswer("smartdevice_0a")		//everything went as planned but gave no result (soft fail, e.g. no permission or no data etc.)
 			.addCustomAnswer("setDeviceToState", setDeviceToState)
 			;
 		info.addAnswerParameters("device", "state"); 	//variables used inside answers: <1>, <2>, ...
@@ -59,11 +62,25 @@ public class SmartOpenHAB implements ServiceInterface {
 	}
 	//collect extra answers for better overview
 	static final String setDeviceToState = "smartdevice_2a";
+	static final String notAllowed = "smartdevice_0d";
 	
 	@Override
 	public ServiceResult getResult(NluResult nluResult) {
 		//initialize result
 		ServiceBuilder service = new ServiceBuilder(nluResult, getInfo(nluResult.language));
+		
+		//check if we know an OpenHAB server
+		if (Is.nullOrEmpty(Config.openhab_host)){
+			service.setStatusOkay();
+			return service.buildResult();
+		}
+				
+		//check user role 'smarthomeguest' for this skill (because it controls devices in the server's network)
+		if (!nluResult.input.user.hasRole(Role.smarthomeguest)){
+			service.setStatusOkay();
+			service.setCustomAnswer(notAllowed);			//fail with "not allowed" answer
+			return service.buildResult();
+		}
 		
 		//get required parameters
 		Parameter device = nluResult.getRequiredParameter(PARAMETERS.SMART_DEVICE);
