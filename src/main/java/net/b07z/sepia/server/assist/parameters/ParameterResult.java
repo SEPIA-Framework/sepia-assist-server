@@ -6,7 +6,7 @@ import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 
 /**
- * Class to collect a parameter handler result and store it, e.g. in NLU_Input
+ * Class to collect a parameter handler result and store it, e.g. in {@link NluInput}
  * 
  * @author Florian Quirin
  *
@@ -70,7 +70,7 @@ public class ParameterResult {
 		}
 		
 		Parameter p = new Parameter(pName);
-		Parameter_Handler handler = p.getHandler();
+		ParameterHandler handler = p.getHandler();
 		handler.setup(nluInput);
 		
 		String ex = handler.extract(input);
@@ -90,7 +90,7 @@ public class ParameterResult {
 	 */
 	public static String cleanInputOfParameter(NluInput nluInput, String pName, String input, String toClean){
 		Parameter p = new Parameter(pName);
-		Parameter_Handler handler = p.getHandler();
+		ParameterHandler handler = p.getHandler();
 		handler.setup(nluInput);
 		
 		//TODO: add storage check here? Or do we want to force a clean extraction?
@@ -113,7 +113,7 @@ public class ParameterResult {
 	 */
 	public static String cleanInputOfFoundParameter(NluInput nluInput, String pName, ParameterResult pr, String toClean){
 		Parameter p = new Parameter(pName);
-		Parameter_Handler handler = p.getHandler();
+		ParameterHandler handler = p.getHandler();
 		handler.setup(nluInput);
 		
 		String found = pr.getFound();

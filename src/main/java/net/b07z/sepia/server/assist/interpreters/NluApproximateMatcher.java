@@ -64,7 +64,7 @@ public class NluApproximateMatcher implements NluInterface{
 		//TODO: I'm a bit concerned that this is too strong here ... better use 2 rounds of searches with light norm. first?
 		Normalizer normalizer = Config.inputNormalizers.get(language);
 		if (normalizer != null){
-			search = normalizer.normalize_text(search);
+			search = normalizer.normalizeText(search);
 		}
 		//get command and certainty
 		TreeMap<String, String> chats_this = commands.get(language);

@@ -14,7 +14,7 @@ import net.b07z.sepia.server.core.tools.JSON;
  * @author Florian Quirin
  *
  */
-public class GenericParameter implements Parameter_Handler{
+public class GenericParameter implements ParameterHandler{
 
 	User user;
 	NluInput nluInput;

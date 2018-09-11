@@ -13,7 +13,7 @@ import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.JSON;
 
-public class SportsTeam implements Parameter_Handler{
+public class SportsTeam implements ParameterHandler{
 
 	//-----data-----
 	

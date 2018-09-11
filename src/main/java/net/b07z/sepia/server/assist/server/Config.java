@@ -290,6 +290,9 @@ public class Config {
 	public static String affilinet_key = "";
 	public static String deutscheBahnOpenApi_key = "";
 	
+	//API URLs - loaded from config file
+	public static String openhab_host = "";
+	
 	//------Database loading and default interpreters------
 	
 	/**
@@ -436,6 +439,8 @@ public class Config {
 			affilinet_pubID = settings.getProperty("affilinet_pubID");
 			affilinet_key = settings.getProperty("affilinet_key");
 			deutscheBahnOpenApi_key = settings.getProperty("deutscheBahnOpenApi_key");
+			//API URLs
+			openhab_host = settings.getProperty("openhab_host");
 			
 			Debugger.println("loading settings from " + confFile + "... done." , 3);
 		}catch (Exception e){
@@ -498,6 +503,8 @@ public class Config {
 		config.setProperty("universal_superuser_pwd", "");
 		/*
 		//API keys
+		//...
+		//API URLs
 		//...
 		*/
 		

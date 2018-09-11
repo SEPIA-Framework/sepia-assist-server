@@ -7,7 +7,7 @@ import java.util.Set;
 
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
-import net.b07z.sepia.server.assist.parameters.Parameter_Handler;
+import net.b07z.sepia.server.assist.parameters.ParameterHandler;
 import net.b07z.sepia.server.assist.server.ConfigServices;
 import net.b07z.sepia.server.assist.services.ServiceInterface;
 import net.b07z.sepia.server.assist.services.ServiceResult;
@@ -18,7 +18,7 @@ import net.b07z.sepia.server.core.tools.Debugger;
 
 /**
  * This class is a helper to do the interviews necessary to get all important parameters.<br>
- * Use it to build the Interview_Result!<br>
+ * Use it to build the {@link InterviewResult}!<br>
  *  
  * @author Florian Quirin
  *
@@ -164,7 +164,7 @@ public class Interview {
 	}
 	
 	/**
-	 * Get all API_Results from services.
+	 * Get all {@link ServiceResult} from services.
 	 * @param refList - list of services (String)
 	 */
 	public List<ServiceResult> getServiceResultsFromStringList(List<String> refList){
@@ -176,8 +176,8 @@ public class Interview {
 		return res;
 	}
 	/**
-	 * Get all API_Results from services.
-	 * @param apiList - list of services (API_Interface)
+	 * Get all {@link ServiceResult} from services.
+	 * @param apiList - list of services ({@link ServiceInterface})
 	 */
 	public List<ServiceResult> getServiceResults(List<ServiceInterface> apiList){
 		List<ServiceResult> res = new ArrayList<>();
@@ -272,7 +272,7 @@ public class Interview {
 		//-b) check if it is already a valid parameter. If not try to build the parameter result using input and account specific info (if necessary)
 		String input = p.getInput();
 		String parameter = p.getName();
-		Parameter_Handler handler = p.getHandler();
+		ParameterHandler handler = p.getHandler();
 		handler.setup(nluResult);
 		
 		//return buildParameterOrComment(input, parameter, handler);

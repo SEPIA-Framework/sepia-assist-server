@@ -77,7 +77,7 @@ public class AbstractParameterSearch {
 	public Map<String, String> getParameters(){
 		Map<String, String> pv = new HashMap<>();
 		String thisText = nluInput.text; 		//extra normalization required?
-		Parameter_Handler paramHandler;
+		ParameterHandler paramHandler;
 				
 		for (Parameter pa : parameters){
 			//any normal parameter

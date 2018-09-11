@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.b07z.sepia.server.assist.assistant.Assistant;
 import net.b07z.sepia.server.assist.database.DB;
@@ -85,6 +86,25 @@ public class ConfigServices {
     	blackList.add(classOrPackageName);
     }
 
+	/**
+	 * Get all master services of the system.
+	 * @return services or empty list
+	 */
+	public static List<ServiceInterface> getAllSystemMasterServices(){
+		List<ServiceInterface> services = new ArrayList<>();
+
+		//get all commands with a service
+		Set<String> mappedCommands = InterviewServicesMap.getAllMappedCommands();
+		for (String c : mappedCommands){
+			//get master
+			ServiceInterface si = getMasterService(c);
+			if (si != null){
+				services.add(si);
+			}
+		}
+		return services;
+	}
+	
 	/**
 	 * Get custom services of a user as a list.
 	 * @param user - User

@@ -52,7 +52,7 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 		// all lowerCase - remove all ',!? - handle ä ö ü ß ... trim
 		Normalizer normalizer = Config.inputNormalizers.get(language);
 		if (normalizer != null){
-			text = normalizer.normalize_text(text);
+			text = normalizer.normalizeText(text);
 			input.text = text; 				//TODO: is this ok here? Do it before?
 		}
 		
@@ -79,22 +79,19 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 			possibleParameters.add(pv);
 		}
 		
-		//TODO: We can simplify this class by moving all regular expressions to the getInfo method of the services and then
-		//we could simply iterate over the InterviewServicesMap and use the abstract regular expressions matcher to build 
-		//the result for each command, e.g.:
+		//----- SYSTEM SERVICES -----
+		
+		//TODO: We can simplify this class by moving all regular expressions to the getInfo method of the services
+		//and then use this:
 		/*
-		for (Entry<String, List<String>> es : InterviewServicesMap.get().entrySet()){
-			String cmd = es.getKey();
-			List<ApiInterface> defaultServicesForCmd = ConfigServices.buildServices(cmd);
-			for (ApiInterface service : defaultServicesForCmd){
-				index = NluKeywordAnalyzer.abstractRegExAnalyzer(text, input, service,
-						possibleCMDs, possibleScore, possibleParameters, index);
-			}
+		for (ServiceInterface service : ConfigServices.getAllSystemMasterServices()){
+			index = NluKeywordAnalyzer.abstractRegExAnalyzer(text, input, service,
+					possibleCMDs, possibleScore, possibleParameters, index);
 		}
 		*/
-		//... because the order of the commands matters and exceptions might apply we could create a custom list as well 
+		//... but sometimes we want to handle some exceptions and special conditions ... 
 		
-		//--------------------------------------------------
+		//---------------------------
 		
 		//What follows now is a list of regular expressions for certain commands that trigger parameter searches ...
 		
@@ -129,6 +126,23 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 			Map<String, String> pv = new HashMap<String, String>(); 		//TODO: pass this down to avoid additional checking
 			AbstractParameterSearch aps = new AbstractParameterSearch()
 					.setParameters(PARAMETERS.TIME, PARAMETERS.PLACE)
+					.setup(input, pv);
+			aps.getParameters();
+			possibleScore.set(index, possibleScore.get(index) + aps.getScore());
+			possibleParameters.add(pv);
+		}
+		
+		//smart device control
+		if (NluTools.stringContains(text, "light(s|)|lighting|lamp(s|)|illumination|brightness|"
+				+ "heater(s|)|temperature(s|)|"
+				+ "smart( |)home control)"
+			)){
+			possibleCMDs.add(CMD.SMARTDEVICE);
+			possibleScore.add(1);	index++;
+
+			Map<String, String> pv = new HashMap<String, String>(); 		//TODO: pass this down to avoid additional checking
+			AbstractParameterSearch aps = new AbstractParameterSearch()
+					.setParameters(PARAMETERS.ACTION, PARAMETERS.SMART_DEVICE, PARAMETERS.SMART_DEVICE_VALUE, PARAMETERS.ROOM)
 					.setup(input, pv);
 			aps.getParameters();
 			possibleScore.set(index, possibleScore.get(index) + aps.getScore());
@@ -252,8 +266,14 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 			//String this_text = text;
 			possibleCMDs.add(CMD.WEB_SEARCH);
 			possibleScore.add(1);	index++;
+			
 			//score a bit extra if you made it till here ^^
 			possibleScore.set(index, possibleScore.get(index)+1);
+			
+			//put some weight on the search engines and keywords for web-search:
+			if (NluTools.stringContains(text, "websearch|web|internet|google|bing|yahoo|duck duck")){
+				possibleScore.set(index, possibleScore.get(index)+2);
+			}
 			
 			Map<String, String> pv = new HashMap<>(); 		//TODO: pass this down to avoid additional checking
 			AbstractParameterSearch aps = new AbstractParameterSearch()
@@ -684,12 +704,12 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 		}
 		
 		//locations
-		if (NluTools.stringContains(text, "where (is|are|am) .*|where can i .*| where we are| where i am|where .* (is|are|live|lives)|"
-				+ "(is there|are there|can i get) .*\\b(close|near|around|here|in)|"
-				+ "(search|show|find|look for|looking for) .*(\\b)("+ RegexParameterSearch.get_POI_list(language) +")|"
-				+ "(show|search|find|look for) .*(\\b)on (the map|maps)|"
-				//+ "(show|search|find|look for) .*(\\b)(close|near|around)( to| by|)( me|)$|"	//TODO: broken
-				+ "(show|search|find|look for) (on |)(the map|maps) .*|"
+		if (NluTools.stringContains(text, "where (is|lies|are|am) .*|where can (i|one) .*| where we are| where i am|where .* (is|are|live|lives|lies|lie|lay)|"
+				+ "(is there|are there|can (i|one) get) .*\\b(close|near|around|here|in)|"
+				+ "(search|show|find|look(up| for)|looking for) .*(\\b)("+ RegexParameterSearch.get_POI_list(language) +")|"
+				+ "(show|search|find|look(up| for|)) .*(\\b)on (the |a |)(map|maps)|"
+				//+ "(show|search|find|look for) .*(\\b)(close|near|around)( to| by|)( me|)$|"	//TODO: broken!??
+				//+ "(show|search|find|look for) (on |)((the|a) map|maps) .*|"
 				+ "(address|location .*)")
 					&& !possibleCMDs.contains(CMD.HOTELS)){
 			String this_text = text;
@@ -706,16 +726,6 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 			if (place.isEmpty() && poi.isEmpty()){
 				if (NluTools.stringContains(this_text, "where am i|where are we|where we are|where i am")){
 					place = "<user_location>";
-				}else{
-					this_text = this_text.replaceFirst(".*?\\b(where (is|are)|where can i find|"
-							+ "(search|show|find|look) (on |)(the map|maps)|address |location |"
-							+ "where|(search|show|find|look for))\\b", "").trim();
-					this_text = this_text.replaceFirst("^(for)\\b", "").trim();
-					this_text = this_text.replaceFirst("^(the|a)\\b", "").trim();
-					this_text = this_text.replaceFirst("\\b(is$|are$)", "").trim();
-					this_text = this_text.replaceFirst("\\b(on the map$|on maps$)", "").trim();
-					this_text = this_text.replaceFirst("\\b(close|near|around)( to| by|)( me|)$", "").trim();
-					place = RegexParameterSearch.replace_personal_locations(this_text, language).trim();
 				}
 			}
 			//still empty?
@@ -924,52 +934,6 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 		
 		//---------------------------
 		
-		//Control Devices/Programs
-		//TODO: this is kind of a "if everything else failed try this" method ... IMPROVE IT!
-		if (!possibleCMDs.contains(CMD.KNOWLEDGEBASE) && !possibleCMDs.contains(CMD.WEB_SEARCH) && !possibleCMDs.contains(CMD.LISTS)
-										&& !possibleCMDs.contains(CMD.DIRECTIONS) && !possibleCMDs.contains(CMD.TV_PROGRAM)){
-			String this_text = text;
-			//search for control parameters
-			search_control_parameters(this_text, language);
-			String info = controls.get("control_info");
-			String action = controls.get("control_action");
-			String number = controls.get("control_number");
-			String item = controls.get("control_type");
-			if (!item.isEmpty()){
-				//add
-				possibleCMDs.add(CMD.CONTROL);
-				possibleScore.add(1);	index++;
-				//scores
-				if (!info.isEmpty()){
-					possibleScore.set(index, possibleScore.get(index)+1);
-				}
-				if (!number.isEmpty()){
-					possibleScore.set(index, possibleScore.get(index)+1);
-				}
-				if (!action.isEmpty()){
-					possibleScore.set(index, possibleScore.get(index)+1);
-				}
-				HashMap<String, String> pv = new HashMap<String, String>();
-					pv.put(PARAMETERS.TYPE, item.trim());
-					pv.put(PARAMETERS.ACTION, action.trim());
-					pv.put(PARAMETERS.INFO, info.trim());
-					pv.put(PARAMETERS.NUMBER, number.trim());
-				possibleParameters.add(pv);
-				
-			}else if (!action.isEmpty()){
-				//add
-				possibleCMDs.add(CMD.CONTROL);
-				possibleScore.add(1);	index++;
-				//
-				HashMap<String, String> pv = new HashMap<String, String>();
-					pv.put(PARAMETERS.TYPE, item.trim());
-					pv.put(PARAMETERS.ACTION, action.trim());
-					pv.put(PARAMETERS.INFO, info.trim());
-					pv.put(PARAMETERS.NUMBER, number.trim());
-				possibleParameters.add(pv);
-			}
-		}		
-		
 		//Common search fallback
 		if (NluTools.stringContains(text, "search|find|show|look for|searching for|looking for") 
 				){
@@ -1039,6 +1003,8 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 		return result.certaintyLvl;
 	}
 	
+	//TODO: what follows is old legacy code that should be replaced with the Parameter system soon! ...
+	
 	/**
 	 * Search for locations once. If it has been done already this method does nothing. 
 	 * @param text - complete text to search
@@ -1047,11 +1013,6 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 	private void search_locations(String text, String language){
 		if (locations == null){
 			locations = RegexParameterSearch.get_locations(text, language);
-			/*
-			locations.put("location", locations.get("location"));
-			locations.put("location_start", locations.get("location_start"));
-			locations.put("location_end", locations.get("location_end"));
-			*/
 		}
 	}
 	/**
@@ -1080,18 +1041,6 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 			numbers.put("value1", num);
 		}
 	}
-	/**
-	 * Get the web search term. If it has been done already this method does nothing. 
-	 * @param text - complete text to search
-	 * @param language - language code
-	 */
-	/*
-	private void get_websearch(String text, String language){
-		if (websearches == null){
-			websearches = NLU_parameter_search.get_search(text, language);
-		}
-	}
-	*/
 	/**
 	 * Get the music parameters artist/creator and genre. 
 	 * uses: music_artist, music_genre

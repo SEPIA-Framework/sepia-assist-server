@@ -22,7 +22,7 @@ import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.JSON;
 
-public class LocationStart implements Parameter_Handler{
+public class LocationStart implements ParameterHandler{
 
 	User user;
 	String language;

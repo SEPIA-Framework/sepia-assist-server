@@ -52,7 +52,7 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 		// all lowerCase - remove all ',!? - handle ä ö ü ß ... trim
 		Normalizer normalizer = Config.inputNormalizers.get(language);
 		if (normalizer != null){
-			text = normalizer.normalize_text(text);
+			text = normalizer.normalizeText(text);
 			input.text = text; 				//TODO: is this ok here? Do it before?
 		}
 		
@@ -76,22 +76,19 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 			possibleParameters.add(pv);
 		}
 		
-		//TODO: We can simplify this class by moving all regular expressions to the getInfo method of the services and then
-		//we could simply iterate over the InterviewServicesMap and use the abstract regular expressions matcher to build 
-		//the result for each command, e.g.:
+		//----- SYSTEM SERVICES -----
+		
+		//TODO: We can simplify this class by moving all regular expressions to the getInfo method of the services
+		//and then use this:
 		/*
-		for (Entry<String, List<String>> es : InterviewServicesMap.get().entrySet()){
-			String cmd = es.getKey();
-			List<ApiInterface> defaultServicesForCmd = ConfigServices.buildServices(cmd);
-			for (ApiInterface service : defaultServicesForCmd){
-				index = NluKeywordAnalyzer.abstractRegExAnalyzer(text, input, service,
-						possibleCMDs, possibleScore, possibleParameters, index);
-			}
+		for (ServiceInterface service : ConfigServices.getAllSystemMasterServices()){
+			index = NluKeywordAnalyzer.abstractRegExAnalyzer(text, input, service,
+					possibleCMDs, possibleScore, possibleParameters, index);
 		}
 		*/
-		//... because the order of the commands matters and exceptions might apply we could create a custom list as well 
+		//... but sometimes we want to handle some exceptions and special conditions ... 
 		
-		//--------------------------------------------------
+		//---------------------------
 		
 		//What follows now is a list of regular expressions for certain commands that trigger parameter searches ...
 		
@@ -132,6 +129,23 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 			Map<String, String> pv = new HashMap<String, String>(); 		//TODO: pass this down to avoid additional checking
 			AbstractParameterSearch aps = new AbstractParameterSearch()
 					.setParameters(PARAMETERS.TIME, PARAMETERS.PLACE)
+					.setup(input, pv);
+			aps.getParameters();
+			possibleScore.set(index, possibleScore.get(index) + aps.getScore());
+			possibleParameters.add(pv);
+		}
+		
+		//smart device control
+		if (NluTools.stringContains(text, "licht(er|)|lampe(n|)|beleuchtung|leuchte(n|)|helligkeit|"
+				+ "heiz(er|ungen|ung|koerper|luefter|strahler)|temperatur(en|)|"
+				+ "smart( |)home (control|steuerung)"
+			)){
+			possibleCMDs.add(CMD.SMARTDEVICE);
+			possibleScore.add(1);	index++;
+
+			Map<String, String> pv = new HashMap<String, String>(); 		//TODO: pass this down to avoid additional checking
+			AbstractParameterSearch aps = new AbstractParameterSearch()
+					.setParameters(PARAMETERS.ACTION, PARAMETERS.SMART_DEVICE, PARAMETERS.SMART_DEVICE_VALUE, PARAMETERS.ROOM)
 					.setup(input, pv);
 			aps.getParameters();
 			possibleScore.set(index, possibleScore.get(index) + aps.getScore());
@@ -242,7 +256,7 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 		}
 		
 		//web search
-		if (NluTools.stringContains(text, "(websuche|web suche|"
+		if (NluTools.stringContains(text, "(websuche|websearch|web suche|"
 						+ "(durchsuche|suche|schau|finde|zeig)( mir|)( mal| bitte|)( bitte| mal|)( im| das) (web|internet))|"
 						+ "^google|^bing|^yahoo|^duck duck|^duck duck go|"
 						+ "^(bild(ern|er|)|rezept(en|e|)|video(s|)|movie(s|)|film(en|e|)|aktie(n|)|aktien(wert|kurs)|buecher(n|)|buch)|"
@@ -258,8 +272,14 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 			//String this_text = text;
 			possibleCMDs.add(CMD.WEB_SEARCH);
 			possibleScore.add(1);	index++;
+			
 			//score a bit extra if you made it till here ^^
 			possibleScore.set(index, possibleScore.get(index)+1);
+			
+			//put some weight on the search engines and keywords for web-search:
+			if (NluTools.stringContains(text, "websearch|websuche|web|internet|google|bing|yahoo|duck duck")){
+				possibleScore.set(index, possibleScore.get(index)+2);
+			}
 
 			HashMap<String, String> pv = new HashMap<String, String>(); 		//TODO: pass this down to avoid additional checking
 			AbstractParameterSearch aps = new AbstractParameterSearch()
@@ -744,12 +764,12 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 		}
 		
 		//locations
-		if (NluTools.stringContains(text, "wo (ist|sind|bin|gibt es|liegt|liegen)|wo (befindet|befinden) sich| wo wir (hier |)sind| wo ich (hier |)bin|wo .* (ist|sind|wohnt|wohne)|"
+		if (NluTools.stringContains(text, "wo (ist|sind|bin|gibt es|liegt|liegen|befindet|befinden)| wo wir (hier |)sind| wo ich (hier |)bin|"
+				+ "wo .* (ist|sind|liegt|liegen|befinden|befindet|wohn(t|en|e))|"
 				+ "(gibt es(?! neues)|kriege ich|finde ich|kann man)\\b.*\\b(hier|in)|"
 				+ "(suche|zeig|finde) .*(\\b)("+ RegexParameterSearch.get_POI_list(language) +")|"
-				+ "(suche|zeig|finde) .*(\\b)auf (der karte|der map|maps)|"
-				//+ "(suche|zeig|finde) .*(\\b)in der naehe$|"			//TODO: broken
-				+ "(suche|zeig|finde) auf der (karte|map) .*|"
+				+ "(suche|zeig|finde|wo) .*(\\b)auf (der |einer |)(karte|map|maps)|"
+				//+ "(suche|zeig|finde) .*(\\b)in der naehe$|"			//TODO: broken!??
 				+ "adresse .*") 
 					&& !possibleCMDs.contains(CMD.HOTELS)){
 			String this_text = text;
@@ -766,16 +786,6 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 			if (place.isEmpty() && poi.isEmpty()){
 				if (NluTools.stringContains(this_text, "wo bin ich|wo ich (hier |)bin|wo sind wir|wo wir (hier |)sind")){
 					place = "<user_location>";
-				}else{
-					this_text = this_text.replaceFirst(".*?\\b(wo (ist|sind|liegt|liegen|gibt es|finde ich)( hier|)|wo (befindet|befinden) sich( hier|)|"
-							+ "(suche|zeig|finde) auf der (karte|map)|adresse |"
-							+ "wo|(suche|zeig|finde))\\b", "").trim();
-					this_text = this_text.replaceFirst("^(nach|von)\\b", "").trim();
-					this_text = this_text.replaceFirst("^(der|die|das|des|einer|eine|ein|einen|den|dem)\\b", "").trim();
-					this_text = this_text.replaceFirst("\\b(ist$|sind$|liegt$|liegen$)", "").trim();
-					this_text = this_text.replaceFirst("\\b(auf der karte$|auf der map$|auf maps$)", "").trim();
-					this_text = this_text.replaceFirst("\\b(in der naehe$)", "").trim();
-					place = RegexParameterSearch.replace_personal_locations(this_text, language).trim();
 				}
 			}
 			//still empty?
@@ -996,57 +1006,6 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 		
 		//---------------------------
 		
-		//Control Devices/Programs --- 
-		
-		//TODO: this is kind of a "if everything else failed try this" method 
-		//we need a complete rework here ... IMPROVE IT!
-		
-		if (!possibleCMDs.contains(CMD.KNOWLEDGEBASE) && !possibleCMDs.contains(CMD.WEB_SEARCH)  
-										&& !possibleCMDs.contains(CMD.DIRECTIONS) 	&& !possibleCMDs.contains(CMD.TV_PROGRAM)){
-										//&& !possibleCMDs.contains(CMD.MUSIC) 		&& !possibleCMDs.contains(CMD.MUSIC_RADIO)){
-			String this_text = text;
-			//search for control parameters
-			search_control_parameters(this_text, language);
-			String info = controls.get("control_info"); 		//e.g. location
-			String action = controls.get("control_action");
-			String number = controls.get("control_number");
-			String item = controls.get("control_type"); 		//e.g. type
-			if (!item.isEmpty()){
-				//add
-				possibleCMDs.add(CMD.CONTROL);
-				possibleScore.add(1);	index++;
-				//scores
-				if (!info.isEmpty()){
-					possibleScore.set(index, possibleScore.get(index)+1);
-				}
-				if (!number.isEmpty()){
-					//if (item.contains("<device_music>") && !info.isEmpty()){	//as there is a lot of cross-talk with music/radio we require at least a room here
-					possibleScore.set(index, possibleScore.get(index)+1);
-				}
-				if (!action.isEmpty()){
-					possibleScore.set(index, possibleScore.get(index)+1);
-				}
-				HashMap<String, String> pv = new HashMap<String, String>();
-					pv.put(PARAMETERS.TYPE, item.trim());
-					pv.put(PARAMETERS.ACTION, action.trim());
-					pv.put(PARAMETERS.INFO, info.trim());
-					pv.put(PARAMETERS.NUMBER, number.trim());
-				possibleParameters.add(pv);
-				
-			}else if (!action.isEmpty()){
-				//add
-				possibleCMDs.add(CMD.CONTROL);
-				possibleScore.add(1);	index++;
-				//
-				HashMap<String, String> pv = new HashMap<String, String>();
-					pv.put(PARAMETERS.TYPE, item.trim());
-					pv.put(PARAMETERS.ACTION, action.trim());
-					pv.put(PARAMETERS.INFO, info.trim());
-					pv.put(PARAMETERS.NUMBER, number.trim());
-				possibleParameters.add(pv);
-			}
-		}
-		
 		//Common search fallback
 		if (NluTools.stringContains(text, "suche(n|)|finde(n|)|zeig(en|)")
 				){
@@ -1144,6 +1103,8 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 		return result.certaintyLvl;
 	}
 	
+	//TODO: what follows is old legacy code that should be replaced with the Parameter system soon! ...
+	
 	/**
 	 * Search for locations once. If it has been done already this method does nothing. 
 	 * @param text - complete text to search
@@ -1152,11 +1113,6 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 	private void search_locations(String text, String language){
 		if (locations == null){
 			locations = RegexParameterSearch.get_locations(text, language);
-			/*
-			locations.put("location", locations.get("location"));
-			locations.put("location_start", locations.get("location_start"));
-			locations.put("location_end", locations.get("location_end"));
-			*/
 		}
 	}
 	/**
@@ -1185,18 +1141,7 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 			numbers.put("value1", num);
 		}
 	}
-	/**
-	 * Get the web search term. If it has been done already this method does nothing. 
-	 * @param text - complete text to search
-	 * @param language - language code
-	 */
-	/*
-	private void get_websearch(String text, String language){
-		if (websearches == null){
-			websearches = NLU_parameter_search.get_search(text, language);
-		}
-	}
-	*/
+
 	/**
 	 * Get the music parameters artist/creator and genre. 
 	 * uses: music_artist, music_genre

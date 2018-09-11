@@ -116,8 +116,8 @@ public class StringCompare {
 	public static double wordInclusionWithNorm(String words, String text, String lang){
 		Normalizer normalizer = Config.inputNormalizersLight.get(lang);
 		if (normalizer != null){
-			words = normalizer.normalize_text(words);
-			text = normalizer.normalize_text(text);
+			words = normalizer.normalizeText(words);
+			text = normalizer.normalizeText(text);
 		}
 		return wordInclusion(words, text);
 	}

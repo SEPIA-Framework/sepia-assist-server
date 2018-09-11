@@ -25,7 +25,7 @@ import net.b07z.sepia.server.core.tools.JSON;
  * @author Florian Quirin
  *
  */
-public class DateAndTime implements Parameter_Handler{
+public class DateAndTime implements ParameterHandler{
 	
 	//---data---
 	

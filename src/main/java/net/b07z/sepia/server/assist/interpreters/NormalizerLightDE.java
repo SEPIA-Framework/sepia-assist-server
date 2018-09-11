@@ -13,7 +13,7 @@ import net.b07z.sepia.server.assist.server.Config;
  */
 public class NormalizerLightDE implements Normalizer {
 
-	public String normalize_text(String text) {
+	public String normalizeText(String text) {
 		
 		String assiName = Config.assistantName.toLowerCase();
 		String assiRegEx = "(" + Pattern.quote(assiName) + "|<assistant_name>" + ")";

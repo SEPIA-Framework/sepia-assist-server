@@ -17,20 +17,20 @@ import net.b07z.sepia.server.core.tools.JSON;
  * @author Florian Quirin
  *
  */
-public class DateClock implements Parameter_Handler{
+public class DateClock implements ParameterHandler{
 	
 	User user;
 	String language;
 	boolean buildSuccess = false;
 	NluInput nluInput;
 	
-	Parameter_Handler masterHandler;
+	ParameterHandler masterHandler;
 	private void setMaster(NluInput nluInput){
-		masterHandler = (Parameter_Handler) ClassBuilder.construct(ParameterConfig.getHandler(PARAMETERS.TIME));
+		masterHandler = (ParameterHandler) ClassBuilder.construct(ParameterConfig.getHandler(PARAMETERS.TIME));
 		masterHandler.setup(nluInput);
 	}
 	private void setMaster(NluResult nluResult){
-		masterHandler = (Parameter_Handler) ClassBuilder.construct(ParameterConfig.getHandler(PARAMETERS.TIME));
+		masterHandler = (ParameterHandler) ClassBuilder.construct(ParameterConfig.getHandler(PARAMETERS.TIME));
 		masterHandler.setup(nluResult);
 	}
 	

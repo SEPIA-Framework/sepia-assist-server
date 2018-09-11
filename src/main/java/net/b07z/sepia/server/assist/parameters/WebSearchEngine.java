@@ -13,7 +13,7 @@ import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.tools.JSON;
 
-public class WebSearchEngine implements Parameter_Handler{
+public class WebSearchEngine implements ParameterHandler{
 	
 	//-----data-----
 	/* may cause confusion

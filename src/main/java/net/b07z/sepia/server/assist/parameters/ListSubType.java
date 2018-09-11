@@ -22,7 +22,7 @@ import net.b07z.sepia.server.core.tools.JSON;
  * @author Florian Quirin
  *
  */
-public class ListSubType implements Parameter_Handler{
+public class ListSubType implements ParameterHandler{
 	
 	User user;
 	NluInput nluInput;

@@ -9,7 +9,7 @@ package net.b07z.sepia.server.assist.interpreters;
  */
 public class NormalizerLightTR implements Normalizer {
 	
-	public String normalize_text(String text) {
+	public String normalizeText(String text) {
 				
 		//special characters - that fail to convert to small case correctly
 		text = text.replaceAll("İ", "i");

@@ -25,6 +25,9 @@ default_miss_user_location_0a;;		rep=0|mood=5;;		<user_name>, mir fehlen leider 
 default_miss_user_location_0a;;		rep=0|mood=5;;		<user_name>, ich kann deinen Standort leider momentan nicht bestimmen. ;;char=polite,neutral
 default_ask_incaccess_0a;;		rep=0|mood=5;;		Dazu benötige ich ein höheres Zugriffslevel. Kannst du dich hier bitte authentifizieren. ;;char=polite,neutral
 default_no_access_0a;;		rep=0|mood=5;;		Sorry <user_name> aber dafür fehlen mir die Zugriffsrechte :-( ;;char=cool,rude,neutral
+default_get_permission_0a;;		rep=0|mood=5;;		Sorry <user_name>, aber du brauchst erst eine Erlaubnis, um diesen Service zu nutzen. ;;char=neutral
+default_get_permission_0a;;		rep=1|mood=5;;		Frage bitte den Administrator, wenn du diesen Service nutzen willst. ;;char=neutral
+default_get_permission_0a;;		rep=2|mood=5;;		Ernsthaft <user_name>, du brauchst erst eine Erlaubnis um diesen Service nutzen zu können! ;;char=neutral
 default_open_link_0a;;		rep=0|mood=5;;		Oh, irgendwas ist nicht in Ordnung mit diesem Link. ;;char=cool,rude,neutral
 default_open_link_0a;;		rep=0|mood=5;;		Mist, da gibts scheinbar ein Problem mit dem Link. ;;char=cool,rude
 default_open_link_1a;;		rep=0|mood=5;;		Ok, ich öffne den Link für dich. ;;char=neutral
@@ -211,8 +214,15 @@ control_0c;;		rep=0|mood=5;;		Sei bitte etwas konkreter, denn ich kann Apps öff
 control_1a;;		rep=0|mood=5;;		Was möchtest du steuern oder kontrollieren? ;;char=neutral
 control_1a;;		rep=1|mood=5;;		Sag noch mal bitte! ;;char=cool,rude,neutral
 control_1a;;		rep=2|mood=5;;		Sorry, ich glaub da kann ich dir gerade nicht weiterhelfen. ;;char=cool,rude,neutral
-smartdevice_0a;;		rep=0|mood=5;;		Ich habe zur Zeit keine Verbindung zu einem Smart Home oder Car System. Du kannst mich aber verbinden, um zahlreiche Geräte in deiner Umgebung per Sprache zu steuern. ;;char=cool,rude,neutral
-smartdevice_0a;;		rep=0|mood=5;;		Ich habe leider kein Zugriff auf ein Smart Home oder Car System. Wenn du mich verbindest, kann ich dir mit über 50 Sprachbefehlen das Leben erleichtern <user_name>! ;;char=polite,neutral
+smartdevice_0a;;		rep=0|mood=5;;		Ich habe zur Zeit keine Verbindung zu einem Smart Home System. ;;char=cool,rude,neutral
+smartdevice_0a;;		rep=0|mood=5;;		Ich habe leider kein Zugriff auf dein Smart Home. ;;char=polite,neutral
+smartdevice_0a;;		rep=1|mood=5;;		Ich habe leider immer noch keinen Zugriff <user_name>! ;;char=polite,neutral
+smartdevice_0a;;		rep=2|mood=5;;		Ich habe leider kein Zugriff auf ein Smart Home. Du kannst mich aber verbinden um Geräte in deiner Umgebung per Sprache zu steuern. ;;char=polite,neutral
+smartdevice_0b;;		rep=0|mood=5;;		Sorry, ich glaub da kann ich dir gerade nicht weiterhelfen <user_name>, es scheint ein Problem zu geben mit dem Smart Home Service. ;;char=neutral
+smartdevice_0c;;		rep=0|mood=5;;		Dein Smart Home System wurde noch nicht eingerichtet <user_name>. ;;char=neutral
+smartdevice_0d;;		rep=0|mood=5;;		Sorry <user_name>, aber du brauchst erst eine Erlaubnis, um diesen Smart Home Service zu nutzen. ;;char=neutral
+smartdevice_0d;;		rep=1|mood=5;;		Frage bitte den Administrator, wenn du diesen Smart Home Service nutzen willst. ;;char=neutral
+smartdevice_0d;;		rep=2|mood=5;;		Ernsthaft <user_name>, du brauchst erst eine Erlaubnis um diesen Service nutzen zu können! ;;char=neutral
 smartdevice_1a;;		rep=0|mood=5;;		Welches Gerät möchtest du steuern <user_name>? ;;char=neutral
 smartdevice_1a;;		rep=1|mood=5;;		Sag noch mal bitte! ;;char=cool,rude
 smartdevice_1a;;		rep=1|mood=5;;		Wie war das? ;;char=polite,neutral
@@ -230,6 +240,7 @@ smartdevice_1d;;		rep=0|mood=5;;		Sag mir einen Wert bitte. ;;char=neutral
 smartdevice_1d;;		rep=0|mood=5;;		Auf welchen Wert?. ;;char=cool,polite,neutral
 smartdevice_1d;;		rep=1|mood=5;;		Welche Zahl war das? ;;char=rude
 smartdevice_1d;;		rep=2|mood=5;;		Sorry, ich glaub da kann ich dir gerade nicht weiterhelfen <user_name>. ;;char=cool,polite,neutral
+smartdevice_2a;;		rep=0|mood=5;;		Ich habe <1> auf <2> gesetzt. ;;char=neutral
 tickets_1a;;		rep=0|mood=5;;		Alles klar, ich suche mal nach Tickets für <1>. ;;char=cool,rude,neutral
 tickets_0a;;		rep=0|mood=5;;		Sorry, irgendwas ist schief gelaufen bei der Suche. Probier es bitte noch mal. ;;char=polite,neutral
 tickets_ask_0a;;	rep=0|mood=5;;		Wofür soll ich Tickets suchen? ;;char=cool,rude,neutral

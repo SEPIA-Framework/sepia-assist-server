@@ -12,7 +12,7 @@ public class NormalizerLight implements Normalizer {
 	//NOTE: DO NOT MODIFY THIS WITH ANYTHING ELSE BESIDES SINGLE CHARACTER NORMALIZATION (e.g. don't change words)  
 
 	@Override
-	public String normalize_text(String text) {
+	public String normalizeText(String text) {
 				
 		//special characters - that fail to convert to small case correctly
 		text = text.replaceAll("İ", "i");

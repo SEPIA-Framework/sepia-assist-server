@@ -50,7 +50,7 @@ public class ControlPreprocessor implements ServiceInterface{
 				
 				NLU_result.setCommand(CMD.SMARTDEVICE);
 				NLU_result.setParameter(PARAMETERS.SMART_DEVICE, type);
-				NLU_result.setParameter(PARAMETERS.SMART_LOCATION, info);
+				NLU_result.setParameter(PARAMETERS.ROOM, info);
 				NLU_result.removeParameter(PARAMETERS.TYPE);
 				NLU_result.removeParameter(PARAMETERS.INFO);
 				return ConfigServices.buildServices(CMD.SMARTDEVICE).get(0).getResult(NLU_result); //.smartDevices.getResult(NLU_result);

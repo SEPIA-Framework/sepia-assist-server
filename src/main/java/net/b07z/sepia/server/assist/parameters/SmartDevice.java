@@ -13,41 +13,43 @@ import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.JSON;
 
-public class SearchSection implements ParameterHandler{
+public class SmartDevice implements ParameterHandler{
 
 	//-----data-----
-	public static HashMap<String, String> sections_de = new HashMap<>();
-	public static HashMap<String, String> sections_en = new HashMap<>();
-	static {
-		sections_de.put("<pictures>", "Bilder");
-		sections_de.put("<recipes>", "Rezepte");
-		sections_de.put("<videos>", "Videos");
-		sections_de.put("<movies>", "Filme");
-		sections_de.put("<shares>", "Aktien");
-		sections_de.put("<books>", "Bücher");
-				
-		sections_en.put("<pictures>", "pictures");
-		sections_en.put("<recipes>", "recipes");
-		sections_en.put("<videos>", "videos");
-		sections_en.put("<movies>", "movies");
-		sections_en.put("<shares>", "shares");
-		sections_en.put("<books>", "books");
+	
+	//Parameter types
+	public static enum Types{
+		light,
+		heater;
 	}
+	
+	//Parameter local type names
+	public static HashMap<String, String> types_de = new HashMap<>();
+	public static HashMap<String, String> types_en = new HashMap<>();
+	static {
+		types_de.put("light", "das Licht");
+		types_de.put("heater", "die Heizung");
+		
+		types_en.put("light", "the light");
+		types_en.put("heater", "the heater");
+	}
+	
 	/**
-	 * Translate generalized value (e.g. &ltscience&gt) to local name (e.g. Wissenschaft).
+	 * Translate generalized value (e.g. &ltlight&gt) to a context based, useful local name (e.g. das Licht).
 	 * If generalized value is unknown returns empty string
-	 * @param value - generalized value 
+	 * @param type - generalized type value 
 	 * @param language - ISO language code
 	 */
-	public static String getLocal(String value, String language){
+	public static String getLocal(String type, String language){
+		type = type.replaceAll("^<|>$", "").trim();
 		String localName = "";
 		if (language.equals(LANGUAGES.DE)){
-			localName = sections_de.get(value);
+			localName = types_de.get(type);
 		}else if (language.equals(LANGUAGES.EN)){
-			localName = sections_en.get(value);
+			localName = types_en.get(type);
 		}
 		if (localName == null){
-			Debugger.println("SerachSection.java - getLocal() has no '" + language + "' version for '" + value + "'", 3);
+			Debugger.println(SmartDevice.class.getSimpleName() + " - getLocal() has no '" + language + "' version for '" + type + "'", 3);
 			return "";
 		}
 		return localName;
@@ -73,38 +75,42 @@ public class SearchSection implements ParameterHandler{
 	}
 	
 	/**
-	 * Search string for news type.
+	 * Search normalized string for raw type.
 	 */
-	public static String getSearchSection(String input, String language){
+	public static String getType(String input, String language){
 		String type = "";
 		//German
 		if (language.matches(LANGUAGES.DE)){
-			type = NluTools.stringFindFirst(input, "bild(ern|er|)|rezept(en|e|)|video(s|)|movie(s|)|film(en|e|)|aktie(n|)|aktien(kurs|wert)|buecher(n|)|buch");
+			type = NluTools.stringFindFirst(input, "(licht(er|)|lampe(n|)|beleuchtung|leuchte(n|)|helligkeit|"
+					+ "heiz(er|ungen|ung|koerper|luefter|strahler)|temperatur(en|)"
+				+ ")");
 			
 		//English and other
 		}else{
-			type = NluTools.stringFindFirst(input, "picture(s|)|recipe(s|)|video(s|)|movie(s|)|film(s|)|share(s|)|stock(s|)|book(s|)");			
+			type = NluTools.stringFindFirst(input, "(light(s|)|lighting|lamp(s|)|illumination|brightness|"
+					+ "heater(s|)|temperature(s|)"
+				+ ")");
+			
 		}
-		//System.out.println("searchType: " + type); 		//debug
+		//System.out.println("Type: " + type); 		//debug
 		return type;
 	}
 
 	@Override
 	public String extract(String input) {
-		String valueFound = getSearchSection(input, language);
-		this.found = valueFound;
-		if (NluTools.stringContains(valueFound, "bild(ern|er|)|picture(s|)")){
-			return "<pictures>";
-		}else if (NluTools.stringContains(valueFound, "rezept(en|e|)|recipe(s|)")){
-			return "<recipes>";
-		}else if (NluTools.stringContains(valueFound, "video(s|)")){
-			return "<videos>";
-		}else if (NluTools.stringContains(valueFound, "movie(s|)|film(s|)|film(en|e|)")){
-			return "<movies>";
-		}else if (NluTools.stringContains(valueFound, "aktie(n|)|aktien(kurs|wert)|share(s|)|stock(s|)")){
-			return "<shares>";
-		}else if (NluTools.stringContains(valueFound, "buecher(n|)|buch|book(s|)")){
-			return "<books>";
+		String type = getType(input, language);
+		this.found = type;
+		
+		//classify into types:
+		
+		if (NluTools.stringContains(type, "licht(er|)|lampe(n|)|beleuchtung|leuchte(n|)|helligkeit|"
+				+ "light(s|)|lighting|lamp(s|)|illumination|brightness")){
+			return "<" + Types.light.name() + ">";
+			
+		}else if (NluTools.stringContains(type, "heiz(er|ungen|ung|koerper|luefter|strahler)|temperatur(en|)|"
+				+ "heater(s|)|temperature(s|)")){
+			return "<" + Types.heater.name() + ">";
+		
 		}else{
 			return "";
 		}
@@ -123,9 +129,9 @@ public class SearchSection implements ParameterHandler{
 	@Override
 	public String remove(String input, String found) {
 		if (language.equals(LANGUAGES.DE)){
-			found = found + "( von| zu| ueber|)( der| die| das|)";
+			found = "(der |die |das |)" + found;
 		}else{
-			found = found + "( of| about| for|)( a| the|)";
+			found = "(a |the |)" + found;
 		}
 		return NluTools.stringRemoveFirst(input, found);
 	}
@@ -133,19 +139,16 @@ public class SearchSection implements ParameterHandler{
 	@Override
 	public String responseTweaker(String input){
 		if (language.equals(LANGUAGES.DE)){
-			input = input.replaceAll(".*\\b(von|zu|ueber|nach)\\b", "").trim();
 			return input.replaceAll(".*\\b(einen|einem|einer|eine|ein|der|die|das|den|ne|ner)\\b", "").trim();
 		}else{
-			input = input.replaceAll(".*\\b(of|about|for)\\b", "").trim();
 			return input.replaceAll(".*\\b(a|the)\\b", "").trim();
 		}
 	}
 
 	@Override
 	public String build(String input) {
-		//TODO: check for my favorite color?
 		
-		//expects a color tag!
+		//expects a type!
 		String commonValue = input.replaceAll("^<|>$", "").trim();
 		String localValue = getLocal(input, language);
 		

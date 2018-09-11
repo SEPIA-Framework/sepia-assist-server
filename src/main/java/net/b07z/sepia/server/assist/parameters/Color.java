@@ -14,7 +14,7 @@ import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.JSON;
 
-public class Color implements Parameter_Handler{
+public class Color implements ParameterHandler{
 
 	//-----data-----
 	public static HashMap<String, String> colors_de = new HashMap<>();

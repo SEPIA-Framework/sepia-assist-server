@@ -13,7 +13,7 @@ import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.JSON;
 
-public class Gender implements Parameter_Handler{
+public class Gender implements ParameterHandler{
 	
 	//-------data-------
 	public static String indicatorMale_de = "(mann|maenner|herr|herren|vater|vaeter|bruder|brueder|sohn|soehne|freund)";

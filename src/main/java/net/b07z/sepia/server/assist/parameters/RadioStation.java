@@ -19,7 +19,7 @@ import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.JSON;
 
-public class RadioStation implements Parameter_Handler{
+public class RadioStation implements ParameterHandler{
 	
 	//------data-----
 	public static HashMap<String, JSONArray> radioStationsMap = new HashMap<>();
@@ -219,7 +219,7 @@ public class RadioStation implements Parameter_Handler{
 			//optimize
 			if (!station.trim().isEmpty()){
 				Normalizer normalizer = new NormalizerAddStrongDE();
-				station = normalizer.normalize_text(station);
+				station = normalizer.normalizeText(station);
 				station = station.replaceFirst(".*?\\b(einen|ein|eine|die|den|das)\\b", "").trim();
 				//is just genre?
 				if (station.equals(genre)){
@@ -266,7 +266,7 @@ public class RadioStation implements Parameter_Handler{
 			//optimize
 			if (!station.trim().isEmpty()){
 				Normalizer normalizer = new NormalizerAddStrongEN();
-				station = normalizer.normalize_text(station);
+				station = normalizer.normalizeText(station);
 				station = station.replaceFirst(".*?\\b(a|an|the|to)\\b", "").trim();
 				//is just genre?
 				if (station.equals(genre)){

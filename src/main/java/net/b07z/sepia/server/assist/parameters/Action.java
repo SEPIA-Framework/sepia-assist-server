@@ -15,7 +15,7 @@ import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.JSON;
 
-public class Action implements Parameter_Handler{
+public class Action implements ParameterHandler{
 	
 	public static enum Type {
 		on,

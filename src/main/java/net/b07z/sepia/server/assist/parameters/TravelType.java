@@ -14,7 +14,7 @@ import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.JSON;
 
-public class TravelType implements Parameter_Handler{
+public class TravelType implements ParameterHandler{
 
 	//-----data-----
 	public static HashMap<String, String> travelTypes_de = new HashMap<>();

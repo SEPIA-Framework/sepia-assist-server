@@ -13,7 +13,7 @@ public interface Normalizer {
 	 * @param text - input to normalize
 	 * @return
 	 */
-	public String normalize_text(String text);
+	public String normalizeText(String text);
 	
 	/**
 	 * Reconstruct the original as good as possible, e.g. recover "München" from "muenchen".

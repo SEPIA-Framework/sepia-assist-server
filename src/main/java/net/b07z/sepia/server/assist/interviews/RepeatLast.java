@@ -14,7 +14,7 @@ import net.b07z.sepia.server.assist.services.ServiceResult;
  * @author Florian Quirin
  *
  */
-public class Repeat_Last {
+public class RepeatLast {
 
 	public static NluResult reload(NluResult NLU_result) {
 		

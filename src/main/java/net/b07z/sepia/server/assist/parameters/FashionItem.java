@@ -12,7 +12,7 @@ import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.JSON;
 
-public class FashionItem implements Parameter_Handler{
+public class FashionItem implements ParameterHandler{
 	
 	//-------data-------
 	public static final String fashionItems_de = 

@@ -46,6 +46,9 @@ public class InterviewData {
 	public static final String TIME_TYPE = "type"; 				//type of the time input like "in 10 min." (duration) or "next week" (unspecific)
 	public static final String TIME_UNSPECIFIC = "unspecific";	//a value that is related to the parameter but cannot be well determined like "the next days"
 	
+	//-numbers and amounts
+	public static final String NUMBER_TYPE = "type"; 			//something like plain, currency, temperature, weight, (unit types...), ...
+	
 	//-radio
 	public static final String RADIO_NAME = "name";				//name of the station
 	public static final String RADIO_STREAM = "stream_url";		//stream of the station

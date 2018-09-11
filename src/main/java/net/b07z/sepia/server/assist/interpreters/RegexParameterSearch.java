@@ -12,7 +12,7 @@ import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
 
-//TODO: this class is ancient, basically deprecated and replaced by the Parameter system, but there are still some functions of it in use!
+//TODO: this class is ancient, many methods are deprecated and replaced by the Parameter system, but there are still some functions of it in use!
 //Move everything to parameter classes!
 
 /**
@@ -93,10 +93,11 @@ public class RegexParameterSearch {
 	
 	/**
 	 * Get the first number in a string and return it as string. Tries to capture decimals too.
-	 * Returns a connected letter as well, e.g. "3b", "1h" or "2L" but also "10€"! You can use "[^0-9\\.,\\+\\-]" to remove it. 
+	 * Returns ONE connected letter as well, e.g. "3b", "1h" or "2L" but also "10€" and "80%"! You can use "[^0-9\\.,\\+\\-]" to remove it.
 	 * @param input - string with number inside
 	 * @return number as string or empty string
 	 */
+	@Deprecated
 	public static String get_number(String input){
 		String number = "";
 		number = NluTools.stringFindFirst(input, "(\\W|)(\\-|\\+|\\.|,|)\\d+(\\.|,|)\\d*(\\w|\\W|)"); 	//the \\w is for street numbers e.g. 3b
@@ -760,16 +761,37 @@ public class RegexParameterSearch {
 			}else if (location_input.matches(".*\\b(bis nach|nach|zu|zum|zur|bis|richtung)\\s.*")){
 				location_end = location_input.replaceFirst(".*?\\b(bis nach|nach|zu|zum|zur|bis|richtung)\\b", "").trim();
 				
-			}else if (location_input.matches(".*\\b((adresse|ort) (des|der|von)|am|in|im|an|fuer|auf(?!( der karte| der map| maps)))\\s.*")){
+			}else if (location_input.matches(".*\\b((adresse|ort) (des|der|von)|am|in|im|an|fuer|auf(?!( (der|einer) (karte|map)| maps)))\\s.*")){
 				location = location_input.replaceFirst(".*?\\b((adresse|ort) (des|der|von)|am|in|im|an|fuer|auf)\\b", "").trim();
-				location = location.replaceFirst("\\b(auf (der|einer) karte$|auf maps$|auf (der|einer) map$)", "").trim();
+				location = location.replaceFirst("\\b(auf (der|einer) (karte|map)$|auf maps$)", "").trim();
 				
 			}else if (location_input.matches(".*\\b(der |die |das |ein |eine |einen |den |dem |)(nahes|naechste(n|)|naechstgelegene(n|))\\s.*")){
 				location = location_input.replaceFirst(".*?\\b(nahes|naechste(n|)|naechstgelegene(n|))\\b", "").trim();	
-				location = location.replaceFirst("\\b(auf (der|einer) karte$|auf maps$|auf (der|einer) map$)", "").trim();
+				location = location.replaceFirst("\\b(auf (der|einer) (karte|map)$|auf maps$)", "").trim();
 				location = location.replaceFirst("\\b(ist$|sind$|liegt$|liegen$)", "").trim();
-			}
+				
+			}else if (location_input.matches(".*\\b(suche|zeig|finde) .*(\\b)(auf|in) (der |einer |)(karte|map|maps|naehe)\\b.*")){
+				location = location_input.replaceFirst(".*?\\b((suche|zeig|finde)( mir|)"
+						+ "( auf (der |einer |)(karte|map|maps)|))\\b", "").trim();
+				location = location.replaceFirst("^(der|die|das|eine|ein|einen|den)\\b", "").trim();
+				location = location.replaceFirst("\\b(auf (der|einer) (karte|map)$|auf maps$)", "").trim();
+				location = location.replaceFirst("\\b(in der naehe$)", "").trim();
+				
+			}else if (location_input.matches(".*\\b(wo (ist|sind|gibt es|liegt|liegen|befindet|befinden|auf (der|einer|) (karte|map|maps)))\\b.*")){
+				location = location_input.replaceFirst(".*?\\b(wo (auf (der |einer |)(karte|map|maps) |)"
+						+ "(ist|sind|liegt|liegen|gibt es|finde ich|befinde(t|n) sich)( hier|))\\b", "").trim();
+				location = location.replaceFirst("^(der|die|das|eine|ein|einen|den)\\b", "").trim();
+				location = location.replaceFirst("\\b(auf (der|einer) (karte|map)$|auf maps$)", "").trim();
+				location = location.replaceFirst("\\b(in der naehe$)", "").trim();
 			
+			}else if (location_input.matches(".*\\b(wo .* (ist|sind|liegt|liegen|befindet|befinden))\\b.*")){
+				location = location_input.replaceFirst(".*?\\b(wo (sich|))\\b", "").trim();
+				location = location.replaceFirst("^(der|die|das|eine|ein|einen|den)\\b", "").trim();
+				location = location.replaceFirst("\\b(ist|sind|liegt|liegen|befindet|befinden)\\b", "").trim();
+				location = location.replaceFirst("\\b(auf (der|einer) (karte|map)$|auf maps$)", "").trim();
+				location = location.replaceFirst("\\b(in der naehe$)", "").trim();
+			}
+						
 			//clean up a bit
 			if (!location_end.isEmpty()){
 				location_end = location_end.replaceFirst("\\b(auf (der|einer) karte$|auf maps$|auf (der|einer) map$)", "").trim();
@@ -870,13 +892,34 @@ public class RegexParameterSearch {
 				
 			}else if (location_input.matches(".*\\b((address|location) (of)|in|at|for|on(?!( (the|a) map| maps)))\\s.*")){
 				location = location_input.replaceFirst(".*?\\b((address|location) (of)|in|at|for|on)\\b", "").trim();
-				location = location.replaceFirst("\\b(on (the|a) map$|on maps$)", "").trim();
+				location = location.replaceFirst("\\b(on (the |a |)(map|maps)$)", "").trim();
 				
 			}else if (location_input.matches(".*\\b(the )(closest|nearest|next)\\s.*")){
 				location = location_input.replaceFirst(".*?\\b(closest|nearest|next)\\b", "").trim();	
-				location = location.replaceFirst("\\b(on (the|a) map$|on maps$)", "").trim();
-				location = location.replaceFirst("\\b(is$|are$)", "").trim();
+				location = location.replaceFirst("\\b(on (the |a |)(map|maps)$)", "").trim();
+				location = location.replaceFirst("\\b(is|are|lies)( here|)$", "").trim();
 			
+			}else if (location_input.matches(".*\\b((show|search|find|look(up| for|)) .*(\\b)(on (the |a |)(map|maps)|(close|near|around)))\\b.*")){
+				location = location_input.replaceFirst(".*?\\b((show|search|find|look(up| for|))( me|)"
+						+ "( on (the |a |)(map|maps)|))\\b", "").trim();
+				location = location.replaceFirst("^(the|a)\\b", "").trim();
+				location = location.replaceFirst("\\b(on (the |a |)(map|maps)$)", "").trim();
+				location = location.replaceFirst("\\b(close|near|around)( to| by|)( me|)$", "").trim();
+				
+			}else if (location_input.matches(".*\\b(where (is|lies|are|does|can (i|one) (find|get)|on (the |a |)(map|maps)))\\b.*")){
+				location = location_input.replaceFirst(".*?\\b(where (on (the |a |)(map|maps) |)"
+						+ "(is|lies|are|does|can (i|one) (get|find)))\\b", "").trim();
+				location = location.replaceFirst("^(the|a)\\b", "").trim();
+				location = location.replaceFirst("^(lie|lay)\\b", "").trim();
+				location = location.replaceFirst("\\b(on (the |a |)(map|maps)$)", "").trim();
+				location = location.replaceFirst("\\b(close|near|around)( to| by|)( me|)( here|)$", "").trim();
+
+			}else if (location_input.matches(".*\\b(where .* (is|are|lie|lies|lay))\\b.*")){
+				location = location_input.replaceFirst(".*?\\b(where (does|))\\b", "").trim();
+				location = location.replaceFirst("^(the|a)\\b", "").trim();
+				location = location.replaceFirst("\\b(is|are|lie|lies|lay)\\b", "").trim();
+				location = location.replaceFirst("\\b(on (the |a |)(map|maps)$)", "").trim();
+				location = location.replaceFirst("\\b(close|near|around)( to| by|)( me|)( here|)$", "").trim();
 			}
 			
 			//clean up a bit
@@ -1585,6 +1628,7 @@ public class RegexParameterSearch {
 	 * @param language - language code
 	 * @return types like on, off, increase, decrease, set/toggle, complex - or empty string
 	 */
+	@Deprecated
 	public static String[] get_control_action(String input, String language){
 		String action = "";
 		String extracted = "";
@@ -2157,7 +2201,7 @@ public class RegexParameterSearch {
 		}else if (language.matches("en")){
 			input = input.replaceAll("\\b(close to |near to |)(my |)(my place|home|where i live)\\b", "<user_home>");
 			input = input.replaceAll("\\b(close to |near to |)(my work|work|where i work)\\b", "<user_work>");
-			input = input.replaceAll("\\b((close to |near to |)(me|here|this place|my location|my position|where i am))\\b", "<user_location>");
+			input = input.replaceAll("\\b((close to (me |)|near to (me |)|)(here|this place|my location|my position|where i am))\\b", "<user_location>");
 		
 		//no result/missing language support ...
 		}else{

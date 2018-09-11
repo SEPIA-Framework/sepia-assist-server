@@ -69,7 +69,7 @@ public class NluSentenceMatcher implements NluInterface{
 			
 			//check first with light normalizer
 			if (normalizer_light != null){
-				search_n1 = normalizer_light.normalize_text(search);
+				search_n1 = normalizer_light.normalizeText(search);
 			}
 			cmd = commands_this.get(search_n1);
 			matched_search = search_n1;
@@ -77,7 +77,7 @@ public class NluSentenceMatcher implements NluInterface{
 			//then check with stronger normalizer if nothing was found
 			if (cmd == null){
 				if (normalizer_default != null){
-					search_n2 = normalizer_default.normalize_text(search);
+					search_n2 = normalizer_default.normalizeText(search);
 				}
 				if (!search_n2.isEmpty() && !search_n1.equals(search_n2)){
 					cmd = commands_this.get(search_n2);

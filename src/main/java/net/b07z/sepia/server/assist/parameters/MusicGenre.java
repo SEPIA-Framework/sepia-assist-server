@@ -15,7 +15,7 @@ import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.JSON;
 
-public class MusicGenre implements Parameter_Handler{
+public class MusicGenre implements ParameterHandler{
 	
 	//-------data-------
 	/*

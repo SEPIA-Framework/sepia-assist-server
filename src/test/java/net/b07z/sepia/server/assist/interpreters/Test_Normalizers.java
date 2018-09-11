@@ -14,8 +14,8 @@ public class Test_Normalizers {
 		Normalizer normalizer_light = Config.inputNormalizersLight.get(lang);
 		Normalizer normalizer_default = Config.inputNormalizers.get(lang);
 	
-		String tn1 = normalizer_light.normalize_text(text);
-		String tn2 = normalizer_default.normalize_text(text);
+		String tn1 = normalizer_light.normalizeText(text);
+		String tn2 = normalizer_default.normalizeText(text);
 		
 		System.out.println("Match this: " + match);
 		System.out.println("n1: " + tn1);

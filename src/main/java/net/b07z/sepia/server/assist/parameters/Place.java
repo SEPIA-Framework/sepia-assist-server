@@ -18,7 +18,7 @@ import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.JSON;
 
-public class Place implements Parameter_Handler{
+public class Place implements ParameterHandler{
 	
 	//-----data-----
 	public static String pois_de = "bar|bars|pub|pubs|cafe|cafes|kaffee|coffeeshop|coffee-shop|kiosk|"
