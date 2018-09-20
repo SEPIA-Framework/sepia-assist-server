@@ -87,7 +87,9 @@ public final class User {
 		
 		//get some temporary local user info
 		if (input != null){
-			if (input.userLocation != null && !input.userLocation.isEmpty()) userLocation = new Address(JSON.parseStringOrFail(input.userLocation));
+			if (input.userLocation != null && !input.userLocation.isEmpty()){
+				userLocation = new Address(Converters.json2HashMap(JSON.parseStringOrFail(input.userLocation)));
+			}
 			userTime = input.userTime;
 			language = input.language;
 		}
@@ -330,7 +332,7 @@ public final class User {
 		accessLvl = Converters.obj2Int(account.get("accessLevel"));
 		JSONObject uname = (JSONObject) account.get("userName");
 		if (uname != null){
-			userName = new Name(uname);
+			userName = new Name(Converters.json2HashMap(uname));
 			info.put(ACCOUNT.USER_NAME, userName);
 			checked.put(ACCOUNT.USER_NAME, true);
 		}

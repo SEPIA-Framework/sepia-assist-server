@@ -772,7 +772,7 @@ public class DB {
 					JSONObject jo = (JSONObject) o;
 					if (jo.containsKey("_source")){
 						JSONObject adrJson = (JSONObject) jo.get("_source");
-						Address adr = new Address(adrJson); 	//we trust that this works ^^
+						Address adr = new Address(Converters.json2HashMap(adrJson)); 	//we trust that this works ^^
 						//get some additional info
 						adr.user = JSON.getString(adrJson, "user");
 						adr.userSpecialTag = JSON.getString(adrJson, "specialTag");

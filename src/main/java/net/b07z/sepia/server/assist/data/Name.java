@@ -41,15 +41,6 @@ public class Name {
 	 */
 	public Name(){}
 	/**
-	 * Use this if you have a name-JSONObject and you KNOW! that it has the correct format.
-	 */
-	public Name(JSONObject jo){
-		jsonName = jo;
-		this.first = (String) jo.get(FIRST);
-		this.last = (String) jo.get(LAST);
-		this.nick = (String) jo.get(NICK);
-	}
-	/**
 	 * Use this if you have a name-map and you KNOW! that it has the correct format.
 	 */
 	public Name(Map<String, Object> map){

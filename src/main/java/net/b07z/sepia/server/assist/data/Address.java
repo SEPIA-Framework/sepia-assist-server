@@ -78,33 +78,17 @@ public class Address {
 	/**
 	 * Use this if you want to manually set the data.
 	 */
-	public Address (){}
+	public Address(){}
 	/**
 	 * Use this if you want to create an object that is explicitly set as empty address (to make the isEmpty() methods 100% safe).
 	 */
-	public Address (boolean isCreatedEmpty){
+	public Address(boolean isCreatedEmpty){
 		this.isCreatedEmpty = isCreatedEmpty;
-	}
-	/**
-	 * Use this if you have an address-JSONObject and you KNOW! that it has the correct format.
-	 */
-	public Address (JSONObject jo){
-		jsonAddress = jo;
-		this.description = (String) jo.get(PersonalInfo.DESCRIPTION);
-		this.name = (String) jo.get(LOCATION.NAME);
-		this.latitude = JSON.getString(jo, LOCATION.LAT);
-		this.longitude = JSON.getString(jo, LOCATION.LNG);
-		this.street = (String) jo.get(LOCATION.STREET);
-		this.streetNumber = JSON.getString(jo, LOCATION.STREET_NBR);
-		this.city = (String) jo.get(LOCATION.CITY);
-		this.postalCode = JSON.getString(jo, LOCATION.POSTAL_CODE);
-		this.state = (String) jo.get(LOCATION.STATE);
-		this.country = (String) jo.get(LOCATION.COUNTRY);
 	}
 	/**
 	 * Use this if you have an address-map and you KNOW! that it has the correct format.
 	 */
-	public Address (Map<String, Object> map){
+	public Address(Map<String, Object> map){
 		this.description = (String) map.get(PersonalInfo.DESCRIPTION);
 		this.name = (String) map.get(LOCATION.NAME);
 		this.latitude = (String) map.get(LOCATION.LAT);

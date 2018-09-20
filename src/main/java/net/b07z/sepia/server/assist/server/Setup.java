@@ -75,7 +75,7 @@ public class Setup {
 	public static void main(String[] args) throws Exception {
 		
 		//components to setup
-		boolean all = true;			//if this is true we do everything and ignore below booleans
+		boolean all = true;			//if this is true we do everything (except duckdns setup) and ignore below booleans
 		boolean database = false;
 		String dbIndex = "";		//write all (empty) or a specific index of the database (e.g. answers, users, chat, ...)?
 		boolean cluster = false;
