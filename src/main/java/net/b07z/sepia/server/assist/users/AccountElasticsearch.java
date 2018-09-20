@@ -9,6 +9,7 @@ import net.b07z.sepia.server.assist.database.Elasticsearch;
 import net.b07z.sepia.server.assist.server.Statistics;
 import net.b07z.sepia.server.assist.services.ServiceAccessManager;
 import net.b07z.sepia.server.core.tools.Connectors;
+import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.JSON;
 
@@ -90,7 +91,7 @@ public class AccountElasticsearch implements AccountInterface{
 					if (found != null){
 						//name
 						if (k.equals(ACCOUNT.USER_NAME)){
-							user.userName = new Name((JSONObject) found);
+							user.userName = new Name(Converters.object2HashMapStrObj(found));
 							user.info.put(k, user.userName);
 						
 						//user_home - this is not officially part of the account anymore, 
