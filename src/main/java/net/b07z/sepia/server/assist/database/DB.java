@@ -249,14 +249,14 @@ public class DB {
 		if (!requestRes.containsKey("token")){
 			int code = auth.getErrorCode();
 			if (code == 5){
-				throw new RuntimeException("Registration request failed, user already exists or is not on white-list (if active)!");
+				throw new RuntimeException("Registration request failed (C5): User already exists or is not on white-list (if active)!");
 			}else{
-				throw new RuntimeException("Registration request failed with code: " + auth.getErrorCode());
+				throw new RuntimeException("Registration request failed (C" + auth.getErrorCode() + ")");
 			}
 		}
 		JSON.put(requestRes, "pwd", pass);
 		if (!auth.createUser(requestRes)){
-			throw new RuntimeException("Creating user failed with code: " + auth.getErrorCode());
+			throw new RuntimeException("Creating user failed (C" + auth.getErrorCode() + ")");
 		}
 		Timer.threadSleep(1100);
 		//test if user exists
@@ -272,6 +272,17 @@ public class DB {
 				ACCOUNT.PASSWORD, pass
 		);
 		return res;
+	}
+	/**
+	 * Check if a user exists to the given email. If so return GUUID else return empty string or error.
+	 * @param email - email address used at user registration
+	 * @return
+	 * @throws Exception
+	 */
+	public static String checkUserExistsByEmail(String email) throws Exception{
+		AuthenticationInterface auth = getAuthDb();
+		String guuid = auth.userExists(email, ID.Type.email);
+		return guuid;
 	}
 	
 	//------------Knowledge / User-data--------------

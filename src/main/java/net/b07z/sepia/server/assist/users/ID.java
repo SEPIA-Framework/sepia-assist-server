@@ -56,14 +56,14 @@ public class ID {
 	 * Generate a new ID, holding a new global ID and a securely hashed password.
 	 */
 	public static class Generator {
-		String guuid;
-		byte[] saltBytes;
-		String salt;
-		int iterations;
-		String pwd;
+		public String guuid;
+		public byte[] saltBytes;
+		public String salt;
+		public int iterations;
+		public String pwd;
 		
 		/**
-		 * Make new ID with unique id. Depending on how you handle your password it is expected to be hashed here
+		 * Make new ID-object with unique id. Depending on how you handle your password it is expected to be hashed here
 		 * with the client method.
 		 */
 		public Generator(String pwd) throws Exception{
@@ -74,7 +74,7 @@ public class ID {
 			this.pwd = hashPassword_server(pwd, saltBytes, iterations);
 		}
 		/**
-		 * Make new ID with defined id. Depending on how you handle your password it is expected to be hashed here
+		 * Make new ID-object with defined id. Depending on how you handle your password it is expected to be hashed here
 		 * with the client method.
 		 */
 		public Generator(String guuid, String pwd) throws Exception{
