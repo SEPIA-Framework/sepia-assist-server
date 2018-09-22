@@ -12,6 +12,7 @@ import net.b07z.sepia.server.assist.database.DynamoDB;
 import net.b07z.sepia.server.assist.database.Elasticsearch;
 import net.b07z.sepia.server.assist.database.GUID;
 import net.b07z.sepia.server.assist.users.ACCOUNT;
+import net.b07z.sepia.server.assist.users.ID;
 import net.b07z.sepia.server.assist.workers.DuckDnsWorker;
 import net.b07z.sepia.server.core.data.Role;
 import net.b07z.sepia.server.core.database.AnswerImporter;
@@ -21,6 +22,7 @@ import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.FilesAndStreams;
 import net.b07z.sepia.server.core.tools.InputPrompt;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 import net.b07z.sepia.server.core.tools.Security;
 
@@ -54,6 +56,11 @@ public class Setup {
 			this.guuid = JSON.getString(json, ACCOUNT.GUUID);
 			this.pwdHash = JSON.getString(json, ACCOUNT.PASSWORD);
 			this.email = JSON.getString(json, ACCOUNT.EMAIL);
+		}
+		public CreateUserResult(String email, String guuid, String pwdHash){
+			this.guuid = guuid;
+			this.pwdHash = pwdHash;
+			this.email = email;
 		}
 	}
 	private static class ServerConfigFiles{
@@ -139,13 +146,15 @@ public class Setup {
 		//accounts
 		if (all || accounts){
 			System.out.println("\nSetting up accounts: ");
-			//TODO: check if users already exists, if so keep IDs and overwrite rest
 		
 			//Default settings for test-mode
 			String adminEmail = "admin@sepia.localhost";
 			String adminPwd = "test12345";
 			String assistantEmail = "assistant@sepia.localhost";
 			String assistantPwd = "test12345";
+			String testUserEmail = "test@sepia.localhost";
+			String testUserPwd = "test12345";
+			String testUserNick = "Testy";
 			
 			//Ask for individual settings?
 			if (!st.equals(ServerType.test)){
@@ -173,9 +182,28 @@ public class Setup {
 			}
 			//create admin and assistant user
 			System.out.println("\nCreating admin: ");
-			writeSuperUser(scf, adminEmail, adminPwd);
+			try{
+				writeSuperUser(scf, adminEmail, adminPwd);
+			}catch(Exception e){
+				System.out.println("ERROR in admin data! Msg.: " + e.getMessage());
+				throw e;
+			}
 			System.out.println("\nCreating assistant user: ");
-			writeAssistantUser(scf, assistantEmail, assistantPwd);
+			try{
+				writeAssistantUser(scf, assistantEmail, assistantPwd);
+			}catch(Exception e){
+				System.out.println("ERROR in assistant data! Msg.: " + e.getMessage());
+				throw e;
+			}
+			if (st.equals(ServerType.test)){
+				System.out.println("\nCreating basic test user: ");
+				try{
+					writeBasicUser(testUserEmail, testUserPwd, testUserNick);
+				}catch(Exception e){
+					System.out.println("ERROR in test user data! Msg.: " + e.getMessage());
+					throw e;
+				}
+			}
 		}
 		
 		//answers
@@ -326,74 +354,152 @@ public class Setup {
 	private static CreateUserResult writeSuperUser(ServerConfigFiles scf, String email, String pwd) throws Exception{
 		boolean orgSetting = Config.restrictRegistration;
 		Config.restrictRegistration = false; 	//deactivate temporary
-		Config.superuserEmail = "";	//deactivate temporary
-		CreateUserResult cr = new CreateUserResult(DB.createUserDirectly(email, pwd));
-		Config.restrictRegistration = orgSetting; 	//reset
-		//add user roles
-		JSONObject data = JSON.make(ACCOUNT.ROLES, JSON.makeArray(
-				Role.user.name(), Role.tester.name(), Role.translator.name(),
-				Role.developer.name(), Role.seniordev.name(),
-				Role.chiefdev.name(), Role.superuser.name()
-		));
-		JSON.put(data, ACCOUNT.USER_NAME, JSON.make(
-				Name.FIRST, "Admin",
-				Name.LAST, "Masters",
-				Name.NICK, "MCP"
-		));
-		if (DB.writeAccountDataDirectly(cr.guuid, data)){ 			//TODO: needs testing for DynamoDB (roles structure changed)
-			//store data in config file
-			if (!FilesAndStreams.replaceLineInFile(scf.assist, "^universal_superuser_id=.*", 
-							"universal_superuser_id=" + cr.guuid)
-					|| !FilesAndStreams.replaceLineInFile(scf.assist, "^universal_superuser_email=.*", 
-							"universal_superuser_email=" + cr.email)
-					|| !FilesAndStreams.replaceLineInFile(scf.assist, "^universal_superuser_pwd=.*", 
-							"universal_superuser_pwd=" + cr.pwdHash)
-				){
-				throw new RuntimeException("Failed to write data to config-file: " + scf.assist);
+		Config.superuserEmail = "";				//deactivate temporary
+
+		//check if user exists
+		String guuid = DB.checkUserExistsByEmail(email);
+		if (Is.notNullOrEmpty(guuid)){
+			//only create new password then ...
+			JSONObject newData = createNewPasswordObject(guuid, pwd);
+			if (DB.writeAccountDataDirectly(guuid, newData)){
+				Debugger.println("Stored new password for: " + email, 3);
+				//refresh ID
+				Config.superuserId = guuid;
+				return new CreateUserResult(email, guuid, JSON.getString(newData, ACCOUNT.PASSWORD));
 			}else{
-				Debugger.println("Stored data in config: " + scf.assist, 3);
+				throw new RuntimeException("Failed to write new password to existing account: " + email);
 			}
 		}else{
-			Debugger.println("Writing account data failed! Probably a database error or you need to delete the user first.", 1);
+			//proceed with creation
+			CreateUserResult cr = new CreateUserResult(DB.createUserDirectly(email, pwd));
+			Config.restrictRegistration = orgSetting; 	//reset
+			//add user roles
+			JSONObject data = JSON.make(ACCOUNT.ROLES, JSON.makeArray(
+					Role.user.name(), Role.tester.name(), Role.translator.name(),
+					Role.developer.name(), Role.seniordev.name(),
+					Role.chiefdev.name(), Role.superuser.name()
+			));
+			JSON.put(data, ACCOUNT.USER_NAME, JSON.make(
+					Name.FIRST, "Admin",
+					Name.LAST, "Masters",
+					Name.NICK, "MCP"
+			));
+			if (DB.writeAccountDataDirectly(cr.guuid, data)){ 			//TODO: needs testing for DynamoDB (roles structure changed)
+				//store data in config file
+				if (!FilesAndStreams.replaceLineInFile(scf.assist, "^universal_superuser_id=.*", 
+								"universal_superuser_id=" + cr.guuid)
+						|| !FilesAndStreams.replaceLineInFile(scf.assist, "^universal_superuser_email=.*", 
+								"universal_superuser_email=" + cr.email)
+						|| !FilesAndStreams.replaceLineInFile(scf.assist, "^universal_superuser_pwd=.*", 
+								"universal_superuser_pwd=" + cr.pwdHash)
+					){
+					throw new RuntimeException("Failed to write data to config-file: " + scf.assist);
+				}else{
+					Debugger.println("Stored data in config: " + scf.assist, 3);
+				}
+			}else{
+				Debugger.println("Writing account data failed! Probably a database error or you need to delete the user first.", 1);
+			}
+			//refresh ID
+			Config.superuserId = cr.guuid;
+			return cr;
 		}
-		//refresh ID
-		Config.superuserId = cr.guuid;
-		return cr;
 	}
 	//Create assistant user.
 	private static CreateUserResult writeAssistantUser(ServerConfigFiles scf, String email, String pwd) throws Exception{
 		boolean orgSetting = Config.restrictRegistration;
 		Config.restrictRegistration = false; 	//deactivate temporary
-		Config.assistantEmail = "";			//deactivate temporary
-		CreateUserResult cr = new CreateUserResult(DB.createUserDirectly(email, pwd));
-		Config.restrictRegistration = orgSetting; 	//reset
-		//add user roles
-		JSONObject data = JSON.make(ACCOUNT.ROLES, JSON.makeArray(
-				Role.user.name(), Role.assistant.name()
-		));
-		JSON.put(data, ACCOUNT.USER_NAME, JSON.make(
-				Name.NICK, Config.assistantName
-		));
-		if (DB.writeAccountDataDirectly(cr.guuid, data)){ 
-			//store data in config file
-			if (!FilesAndStreams.replaceLineInFile(scf.assist, "^assistant_id=.*", 
-							"assistant_id=" + cr.guuid)
-					|| !FilesAndStreams.replaceLineInFile(scf.assist, "^assistant_email=.*", 
-							"assistant_email=" + cr.email)
-					|| !FilesAndStreams.replaceLineInFile(scf.assist, "^assistant_pwd=.*", 
-							"assistant_pwd=" + cr.pwdHash)
-				){
-				throw new RuntimeException("Failed to write data to config-file: " + scf.assist);
+		Config.assistantEmail = "";				//deactivate temporary
+		
+		//check if user exists
+		String guuid = DB.checkUserExistsByEmail(email);
+		if (Is.notNullOrEmpty(guuid)){
+			//only create new password then ...
+			JSONObject newData = createNewPasswordObject(guuid, pwd);
+			if (DB.writeAccountDataDirectly(guuid, newData)){
+				Debugger.println("Stored new password for: " + email, 3);
+				//refresh IDs
+				Config.assistantId = guuid;
+				ConfigDefaults.defaultAssistantUserId = guuid; 
+				return new CreateUserResult(email, guuid, JSON.getString(newData, ACCOUNT.PASSWORD));
 			}else{
-				Debugger.println("Stored data in config: " + scf.assist, 3);
+				throw new RuntimeException("Failed to write new password to existing account: " + email);
 			}
 		}else{
-			Debugger.println("Writing account data failed! Probably a database error or you need to delete the user first.", 1);
+			//proceed with creation
+			CreateUserResult cr = new CreateUserResult(DB.createUserDirectly(email, pwd));
+			Config.restrictRegistration = orgSetting; 	//reset
+			//add user roles
+			JSONObject data = JSON.make(ACCOUNT.ROLES, JSON.makeArray(
+					Role.user.name(), Role.assistant.name()
+			));
+			JSON.put(data, ACCOUNT.USER_NAME, JSON.make(
+					Name.NICK, Config.assistantName
+			));
+			if (DB.writeAccountDataDirectly(cr.guuid, data)){ 
+				//store data in config file
+				if (!FilesAndStreams.replaceLineInFile(scf.assist, "^assistant_id=.*", 
+								"assistant_id=" + cr.guuid)
+						|| !FilesAndStreams.replaceLineInFile(scf.assist, "^assistant_email=.*", 
+								"assistant_email=" + cr.email)
+						|| !FilesAndStreams.replaceLineInFile(scf.assist, "^assistant_pwd=.*", 
+								"assistant_pwd=" + cr.pwdHash)
+					){
+					throw new RuntimeException("Failed to write data to config-file: " + scf.assist);
+				}else{
+					Debugger.println("Stored data in config: " + scf.assist, 3);
+				}
+			}else{
+				Debugger.println("Writing account data failed! Probably a database error or you need to delete the user first.", 1);
+			}
+			//refresh IDs
+			Config.assistantId = cr.guuid;
+			ConfigDefaults.defaultAssistantUserId = cr.guuid; 
+			return cr;
 		}
-		//refresh IDs
-		Config.assistantId = cr.guuid;
-		ConfigDefaults.defaultAssistantUserId = cr.guuid; 
-		return cr;
+	}
+	//Create basic user.
+	private static CreateUserResult writeBasicUser(String email, String pwd, String nickName) throws Exception{
+		boolean orgSetting = Config.restrictRegistration;
+		Config.restrictRegistration = false; 	//deactivate temporary
+		
+		//check if user exists
+		String guuid = DB.checkUserExistsByEmail(email);
+		if (Is.notNullOrEmpty(guuid)){
+			//only create new password then ...
+			JSONObject newData = createNewPasswordObject(guuid, pwd);
+			if (DB.writeAccountDataDirectly(guuid, newData)){
+				Debugger.println("Stored new password for: " + email, 3);
+				return new CreateUserResult(email, guuid, JSON.getString(newData, ACCOUNT.PASSWORD));
+			}else{
+				throw new RuntimeException("Failed to write new password to existing account: " + email);
+			}
+		}else{
+			//proceed with creation
+			CreateUserResult cr = new CreateUserResult(DB.createUserDirectly(email, pwd));
+			Config.restrictRegistration = orgSetting; 	//reset
+			//add user roles
+			JSONObject data = JSON.make(ACCOUNT.ROLES, JSON.makeArray(
+					Role.user.name()
+			));
+			JSON.put(data, ACCOUNT.USER_NAME, JSON.make(
+					Name.NICK, nickName
+			));
+			if (!DB.writeAccountDataDirectly(cr.guuid, data)){ 
+				Debugger.println("Writing account data failed! Probably a database error or you need to delete the user first.", 1);
+			}
+			return cr;
+		}
+	}
+	//Create new password
+	private static JSONObject createNewPasswordObject(String id, String pwdUnhashed) throws Exception{
+		String pass = Security.hashClientPassword(pwdUnhashed);
+		ID.Generator gen = new ID.Generator(id, pass);
+		JSONObject pwdAccountData = new JSONObject();
+		JSON.put(pwdAccountData, ACCOUNT.PASSWORD, gen.pwd);
+		JSON.put(pwdAccountData, ACCOUNT.PWD_SALT, gen.salt);
+		JSON.put(pwdAccountData, ACCOUNT.PWD_ITERATIONS, gen.iterations);
+		return pwdAccountData;
 	}
 	
 	/**

@@ -121,7 +121,7 @@ public class NewsRssFeeds implements ServiceInterface{
 	public static final HashMap<String, String> feedUrls = new HashMap<>();
 	static{
 		feedUrls.put("SPIEGEL ONLINE", "http://www.spiegel.de/schlagzeilen/tops/index.rss");
-		feedUrls.put("bento", "http://www.bento.de/rss/feed.rss");
+		feedUrls.put("bento", "https://www.bento.de/rss/nachrichten/");
 		feedUrls.put("Tagesschau", "http://www.tagesschau.de/xml/rss2");
 		feedUrls.put("Süddeutsche", "http://rss.sueddeutsche.de/rss/Topthemen");
 		feedUrls.put("FAZ", "http://www.faz.net/rss/aktuell/");
@@ -135,7 +135,7 @@ public class NewsRssFeeds implements ServiceInterface{
 		feedUrls.put("Gruenderszene", "https://www.gruenderszene.de/feed");
 		feedUrls.put("jetzt.de", "https://www.jetzt.de/alle_artikel.rss");
 		feedUrls.put("11FREUNDE", "https://www.11freunde.de/feed");
-		feedUrls.put("RevierSport", "http://www.reviersport.de/?news-rss-ama");
+		feedUrls.put("RevierSport", "https://www.reviersport.de/?news-rss-ama");
 		feedUrls.put("golem.de", "http://rss.golem.de/rss.php?feed=RSS2.0");
 		feedUrls.put("heise online", "https://www.heise.de/newsticker/heise-top-atom.xml");
 		feedUrls.put("PCGames", "http://www.pcgames.de/feed.cfm?menu_alias=home");
