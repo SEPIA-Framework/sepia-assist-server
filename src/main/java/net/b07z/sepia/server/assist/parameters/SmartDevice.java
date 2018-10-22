@@ -114,6 +114,8 @@ public class SmartDevice implements ParameterHandler{
 		}else{
 			return "";
 		}
+		
+		//we should take device names into account, like "Lamp 1", "Light A" or "Desk-Lights" etc.
 	}
 	
 	@Override

@@ -11,7 +11,7 @@ import net.b07z.sepia.server.assist.server.ConfigTestServer;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.tools.JSON;
 
-public class Test_Parameter_Search {
+public class Test_ParameterSearch {
 
 	public static void main(String[] args) {
 		

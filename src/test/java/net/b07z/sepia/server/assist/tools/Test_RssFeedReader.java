@@ -9,7 +9,7 @@ import net.b07z.sepia.server.assist.services.NewsRssFeeds;
 import net.b07z.sepia.server.core.tools.JSON;
 import net.b07z.sepia.server.core.tools.Timer;
 
-public class TestRssFeedReader {
+public class Test_RssFeedReader {
 
 	public static void main(String[] args) {
 

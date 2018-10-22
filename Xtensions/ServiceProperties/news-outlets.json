@@ -1,0 +1,67 @@
+{
+	"outlets":[
+		{ "name": "SPIEGEL ONLINE", "url": "http://www.spiegel.de/schlagzeilen/tops/index.rss", "name_html": "<span style='color:#950000;'><b>SPIEGEL</b> ONLINE</span>" },
+		{ "name": "bento", "url": "https://www.bento.de/rss/nachrichten/", "name_html": "<span style='color:#000;'><b>bento</b></span>" },
+		{ "name": "Tagesschau", "url": "http://www.tagesschau.de/xml/rss2", "name_html": "<span style='color:#0065BE; font-family:serif'>tages<b>schau</b>.de</span>" },
+		{ "name": "Süddeutsche", "url": "http://rss.sueddeutsche.de/rss/Topthemen", "name_html": "<span style='color:#000; font-family:serif'>Süddeutsche Zeitung</span>" },
+		{ "name": "FAZ", "url": "http://www.faz.net/rss/aktuell/", "name_html": "<span style='color:#000; font-family:serif'>Frankfurter Allgemeine</span>" },
+		{ "name": "Bild", "url": "https://www.bild.de/rssfeeds/vw-home/vw-home-16725562,sort=1,view=rss2.bild.xml", "name_html": "<span style='color:#D91918;'>Bild</span><span style='color:#000;'>.de</span>" },
+		{ "name": "Sportschau", "url": "https://www.sportschau.de//sportschauindex100~_type-rss.feed", "name_html": "<span style='color:#002C6B;'><b>SPORTSCHAU</b></span>" },
+		{ "name": "Sportschau - Bundesliga", "url": "https://www.sportschau.de/fussball/bundesliga/fussballbundesligaindex100~_type-rss.feed", "name_html": "<span style='color:#002C6B;'><b>SPORTSCHAU</b></span> - <span style='color:#EE1C25;'><b>BUNDESLIGA</b></span>" },
+		{ "name": "Sportschau - Fussball", "url": "https://www.sportschau.de/fussball/fussballindex100~_type-rss.feed", "name_html": "<span style='color:#002C6B;'><b>SPORTSCHAU</b></span> - <span style='color:#000000;'><b>FUSSBALL</b></span>" },
+		{ "name": "Sport1", "url": "https://www.sport1.de/news.rss", "name_html": "<span style='color:#3D464C;'>sport</span><span style='color:#F6A800;'><b>1</b></span>" },
+		{ "name": "Kicker", "url": "http://rss.kicker.de/news/aktuell", "name_html": "<span style='color:#CC0000;'><b>kicker</b></span>" },
+		{ "name": "Wired", "url": "https://www.wired.de/feed/latest", "name_html": "<span style='color:#222222; font-family:serif'><b>W</b>I<b>R</b>E<b>D</b></span>" },
+		{ "name": "Gruenderszene", "url": "https://www.gruenderszene.de/feed", "name_html": "<span style='color:#000; font-family:serif'>GRÜNDER</span><span style='color:#456494; font-family:serif'>SZENE</span>" },
+		{ "name": "jetzt.de", "url": "https://www.jetzt.de/alle_artikel.rss", "name_html": "<span style='color:#000; font-family:serif'>jetzt.de</span>" },
+		{ "name": "11FREUNDE", "url": "https://www.11freunde.de/feed", "name_html": "<span style='color:#000;'>11FREUNDE</span>" },
+		{ "name": "golem.de", "url": "http://rss.golem.de/rss.php?feed=RSS2.0", "name_html": "<span style='color:#000;'>golem.</span><span style='color:#6EC5CD;'>d</span><span style='color:#9AC54B;'>e</span>" },
+		{ "name": "heise online", "url": "https://www.heise.de/newsticker/heise-top-atom.xml", "name_html": "<span style='color:#999898;'>heise online</span>" },
+		{ "name": "PCGames", "url": "http://www.pcgames.de/feed.cfm?menu_alias=home", "name_html": "<span style='color:#1F83B5;'>PC</span><span style='color:#FBDB21;'>Games</span>" },
+		{ "name": "GameStar", "url": "http://www.pcgames.de/feed.cfm?menu_alias=home", "name_html": "<span style='color:#003372;'><b>GameStar</b></span>" },
+		{ "name": "t3n", "url": "https://t3n.de/rss.xml", "name_html": "<span style='color:#000;'>t</span><span style='color:#FF0000;'>3</span><span style='color:#000000;'>n</span>" },
+		{ "name": "Business Punk", "url": "http://www.business-punk.com/feed/", "name_html": "<span style='color:#2C2C2C; font-family:serif;'>Business Punk</span>" },
+		{ "name": "RollingStone", "url": "https://www.rollingstone.com/music/feed/", "name_html": "<span style='color:#C81429; font-family:serif;'>RollingStone</span>" },
+		{ "name": "MUSIC NEWS", "url": "http://www.music-news.com/rss/UK/news", "name_html": "<span style='color:#ba1a56;'>MUSIC </span><span style='color:#000000;'>NEWS</span>" },
+		{ "name": "CinemaxX", "url": "https://www.presseportal.de/rss/pm_9588.rss2", "name_html": "<span style='color:#b90049;'><i>Cinemax<b>X</b></i></span>" },
+		{ "name": "Filmstarts.de - aktuell", "url": "http://rss.filmstarts.de/fs/kinos/aktuelle?format=xml", "name_html": "<span style='color:#3d59ba;'>Filmstarts.de</span><span style='color:#000000;'> - aktuell</span>" },
+		{ "name": "Filmstarts.de - bald", "url": "http://rss.filmstarts.de/fs/kinos/bald?format=xml", "name_html": "<span style='color:#3d59ba;'>Filmstarts.de</span><span style='color:#000000;'> - bald</span>" },
+		{ "name": "Filmstarts.de - Serien", "url": "http://rss.filmstarts.de/fs/news/serien?format=xml", "name_html": "<span style='color:#3d59ba;'>Filmstarts.de</span><span style='color:#000000;'> - Serien</span>" },
+		{ "name": "SPIEGEL Kino", "url": "http://www.spiegel.de/kultur/kino/index.rss", "name_html": "<span style='color:#950000;'><b>SPIEGEL</b> Kino</span>" },
+		{ "name": "Kino.de - Film-News", "url": "https://www.kino.de/rss/movienews", "name_html": "<span style='color:#039cfd;'>Kino.de</span><span style='color:#000000;'> - Film-News</span>" },
+		{ "name": "deutsche startups", "url": "https://www.deutsche-startups.de/feed/", "name_html": "<span style='color:#3b65b1;'>deutsche startups</span>" }
+	],
+	"deprecated":[
+		{ "name": "RevierSport", "url": "https://abo.reviersport.de/?news-rss-ama", "name_html": "<span style='color:#000;'>RevierSport</span>" }
+	],
+	"groups":[
+		{ "language": "de", "data": [
+			{"section": "main", "group": ["SPIEGEL ONLINE", "Süddeutsche", "FAZ", "Bild", "Tagesschau", "Wired", "Gruenderszene", "jetzt.de", "bento"]},
+			{"section": "economy", "group": ["SPIEGEL ONLINE", "Süddeutsche", "FAZ", "Tagesschau", "Gruenderszene"]},
+			{"section": "politics", "group": ["SPIEGEL ONLINE", "Süddeutsche", "FAZ", "Bild", "Tagesschau"]},
+			{"section": "science", "group": ["Wired", "t3n", "golem.de", "heise online"]},
+			{"section": "tech", "group": ["Wired", "t3n", "golem.de", "heise online", "PCGames"]},
+			{"section": "sports", "group": ["Sport1", "Sportschau", "Kicker"]},
+			{"section": "soccer", "group": ["Sportschau - Fussball", "Kicker", "Sport1", "11FREUNDE"]},
+			{"section": "games", "group": ["PCGames", "GameStar"]},
+			{"section": "music", "group": ["RollingStone", "MUSIC NEWS"]},
+			{"section": "cinema", "group": ["Filmstarts.de - aktuell", "Filmstarts.de - bald", "Kino.de - Film-News", "SPIEGEL Kino"]},
+			{"section": "tv", "group": ["Filmstarts.de - Serien", "Kino.de - Film-News"]},
+			{"section": "startup", "group": ["Gruenderszene", "deutsche startups", "Business Punk"]}
+		]},
+		{ "language": "en", "data": [
+			{"section": "main", "group": ["SPIEGEL ONLINE", "FAZ", "Bild", "Wired", "RollingStone"]},
+			{"section": "economy", "group": ["SPIEGEL ONLINE", "Süddeutsche", "FAZ", "Tagesschau", "Gruenderszene"]},
+			{"section": "politics", "group": ["SPIEGEL ONLINE", "Süddeutsche", "FAZ", "Bild", "Tagesschau"]},
+			{"section": "science", "group": ["Wired", "t3n", "golem.de", "heise online"]},
+			{"section": "tech", "group": ["Wired", "t3n", "golem.de", "heise online", "PCGames"]},
+			{"section": "sports", "group": ["Sport1", "Sportschau", "Kicker"]},
+			{"section": "soccer", "group": ["Sportschau - Fussball", "Kicker", "Sport1", "11FREUNDE"]},
+			{"section": "games", "group": ["PCGames", "GameStar"]},
+			{"section": "music", "group": ["RollingStone", "MUSIC NEWS"]},
+			{"section": "cinema", "group": ["Filmstarts.de - aktuell", "Filmstarts.de - bald", "Kino.de - Film-News", "SPIEGEL Kino"]},
+			{"section": "tv", "group": ["Filmstarts.de - Serien", "Kino.de - Film-News"]},
+			{"section": "startup", "group": ["Gruenderszene", "deutsche startups", "Business Punk"]}
+		]}
+	]
+}

@@ -151,7 +151,7 @@ public class Test_AuthAndAccount {
 		loginToken = authToken.getKeyToken(client);
 		authToken = getAuthToken(guuid, "", loginToken, client);
 		System.out.println("\nBasic-info of account: ");
-		Debugger.printMap_SO(authToken.getBasicInfo());
+		Debugger.printMap(authToken.getBasicInfo());
 				
 		//create user and API manager
 		User user = new User(null, authToken);
@@ -344,7 +344,7 @@ public class Test_AuthAndAccount {
 		System.out.println("id: " + userID);
 		System.out.println("accessLvl: " + accessLvl);
 		System.out.print("basicInfo: ");
-		if (basicInfo != null) Debugger.printMap_SO(basicInfo); else System.out.println("null");
+		if (basicInfo != null) Debugger.printMap(basicInfo); else System.out.println("null");
 		
 		return success;
 	}

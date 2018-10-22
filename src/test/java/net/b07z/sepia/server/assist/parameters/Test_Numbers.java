@@ -56,9 +56,9 @@ public class Test_Numbers {
 			TestResult tr = Test_Parameters.testAbstractParameterSearch(input, true, parametersToTest);
 			System.out.println("score: " + tr.score);
 			System.out.println("EXTRACTED: ");
-			Debugger.printMap_SS(tr.pv);
+			Debugger.printMap(tr.pv);
 			System.out.println("BUILT: ");
-			Debugger.printMap_SS(tr.pvBuild);
+			Debugger.printMap(tr.pvBuild);
 			System.out.println("");
 		}
 	}
