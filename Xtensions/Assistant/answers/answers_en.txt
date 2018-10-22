@@ -235,7 +235,9 @@ smartdevice_1d;;		rep=0|mood=5;;		What is the value?. ;;char=neutral
 smartdevice_1d;;		rep=1|mood=5;;		Repeat that number please! ;;char=neutral,polite
 smartdevice_1d;;		rep=2|mood=5;;		Sorry I think I can't help you with that :-( ;; char=neutral,polite
 smartdevice_2a;;		rep=0|mood=5;;		<1> to <3>, ok. ;;char=neutral
+smartdevice_2a;;		rep=0|mood=5;;		<1> to <3>, done. ;;char=neutral
 smartdevice_2b;;		rep=0|mood=5;;		<1> <2> to <3>, ok. ;;char=neutral
+smartdevice_2b;;		rep=0|mood=5;;		<1> <2> to <3>, done. ;;char=neutral
 smartdevice_2c;;		rep=0|mood=5;;		<1> is set to <3>. ;;char=neutral
 smartdevice_2d;;		rep=0|mood=5;;		<1> <2> is set to <3>. ;;char=neutral
 tickets_1a;;		rep=0|mood=5;;		Okay, I'll search tickets for <1>. ;;char=neutral
