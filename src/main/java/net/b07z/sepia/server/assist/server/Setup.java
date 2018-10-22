@@ -181,14 +181,14 @@ public class Setup {
 				}
 			}
 			//create admin and assistant user
-			System.out.println("\nCreating admin: ");
+			System.out.println("\nCreating admin... ");
 			try{
 				writeSuperUser(scf, adminEmail, adminPwd);
 			}catch(Exception e){
 				System.out.println("ERROR in admin data! Msg.: " + e.getMessage());
 				throw e;
 			}
-			System.out.println("\nCreating assistant user: ");
+			System.out.println("\nCreating assistant user... ");
 			try{
 				writeAssistantUser(scf, assistantEmail, assistantPwd);
 			}catch(Exception e){
@@ -196,7 +196,7 @@ public class Setup {
 				throw e;
 			}
 			if (st.equals(ServerType.test)){
-				System.out.println("\nCreating basic test user: ");
+				System.out.println("\nCreating basic test user... ");
 				try{
 					writeBasicUser(testUserEmail, testUserPwd, testUserNick);
 				}catch(Exception e){
