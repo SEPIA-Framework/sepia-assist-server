@@ -34,6 +34,7 @@ default_open_link_1a;;		rep=0|mood=5;;		Ok, ich öffne den Link für dich. ;;cha
 default_open_link_1a;;		rep=0|mood=5;;		Eine Sekunde, ich öffne den Link. ;;char=neutral
 default_under_construction_0a;;		rep=0|mood=5;;		Daran wird noch gearbeitet, sorry.  ;;char=neutral
 default_abort_no_change_0a;;		rep=0|mood=5;;		Ok, dann lasse ich mal alles so.  ;;char=neutral
+default_not_possible_0a;;			rep=0|mood=5;;		Sorry aber das ist nicht möglich, glaube ich.  ;;char=neutral
 yes_no_ask_0a;;		rep=0|mood=5;;		ja oder nein <user_name>? ;;char=cool,rude,neutral
 yes_no_ask_0a;;		rep=1|mood=5;;		war das jetzt ein ja oder ein nein <user_name>? ;;char=polite,neutral
 yes_no_ask_0a;;		rep=2|mood=5;;		also du hast jetzt folgende Optionen <user_name>, ja, nein oder abbrechen. ;;char=polite,neutral
@@ -222,7 +223,13 @@ smartdevice_0b;;		rep=0|mood=5;;		Sorry, ich glaub da kann ich dir gerade nicht 
 smartdevice_0c;;		rep=0|mood=5;;		Dein Smart Home System wurde noch nicht eingerichtet <user_name>. ;;char=neutral
 smartdevice_0d;;		rep=0|mood=5;;		Sorry <user_name>, aber du brauchst erst eine Erlaubnis, um diesen Smart Home Service zu nutzen. ;;char=neutral
 smartdevice_0d;;		rep=1|mood=5;;		Frage bitte den Administrator, wenn du diesen Smart Home Service nutzen willst. ;;char=neutral
-smartdevice_0d;;		rep=2|mood=5;;		Ernsthaft <user_name>, du brauchst erst eine Erlaubnis um diesen Service nutzen zu können! ;;char=neutral
+smartdevice_0d;;		rep=2|mood=5;;		Ernsthaft <user_name>, du brauchst erst eine Erlaubnis um diesen Service nutzen zu können! ;;char=neutral,rude
+smartdevice_0e;;		rep=0|mood=5;;		Sorry <user_name>, aber dieses Gerät kann ich noch nicht steuern. ;;char=neutral
+smartdevice_0e;;		rep=1|mood=5;;		Das geht jetzt noch nicht, aber bestimmt bald. ;;char=neutral
+smartdevice_0e;;		rep=2|mood=5;;		Das geht leider wirklich noch nicht. Ich muss erst lernen damit umzugehen! ;;char=neutral
+smartdevice_0f;;		rep=0|mood=5;;		Sorry <user_name>, aber ich habe keine passenden Geräte gefunden. ;;char=neutral
+smartdevice_0f;;		rep=1|mood=5;;		Nö, sehe kein passendes Gerät. ;;char=neutral,cool
+smartdevice_0f;;		rep=2|mood=5;;		Habe kein einziges, passendes Gerät gefunden! ;;char=neutral
 smartdevice_1a;;		rep=0|mood=5;;		Welches Gerät möchtest du steuern <user_name>? ;;char=neutral
 smartdevice_1a;;		rep=1|mood=5;;		Sag noch mal bitte! ;;char=cool,rude
 smartdevice_1a;;		rep=1|mood=5;;		Wie war das? ;;char=polite,neutral
@@ -240,7 +247,10 @@ smartdevice_1d;;		rep=0|mood=5;;		Sag mir einen Wert bitte. ;;char=neutral
 smartdevice_1d;;		rep=0|mood=5;;		Auf welchen Wert?. ;;char=cool,polite,neutral
 smartdevice_1d;;		rep=1|mood=5;;		Welche Zahl war das? ;;char=rude
 smartdevice_1d;;		rep=2|mood=5;;		Sorry, ich glaub da kann ich dir gerade nicht weiterhelfen <user_name>. ;;char=cool,polite,neutral
-smartdevice_2a;;		rep=0|mood=5;;		Ich habe <1> auf <2> gesetzt. ;;char=neutral
+smartdevice_2a;;		rep=0|mood=5;;		<1> auf <3>, alles klaro. ;;char=neutral
+smartdevice_2b;;		rep=0|mood=5;;		<1> <2> auf <3>, alles klaro. ;;char=neutral
+smartdevice_2c;;		rep=0|mood=5;;		<1> steht auf <3>. ;;char=neutral
+smartdevice_2d;;		rep=0|mood=5;;		<1> <2> steht auf <3>. ;;char=neutral
 tickets_1a;;		rep=0|mood=5;;		Alles klar, ich suche mal nach Tickets für <1>. ;;char=cool,rude,neutral
 tickets_0a;;		rep=0|mood=5;;		Sorry, irgendwas ist schief gelaufen bei der Suche. Probier es bitte noch mal. ;;char=polite,neutral
 tickets_ask_0a;;	rep=0|mood=5;;		Wofür soll ich Tickets suchen? ;;char=cool,rude,neutral

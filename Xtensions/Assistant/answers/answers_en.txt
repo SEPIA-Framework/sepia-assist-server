@@ -34,6 +34,7 @@ default_open_link_1a;;		rep=0|mood=5;;		Ok, let me open that link for you. ;;cha
 default_open_link_1a;;		rep=0|mood=5;;		One second, opening the link. ;;char=neutral
 default_under_construction_0a;;		rep=0|mood=5;;		This is still under construction, sorry.  ;;char=neutral
 default_abort_no_change_0a;;		rep=0|mood=5;;		Ok, I'll leave everything as is.  ;;char=neutral
+default_not_possible_0a;;			rep=0|mood=5;;		Sorry this is not possible, I think.  ;;char=neutral
 yes_no_ask_0a;;		rep=0|mood=5;;		yes or no <user_name>? ;;char=rude,neutral
 yes_no_ask_0a;;		rep=1|mood=5;;		was that a yes or a no <user_name>? ;;char=neutral
 yes_no_ask_0a;;		rep=2|mood=5;;		<user_name>, you have the following options here, yes, no or abort. ;;char=rude
@@ -211,6 +212,12 @@ smartdevice_0c;;		rep=0|mood=5;;		Your Smart Home system has not been configured
 smartdevice_0d;;		rep=0|mood=5;;		Sorry <user_name>, but you need a permission to use this smart home service. ;;char=neutral
 smartdevice_0d;;		rep=1|mood=5;;		If you want to use this smart home service please ask your administrator first. ;;char=neutral
 smartdevice_0d;;		rep=2|mood=5;;		No seriously <user_name>, you have to get permission first to access this service! ;;char=neutral
+smartdevice_0e;;		rep=0|mood=5;;		Sorry <user_name>, but I can't control this device yet. ;;char=neutral
+smartdevice_0e;;		rep=1|mood=5;;		I can't do that yet, ask me again soon. ;;char=neutral
+smartdevice_0e;;		rep=2|mood=5;;		I really can't. I have to learn how to control that device first! ;;char=neutral
+smartdevice_0f;;		rep=0|mood=5;;		Sorry <user_name>, but I can't find any matching devices. ;;char=neutral
+smartdevice_0f;;		rep=1|mood=5;;		No devices seems to match, sorry. ;;char=neutral
+smartdevice_0f;;		rep=2|mood=5;;		Not a single matching device found! ;;char=neutral
 smartdevice_1a;;		rep=0|mood=5;;		What is the device you want to operate? ;;char=neutral
 smartdevice_1a;;		rep=1|mood=5;;		Say again please! ;;char=neutral,polite
 smartdevice_1a;;		rep=1|mood=5;;		What was that <user_name>? ;;char=neutral
@@ -227,7 +234,10 @@ smartdevice_1d;;		rep=0|mood=5;;		Give me a value please. ;;char=neutral,polite
 smartdevice_1d;;		rep=0|mood=5;;		What is the value?. ;;char=neutral
 smartdevice_1d;;		rep=1|mood=5;;		Repeat that number please! ;;char=neutral,polite
 smartdevice_1d;;		rep=2|mood=5;;		Sorry I think I can't help you with that :-( ;; char=neutral,polite
-smartdevice_2a;;		rep=0|mood=5;;		I've set <1> to <2>. ;;char=neutral
+smartdevice_2a;;		rep=0|mood=5;;		<1> to <3>, ok. ;;char=neutral
+smartdevice_2b;;		rep=0|mood=5;;		<1> <2> to <3>, ok. ;;char=neutral
+smartdevice_2c;;		rep=0|mood=5;;		<1> is set to <3>. ;;char=neutral
+smartdevice_2d;;		rep=0|mood=5;;		<1> <2> is set to <3>. ;;char=neutral
 tickets_1a;;		rep=0|mood=5;;		Okay, I'll search tickets for <1>. ;;char=neutral
 tickets_0a;;		rep=0|mood=5;;		Sorry, something went wrong during the search. Try again please. ;;char=neutral,polite
 tickets_ask_0a;;	rep=0|mood=5;;		For what should I search tickets? ;;char=neutral

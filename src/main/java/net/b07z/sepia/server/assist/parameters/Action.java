@@ -140,7 +140,7 @@ public class Action implements ParameterHandler{
 			set = "setzen|setze|stelle|stellen|auswaehlen|waehlen|waehle|"
 					+ "erinnere|weck(e|)";
 			toggle = "umschalten|schalten|schalte";
-			show = "anzeigen|zeig|zeigen|check|checken|was sagt|wieviel";
+			show = "anzeigen|zeig|zeigen|check|checken|was sagt|wieviel|status";
 			add = "fuege .*\\bhinzu|hinzufuegen|ergaenze|ergaenzen|eintragen|trage .*\\bein|"
 					+ "auf .*\\b(\\w*list(e|)|\\w*zettel|\\w*note(s|))";		//tricky one for lists ... user can "mean" add, but not say it (milk on my list)
 			remove = "entferne|entfernen|loesche|loeschen|nimm .*\\bvon";
@@ -165,7 +165,7 @@ public class Action implements ParameterHandler{
 			set = "set|put|select|choose|"
 					+ "remind (\\w+) to|wake";
 			toggle = "toggle|switch";
-			show = "show|shows|display|check|what does .* say|how much";
+			show = "show|shows|display|check|what does .* say|how much|status";
 			add = "add|enter|"
 					+ "on .*\\b(\\w*list|\\w*note(s|))";		//tricky one for lists ... user can "mean" add, but not say it (milk on my list)
 			remove = "remove|delete|take .*\\boff";
