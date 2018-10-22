@@ -44,7 +44,7 @@ public class Workers {
 		workers.put(rssWorker.getName(), rssWorker);
 		
 		//openLiga - German soccer: Bundesliga
-		openLigaWorkerBundesliga = new OpenLigaWorker(OpenLigaWorker.BUNDESLIGA, "2017");
+		openLigaWorkerBundesliga = new OpenLigaWorker(OpenLigaWorker.BUNDESLIGA, "2018");
 		workers.put(openLigaWorkerBundesliga.getName(), openLigaWorkerBundesliga);
 		
 		//Backups
