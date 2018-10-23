@@ -108,16 +108,30 @@ public class NluInput {
 	public void clearCustomCommandToServicesMappings(){
 		customCommandToServicesMappings.clear();
 	}
+	
 	//parameter results
+	/**
+	 * Add a parameter result to temporary session storage for usage in other parameters for example.
+	 */
 	public void addToParameterResultStorage(ParameterResult pr){
 		parameterResultStorage.put(pr.getName(), pr);
 	}
+	/**
+	 * Get a stored parameter result for this session or return null. <br>
+	 * Note: you can use {@link ParameterResult#getResult} as well.
+	 */
 	public ParameterResult getStoredParameterResult(String pName){
 		return parameterResultStorage.get(pName);
 	}
+	/**
+	 * Clear session storage of parameters.
+	 */
 	public void clearParameterResultStorage(){
 		parameterResultStorage = new HashMap<>();
 	}
+	/**
+	 * Clear specific parameter buffered in session storage.
+	 */
 	public void clearParameterResult(String pName){
 		parameterResultStorage.remove(pName);
 	}

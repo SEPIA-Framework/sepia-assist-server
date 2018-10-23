@@ -1,5 +1,7 @@
 package net.b07z.sepia.server.assist.parameters;
 
+import java.util.regex.Pattern;
+
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.interpreters.NluInput;
@@ -8,6 +10,7 @@ import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 
 /**
@@ -53,34 +56,91 @@ public class SmartDeviceValue implements ParameterHandler{
 			number = Number.extract(input, this.nluInput);
 			foundCommon = number;
 		}
-		
-		//store common value?
+		//if we don't have any number ..
 		if (number.trim().isEmpty()){
 			return "";
 		}else{
-			//store common
+			//store first common number for other parameters (there might be more though)
 			pr = new ParameterResult(PARAMETERS.NUMBER, number, foundCommon);
 			nluInput.addToParameterResultStorage(pr);
 		}
+
+		//get number type
+		TypeAndNumber typeNum = checkTypeAndReturnNumber(input, number, null);
+		String type = typeNum.type;
+		number = typeNum.number;
 		
-		//check accepted types
-		String type = Number.getTypeClass(number, language).replaceAll("^<|>$", "").trim();
-		if (NluTools.stringContains(type, 
-				Number.Types.plain.name() + "|" + 
-				Number.Types.percent.name() + "|" + 
-				Number.Types.temperature.name())){
-			
+		if (number.isEmpty()){
+			return "";
+		}else{
 			this.found = number;
 			//System.out.println("PARAMETER-NUMBER - found: " + this.found);					//DEBUG
 			
 			//store type of this - NOTE: we use this for 'type' here, we got the rest in NUMBER already
 			pr = new ParameterResult(PARAMETERS.SMART_DEVICE_VALUE, type, this.found);
 			nluInput.addToParameterResultStorage(pr);
-			
+
 			return number;
+		}
+	}
+	
+	/**
+	 * Recursively run type check again until we got a valid number or no matches anymore.
+	 * @param input
+	 * @param number
+	 * @param deviceStringFound
+	 * @return
+	 */
+	private TypeAndNumber checkTypeAndReturnNumber(String input, String number, String deviceStringFound){
+		//get number type
+		String type = Number.getTypeClass(number, language).replaceAll("^<|>$", "").trim();
 		
+		//check plain type first because it could be a device tag like "light 1"
+		if (NluTools.stringContains(type, 
+				Number.Types.plain.name())){
+			
+			//load device to better evaluate plain numbers - Note: usually this is already extracted before so we don't store it
+			if (Is.nullOrEmpty(deviceStringFound)){
+				ParameterResult devicePr = ParameterResult.getResult(nluInput, PARAMETERS.SMART_DEVICE, input);
+				deviceStringFound = devicePr.getFound();
+			}
+			
+			//The device string can be something like "lamp 1" ...
+			if (Is.notNullOrEmpty(deviceStringFound) && NluTools.stringContains(deviceStringFound, number)){
+				//In this case we need to search again
+				String filteredInput = NluTools.stringRemoveFirst(input, Pattern.quote(deviceStringFound));
+				number = Number.extract(filteredInput, this.nluInput);
+				if (Is.notNullOrEmpty(number)){
+					return checkTypeAndReturnNumber(filteredInput, number, null);
+				}else{
+					return new TypeAndNumber(type, "");
+				}
+				
+			}else{
+				return new TypeAndNumber(type, number);
+			}
+		
+		//then check other accepted types
+		}else if (NluTools.stringContains(type,  
+				Number.Types.percent.name() + "|" + 
+				Number.Types.temperature.name())){
+			
+			return new TypeAndNumber(type, number);
+		
+		//no type fits
 		}else{
-			return "";
+			return new TypeAndNumber(type, "");
+		}
+	}
+	/**
+	 * Helper class for passing through type and number at the same time in method above.
+	 */
+	private static class TypeAndNumber {
+		String type;
+		String number;
+		public TypeAndNumber(String type, String number){
+			this.type = type;
+			this.number = number;
 		}
 	}
 	

@@ -17,7 +17,7 @@ public class Test_Numbers {
 	public static void main(String[] args) {
 		
 		Start.setupServicesAndParameters();
-		String[] parametersToTest = new String[]{ PARAMETERS.NUMBER, PARAMETERS.SMART_DEVICE_VALUE };
+		String[] parametersToTest = new String[]{ PARAMETERS.NUMBER, PARAMETERS.SMART_DEVICE, PARAMETERS.SMART_DEVICE_VALUE };
 		
 		String language = "de";
 				
@@ -36,6 +36,7 @@ public class Test_Numbers {
 		texts.add("Heizung auf 20 Grad Celsius bitte");
 		texts.add("Licht auf 70% im Wohnzimmer bitte");
 		texts.add("Licht auf 10 Prozent bitte im Wohnzimmer");
+		texts.add("Lampe 1 auf 50 Prozent");
 
 		printTestResults(texts, parametersToTest, language);
 	}

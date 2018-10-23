@@ -38,7 +38,8 @@ public interface ParameterHandler {
 	public String guess(String input);
 	
 	/**
-	 * Return the exact string (not any modified version) that has been found during extraction.
+	 * Return the exact string (not any modified version) that has been found during extraction.<br>
+	 * Note: this is usually only available during the NLU interpretation phase (not anymore in the build-phase).
 	 */
 	public String getFound();
 	
