@@ -5,6 +5,7 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.assistant.LOCATION;
+import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 
@@ -89,16 +90,16 @@ public class Address {
 	 * Use this if you have an address-map and you KNOW! that it has the correct format.
 	 */
 	public Address(Map<String, Object> map){
-		this.description = (String) map.get(PersonalInfo.DESCRIPTION);
-		this.name = (String) map.get(LOCATION.NAME);
-		this.latitude = (String) map.get(LOCATION.LAT);
-		this.longitude = (String) map.get(LOCATION.LNG);
-		this.street = (String) map.get(LOCATION.STREET);
-		this.streetNumber = (String) map.get(LOCATION.STREET_NBR);
-		this.city = (String) map.get(LOCATION.CITY);
-		this.postalCode = (String) map.get(LOCATION.POSTAL_CODE);
-		this.state = (String) map.get(LOCATION.STATE);
-		this.country = (String) map.get(LOCATION.COUNTRY);
+		this.description = Converters.obj2StringOrDefault(map.get(PersonalInfo.DESCRIPTION), null);
+		this.name = Converters.obj2StringOrDefault(map.get(LOCATION.NAME), null);
+		this.latitude = Converters.obj2StringOrDefault(map.get(LOCATION.LAT), null);
+		this.longitude = Converters.obj2StringOrDefault(map.get(LOCATION.LNG), null);
+		this.street = Converters.obj2StringOrDefault(map.get(LOCATION.STREET), null);
+		this.streetNumber = Converters.obj2StringOrDefault(map.get(LOCATION.STREET_NBR), null);
+		this.city = Converters.obj2StringOrDefault(map.get(LOCATION.CITY), null);
+		this.postalCode = Converters.obj2StringOrDefault(map.get(LOCATION.POSTAL_CODE), null);
+		this.state = Converters.obj2StringOrDefault(map.get(LOCATION.STATE), null);
+		this.country = Converters.obj2StringOrDefault(map.get(LOCATION.COUNTRY), null);
 	}
 	
 	/**

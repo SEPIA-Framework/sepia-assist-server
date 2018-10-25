@@ -66,8 +66,8 @@ public class EventsManager {
 		//
 		//place
 		boolean locationIsKnown = true;
-		double lat = Converters.obj2Double(input.user.getCurrentLocation(LOCATION.LAT));
-		double lng = Converters.obj2Double(input.user.getCurrentLocation(LOCATION.LNG));
+		double lat = Converters.obj2DoubleOrDefault(input.user.getCurrentLocation(LOCATION.LAT), Double.NEGATIVE_INFINITY);
+		double lng = Converters.obj2DoubleOrDefault(input.user.getCurrentLocation(LOCATION.LNG), Double.NEGATIVE_INFINITY);
 		if (lat == Double.NEGATIVE_INFINITY || lng == Double.NEGATIVE_INFINITY){
 			locationIsKnown = false;
 		}
@@ -76,8 +76,8 @@ public class EventsManager {
 		}
 		boolean homeIsKnown = true;
 		Address homeAdr = input.user.getTaggedAddress(Address.USER_HOME_TAG, false);		//load from account
-		double latHome = Converters.obj2Double(homeAdr.latitude);
-		double lngHome = Converters.obj2Double(homeAdr.longitude);
+		double latHome = Converters.obj2DoubleOrDefault(homeAdr.latitude, Double.NEGATIVE_INFINITY);
+		double lngHome = Converters.obj2DoubleOrDefault(homeAdr.longitude, Double.NEGATIVE_INFINITY);
 		if (latHome == Double.NEGATIVE_INFINITY || lngHome == Double.NEGATIVE_INFINITY){
 			homeIsKnown = false;
 		}
@@ -87,8 +87,8 @@ public class EventsManager {
 		}
 		boolean workIsKnown = true;
 		Address workAdr = input.user.getTaggedAddress(Address.USER_WORK_TAG, false);		//load from account
-		double latWork = Converters.obj2Double(workAdr.latitude);
-		double lngWork = Converters.obj2Double(workAdr.longitude);
+		double latWork = Converters.obj2DoubleOrDefault(workAdr.latitude, Double.NEGATIVE_INFINITY);
+		double lngWork = Converters.obj2DoubleOrDefault(workAdr.longitude, Double.NEGATIVE_INFINITY);
 		if (latWork == Double.NEGATIVE_INFINITY || lngWork == Double.NEGATIVE_INFINITY){
 			workIsKnown = false;
 		}
@@ -202,9 +202,11 @@ public class EventsManager {
 		//TV program
 		if (localTimeIsKnown && isEvening){
 			//evening TV
+			/* Disabled until better service available
 			addCommandButton(actionBuilder, EventLabels.getLabel(Constants.tv_program, input.language), 
 					CmdBuilder.getTvProgram("")
 			);
+			*/
 			//series news
 			addCommandButton(actionBuilder, EventLabels.getLabel(Constants.tv_series, input.language), 
 					CmdBuilder.getNews("tv")
