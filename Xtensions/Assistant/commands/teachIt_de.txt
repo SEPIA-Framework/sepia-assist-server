@@ -1,3 +1,4 @@
+ERR;;		command=chat;;		reply=<error_0a>
 Test;;		command=chat;;		reply=<test_0a>
 Dies ist ein Test;;		command=chat;;		reply=<test_0a>
 Funktioniert alles?;;		command=chat;;		reply=<test_0a>
