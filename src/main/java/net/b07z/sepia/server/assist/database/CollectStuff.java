@@ -116,8 +116,8 @@ public class CollectStuff {
 	 * @return id string or empty string
 	 */
 	public static String getGeoLocationID(JSONObject location_data_js){
-		double lat = Converters.obj2Double(location_data_js.get(LOCATION.LAT));
-		double lng = Converters.obj2Double(location_data_js.get(LOCATION.LNG));
+		double lat = Converters.obj2DoubleOrDefault(location_data_js.get(LOCATION.LAT), Double.NEGATIVE_INFINITY);
+		double lng = Converters.obj2DoubleOrDefault(location_data_js.get(LOCATION.LNG), Double.NEGATIVE_INFINITY);
 		if (lat != Double.NEGATIVE_INFINITY && lng != Double.NEGATIVE_INFINITY){
 			String id = String.format("%.4f", lat) + "_" + String.format("%.4f", lng);
 			id = id.replaceAll(",", ".");

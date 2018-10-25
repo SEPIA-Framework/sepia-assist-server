@@ -89,6 +89,9 @@ public class ID {
 		 * with the client method.
 		 */
 		public Generator(String pwd, String salt, int N) throws Exception{
+			if (N<1){
+				throw new RuntimeException("Invalid N!");
+			}
 			iterations = N;
 			saltBytes = Security.hexToByteArray(salt);
 			this.pwd = hashPassword_server(pwd, saltBytes, iterations);

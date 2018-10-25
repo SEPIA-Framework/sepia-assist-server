@@ -183,7 +183,7 @@ public class Test_ElasticSearch {
 		JSONObject data = db.searchSimple(DB.WHITELIST + "/" + "users", "uid:" + userId);
 		try{
 			System.out.println("whitelist user search: " + data.toJSONString());
-			int hits = Converters.obj2Int(((JSONObject) data.get("hits")).get("total"));
+			int hits = Converters.obj2IntOrDefault(((JSONObject) data.get("hits")).get("total"), -1);
 			System.out.println("whitelist users found: " + hits);
 		}catch (Exception e){
 			Debugger.println("Whitelist search failed! ID: " + userId + " - error: " + e.getMessage(), 1);

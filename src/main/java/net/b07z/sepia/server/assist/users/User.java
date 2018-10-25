@@ -329,7 +329,7 @@ public final class User {
 		userId = (String) account.get("userId");
 		email = (String) account.get("email");
 		phone = (String) account.get("phone");
-		accessLvl = Converters.obj2Int(account.get("accessLevel"));
+		accessLvl = Converters.obj2IntOrDefault(account.get("accessLevel"), -1);
 		JSONObject uname = (JSONObject) account.get("userName");
 		if (uname != null){
 			userName = new Name(Converters.json2HashMap(uname));
@@ -462,43 +462,47 @@ public final class User {
 	}
 	/**
 	 * Load account info first via loadInfoFromAccount(...) then use this with the desired key you used in load...
-	 * Returns a string of the key value if possible or empty string. 
+	 * Returns a string with the key value if possible or default string. 
 	 * @param key - key, previously loaded with loadInfo...()
-	 * @return string or ""
+	 * @param def - default
+	 * @return string or default
 	 */
-	public String getInfo_String(String key){
+	public String getInfoAsString(String key, String def){
 		Object o = info.get(key);
-		return (o != null) ? o.toString() : "";
+		return (o != null) ? o.toString() : def;
 	}
 	/**
 	 * Load account info first via loadInfoFromAccount(...) then use this with the desired key you used in load...
-	 * Returns a long of the key value if possible or -1! 
+	 * Returns a long number with the key value if possible or default 
 	 * @param key - key, previously loaded with loadInfo...()
-	 * @return long or -1
+	 * @param def - default
+	 * @return long or default
 	 */
-	public long getInfo_Long(String key){
+	public long getInfoAsLong(String key, Long def){
 		Object o = info.get(key);
-		return Converters.obj2Long(o);
+		return Converters.obj2LongOrDefault(o, def);
 	}
 	/**
 	 * Load account info first via loadInfoFromAccount(...) then use this with the desired key you used in load...
-	 * Returns an integer of the key value if possible or -1! 
+	 * Returns an integer number with the key value if possible or default! 
 	 * @param key - key, previously loaded with loadInfo...()
-	 * @return integer or -1
+	 * @param def - default
+	 * @return integer or default
 	 */
-	public int getInfo_Integer(String key){
+	public int getInfoAsInteger(String key, Integer def){
 		Object o = info.get(key);
-		return Converters.obj2Int(o);
+		return Converters.obj2IntOrDefault(o, def);
 	}
 	/**
 	 * Load account info first via loadInfoFromAccount(...) then use this with the desired key you used in load...
-	 * Returns a double of the key value if possible or -1.0! 
+	 * Returns a double number with the key value if possible or default! 
 	 * @param key - key, previously loaded with loadInfo...()
-	 * @return double or NEGATIVE_INFINITY
+	 * @param def - default
+	 * @return double or default
 	 */
-	public double getInfo_Double(String key){
+	public double getInfoAsDouble(String key, Double def){
 		Object o = info.get(key);
-		return Converters.obj2Double(o);
+		return Converters.obj2DoubleOrDefault(o, def);
 	}
 	
 	/**
@@ -508,7 +512,7 @@ public final class User {
 	 * @return ArrayList with strings or null
 	 */
 	@SuppressWarnings("unchecked")
-	public ArrayList<String> getInfo_List(String listKey){
+	public ArrayList<String> getInfoAsList(String listKey){
 		Object o = info.get(listKey);
 		ArrayList<String> list = (o != null)? (ArrayList<String>) info.get(listKey) : null;
 		return list;
@@ -521,7 +525,7 @@ public final class User {
 	 * @return HashMap with strings or null
 	 */
 	@SuppressWarnings("unchecked")
-	public HashMap<String, String> getInfo_Map(String mapKey){
+	public HashMap<String, String> getInfoAsMap(String mapKey){
 		Object o = info.get(mapKey);
 		HashMap<String, String> map = (o != null)? (HashMap<String, String>) info.get(mapKey) : null;
 		return map;

@@ -439,9 +439,9 @@ public class DateTimeConverters {
 	 */
 	public static HashMap<String, Long> getTimeUntilMidnight(String userLocalTime){
 		String[] time = userLocalTime.split(":");
-		long hh = 23l - Converters.str2Long(time[0]);
-		long mm = 59l - Converters.str2Long(time[1]);
-		long ss = 59l - Converters.str2Long(time[2]);
+		long hh = 23l - Converters.obj2LongOrDefault(time[0], null);
+		long mm = 59l - Converters.obj2LongOrDefault(time[1], null);
+		long ss = 59l - Converters.obj2LongOrDefault(time[2], null);
 		long totalSec = (hh * 60l * 60l) + (mm * 60) + (ss);
 		
 		HashMap<String, Long> diffMap = new HashMap<>();

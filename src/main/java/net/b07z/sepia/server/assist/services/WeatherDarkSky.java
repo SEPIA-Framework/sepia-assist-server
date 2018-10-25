@@ -182,10 +182,10 @@ public class WeatherDarkSky implements ServiceInterface{
 			//targetDate = targetDate.replaceFirst("_.*", "").trim();
 			
 			JSONObject timeDiff = (JSONObject) timeJSON.get(InterviewData.TIME_DIFF);
-			days = Converters.obj2Long((timeDiff).get("dd"));
-			long hours = Converters.obj2Long((timeDiff).get("hh"));
-			long minutes = Converters.obj2Long((timeDiff).get("mm"));
-			long seconds = Converters.obj2Long((timeDiff).get("ss"));
+			days = Converters.obj2LongOrDefault((timeDiff).get("dd"), null);
+			long hours = Converters.obj2LongOrDefault((timeDiff).get("hh"), null);
+			long minutes = Converters.obj2LongOrDefault((timeDiff).get("mm"), null);
+			long seconds = Converters.obj2LongOrDefault((timeDiff).get("ss"), null);
 			if (hours > 0 || minutes > 0 || seconds > 0){
 				long correctedDiffDays = DateTimeConverters.getIntuitiveDaysDifference(NLU_result.input, days, hours, minutes, seconds);
 				days = correctedDiffDays;
@@ -331,7 +331,7 @@ public class WeatherDarkSky implements ServiceInterface{
 					JSONObject hh = (JSONObject) o;
 					double tempHour = Double.parseDouble(hh.get("temperature").toString());
 					tempHour = Math.round(tempHour);
-					long timeUnixHour = Converters.obj2Long(hh.get("time"))*1000;
+					long timeUnixHour = Converters.obj2LongOrDefault(hh.get("time"), null)*1000;
 					String[] tags = DateTime.getDateAtTimeZone(timeUnixHour, "EEEE HH:mm", timeZone).split(" ");
 					String dayShort = getTimeName(tags[0].toLowerCase(), api.language);
 					dayLong = getTimeName(dayShort, api.language);
@@ -404,7 +404,7 @@ public class WeatherDarkSky implements ServiceInterface{
 					tempMin = Math.round(tempMin);
 					double tempMax = Double.parseDouble(dd.get("temperatureMax").toString());
 					tempMax = Math.round(tempMax);
-					long timeUnixDay = Converters.obj2Long(dd.get("time"))*1000;
+					long timeUnixDay = Converters.obj2LongOrDefault(dd.get("time"), null)*1000;
 					String[] tags = DateTime.getDateAtTimeZone(timeUnixDay, "EEEE dd.MM.", timeZone).split(" ");
 					String dayShort = getTimeName(tags[0].toLowerCase(), api.language);
 					String thisDayLong = getTimeName(dayShort, api.language);

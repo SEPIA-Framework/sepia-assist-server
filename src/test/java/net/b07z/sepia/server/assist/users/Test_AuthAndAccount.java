@@ -212,7 +212,7 @@ public class Test_AuthAndAccount {
 		//load name
 		String name = user.getName(apiManager);
 		System.out.println("\nName: " + name);
-		System.out.println("Pref. language: " + user.getInfo_String(ACCOUNT.USER_PREFERRED_LANGUAGE));
+		System.out.println("Pref. language: " + user.getInfoAsString(ACCOUNT.USER_PREFERRED_LANGUAGE, ""));
 		
 		//save some stuff
 		int code = user.saveInfoToAccount(apiManager, JSON.make(
@@ -229,8 +229,8 @@ public class Test_AuthAndAccount {
 		if (user.loadInfoFromAccount(apiManager, ACCOUNT.USER_NAME_NICK, ACCOUNT.USER_PREFERRED_LANGUAGE) != 0){
 			throw new RuntimeException("\nFailed to load account data!");
 		}
-		System.out.println("\nNew nick-name: " + user.getInfo_String(ACCOUNT.USER_NAME_NICK));
-		System.out.println("New pref. language: " + user.getInfo_String(ACCOUNT.USER_PREFERRED_LANGUAGE));
+		System.out.println("\nNew nick-name: " + user.getInfoAsString(ACCOUNT.USER_NAME_NICK, ""));
+		System.out.println("New pref. language: " + user.getInfoAsString(ACCOUNT.USER_PREFERRED_LANGUAGE, ""));
 		
 		//load address
 		Address userHome = user.getTaggedAddress(Address.USER_HOME_TAG, true);

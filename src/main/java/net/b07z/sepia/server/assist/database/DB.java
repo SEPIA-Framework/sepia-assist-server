@@ -1085,7 +1085,7 @@ public class DB {
 		JSONObject data = knowledge.searchSimple(WHITELIST + "/" + "users", "uid:" + ID.clean(email));
 		//System.out.println("whitelist user search: " + data.toJSONString());
 		try{
-			int hits = Converters.obj2Int(((JSONObject) data.get("hits")).get("total"));
+			int hits = Converters.obj2IntOrDefault(((JSONObject) data.get("hits")).get("total"), -1);
 			if (hits > 0){
 				return true;
 			}else{

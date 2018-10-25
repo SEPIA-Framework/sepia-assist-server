@@ -431,11 +431,11 @@ public class RegexParameterSearch {
 					//all good
 				//meter
 				}else if (NluTools.stringContains(amount_type, "(meter|m)")){
-					double m = Converters.obj2Double(amount);
+					double m = Converters.obj2DoubleOrDefault(amount, Double.NEGATIVE_INFINITY);
 					amount = (m != Double.NEGATIVE_INFINITY)? Converters.smartRound(m / 1000.0d, false) : "";
 				//miles
 				}else if (NluTools.stringContains(amount_type, "(meile(n|))")){
-					double m = Converters.obj2Double(amount);
+					double m = Converters.obj2DoubleOrDefault(amount, Double.NEGATIVE_INFINITY);
 					amount = (m != Double.NEGATIVE_INFINITY)? Converters.smartRound(m * 1.609344d, false) : "";
 				//FAIL
 				}else{
@@ -448,11 +448,11 @@ public class RegexParameterSearch {
 					//all good
 				//watt
 				}else if (NluTools.stringContains(amount_type, "(watt|w)")){
-					double w = Converters.obj2Double(amount);
+					double w = Converters.obj2DoubleOrDefault(amount, Double.NEGATIVE_INFINITY);
 					amount = (w != Double.NEGATIVE_INFINITY)? Converters.smartRound(w / 1000.0d, false) : "";
 				//hp, ps
 				}else if (NluTools.stringContains(amount_type, "(ps|hp|pferdestaerke(n|)|pferde staerke(n|))")){
-					double ps = Converters.obj2Double(amount);
+					double ps = Converters.obj2DoubleOrDefault(amount, Double.NEGATIVE_INFINITY);
 					amount = (ps != Double.NEGATIVE_INFINITY)? Converters.smartRound(ps * 0.735499d, false) : "";
 				//FAIL
 				}else{
@@ -490,11 +490,11 @@ public class RegexParameterSearch {
 					//all good
 				//meter
 				}else if (NluTools.stringContains(amount_type, "(meter(s|)|metre(s|)|m)")){
-					double m = Converters.obj2Double(amount);
+					double m = Converters.obj2DoubleOrDefault(amount, Double.NEGATIVE_INFINITY);
 					amount = (m != Double.NEGATIVE_INFINITY)? Converters.smartRound(m / 1000.0d, false) : "";
 				//miles
 				}else if (NluTools.stringContains(amount_type, "(mile(s|))")){
-					double m = Converters.obj2Double(amount);
+					double m = Converters.obj2DoubleOrDefault(amount, Double.NEGATIVE_INFINITY);
 					amount = (m != Double.NEGATIVE_INFINITY)? Converters.smartRound(m * 1.609344d, false) : "";
 				//FAIL
 				}else{
@@ -507,11 +507,11 @@ public class RegexParameterSearch {
 					//all good
 				//watt
 				}else if (NluTools.stringContains(amount_type, "(watt(s|)|w)")){
-					double w = Converters.obj2Double(amount);
+					double w = Converters.obj2DoubleOrDefault(amount, Double.NEGATIVE_INFINITY);
 					amount = (w != Double.NEGATIVE_INFINITY)? Converters.smartRound(w / 1000.0d, false) : "";
 				//hp, ps
 				}else if (NluTools.stringContains(amount_type, "(ps|hp|horsepower(s|)|horse power(s|))")){
-					double ps = Converters.obj2Double(amount);
+					double ps = Converters.obj2DoubleOrDefault(amount, Double.NEGATIVE_INFINITY);
 					amount = (ps != Double.NEGATIVE_INFINITY)? Converters.smartRound(ps * 0.735499d, false) : "";
 				//FAIL
 				}else{

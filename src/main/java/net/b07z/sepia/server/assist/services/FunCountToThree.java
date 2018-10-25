@@ -44,7 +44,7 @@ public class FunCountToThree implements ServiceInterface {
 				String[] num_array = memory.split("\\|\\|");
 				double max = 0.0d;
 				for (String num_str : num_array){
-					double d = Converters.obj2Double(num_str);
+					double d = Converters.obj2DoubleOrDefault(num_str, Double.NEGATIVE_INFINITY);
 					if (d > max){
 						max = d;
 					}
@@ -79,7 +79,7 @@ public class FunCountToThree implements ServiceInterface {
 		}
 		
 		//valid number - use it:
-		double d_user = Converters.obj2Double(number);
+		double d_user = Converters.obj2DoubleOrDefault(number, Double.NEGATIVE_INFINITY);
 		
 		//bigger or equal to 3 is "go go go"
 		if (d_user >= 3.0d){
@@ -92,7 +92,7 @@ public class FunCountToThree implements ServiceInterface {
 			String[] num_array = memory.split("\\|\\|");
 			double max = d_user;
 			for (String num_str : num_array){
-				double d = Converters.obj2Double(num_str);
+				double d = Converters.obj2DoubleOrDefault(num_str, Double.NEGATIVE_INFINITY);
 				if (d > max){
 					max = d;
 				}
