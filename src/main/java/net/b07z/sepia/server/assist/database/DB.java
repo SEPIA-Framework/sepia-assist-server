@@ -236,10 +236,13 @@ public class DB {
 	/**
 	 * Create a user by using an email address (fake or real, the email will not actually be sent).
 	 * @param email - email address
-	 * @param pwd - password with at least 8 characters
-	 * @return - JSON with GUUID, EMAIL and PASSWORD (hashed) 
+	 * @param pwd - password with at least 8 characters (unhashed)
+	 * @return - JSON with GUUID, EMAIL and PASSWORD (client hashed) 
 	 */
 	public static JSONObject createUserDirectly(String email, String pwd) throws Exception{
+		if (pwd.length() < 8){
+			throw new RuntimeException("Password has to have at least 8 characters!");
+		}
 		String pass = Security.hashClientPassword(pwd);
 		//String idType = ID.Type.email;
 		AuthenticationInterface auth = getAuthDb();
