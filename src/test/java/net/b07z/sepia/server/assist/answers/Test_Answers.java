@@ -15,6 +15,7 @@ public class Test_Answers {
 		
 		//set answer loader
 		//Config.setup_answers();
+		//AnswerLoader loader = Config.answers;
 		AnswerLoader loader = new AnswerLoaderFile();
 		
 		//print time

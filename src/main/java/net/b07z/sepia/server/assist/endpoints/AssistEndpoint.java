@@ -39,6 +39,25 @@ import spark.Response;
  *
  */
 public class AssistEndpoint {
+	
+	public static enum InputParameters {
+		text,
+		lang,
+		context,
+		mood,
+		env,
+		//TODO: add something like "is_home_network" ?
+		time,
+		time_local,
+		client,
+		last_cmd,
+		last_cmd_N,
+		input_type, 		//Values: question, direct_cmd, response
+		input_miss,
+		dialog_stage,
+		user_location,
+		demomode
+	}
 
 	/**---INTERPRETER API---<br>
 	 * End-point that interprets a user text input searching for commands and parameters and returns a JSON object describing the best result.
@@ -243,26 +262,26 @@ public class AssistEndpoint {
 	public static NluInput getInput(RequestParameters params){
 		//get parameters
 		//-defaults:
-		String text = params.getString("text");
+		String text = params.getString(InputParameters.text.name());
 		//String text = request.params(":text");
-		String language = params.getString("lang");
-		String context = params.getString("context");
-		String mood_str = params.getString("mood");
+		String language = params.getString(InputParameters.lang.name());
+		String context = params.getString(InputParameters.context.name());
+		String mood_str = params.getString(InputParameters.mood.name());
 		int mood = -1;
-		String env = params.getString("env");
-		String time_str = params.getString("time"); 				//system time - time stamp
-		String time_local = params.getString("time_local");		//local time date
-		String client_info = params.getString("client");
+		String env = params.getString(InputParameters.env.name());
+		String time_str = params.getString(InputParameters.time.name()); 				//system time - time stamp
+		String time_local = params.getString(InputParameters.time_local.name());		//local time date
+		String client_info = params.getString(InputParameters.client.name());
 		long time = -1;
 		//-answer params:
-		String last_cmd = params.getString("last_cmd");
-		int last_cmd_N = 0;			String last_cmd_N_str = params.getString("last_cmd_N");
-		String input_type = params.getString("input_type");
-		String input_miss = params.getString("input_miss");
-		int dialog_stage = 0;		String dialog_stage_str = params.getString("dialog_stage");
+		String last_cmd = params.getString(InputParameters.last_cmd.name());
+		int last_cmd_N = 0;			String last_cmd_N_str = params.getString(InputParameters.last_cmd_N.name());
+		String input_type = params.getString(InputParameters.input_type.name());
+		String input_miss = params.getString(InputParameters.input_miss.name());
+		int dialog_stage = 0;		String dialog_stage_str = params.getString(InputParameters.dialog_stage.name());
 		//personal info
-		String user_location = params.getString("user_location");
-		String demomode = params.getString("demomode");
+		String user_location = params.getString(InputParameters.user_location.name());
+		String demomode = params.getString(InputParameters.demomode.name());
 		//-tokens:
 		//tokens are isolated inside authenticators!
 		

@@ -151,7 +151,7 @@ public class Test_AuthAndAccount {
 		loginToken = authToken.getKeyToken(client);
 		authToken = getAuthToken(guuid, "", loginToken, client);
 		System.out.println("\nBasic-info of account: ");
-		Debugger.printMap_SO(authToken.getBasicInfo());
+		Debugger.printMap(authToken.getBasicInfo());
 				
 		//create user and API manager
 		User user = new User(null, authToken);
@@ -212,7 +212,7 @@ public class Test_AuthAndAccount {
 		//load name
 		String name = user.getName(apiManager);
 		System.out.println("\nName: " + name);
-		System.out.println("Pref. language: " + user.getInfo_String(ACCOUNT.USER_PREFERRED_LANGUAGE));
+		System.out.println("Pref. language: " + user.getInfoAsString(ACCOUNT.USER_PREFERRED_LANGUAGE, ""));
 		
 		//save some stuff
 		int code = user.saveInfoToAccount(apiManager, JSON.make(
@@ -229,8 +229,8 @@ public class Test_AuthAndAccount {
 		if (user.loadInfoFromAccount(apiManager, ACCOUNT.USER_NAME_NICK, ACCOUNT.USER_PREFERRED_LANGUAGE) != 0){
 			throw new RuntimeException("\nFailed to load account data!");
 		}
-		System.out.println("\nNew nick-name: " + user.getInfo_String(ACCOUNT.USER_NAME_NICK));
-		System.out.println("New pref. language: " + user.getInfo_String(ACCOUNT.USER_PREFERRED_LANGUAGE));
+		System.out.println("\nNew nick-name: " + user.getInfoAsString(ACCOUNT.USER_NAME_NICK, ""));
+		System.out.println("New pref. language: " + user.getInfoAsString(ACCOUNT.USER_PREFERRED_LANGUAGE, ""));
 		
 		//load address
 		Address userHome = user.getTaggedAddress(Address.USER_HOME_TAG, true);
@@ -344,7 +344,7 @@ public class Test_AuthAndAccount {
 		System.out.println("id: " + userID);
 		System.out.println("accessLvl: " + accessLvl);
 		System.out.print("basicInfo: ");
-		if (basicInfo != null) Debugger.printMap_SO(basicInfo); else System.out.println("null");
+		if (basicInfo != null) Debugger.printMap(basicInfo); else System.out.println("null");
 		
 		return success;
 	}

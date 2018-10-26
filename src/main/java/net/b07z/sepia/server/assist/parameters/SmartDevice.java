@@ -82,13 +82,13 @@ public class SmartDevice implements ParameterHandler{
 		//German
 		if (language.matches(LANGUAGES.DE)){
 			type = NluTools.stringFindFirst(input, "(licht(er|)|lampe(n|)|beleuchtung|leuchte(n|)|helligkeit|"
-					+ "heiz(er|ungen|ung|koerper|luefter|strahler)|temperatur(en|)"
+					+ "heiz(er|ungen|ung|koerper|luefter|strahler)|thermostat|temperatur(regler|en|)"
 				+ ")");
 			
 		//English and other
 		}else{
 			type = NluTools.stringFindFirst(input, "(light(s|)|lighting|lamp(s|)|illumination|brightness|"
-					+ "heater(s|)|temperature(s|)"
+					+ "heater(s|)|temperature(s|)|thermostat(s|)"
 				+ ")");
 			
 		}
@@ -99,7 +99,20 @@ public class SmartDevice implements ParameterHandler{
 	@Override
 	public String extract(String input) {
 		String type = getType(input, language);
-		this.found = type;
+		if (type.isEmpty()){
+			return "";
+		}else{
+			//we should take device names (tag/number..) into account, like "Lamp 1", "Light A" or "Desk-Lights" etc.
+			String deviceWithNumber = NluTools.stringFindFirst(input, type + " \\d+");
+			if (!deviceWithNumber.isEmpty()){
+				this.found = deviceWithNumber;
+			}else{
+				this.found = type;
+			}
+			//System.out.println("found: " + this.found); 		//DEBUG
+			
+			//TODO: needs further work ->  create an additional parameter called SMART_DEVICE_NAME
+		}
 		
 		//classify into types:
 		
@@ -107,7 +120,7 @@ public class SmartDevice implements ParameterHandler{
 				+ "light(s|)|lighting|lamp(s|)|illumination|brightness")){
 			return "<" + Types.light.name() + ">";
 			
-		}else if (NluTools.stringContains(type, "heiz(er|ungen|ung|koerper|luefter|strahler)|temperatur(en|)|"
+		}else if (NluTools.stringContains(type, "heiz(er|ungen|ung|koerper|luefter|strahler)|thermostat(s|)|temperatur(regler|en|)|"
 				+ "heater(s|)|temperature(s|)")){
 			return "<" + Types.heater.name() + ">";
 		
@@ -156,6 +169,7 @@ public class SmartDevice implements ParameterHandler{
 		JSONObject itemResultJSON = new JSONObject();
 			JSON.add(itemResultJSON, InterviewData.VALUE, commonValue);
 			JSON.add(itemResultJSON, InterviewData.VALUE_LOCAL, localValue);
+			//JSON.add(itemResultJSON, InterviewData.SMART_DEVICE_NAME, this.found); 	//not working because this.found is not set in build
 		
 		buildSuccess = true;
 		return itemResultJSON.toJSONString();

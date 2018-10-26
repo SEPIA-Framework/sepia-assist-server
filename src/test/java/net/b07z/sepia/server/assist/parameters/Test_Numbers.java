@@ -17,7 +17,7 @@ public class Test_Numbers {
 	public static void main(String[] args) {
 		
 		Start.setupServicesAndParameters();
-		String[] parametersToTest = new String[]{ PARAMETERS.NUMBER, PARAMETERS.SMART_DEVICE_VALUE };
+		String[] parametersToTest = new String[]{ PARAMETERS.NUMBER, PARAMETERS.SMART_DEVICE, PARAMETERS.SMART_DEVICE_VALUE };
 		
 		String language = "de";
 				
@@ -36,6 +36,7 @@ public class Test_Numbers {
 		texts.add("Heizung auf 20 Grad Celsius bitte");
 		texts.add("Licht auf 70% im Wohnzimmer bitte");
 		texts.add("Licht auf 10 Prozent bitte im Wohnzimmer");
+		texts.add("Lampe 1 auf 50 Prozent");
 
 		printTestResults(texts, parametersToTest, language);
 	}
@@ -56,9 +57,9 @@ public class Test_Numbers {
 			TestResult tr = Test_Parameters.testAbstractParameterSearch(input, true, parametersToTest);
 			System.out.println("score: " + tr.score);
 			System.out.println("EXTRACTED: ");
-			Debugger.printMap_SS(tr.pv);
+			Debugger.printMap(tr.pv);
 			System.out.println("BUILT: ");
-			Debugger.printMap_SS(tr.pvBuild);
+			Debugger.printMap(tr.pvBuild);
 			System.out.println("");
 		}
 	}

@@ -52,7 +52,7 @@ import net.b07z.sepia.server.core.tools.FilesAndStreams;
  */
 public class Config {
 	public static final String SERVERNAME = "SEPIA-Assist-API"; 		//public server name
-	public static final String apiVersion = "v2.0.1";					//API version
+	public static final String apiVersion = "v2.1.0";					//API version
 	public static String privacyPolicyLink = "";						//Link to privacy policy
 	
 	//helper for dynamic class creation (e.g. from strings in config-file) - TODO: reduce dependencies further 
@@ -62,6 +62,7 @@ public class Config {
 	public static String configFile = "Xtensions/assist.properties";		//external configuration file - note: this will be overwritten in "Setup" and "Start"
 	public static String xtensionsFolder = "Xtensions/";					//folder for all sorts of data
 	public static String pluginsFolder = xtensionsFolder + "Plugins/";		//folder for plugins
+	public static String servicePropertiesFolder = xtensionsFolder + "ServiceProperties/";		//folder for service properties and static data
 	public static String dbSetupFolder = xtensionsFolder + "Database/";		//folder for database stuff
 	public static String webServerFolder = xtensionsFolder + "WebContent";	//folder for web-server
 	public static boolean hostFiles = true;									//use web-server?

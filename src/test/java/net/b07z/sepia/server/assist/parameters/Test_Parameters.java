@@ -50,7 +50,7 @@ public class Test_Parameters {
 					PARAMETERS.LIST_TYPE, PARAMETERS.LIST_SUBTYPE, PARAMETERS.LIST_ITEM);
 			System.out.println("text: " + text);
 			System.out.println("score: " + tr.score);
-			Debugger.printMap_SS(tr.pv);
+			Debugger.printMap(tr.pv);
 			System.out.println("");
 		}
 	}

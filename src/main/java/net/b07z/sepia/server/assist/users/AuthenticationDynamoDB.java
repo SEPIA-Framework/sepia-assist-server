@@ -664,7 +664,7 @@ public class AuthenticationDynamoDB implements AuthenticationInterface{
 					//check time stamp
 					//long ts = (long)(double)(Account_DynamoDB.typeConversion(Account_DynamoDB.dig(item, ACCOUNT.TOKEN_KEY_TS)));
 					JSONObject tts = DynamoDB.dig(item, token_ts);
-					long ts = Converters.obj2Long(DynamoDB.typeConversion(tts));
+					long ts = Converters.obj2LongOrDefault(DynamoDB.typeConversion(tts), 0l);
 					if ((System.currentTimeMillis() - ts) > valid_time){
 						//token became invalid
 						pwd = null;
@@ -678,7 +678,7 @@ public class AuthenticationDynamoDB implements AuthenticationInterface{
 				try {
 					pwd = (String) DynamoDB.typeConversion((JSONObject) item.get(ACCOUNT.PASSWORD));
 					String salt = (String) DynamoDB.typeConversion((JSONObject) item.get(ACCOUNT.PWD_SALT));
-					int iterations = Converters.obj2Int(DynamoDB.typeConversion((JSONObject) item.get(ACCOUNT.PWD_ITERATIONS)));
+					int iterations = Converters.obj2IntOrDefault(DynamoDB.typeConversion((JSONObject) item.get(ACCOUNT.PWD_ITERATIONS)), -1);
 					ID.Generator gen = new ID.Generator(password, salt, iterations);
 					password = gen.pwd;
 				} catch (Exception e) {
@@ -716,7 +716,7 @@ public class AuthenticationDynamoDB implements AuthenticationInterface{
 								String newAccessLvl = storedIncToken.substring(0, 2);
 								if ((newAccessLvl+incToken).equals(storedIncToken)){
 									//check time stamp
-									long storedIncToken_TS = Converters.obj2Long(DynamoDB.typeConversion(DynamoDB.dig(item, ACCOUNT.TOKENS + "." + ACCOUNT.ACCESS_LVL_TOKEN_TS)));
+									long storedIncToken_TS = Converters.obj2LongOrDefault(DynamoDB.typeConversion(DynamoDB.dig(item, ACCOUNT.TOKENS + "." + ACCOUNT.ACCESS_LVL_TOKEN_TS)), 0l);
 									if ((System.currentTimeMillis()-storedIncToken_TS) < access_lvl_token_valid_time){
 										accessLvl = Integer.parseInt(storedIncToken.substring(0, 2));
 									}else{
@@ -924,7 +924,7 @@ public class AuthenticationDynamoDB implements AuthenticationInterface{
 			JSONObject t = DynamoDB.dig(item, tokenPath);
 			JSONObject tts = DynamoDB.dig(item, tokenPath_ts);
 			String token = DynamoDB.typeConversion(t).toString();
-			long token_ts = Converters.obj2Long(DynamoDB.typeConversion(tts));
+			long token_ts = Converters.obj2LongOrDefault(DynamoDB.typeConversion(tts), 0l);
 			return new Object[]{token, token_ts};
 			
 		}catch (Exception e){

@@ -204,9 +204,9 @@ public class Test_Tools {
 		//number extraction
 		test = "1LIVE starten bitte oder Kanal 106.7 suchen";
 		System.out.println(RegexParameterSearch.get_number(test));
-		System.out.println(Converters.obj2Int(RegexParameterSearch.get_number(test)));
+		System.out.println(Converters.obj2IntOrDefault(RegexParameterSearch.get_number(test), -1));
 		test = "-305.14";
-		System.out.println(Converters.obj2Int(RegexParameterSearch.get_number(test)));
+		System.out.println(Converters.obj2IntOrDefault(RegexParameterSearch.get_number(test), -1));
 		test = "1,75€ ist groesser als 1.57$";
 		System.out.println(RegexParameterSearch.get_number(test));
 		test = "you can have it for $75";

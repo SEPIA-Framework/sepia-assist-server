@@ -49,17 +49,17 @@ public class Setup {
 	}
 	private static class CreateUserResult{
 		String guuid;
-		String pwdHash;
+		String pwdClientHash;
 		public String email;
 		
 		public CreateUserResult(JSONObject json){
 			this.guuid = JSON.getString(json, ACCOUNT.GUUID);
-			this.pwdHash = JSON.getString(json, ACCOUNT.PASSWORD);
+			this.pwdClientHash = JSON.getString(json, ACCOUNT.PASSWORD);
 			this.email = JSON.getString(json, ACCOUNT.EMAIL);
 		}
 		public CreateUserResult(String email, String guuid, String pwdHash){
 			this.guuid = guuid;
-			this.pwdHash = pwdHash;
+			this.pwdClientHash = pwdHash;
 			this.email = email;
 		}
 	}
@@ -181,14 +181,14 @@ public class Setup {
 				}
 			}
 			//create admin and assistant user
-			System.out.println("\nCreating admin: ");
+			System.out.println("\nCreating admin... ");
 			try{
 				writeSuperUser(scf, adminEmail, adminPwd);
 			}catch(Exception e){
 				System.out.println("ERROR in admin data! Msg.: " + e.getMessage());
 				throw e;
 			}
-			System.out.println("\nCreating assistant user: ");
+			System.out.println("\nCreating assistant user... ");
 			try{
 				writeAssistantUser(scf, assistantEmail, assistantPwd);
 			}catch(Exception e){
@@ -196,7 +196,7 @@ public class Setup {
 				throw e;
 			}
 			if (st.equals(ServerType.test)){
-				System.out.println("\nCreating basic test user: ");
+				System.out.println("\nCreating basic test user... ");
 				try{
 					writeBasicUser(testUserEmail, testUserPwd, testUserNick);
 				}catch(Exception e){
@@ -361,8 +361,17 @@ public class Setup {
 		if (Is.notNullOrEmpty(guuid)){
 			//only create new password then ...
 			JSONObject newData = createNewPasswordObject(guuid, pwd);
+			String pwdClientHashed = Security.hashClientPassword(pwd);
 			if (DB.writeAccountDataDirectly(guuid, newData)){
-				Debugger.println("Stored new password for: " + email, 3);
+				Debugger.println("Stored new password in database for: " + email, 3);
+				//store data in config file
+				if (!FilesAndStreams.replaceLineInFile(scf.assist, "^universal_superuser_pwd=.*", 
+								"universal_superuser_pwd=" + pwdClientHashed)
+					){
+					throw new RuntimeException("Failed to write new password to config-file: " + scf.assist);
+				}else{
+					Debugger.println("Stored new password in config: " + scf.assist, 3);
+				}
 				//refresh ID
 				Config.superuserId = guuid;
 				return new CreateUserResult(email, guuid, JSON.getString(newData, ACCOUNT.PASSWORD));
@@ -391,11 +400,11 @@ public class Setup {
 						|| !FilesAndStreams.replaceLineInFile(scf.assist, "^universal_superuser_email=.*", 
 								"universal_superuser_email=" + cr.email)
 						|| !FilesAndStreams.replaceLineInFile(scf.assist, "^universal_superuser_pwd=.*", 
-								"universal_superuser_pwd=" + cr.pwdHash)
+								"universal_superuser_pwd=" + cr.pwdClientHash)
 					){
 					throw new RuntimeException("Failed to write data to config-file: " + scf.assist);
 				}else{
-					Debugger.println("Stored data in config: " + scf.assist, 3);
+					Debugger.println("Stored data in database and config: " + scf.assist, 3);
 				}
 			}else{
 				Debugger.println("Writing account data failed! Probably a database error or you need to delete the user first.", 1);
@@ -416,8 +425,17 @@ public class Setup {
 		if (Is.notNullOrEmpty(guuid)){
 			//only create new password then ...
 			JSONObject newData = createNewPasswordObject(guuid, pwd);
+			String pwdClientHashed = Security.hashClientPassword(pwd);
 			if (DB.writeAccountDataDirectly(guuid, newData)){
-				Debugger.println("Stored new password for: " + email, 3);
+				Debugger.println("Stored new password in database for: " + email, 3);
+				//store data in config file
+				if (!FilesAndStreams.replaceLineInFile(scf.assist, "^assistant_pwd=.*", 
+								"assistant_pwd=" + pwdClientHashed)
+					){
+					throw new RuntimeException("Failed to write new password to config-file: " + scf.assist);
+				}else{
+					Debugger.println("Stored new password in config: " + scf.assist, 3);
+				}
 				//refresh IDs
 				Config.assistantId = guuid;
 				ConfigDefaults.defaultAssistantUserId = guuid; 
@@ -443,11 +461,11 @@ public class Setup {
 						|| !FilesAndStreams.replaceLineInFile(scf.assist, "^assistant_email=.*", 
 								"assistant_email=" + cr.email)
 						|| !FilesAndStreams.replaceLineInFile(scf.assist, "^assistant_pwd=.*", 
-								"assistant_pwd=" + cr.pwdHash)
+								"assistant_pwd=" + cr.pwdClientHash)
 					){
 					throw new RuntimeException("Failed to write data to config-file: " + scf.assist);
 				}else{
-					Debugger.println("Stored data in config: " + scf.assist, 3);
+					Debugger.println("Stored data in database and config: " + scf.assist, 3);
 				}
 			}else{
 				Debugger.println("Writing account data failed! Probably a database error or you need to delete the user first.", 1);
@@ -496,7 +514,7 @@ public class Setup {
 		String pass = Security.hashClientPassword(pwdUnhashed);
 		ID.Generator gen = new ID.Generator(id, pass);
 		JSONObject pwdAccountData = new JSONObject();
-		JSON.put(pwdAccountData, ACCOUNT.PASSWORD, gen.pwd);
+		JSON.put(pwdAccountData, ACCOUNT.PASSWORD, gen.pwd); 		//note: server hashed
 		JSON.put(pwdAccountData, ACCOUNT.PWD_SALT, gen.salt);
 		JSON.put(pwdAccountData, ACCOUNT.PWD_ITERATIONS, gen.iterations);
 		return pwdAccountData;

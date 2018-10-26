@@ -85,7 +85,7 @@ public class Test_DynamoDB {
 		System.out.println("accessLvl: " + accessLvl);
 		System.out.println("errorCode: " + errorCode);
 		System.out.print("basicInfo: ");
-		if (basicInfo != null) Debugger.printMap_SO(basicInfo); else System.out.println("null");
+		if (basicInfo != null) Debugger.printMap(basicInfo); else System.out.println("null");
 	}
 	
 	public static void testQueryIndex(){

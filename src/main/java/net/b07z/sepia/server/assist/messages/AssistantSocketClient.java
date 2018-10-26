@@ -1,14 +1,19 @@
 package net.b07z.sepia.server.assist.messages;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.endpoints.AssistEndpoint;
+import net.b07z.sepia.server.assist.endpoints.AssistEndpoint.InputParameters;
 import net.b07z.sepia.server.assist.server.Start;
 import net.b07z.sepia.server.core.server.FakeRequest;
 import net.b07z.sepia.server.core.server.FakeResponse;
+import net.b07z.sepia.server.core.tools.Converters;
+import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.JSON;
 import net.b07z.sepia.websockets.client.SepiaSocketClient;
 import net.b07z.sepia.websockets.common.SocketConfig;
@@ -129,6 +134,73 @@ public class AssistantSocketClient extends SepiaSocketClient{
     //--------
     
     /**
+     * Convert {@link SocketMessage} to {@link Request} for {@link AssistEndpoint} call.
+     */
+    public FakeRequest buildAssistEndpointRequest(SocketMessage msg){
+    	JSONObject data = msg.data;
+    	//System.out.println(data); 		//DEBUG
+    	String text = msg.text;
+    	return buildAssistEndpointRequest(data, text);
+    }
+    /**
+     * Convert "data" and "text" of {@link SocketMessage} to {@link Request} for {@link AssistEndpoint} call.
+     */
+    public FakeRequest buildAssistEndpointRequest(JSONObject data, String text){
+    	JSONObject credentials = (JSONObject) data.get("credentials");
+    	JSONObject parameters = (JSONObject) data.get("parameters");
+    	
+    	//build map with parameters
+    	Map<String, String> keyTextAndParameters = new HashMap<>();
+    	keyTextAndParameters.put("KEY", credentials.get("userId") + ";" + credentials.get("pwd"));	//KEY
+    	keyTextAndParameters.put(AssistEndpoint.InputParameters.text.name(), text);					//text
+    	Converters.addJsonToMapAsStrings(parameters, keyTextAndParameters); 						//lang, time, time_local, ...
+    	
+    	//Convert to request
+    	return new FakeRequest(keyTextAndParameters);
+    }
+    /**
+     * Build a custom request for {@link AssistEndpoint} call.
+     * @param data - data of {@link SocketMessage}
+     * @param text - text or direct command
+     * @param overwriteParameters - parameters to overwrite, see {@link AssistEndpoint.InputParameters}
+     * @return
+     */
+    public FakeRequest buildAssistEndpointCustomCommandRequest(JSONObject data, String text, Map<String, String> overwriteParameters){
+    	FakeRequest frq = buildAssistEndpointRequest(data, text);
+    	overwriteParameters.forEach((String k, String v) -> {
+    		frq.overwriteParameter(k, v);
+    	});
+    	return frq;
+    }
+    
+    /**
+     * Build {@link SocketMessage} reply from {@link AssistEndpoint} answer.
+     */
+    public SocketMessage buildReply(JSONObject answer, String channelId, String receiver, String receiverOnError){
+    	SocketMessage reply;
+    	if (!JSON.getString(answer, "result").equals("fail")){
+	    	String answerText = (String) answer.get("answer");
+	    	if (answerText == null){
+	    		reply = new SocketMessage(channelId, getUserId(), receiverOnError, "Error?", TextType.status.name());
+	    	}else{
+	    		//The 'real' message:
+	    		JSONObject data = new JSONObject();
+		        JSON.add(data, "dataType", DataType.assistAnswer.name());
+		        JSON.add(data, "assistAnswer", answer);
+		        reply = new SocketMessage(channelId, getUserId(), receiver, data);
+	    		//reply = new SocketMessage(getUserName(), receiver, answerText, "default");
+	    		//reply.addData("assistAnswer", answer);
+	    		//reply.addData("dataType", DataType.assistAnswer.name());
+	    	}
+    	
+    	//no login or error
+    	}else{
+    		reply = new SocketMessage(channelId, getUserId(), receiverOnError, "Login? Error?", TextType.status.name());
+    	}
+    	return reply;
+    }
+    
+    /**
      * Get a reply and send it to receiver.
      * @param msg - message received
      * @param receiver - receiver when everything works
@@ -139,49 +211,43 @@ public class AssistantSocketClient extends SepiaSocketClient{
     	String msgId = msg.msgId;
     	String channelId = msg.channelId;
     	if (msg.data != null && msg.data.get("credentials") != null){
-	    	JSONObject credentials = (JSONObject) msg.data.get("credentials");
-	    	JSONObject parameters = (JSONObject) msg.data.get("parameters");
-	    	
-	    	//Convert to request
-	    	String[] params = new String[parameters.size() + 2];
-	    	params[0] = "KEY=" + credentials.get("userId") + ";" + credentials.get("pwd");
-	    	params[1] = "text=" + msg.text;
-	    	/*
-    		"lang=" + parameters.get("lang"),
-    		"time=" + parameters.get("time"),
-    		"time_local=" + parameters.get("time_local"),
-    		"user_location=" + parameters.get("user_location"
-    		...
-    		 */
-	    	int i=2;
-	    	for (Object o : parameters.keySet()){
-	    		params[i] = o.toString() + "=" + parameters.get(o);
-	    		//System.out.println(params[i]); 		//DEBUG
-	    		i++;
-	    	}
-	    	//TODO: why not use JSON here instead of converting everything and then convert it back ^^
-	    	Request request = new FakeRequest(params);
-	    	JSONObject answer = JSON.parseString(AssistEndpoint.answerAPI(request, new FakeResponse()));
-	    	//System.out.println(answer.toJSONString()); 		//debug
-	    	if (!JSON.getString(answer, "result").equals("fail")){
-		    	String answerText = (String) answer.get("answer");
-		    	if (answerText == null){
-		    		reply = new SocketMessage(channelId, getUserId(), receiverOnError, "Error?", TextType.status.name());
-		    	}else{
-		    		//The 'real' message:
-		    		JSONObject data = new JSONObject();
-			        JSON.add(data, "dataType", DataType.assistAnswer.name());
-			        JSON.add(data, "assistAnswer", answer);
-			        reply = new SocketMessage(channelId, getUserId(), receiver, data);
-		    		//reply = new SocketMessage(getUserName(), receiver, answerText, "default");
-		    		//reply.addData("assistAnswer", answer);
-		    		//reply.addData("dataType", DataType.assistAnswer.name());
-		    	}
-	    	
-	    	//no login or error
-	    	}else{
-	    		reply = new SocketMessage(channelId, getUserId(), receiverOnError, "Login? Error?", TextType.status.name());
-	    	}
+    		try{
+		    	Request request = buildAssistEndpointRequest(msg);
+		    	//System.out.println("AssistantSocketClient - request: " + msg.text); 					//debug
+		    	JSONObject answer = JSON.parseString(AssistEndpoint.answerAPI(request, new FakeResponse()));
+		    	//System.out.println("AssistantSocketClient - answer: " + answer.toJSONString()); 		//debug
+		    	reply = buildReply(answer, channelId, receiver, receiverOnError);
+
+		    //internal error
+    		}catch (Exception e){
+    			Debugger.println(e.getMessage(), 1);		//DEBUG
+    			Debugger.printStackTrace(e, 4);				//DEBUG
+    			try{
+    				//try again to get at least an error message response while keeping some parameters
+    				JSONObject parameters = JSON.getJObject(msg.data, "parameters");
+    				JSONObject newParams = JSON.make(
+    						InputParameters.input_type.name(), "direct_cmd",
+    						InputParameters.lang.name(), JSON.getString(parameters, InputParameters.lang.name()),
+    						InputParameters.last_cmd.name(), JSON.getString(parameters, InputParameters.last_cmd.name()),
+    						InputParameters.last_cmd_N.name(), JSON.getString(parameters, InputParameters.last_cmd_N.name()),
+    						InputParameters.mood.name(), JSON.getString(parameters, InputParameters.mood.name())
+    				);
+    				JSON.put(newParams, InputParameters.client.name(), JSON.getString(parameters, InputParameters.client.name())); 	//REQUIRED! Need more?
+    				JSON.put(msg.data, "parameters", newParams);
+    				String text = "chat;;reply=<error_0a>";
+    				Request request = buildAssistEndpointRequest(msg.data, text);
+    				JSONObject answer = JSON.parseString(AssistEndpoint.answerAPI(request, new FakeResponse()));
+    				reply = buildReply(answer, channelId, receiver, receiverOnError);
+    				
+    			}catch (Exception e2){
+    				//if that fails as well just make an error status message
+    				Debugger.println(e.getMessage(), 1);		//DEBUG
+        			Debugger.printStackTrace(e, 4);				//DEBUG
+    				reply = new SocketMessage(channelId, getUserId(), receiverOnError, "Internal Error!", TextType.status.name());
+        			reply.addData("dataType", DataType.errorMessage.name());
+    			}
+    		}
+    	//no login?
     	}else{
     		reply = new SocketMessage(channelId, getUserId(), receiverOnError, "Login?", TextType.status.name());
     	}

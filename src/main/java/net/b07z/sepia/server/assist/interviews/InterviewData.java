@@ -35,7 +35,7 @@ public class InterviewData {
 	public static final String LOCATION_STATE = "area_state";
 	public static final String LOCATION_COUNTRY = "country";
 	public static final String LOCATION_NAME = "name";
-	public static final String LOCATION_ADDRESS_TEXT = "addressText";
+	public static final String LOCATION_ADDRESS_TEXT = "addressText"; 		//TODO: oh oh there is a camel-case name, search and replace (server and client?)
 	public static final String LOCATION_IMAGE = "image";
 	
 	//-time

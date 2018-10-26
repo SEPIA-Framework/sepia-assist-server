@@ -21,7 +21,7 @@ import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.tools.DateTime;
 import net.b07z.sepia.server.core.tools.JSON;
 
-public class Test_taggedSentenceMatcher {
+public class Test_TaggedSentenceMatcher {
 
 	public static void main(String[] args) {
 		

@@ -17,15 +17,18 @@ import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.assist.tools.RandomGen;
 import net.b07z.sepia.server.core.assistant.ACTIONS;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
+import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
-
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /**
@@ -117,191 +120,65 @@ public class NewsRssFeeds implements ServiceInterface{
 	
 	//----------------feeds----------------
 	
-	//NEWS PAGES
-	public static final HashMap<String, String> feedUrls = new HashMap<>();
-	static{
-		feedUrls.put("SPIEGEL ONLINE", "http://www.spiegel.de/schlagzeilen/tops/index.rss");
-		feedUrls.put("bento", "https://www.bento.de/rss/nachrichten/");
-		feedUrls.put("Tagesschau", "http://www.tagesschau.de/xml/rss2");
-		feedUrls.put("Süddeutsche", "http://rss.sueddeutsche.de/rss/Topthemen");
-		feedUrls.put("FAZ", "http://www.faz.net/rss/aktuell/");
-		feedUrls.put("Bild", "https://www.bild.de/rssfeeds/vw-home/vw-home-16725562,sort=1,view=rss2.bild.xml");
-		feedUrls.put("Sportschau", "https://www.sportschau.de//sportschauindex100~_type-rss.feed");
-		feedUrls.put("Sportschau - Bundesliga", "https://www.sportschau.de/fussball/bundesliga/fussballbundesligaindex100~_type-rss.feed");
-		feedUrls.put("Sportschau - Fussball", "https://www.sportschau.de/fussball/fussballindex100~_type-rss.feed");
-		feedUrls.put("Sport1", "https://www.sport1.de/news.rss");
-		feedUrls.put("Kicker", "http://rss.kicker.de/news/aktuell");
-		feedUrls.put("Wired", "https://www.wired.de/feed/latest");
-		feedUrls.put("Gruenderszene", "https://www.gruenderszene.de/feed");
-		feedUrls.put("jetzt.de", "https://www.jetzt.de/alle_artikel.rss");
-		feedUrls.put("11FREUNDE", "https://www.11freunde.de/feed");
-		feedUrls.put("RevierSport", "https://www.reviersport.de/?news-rss-ama");
-		feedUrls.put("golem.de", "http://rss.golem.de/rss.php?feed=RSS2.0");
-		feedUrls.put("heise online", "https://www.heise.de/newsticker/heise-top-atom.xml");
-		feedUrls.put("PCGames", "http://www.pcgames.de/feed.cfm?menu_alias=home");
-		feedUrls.put("GameStar", "https://www.gamestar.de/news/rss/news.rss");
-		//feedUrls.put("Yahoo eSports", "https://esports.yahoo.com/rss");
-		//feedUrls.put("Yahoo LoL", "https://sports.yahoo.com/league-of-legends/rss");
-		feedUrls.put("t3n", "https://t3n.de/rss.xml");
-		feedUrls.put("Business Punk", "http://www.business-punk.com/feed/");
-		feedUrls.put("RollingStone", "https://www.rollingstone.com/music/feed/");
-		feedUrls.put("MUSIC NEWS", "http://www.music-news.com/rss/UK/news");
-		//feedUrls.put("CinemaxX", "https://www.cinemaxx.de/Site/GetRSS/Filme");
-		feedUrls.put("CinemaxX", "https://www.presseportal.de/rss/pm_9588.rss2");
-		feedUrls.put("Filmstarts.de - aktuell", "http://rss.filmstarts.de/fs/kinos/aktuelle?format=xml");
-		feedUrls.put("Filmstarts.de - bald", "http://rss.filmstarts.de/fs/kinos/bald?format=xml");
-		feedUrls.put("Filmstarts.de - Serien", "http://rss.filmstarts.de/fs/news/serien?format=xml");
-		//feedUrls.put("Serienjunkies - Kalender", "http://www.serienjunkies.de/docs/serienkalender-aktuell.html#feed");
-		//feedUrls.put("cinema.de - Trailer", "http://www.cinema.de/kino/trailer/video/rss.xml");
-		feedUrls.put("SPIEGEL Kino", "http://www.spiegel.de/kultur/kino/index.rss");
-		feedUrls.put("Kino.de - Film-News", "https://www.kino.de/rss/movienews");
-		feedUrls.put("deutsche startups", "https://www.deutsche-startups.de/feed/");
-	}
-	public static final HashMap<String, String> feedNames = new HashMap<>();
-	static{
-		feedNames.put("SPIEGEL ONLINE", "<span style='color:#950000;'><b>SPIEGEL</b> ONLINE</span>");
-		feedNames.put("bento", "<span style='color:#000;'><b>bento</b></span>");
-		feedNames.put("Tagesschau", "<span style='color:#0065BE; font-family:serif'>tages<b>schau</b>.de</span>");
-		feedNames.put("Süddeutsche", "<span style='color:#000; font-family:serif'>Süddeutsche Zeitung</span>");
-		feedNames.put("FAZ", "<span style='color:#000; font-family:serif'>Frankfurter Allgemeine</span>");
-		feedNames.put("Bild", "<span style='color:#D91918;'>Bild</span><span style='color:#000;'>.de</span>");
-		feedNames.put("Sportschau", "<span style='color:#002C6B;'><b>SPORTSCHAU</b></span>");
-		feedNames.put("Sportschau - Bundesliga", "<span style='color:#002C6B;'><b>SPORTSCHAU</b></span> - <span style='color:#EE1C25;'><b>BUNDESLIGA</b></span>");
-		feedNames.put("Sportschau - Fussball", "<span style='color:#002C6B;'><b>SPORTSCHAU</b></span> - <span style='color:#000000;'><b>FUSSBALL</b></span>");
-		feedNames.put("Sport1", "<span style='color:#3D464C;'>sport</span><span style='color:#F6A800;'><b>1</b></span>");
-		feedNames.put("Kicker", "<span style='color:#CC0000;'><b>kicker</b></span>");
-		feedNames.put("Wired", "<span style='color:#222222; font-family:serif'><b>W</b>I<b>R</b>E<b>D</b></span>");
-		feedNames.put("Gruenderszene", "<span style='color:#000; font-family:serif'>GRÜNDER</span><span style='color:#456494; font-family:serif'>SZENE</span>");
-		feedNames.put("jetzt.de", "<span style='color:#000; font-family:serif'>jetzt.de</span>");
-		feedNames.put("11FREUNDE", "<span style='color:#000;'>11FREUNDE</span>");
-		feedNames.put("RevierSport", "<span style='color:#000;'>RevierSport</span>");
-		feedNames.put("golem.de", "<span style='color:#000;'>golem.</span><span style='color:#6EC5CD;'>d</span><span style='color:#9AC54B;'>e</span>");
-		feedNames.put("heise online", "<span style='color:#999898;'>heise online</span>");
-		feedNames.put("PCGames", "<span style='color:#1F83B5;'>PC</span><span style='color:#FBDB21;'>Games</span>");
-		feedNames.put("GameStar", "<span style='color:#003372;'><b>GameStar</b></span>");
-		//feedNames.put("Yahoo eSports", "<span style='color:#4500B0;'>Yahoo eSports</span>");
-		//feedNames.put("Yahoo LoL", "<span style='color:#4500B0;'>Yahoo LoL</span>");
-		feedNames.put("t3n", "<span style='color:#000;'>t</span><span style='color:#FF0000;'>3</span><span style='color:#000000;'>n</span>");
-		feedNames.put("Business Punk", "<span style='color:#2C2C2C; font-family:serif;'>Business Punk</span>");
-		feedNames.put("RollingStone", "<span style='color:#C81429; font-family:serif;'>RollingStone</span>");
-		feedNames.put("MUSIC NEWS", "<span style='color:#ba1a56;'>MUSIC </span><span style='color:#000000;'>NEWS</span>");
-		feedNames.put("CinemaxX", "<span style='color:#b90049;'><i>Cinemax<b>X</b></i></span>");
-		feedNames.put("Filmstarts.de - aktuell", "<span style='color:#3d59ba;'>Filmstarts.de</span><span style='color:#000000;'> - aktuell</span>");
-		feedNames.put("Filmstarts.de - bald", "<span style='color:#3d59ba;'>Filmstarts.de</span><span style='color:#000000;'> - bald</span>");
-		feedNames.put("Filmstarts.de - Serien", "<span style='color:#3d59ba;'>Filmstarts.de</span><span style='color:#000000;'> - Serien</span>");
-		//feedNames.put("Serienjunkies - Kalender","<span style='color:#414F5D;'>Serienjunkies</span><span style='color:#000000;'> - Kalender</span>");
-		//feedNames.put("cinema.de - Trailer", "<span style='color:#000000;'>cinema.</span><span style='color:#009ee1;'>de</span><span style='color:#000000;'> - Trailer</span>");
-		feedNames.put("SPIEGEL Kino", "<span style='color:#950000;'><b>SPIEGEL</b> Kino</span>");
-		feedNames.put("Kino.de - Film-News", "<span style='color:#039cfd;'>Kino.de</span><span style='color:#000000;'> - Film-News</span>");
-		feedNames.put("deutsche startups", "<span style='color:#3b65b1;'>deutsche startups</span>");
-	}
+	//NEWS OUTLETS and FEEDS
+	public static final Map<String, String> feedUrls = new HashMap<>();
+	public static final Map<String, String> feedNames = new HashMap<>();
+	public static final JSONObject outletProperties;
+	public static final Map<String, Map<String, List<String>>> outletGroupsByLanguage = new HashMap<>();
 	
-	//SECTION BLOCKS
-	public static final ArrayList<String> commonNews_de = new ArrayList<>();
+	//Load properties file (Outlets, groups by language etc.)
 	static{
-		commonNews_de.add("SPIEGEL ONLINE");
-		commonNews_de.add("Süddeutsche");
-		commonNews_de.add("FAZ");
-		commonNews_de.add("Bild");
-		commonNews_de.add("Tagesschau");
-		commonNews_de.add("Wired");
-		commonNews_de.add("Gruenderszene");
-		commonNews_de.add("jetzt.de");
-		commonNews_de.add("bento");
+		String propFile = Config.servicePropertiesFolder + "news-outlets.json";
+		outletProperties = JSON.readJsonFromFile(propFile);
+		try{
+			//Fill URL and NAME info
+			JSONArray outletArray = JSON.getJArray(outletProperties, "outlets");
+			for (Object jo : outletArray){
+				JSONObject outlet = (JSONObject) jo;
+				feedUrls.put(JSON.getString(outlet, "name"), JSON.getString(outlet, "url"));
+				feedNames.put(JSON.getString(outlet, "name"), JSON.getString(outlet, "name_html"));
+			}
+			//Check again
+			if (outletArray.isEmpty() || Is.nullOrEmptyMap(feedNames) || Is.nullOrEmptyMap(feedUrls)){
+				throw new RuntimeException("Outlet array is empty or entries are broken.");
+			}
+			
+			//Fill OUTLET GROUPS for each language
+			JSONArray outletGroupsLanguageArray = JSON.getJArray(outletProperties, "groups");
+			for (Object jo : outletGroupsLanguageArray){
+				JSONObject languageGroup = (JSONObject) jo;
+				String language = JSON.getString(languageGroup, "language");
+				JSONArray languageData = JSON.getJArray(languageGroup, "data");
+				
+				//Add GROUP for this language each section - we basically only convert the JSONArray to a map
+				Map<String, List<String>> sections = new HashMap<>();
+				for (Object sectionObj : languageData){
+					JSONObject section = (JSONObject) sectionObj;
+					NSection sectionName = NSection.valueOf(JSON.getString(section, "section"));	//NOTE: name has to match one of the "NSection"s
+					JSONArray sectionGroup = JSON.getJArray(section, "group");
+					sections.put(sectionName.name(), Converters.object2ArrayListStr(sectionGroup));
+				}
+				//Check again
+				if (sections.isEmpty()){
+					throw new RuntimeException("Outlet section groups are empty for language: " + language);
+				}
+				outletGroupsByLanguage.put(language, sections);
+			}
+			
+		}catch (Exception e){
+			Debugger.println("Services:News - Error during initialization.", 1);
+			throw new RuntimeException("News service outlet properties file missing or broken! "
+					+ "File: " + propFile + " - Error: " + e.getMessage());
+		}
+		Debugger.println("Services:News - Loaded " + feedNames.keySet().size() 
+				+ " outlets with groups for " + outletGroupsByLanguage.keySet().size() + " languages from: " + propFile, 3);
 	}
-	public static final ArrayList<String> sportNews_de = new ArrayList<>();
-	static{
-		sportNews_de.add("Sport1");
-		sportNews_de.add("Sportschau");
-		sportNews_de.add("Kicker");
-		//sportNews_de.add("Yahoo eSports");
-	}
-	public static final ArrayList<String> soccerNews_de = new ArrayList<>();
-	static{
-		//soccerNews_de.add("Sportschau - Bundesliga");
-		soccerNews_de.add("Sportschau - Fussball");
-		soccerNews_de.add("Kicker");
-		soccerNews_de.add("Sport1");
-		soccerNews_de.add("11FREUNDE");
-		soccerNews_de.add("RevierSport");
-	}
-	public static final ArrayList<String> techNews_de = new ArrayList<>();
-	static{
-		techNews_de.add("Wired");
-		techNews_de.add("t3n");
-		techNews_de.add("golem.de");
-		techNews_de.add("heise online");
-		techNews_de.add("PCGames");
-		//techNews_de.add("Yahoo eSports");
-	}
-	public static final ArrayList<String> gamesNews_de = new ArrayList<>();
-	static{
-		gamesNews_de.add("PCGames");
-		gamesNews_de.add("GameStar");
-		//gamesNews_de.add("Yahoo eSports");
-		//gamesNews_de.add("Yahoo LoL");
-	}
-	public static final ArrayList<String> musicNews_de = new ArrayList<>();
-	static{
-		musicNews_de.add("RollingStone");
-		musicNews_de.add("MUSIC NEWS");
-	}
-	public static final ArrayList<String> cinemaNews_de = new ArrayList<>();
-	static{
-		cinemaNews_de.add("CinemaxX");
-		cinemaNews_de.add("Filmstarts.de - aktuell");
-		cinemaNews_de.add("Filmstarts.de - bald");
-		cinemaNews_de.add("Kino.de - Film-News");
-		//cinemaNews_de.add("cinema.de - Trailer");
-		cinemaNews_de.add("SPIEGEL Kino");
-	}
-	public static final ArrayList<String> tvNews_de = new ArrayList<>();
-	static{
-		tvNews_de.add("Filmstarts.de - Serien");
-		tvNews_de.add("Kino.de - Film-News");
-		//tvNews_de.add("Serienjunkies - Kalender");
-	}
-	public static final ArrayList<String> startUpNews_de = new ArrayList<>();
-	static{
-		startUpNews_de.add("Gruenderszene");
-		startUpNews_de.add("deutsche startups");
-		startUpNews_de.add("Business Punk");
-	}
-	
-	//SECTION MAPPING
-	public static final HashMap<String, ArrayList<String>> sectionNewsBlocks_de = new HashMap<>();
-	static{
-		sectionNewsBlocks_de.put(NSection.main.name(), commonNews_de);
-		sectionNewsBlocks_de.put(NSection.economy.name(), commonNews_de);
-		sectionNewsBlocks_de.put(NSection.politics.name(), commonNews_de);
-		sectionNewsBlocks_de.put(NSection.science.name(), techNews_de);
-		sectionNewsBlocks_de.put(NSection.tech.name(), techNews_de);
-		sectionNewsBlocks_de.put(NSection.sports.name(), sportNews_de);
-		sectionNewsBlocks_de.put(NSection.soccer.name(), soccerNews_de);
-		sectionNewsBlocks_de.put(NSection.games.name(), gamesNews_de);
-		sectionNewsBlocks_de.put(NSection.music.name(), musicNews_de);
-		sectionNewsBlocks_de.put(NSection.cinema.name(), cinemaNews_de);
-		sectionNewsBlocks_de.put(NSection.tv.name(), tvNews_de);
-		sectionNewsBlocks_de.put(NSection.startup.name(), startUpNews_de);
-	}
-	
+		
 	/**
-	 * Returns all available feeds for e.g. a feed refresh worker.
+	 * Returns all available feeds (names) for e.g. a feed refresh worker.
 	 */
-	public static final HashSet<String> getAllFeeds(){
-		HashSet<String> allFeeds = new HashSet<>();
-		
-		allFeeds.addAll(commonNews_de);
-		allFeeds.addAll(sportNews_de);
-		allFeeds.addAll(soccerNews_de);
-		allFeeds.addAll(techNews_de);
-		allFeeds.addAll(gamesNews_de);
-		allFeeds.addAll(musicNews_de);
-		allFeeds.addAll(cinemaNews_de);
-		allFeeds.addAll(tvNews_de);
-		allFeeds.addAll(startUpNews_de);
-		
-		return allFeeds;
+	public static final Set<String> getAllFeeds(){
+		return feedNames.keySet();
 	}
 	//-------------------------------------
 	
@@ -399,12 +276,11 @@ public class NewsRssFeeds implements ServiceInterface{
 		}
 		
 		//articles
-		ArrayList<String> feeds;
-		if (api.language.equals(LANGUAGES.DE)){
-			feeds = sectionNewsBlocks_de.get(section);
-		}else{
-			feeds = sectionNewsBlocks_de.get(section);
+		Map<String, List<String>> sectionGroupsForLanguage = outletGroupsByLanguage.get(api.language);
+		if (Is.nullOrEmptyMap(sectionGroupsForLanguage)){
+			sectionGroupsForLanguage = outletGroupsByLanguage.get(LANGUAGES.EN);
 		}
+		List<String> feeds = sectionGroupsForLanguage.get(section);
 		
 		Card card = new Card(Card.TYPE_GROUPED_LIST);
 		int i = 1;

@@ -1,6 +1,6 @@
 package net.b07z.sepia.server.assist.workers;
 
-import java.util.HashSet;
+import java.util.Set;
 
 import org.json.simple.JSONObject;
 
@@ -35,7 +35,7 @@ public class RssFeedWorker implements WorkerInterface {
 	long lastUpdated = 0;				//when has the worker last done an update
 	
 	//specific
-	HashSet<String> refreshFeeds;
+	Set<String> refreshFeeds;
 	long customWaitInterval = 2275;			//custom wait time until the worker checks for an abort request and status changes
 	public static long customRefreshInterval = (3*60*60*1000);	//every 3h
 	

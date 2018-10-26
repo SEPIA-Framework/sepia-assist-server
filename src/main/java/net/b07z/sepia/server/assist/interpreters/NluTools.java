@@ -79,7 +79,8 @@ public class NluTools {
 	static String BREAK_E = "(\\b|\\s|>|<|$)";
 	
 	/**
-	 * String contains one of these ...
+	 * String contains one of these ... <br>
+	 * Note: The difference to String.contains is that is has to be a whole token match, e.g. "AB" does not contain "B" in this case. 
 	 * @param text - string with text to analyze
 	 * @param match - string with matches separated by "|" e.g. a|b|c
 	 * @return true/false
@@ -131,7 +132,8 @@ public class NluTools {
 		}
 	}
 	/**
-	 * Remove first match of these ...
+	 * Remove first match of these ... <br>
+	 * Note: since its regExp you might need to make wise use of {@link Pattern#quote}.
 	 * @param text - string with text to analyze
 	 * @param remove_first_of - string with terms to remove the first match, separated by "|" e.g. a|b|c
 	 * @return string with removed first match
