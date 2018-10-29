@@ -81,7 +81,7 @@ public class SmartDevice implements ParameterHandler{
 		String type = "";
 		//German
 		if (language.matches(LANGUAGES.DE)){
-			type = NluTools.stringFindFirst(input, "(licht(er|)|lampe(n|)|beleuchtung|leuchte(n|)|helligkeit|"
+			type = NluTools.stringFindFirst(input, "(licht(er|es|)|lampe(n|)|beleuchtung|leuchte(n|)|helligkeit|"
 					+ "heiz(er|ungen|ung|koerper|luefter|strahler)|thermostat|temperatur(regler|en|)"
 				+ ")");
 			
@@ -116,7 +116,7 @@ public class SmartDevice implements ParameterHandler{
 		
 		//classify into types:
 		
-		if (NluTools.stringContains(type, "licht(er|)|lampe(n|)|beleuchtung|leuchte(n|)|helligkeit|"
+		if (NluTools.stringContains(type, "licht(er|es|)|lampe(n|)|beleuchtung|leuchte(n|)|helligkeit|"
 				+ "light(s|)|lighting|lamp(s|)|illumination|brightness")){
 			return "<" + Types.light.name() + ">";
 			

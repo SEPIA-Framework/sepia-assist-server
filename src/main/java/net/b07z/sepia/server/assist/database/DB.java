@@ -580,6 +580,12 @@ public class DB {
 		String userLocation = (String) filters.get("user_location");
 		String[] repliesArr = (String[]) filters.get("reply");
 		List<String> replies = repliesArr == null ? new ArrayList<>() : Arrays.asList(repliesArr);
+		JSONObject dataJson = null;				//e.g.: custom button data
+		if (filters.containsKey("data")){
+			dataJson = JSON.parseString((String) filters.get("data"));
+		}else{
+			dataJson = new JSONObject();	 	//NOTE: If no data is submitted it will kill all previous data info (anyway the whole object is overwritten)
+		}
 		
 		//build sentence
 		List<Command.Sentence> sentenceList = new ArrayList<>();
@@ -593,6 +599,7 @@ public class DB {
 				.setExplicit(isExplicit)
 				.setEnvironment(environment)
 				.setUserLocation(userLocation)
+				.setData(dataJson)
 				//TODO: keep it or remove it? The general answers should be stored in an index called "answers"
 				//and the connector is the command. For chats, custom answers are inside parameter "reply". But I think its still useful here ...
 				.setReplies(new ArrayList<>(replies))
