@@ -40,9 +40,9 @@ public class MusicRadioMixed implements ServiceInterface {
 				.setQuestion("music_radio_ask_0a");
 		info.addParameter(p1);
 		//optional
-		Parameter p2 = new Parameter(PARAMETERS.MUSIC_GENRE, "");			//<rock>, <pop>, etc. ...
+		Parameter p2 = new Parameter(PARAMETERS.MUSIC_GENRE, "");			//rock, pop, etc. ...
 		Parameter p3 = new Parameter(PARAMETERS.ACTION, "");				//<on>, <off>, etc. ...
-		//Parameter p4 = new Parameter(PARAMETERS.URL, "");					//custom stream URL - this is not a parameter on can extract so we don't include it here
+		//Parameter p4 = new Parameter(PARAMETERS.URL, "");					//custom stream URL - this is not a parameter one can extract so we don't include it here
 		info.addParameter(p2).addParameter(p3);
 		
 		//... but one of these optional parameters is required
@@ -122,7 +122,7 @@ public class MusicRadioMixed implements ServiceInterface {
 				api.putActionInfo("audio_title", title);
 				api.hasAction = true;
 				
-				String playlistURL = RadioStation.radioStationsPlaylist.get(title);
+				String playlistURL = RadioStation.getPlaylistUrl(title);
 				if (playlistURL != null && !playlistURL.isEmpty()){
 					api.addAction(ACTIONS.BUTTON_IN_APP_BROWSER);
 					api.putActionInfo("url", playlistURL); 
@@ -156,7 +156,7 @@ public class MusicRadioMixed implements ServiceInterface {
 			JSONArray stationsCollection;
 			boolean isPopular = (chacheStationName != null && !chacheStationName.isEmpty());
 			if (isPopular){
-				stationsCollection = RadioStation.radioStationsMap.get(chacheStationName);
+				stationsCollection = RadioStation.getStation(chacheStationName);
 				//get all from cache and finish
 				if (stationsCollection != null && !stationsCollection.isEmpty()){
 					long tic = System.currentTimeMillis();
@@ -338,7 +338,7 @@ public class MusicRadioMixed implements ServiceInterface {
 					
 					//add stored Array to radio cache
 					if (isPopular && !stationsCollection.isEmpty()){
-						RadioStation.radioStationsMap.put(chacheStationName, stationsCollection);
+						RadioStation.putStation(chacheStationName, stationsCollection);
 						Debugger.println("Radio cache - wrote: '" + chacheStationName + "' with " + stationsCollection.size() + " stations", 3);
 					}
 				
@@ -361,9 +361,9 @@ public class MusicRadioMixed implements ServiceInterface {
 				api.actionInfo_put_info("cmd", CMD.getRadio(station));
 				*/
 				
-				String playlistURL = RadioStation.radioStationsPlaylist.get(active_name);
+				String playlistURL = RadioStation.getPlaylistUrl(active_name);
 				if (playlistURL == null){
-					playlistURL = RadioStation.radioStationsPlaylist.get(active_name.replaceAll(" - .*", "").trim());
+					playlistURL = RadioStation.getPlaylistUrl(active_name.replaceAll(" - .*", "").trim());
 				}
 				if (playlistURL != null && !playlistURL.isEmpty()){
 					api.addAction(ACTIONS.BUTTON_IN_APP_BROWSER);
