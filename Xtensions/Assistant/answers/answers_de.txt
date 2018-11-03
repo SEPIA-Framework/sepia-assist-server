@@ -156,7 +156,7 @@ music_radio_ask_0a;;	rep=0|mood=5;;		Wie heißt die Radiostation, das Genre oder
 music_radio_1a;;		rep=0|mood=5;;		Habe eine Auswahl von <1> Radio Stationen gefunden und starte schon mal <4>.<br><br><3> ;;char=neutral
 music_radio_1b;;		rep=0|mood=5;;		Habe eine Radio Station gefunden namens <4>. Sekunde, ich starte sie mal. ;;char=polite,neutral
 music_radio_1c;;		rep=0|mood=5;;		Hab folgende top <1> Radio Stationen gefunden.<br><br><3><br>Ich starte mal die erste. ;;char=cool,polite,neutral
-music_radio_1d;;		rep=0|mood=5;;		Sekunde, ich start den <1> Stream. ;;char=cool,rude,neutral
+music_radio_1d;;		rep=0|mood=5;;		Sekunde, ich starte den <1> Stream. ;;char=cool,rude,neutral
 music_radio_1e;;		rep=0|mood=5;;		Radio wird gestartet.
 music_radio_1f;;		rep=0|mood=5;;		Radio wird gestartet.<br>Habe diese <1> Sender gefunden:<br><br><3> ;;char=cool,rude
 music_radio_2a;;		rep=0|mood=5;;		Erledigt <user_name>. ;;char=neutral

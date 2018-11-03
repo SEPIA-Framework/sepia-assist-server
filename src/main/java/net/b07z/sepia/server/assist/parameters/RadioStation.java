@@ -1,6 +1,5 @@
 package net.b07z.sepia.server.assist.parameters;
 
-import java.util.HashMap;
 import java.util.regex.Pattern;
 
 import org.json.simple.JSONArray;
@@ -17,123 +16,53 @@ import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
+import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.JSON;
 
 public class RadioStation implements ParameterHandler{
 	
 	//------data-----
-	public static HashMap<String, JSONArray> radioStationsMap = new HashMap<>();
-	public static HashMap<String, String> radioStationsPlaylist = new HashMap<>();
+	public static JSONObject radioStationsMap = new JSONObject();
+	public static JSONObject radioStationsPlaylist = new JSONObject();
 	static {
-		//genre mix
-		radioStationsMap.put("night", makeStationArray(JSON.make("name", "DELUXE LOUNGE RADIO", "streamURL", "http://46.245.183.120:8000/0010"),
-								JSON.make("name", "ANTENNE BAYERN Chillout", "streamURL", "http://mp3channels.webradio.antenne.de/chillout"),
-								JSON.make("name", "egoFM Flash", "streamURL", "http://mp3ad.egofm.c.nmdn.net/ps-egofmflash_192/livestream.mp3"),
-								JSON.make("name", "YOU FM Club","streamURL", "http://hr-youfm-club.cast.addradio.de/hr/youfm/club/mp3/128/stream.mp3"),
-								JSON.make("name", "1LIVE DJ Session", "streamURL", "http://wdr-1live-djsession.icecast.wdr.de/wdr/1live/djsession/mp3/128/stream.mp3"),
-								JSON.make("name", "egoFM Soul", "streamURL", "http://mp3ad.egofm.c.nmdn.net/ps-egofmsoul_192/livestream.mp3"),
-								JSON.make("name", "ANTENNE BAYERN Lovesongs", "streamURL", "http://mp3channels.webradio.antenne.de/lovesongs"),
-								JSON.make("name", "1LIVE Fiehe", "streamURL", "http://wdr-1live-fiehe.icecast.wdr.de/wdr/1live/fiehe/mp3/128/stream.mp3")) );
-		//Sport
-		radioStationsMap.put("sport1", makeStationArray(JSON.make("name", "Sport1 - 24/7", "streamURL", "http://stream.sport1.fm/api/livestream-redirect/SPORT1FM_24_7.mp3"),
-								JSON.make("name", "Sport1 - Spezial1", "streamURL","http://stream.sport1.fm/api/livestream-redirect/SPORT1FM_Einzel1.mp3"),
-								JSON.make("name", "Sport1 - Spezial2", "streamURL","http://stream.sport1.fm/api/livestream-redirect/SPORT1FM_Einzel2.mp3"),
-								JSON.make("name", "Sport1 - Spezial3", "streamURL","http://stream.sport1.fm/api/livestream-redirect/SPORT1FM_Einzel3.mp3"),
-								JSON.make("name", "Sport1 - Spezial4", "streamURL","http://stream.sport1.fm/api/livestream-redirect/SPORT1FM_Einzel4.mp3"),
-								JSON.make("name", "Sport1 - Spezial5", "streamURL","http://stream.sport1.fm/api/livestream-redirect/SPORT1FM_Einzel5.mp3"),
-								JSON.make("name", "Sport1 - Spezial6", "streamURL","http://stream.sport1.fm/api/livestream-redirect/SPORT1FM_Einzel6.mp3")) );
-		//---------
-		radioStationsMap.put("deluxe_lounge", makeStationArray(JSON.make("name", "DELUXE LOUNGE RADIO", "streamURL", "http://46.245.183.120:8000/0010")) );
-		radioStationsPlaylist.put("DELUXE LOUNGE RADIO", "http://onlineradiobox.com/de/radiodeluxelounge/playlist/");
-		radioStationsMap.put("1live", makeStationArray(JSON.make("name","1LIVE","streamURL", "http://wdr-1live-live.icecast.wdr.de/wdr/1live/live/mp3/128/stream.mp3"),
-								JSON.make("name", "1LIVE diGGi","streamURL","http://wdr-1live-diggi.icecast.wdr.de/wdr/1live/diggi/mp3/128/stream.mp3"),
-								JSON.make("name", "1LIVE DJ Session", "streamURL", "http://wdr-1live-djsession.icecast.wdr.de/wdr/1live/djsession/mp3/128/stream.mp3"),
-								JSON.make("name", "1LIVE HipHop","streamURL", "http://wdr-1live-hiphop.icecast.wdr.de/wdr/1live/hiphop/mp3/128/stream.mp3"),
-								JSON.make("name", "1LIVE Plan B", "streamURL", "http://wdr-1live-planb.icecast.wdr.de/wdr/1live/planb/mp3/128/stream.mp3"),
-								JSON.make("name", "1LIVE Neu für den Sektor", "streamURL", "http://wdr-1live-neufuerdensektor.icecast.wdr.de/wdr/1live/neufuerdensektor/mp3/128/stream.mp3"),
-								JSON.make("name", "1LIVE Fiehe", "streamURL", "http://wdr-1live-fiehe.icecast.wdr.de/wdr/1live/fiehe/mp3/128/stream.mp3")) );
-		radioStationsPlaylist.put("1LIVE", "http://www1.wdr.de/radio/1live/on-air/1live-playlist/index.html");
-		radioStationsMap.put("antenne_bayern", makeStationArray(JSON.make("name","ANTENNE BAYERN","streamURL", "http://mp3channels.webradio.antenne.de:80/antenne"),
-								JSON.make("name", "ANTENNE BAYERN Fresh", "streamURL", "http://mp3channels.webradio.antenne.de/fresh"),
-								JSON.make("name", "ROCK ANTENNE","streamURL","http://mp3channels.webradio.rockantenne.de/rockantenne"),
-								JSON.make("name", "ANTENNE BAYERN Workout Hits", "streamURL", "http://mp3channels.webradio.antenne.de/workout-hits"),
-								JSON.make("name", "ANTENNE BAYERN Black Beatz", "streamURL", "http://mp3channels.webradio.antenne.de/black-beatz"),
-								JSON.make("name", "ANTENNE BAYERN Chillout", "streamURL", "http://mp3channels.webradio.antenne.de/chillout"),
-								JSON.make("name", "ANTENNE BAYERN Classic Rock Live", "streamURL", "http://mp3channels.webradio.antenne.de/classic-rock-live"),
-								JSON.make("name", "ANTENNE BAYERN 80er Kulthits", "streamURL", "http://mp3channels.webradio.antenne.de/80er-kulthits"),
-								JSON.make("name", "ANTENNE BAYERN 90er Hits","streamURL", "http://mp3channels.webradio.antenne.de/90er-hits"),
-								JSON.make("name", "ANTENNE BAYERN Lovesongs", "streamURL", "http://mp3channels.webradio.antenne.de/lovesongs"),
-								JSON.make("name", "ANTENNE BAYERN Alpensound", "streamURL", "http://mp3channels.webradio.antenne.de/alpensound")) );
-		radioStationsPlaylist.put("ANTENNE BAYERN", "http://www.antenne.de/musik/song-suche/?station=antenne");
-		radioStationsMap.put("wdr2", makeStationArray(JSON.make("name", "WDR 2 - Ruhrgebiet","streamURL", "http://wdr-wdr2-ruhrgebiet.icecast.wdr.de/wdr/wdr2/ruhrgebiet/mp3/128/stream.mp3"),
-								JSON.make("name", "WDR 2 - Rheinland","streamURL", "http://wdr-wdr2-rheinland.icecast.wdr.de/wdr/wdr2/rheinland/mp3/128/stream.mp3"),
-								JSON.make("name", "WDR 2 - Ostwestfalen-Lippe", "streamURL", "http://wdr-wdr2-ostwestfalenlippe.icecast.wdr.de/wdr/wdr2/ostwestfalenlippe/mp3/128/stream.mp3"),
-								JSON.make("name", "WDR 2 - Südwestfalen", "streamURL", "http://wdr-wdr2-suedwestfalen.icecast.wdr.de/wdr/wdr2/suedwestfalen/mp3/128/stream.mp3"),
-								JSON.make("name", "WDR 2 - Münsterland", "streamURL", "http://wdr-wdr2-muensterland.icecast.wdr.de/wdr/wdr2/muensterland/mp3/128/stream.mp3")));
-		radioStationsPlaylist.put("WDR 2", "http://www1.wdr.de/radio/wdr2/titelsuche-wdrzwei-124.html");
-		radioStationsMap.put("wdr3", makeStationArray(
-								JSON.make("name", "WDR 3", "streamURL", "http://wdr-wdr3-live.icecast.wdr.de/wdr/wdr3/live/mp3/128/stream.mp3")));
-		radioStationsPlaylist.put("WDR 3", "http://www1.wdr.de/radio/wdr3/titelsuche-wdrdrei-104.html");
-		radioStationsMap.put("wdr4", makeStationArray(
-								JSON.make("name", "WDR 4", "streamURL", "http://wdr-wdr4-live.icecast.wdr.de/wdr/wdr4/live/mp3/128/stream.mp3")));
-		radioStationsPlaylist.put("WDR 4", "http://www1.wdr.de/radio/wdr4/titelsuche-wdrvier-102.html");
-		radioStationsMap.put("wdr5", makeStationArray(
-								JSON.make("name", "WDR 5", "streamURL", "http://wdr-wdr5-live.icecast.wdr.de/wdr/wdr5/live/mp3/128/stream.mp3")));
-		radioStationsPlaylist.put("WDR 5", "http://www1.wdr.de/radio/wdr5/musik/titelsuche-wdrfuenf-104.html");
-		radioStationsMap.put("swr1", null);
-		radioStationsMap.put("swr2", null);
-		radioStationsMap.put("swr3", null);
-		radioStationsMap.put("ndr1", null);
-		radioStationsMap.put("ndr2", null);
-		radioStationsMap.put("ndr3", null);
-		radioStationsMap.put("bayern1", null);
-		radioStationsMap.put("bayern2", null);
-		radioStationsMap.put("bayern3", null);
-		radioStationsMap.put("hr1", null);
-		radioStationsMap.put("hr2", null);
-		radioStationsMap.put("hr3", null);
-		radioStationsMap.put("rpr1", null);
-		radioStationsMap.put("rpr2", null);
-		radioStationsMap.put("ffn", null);
-		radioStationsMap.put("regenbogen", null);
-		radioStationsMap.put("jam_fm", null);
-		radioStationsMap.put("big_fm", null);
-		radioStationsMap.put("jump", null);
-		radioStationsMap.put("hamburg", null);
-		radioStationsMap.put("rock_antenne", null);
-		radioStationsMap.put("antenne_ac", null);
-		radioStationsMap.put("arabella", null);
-		radioStationsMap.put("gong", null);
-		radioStationsMap.put("ego_fm", makeStationArray(JSON.make("name", "egoFM Pure","streamURL", "http://mp3ad.egofm.c.nmdn.net/ps-egofmraw_192/livestream.mp3"),
-								JSON.make("name", "egoFM","streamURL","http://mp3ad.egofm.c.nmdn.net/ps-egofm_192/livestream.mp3"),
-								JSON.make("name", "egoFM Riff","streamURL", "http://mp3ad.egofm.c.nmdn.net/ps-egofmriff_192/livestream.mp3"),
-								JSON.make("name", "egoFM Flash", "streamURL", "http://mp3ad.egofm.c.nmdn.net/ps-egofmflash_192/livestream.mp3"),
-								JSON.make("name", "egoFM Soul", "streamURL", "http://mp3ad.egofm.c.nmdn.net/ps-egofmsoul_192/livestream.mp3"),
-								JSON.make("name", "egoFM Rap", "streamURL", "http://mp3ad.egofm.c.nmdn.net/ps-egofmrap_192/livestream.mp3"),
-								JSON.make("name", "egoFM Snow", "streamURL", "http://mp3ad.egofm.c.nmdn.net/ps-egofmsnow_192/livestream.mp3")) );
-		radioStationsPlaylist.put("egoFM", "http://www.egofm.de/musik/play-history");
-		radioStationsPlaylist.put("egoFM Pure", "http://www.egofm.de/musik/play-history-raw");
-		radioStationsMap.put("ballermann", null);
-		radioStationsMap.put("das_ding", null);
-		radioStationsMap.put("paloma", null);
-		radioStationsMap.put("you_fm", makeStationArray(JSON.make("name", "YOU FM","streamURL", "http://hr-youfm-live.cast.addradio.de/hr/youfm/live/mp3/128/stream.mp3"),
-								JSON.make("name", "YOU FM Club","streamURL", "http://hr-youfm-club.cast.addradio.de/hr/youfm/club/mp3/128/stream.mp3"),
-								JSON.make("name", "YOU FM Just Music", "streamURL", "http://hr-youfm-justmusic.cast.addradio.de/hr/youfm/justmusic/mp3/128/stream.mp3")));
-		radioStationsPlaylist.put("YOU FM", "http://www.you-fm.de/playlist/youfm.html");
-		radioStationsMap.put("rtl_104_6_berlin", null);	
-		radioStationsMap.put("sunshine_live", null);
-		radioStationsMap.put("charivari_party_hitmix", null);
-		radioStationsMap.put("antenne_niedersachsen", null);
-		radioStationsMap.put("deutschlandfunk", null);
+		String propFile = Config.servicePropertiesFolder + "radio-stations.json";
+		JSONObject radioStations = JSON.readJsonFromFile(propFile);
+		try{
+			radioStationsMap = JSON.getJObject(radioStations, "stations");
+			radioStationsPlaylist = JSON.getJObject(radioStations, "playlists");
+			if (radioStationsMap == null || radioStationsPlaylist == null){
+				throw new RuntimeException("RadioStation properties file missing or broken! "
+						+ "File: " + propFile + " - Error: 'stations' or 'playlists' was null!");
+			}
+			Debugger.println("Parameters:RadioStation - Loaded " + radioStationsMap.keySet().size() 
+					+ " station arrays with " + radioStationsPlaylist.keySet().size() + " playlists from: " + propFile, 3);
+		}catch(Exception e){
+			Debugger.println("Parameters:RadioStation - Error during initialization.", 1);
+			throw new RuntimeException("RadioStation properties file missing or broken! "
+					+ "File: " + propFile + " - Error: " + e.getMessage());
+		}
+	}
+	public static JSONArray getStation(String search){
+		JSONArray entry = JSON.getJArray(radioStationsMap, search);
+		//TODO: we could add some fancy fuzzy search here too ...
+		return entry;
+	}
+	public static void putStation(String key, JSONArray entry){
+		JSON.put(radioStationsMap, key, entry);
+	}
+	public static String getPlaylistUrl(String stationName){
+		String entry = JSON.getString(radioStationsPlaylist, stationName);
+		return entry;
 	}
 	
-	private static JSONArray makeStationArray(JSONObject... stations){
+	/*private static JSONArray makeStationArray(JSONObject... stations){
 		JSONArray ja = new JSONArray();
 		for (JSONObject station : stations){
 			JSON.add(ja,station);
 		}
 		return ja;
-	}
+	}*/
+	
 	//--------
 
 	User user;
@@ -338,6 +267,7 @@ public class RadioStation implements ParameterHandler{
 		JSONObject itemResultJSON = new JSONObject();
 			JSON.add(itemResultJSON, InterviewData.VALUE, station);
 			JSON.add(itemResultJSON, InterviewData.CACHE_ENTRY, (radioStationsMap.containsKey(chacheStationName))? chacheStationName : "");
+			//TODO: we should make a real "search" inside the stations map via name parameter and fuzzy matching
 		
 		buildSuccess = true;
 		return itemResultJSON.toJSONString();

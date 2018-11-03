@@ -1,0 +1,215 @@
+{
+    "playlists": {
+        "WDR 5": "http://www1.wdr.de/radio/wdr5/musik/titelsuche-wdrfuenf-104.html",
+        "WDR 3": "http://www1.wdr.de/radio/wdr3/titelsuche-wdrdrei-104.html",
+        "WDR 4": "http://www1.wdr.de/radio/wdr4/titelsuche-wdrvier-102.html",
+        "egoFM Pure": "http://www.egofm.de/musik/play-history-raw",
+        "YOU FM": "http://www.you-fm.de/playlist/youfm.html",
+        "ANTENNE BAYERN": "http://www.antenne.de/musik/song-suche/?station=antenne",
+        "1LIVE": "http://www1.wdr.de/radio/1live/on-air/1live-playlist/index.html",
+        "egoFM": "http://www.egofm.de/musik/play-history",
+        "WDR 2": "http://www1.wdr.de/radio/wdr2/titelsuche-wdrzwei-124.html",
+        "DELUXE LOUNGE RADIO": "http://onlineradiobox.com/de/radiodeluxelounge/playlist/"
+    },
+    "stations": {
+        "ego_fm": [{
+            "streamURL": "http://egofm-live.cast.addradio.de/egofm/pure/mp3/high/stream.mp3",
+            "name": "egoFM Pure"
+        }, {
+            "streamURL": "http://egofm-live.cast.addradio.de/egofm/live/mp3/high/stream.mp3",
+            "name": "egoFM"
+        }, {
+            "streamURL": "http://egofm-live.cast.addradio.de/egofm/riff/mp3/high/stream.mp3",
+            "name": "egoFM Riff"
+        }, {
+            "streamURL": "http://egofm-live.cast.addradio.de/egofm/flash/mp3/high/stream.mp3",
+            "name": "egoFM Flash"
+        }, {
+            "streamURL": "http://egofm-live.cast.addradio.de/egofm/soul/mp3/high/stream.mp3",
+            "name": "egoFM Soul"
+        }, {
+            "streamURL": "http://egofm-live.cast.addradio.de/egofm/rap/mp3/high/stream.mp3",
+            "name": "egoFM Rap"
+        }, {
+            "streamURL": "http://egofm-live.cast.addradio.de/egofm/snow/mp3/high/stream.mp3",
+            "name": "egoFM Snow"
+        }],
+        "ndr3": null,
+        "ndr2": null,
+        "ndr1": null,
+        "charivari_party_hitmix": null,
+        "deutschlandfunk": null,
+        "deluxe_lounge": [{
+            "streamURL": "http://46.245.183.120:8000/0010",
+            "name": "DELUXE LOUNGE RADIO"
+        }],
+        "rpr1": null,
+        "bayern2": null,
+        "bayern1": null,
+        "rpr2": null,
+        "bayern3": null,
+        "antenne_ac": null,
+        "gong": null,
+        "swr2": null,
+        "swr3": null,
+        "big_fm": null,
+        "swr1": null,
+        "antenne_niedersachsen": null,
+        "arabella": null,
+        "das_ding": null,
+        "jump": null,
+        "hamburg": null,
+        "paloma": null,
+        "sport1": [{
+            "streamURL": "http://stream.sport1.fm/api/livestream-redirect/SPORT1FM_24_7.mp3",
+            "name": "Sport1 - 24/7"
+        }, {
+            "streamURL": "http://stream.sport1.fm/api/livestream-redirect/SPORT1FM_Einzel1.mp3",
+            "name": "Sport1 - Spezial1"
+        }, {
+            "streamURL": "http://stream.sport1.fm/api/livestream-redirect/SPORT1FM_Einzel2.mp3",
+            "name": "Sport1 - Spezial2"
+        }, {
+            "streamURL": "http://stream.sport1.fm/api/livestream-redirect/SPORT1FM_Einzel3.mp3",
+            "name": "Sport1 - Spezial3"
+        }, {
+            "streamURL": "http://stream.sport1.fm/api/livestream-redirect/SPORT1FM_Einzel4.mp3",
+            "name": "Sport1 - Spezial4"
+        }, {
+            "streamURL": "http://stream.sport1.fm/api/livestream-redirect/SPORT1FM_Einzel5.mp3",
+            "name": "Sport1 - Spezial5"
+        }, {
+            "streamURL": "http://stream.sport1.fm/api/livestream-redirect/SPORT1FM_Einzel6.mp3",
+            "name": "Sport1 - Spezial6"
+        }],
+        "hr1": null,
+        "night": [{
+            "streamURL": "http://46.245.183.120:8000/0010",
+            "name": "DELUXE LOUNGE RADIO"
+        }, {
+            "streamURL": "http://mp3channels.webradio.antenne.de/chillout",
+            "name": "ANTENNE BAYERN Chillout"
+        }, {
+            "streamURL": "http://mp3ad.egofm.c.nmdn.net/ps-egofmflash_192/livestream.mp3",
+            "name": "egoFM Flash"
+        }, {
+            "streamURL": "http://hr-youfm-club.cast.addradio.de/hr/youfm/club/mp3/128/stream.mp3",
+            "name": "YOU FM Club"
+        }, {
+            "streamURL": "http://wdr-1live-djsession.icecast.wdr.de/wdr/1live/djsession/mp3/128/stream.mp3",
+            "name": "1LIVE DJ Session"
+        }, {
+            "streamURL": "http://mp3ad.egofm.c.nmdn.net/ps-egofmsoul_192/livestream.mp3",
+            "name": "egoFM Soul"
+        }, {
+            "streamURL": "http://mp3channels.webradio.antenne.de/lovesongs",
+            "name": "ANTENNE BAYERN Lovesongs"
+        }, {
+            "streamURL": "http://wdr-1live-fiehe.icecast.wdr.de/wdr/1live/fiehe/mp3/128/stream.mp3",
+            "name": "1LIVE Fiehe"
+        }],
+        "wdr5": [{
+            "streamURL": "http://wdr-wdr5-live.icecast.wdr.de/wdr/wdr5/live/mp3/128/stream.mp3",
+            "name": "WDR 5"
+        }],
+        "sunshine_live": null,
+        "antenne_bayern": [{
+            "streamURL": "http://mp3channels.webradio.antenne.de:80/antenne",
+            "name": "ANTENNE BAYERN"
+        }, {
+            "streamURL": "http://mp3channels.webradio.antenne.de/fresh",
+            "name": "ANTENNE BAYERN Fresh"
+        }, {
+            "streamURL": "http://mp3channels.webradio.rockantenne.de/rockantenne",
+            "name": "ROCK ANTENNE"
+        }, {
+            "streamURL": "http://mp3channels.webradio.antenne.de/workout-hits",
+            "name": "ANTENNE BAYERN Workout Hits"
+        }, {
+            "streamURL": "http://mp3channels.webradio.antenne.de/black-beatz",
+            "name": "ANTENNE BAYERN Black Beatz"
+        }, {
+            "streamURL": "http://mp3channels.webradio.antenne.de/chillout",
+            "name": "ANTENNE BAYERN Chillout"
+        }, {
+            "streamURL": "http://mp3channels.webradio.antenne.de/classic-rock-live",
+            "name": "ANTENNE BAYERN Classic Rock Live"
+        }, {
+            "streamURL": "http://mp3channels.webradio.antenne.de/80er-kulthits",
+            "name": "ANTENNE BAYERN 80er Kulthits"
+        }, {
+            "streamURL": "http://mp3channels.webradio.antenne.de/90er-hits",
+            "name": "ANTENNE BAYERN 90er Hits"
+        }, {
+            "streamURL": "http://mp3channels.webradio.antenne.de/lovesongs",
+            "name": "ANTENNE BAYERN Lovesongs"
+        }, {
+            "streamURL": "http://mp3channels.webradio.antenne.de/alpensound",
+            "name": "ANTENNE BAYERN Alpensound"
+        }],
+        "hr3": null,
+        "hr2": null,
+        "you_fm": [{
+            "streamURL": "http://hr-youfm-live.cast.addradio.de/hr/youfm/live/mp3/128/stream.mp3",
+            "name": "YOU FM"
+        }, {
+            "streamURL": "http://hr-youfm-club.cast.addradio.de/hr/youfm/club/mp3/128/stream.mp3",
+            "name": "YOU FM Club"
+        }, {
+            "streamURL": "http://hr-youfm-justmusic.cast.addradio.de/hr/youfm/justmusic/mp3/128/stream.mp3",
+            "name": "YOU FM Just Music"
+        }],
+        "ffn": null,
+        "rock_antenne": null,
+        "regenbogen": null,
+        "1live": [{
+            "streamURL": "http://wdr-1live-live.icecast.wdr.de/wdr/1live/live/mp3/128/stream.mp3",
+            "name": "1LIVE"
+        }, {
+            "streamURL": "http://wdr-1live-diggi.icecast.wdr.de/wdr/1live/diggi/mp3/128/stream.mp3",
+            "name": "1LIVE diGGi"
+        }, {
+            "streamURL": "http://wdr-1live-djsession.icecast.wdr.de/wdr/1live/djsession/mp3/128/stream.mp3",
+            "name": "1LIVE DJ Session"
+        }, {
+            "streamURL": "http://wdr-1live-hiphop.icecast.wdr.de/wdr/1live/hiphop/mp3/128/stream.mp3",
+            "name": "1LIVE HipHop"
+        }, {
+            "streamURL": "http://wdr-1live-planb.icecast.wdr.de/wdr/1live/planb/mp3/128/stream.mp3",
+            "name": "1LIVE Plan B"
+        }, {
+            "streamURL": "http://wdr-1live-neufuerdensektor.icecast.wdr.de/wdr/1live/neufuerdensektor/mp3/128/stream.mp3",
+            "name": "1LIVE Neu für den Sektor"
+        }, {
+            "streamURL": "http://wdr-1live-fiehe.icecast.wdr.de/wdr/1live/fiehe/mp3/128/stream.mp3",
+            "name": "1LIVE Fiehe"
+        }],
+        "wdr4": [{
+            "streamURL": "http://wdr-wdr4-live.icecast.wdr.de/wdr/wdr4/live/mp3/128/stream.mp3",
+            "name": "WDR 4"
+        }],
+        "rtl_104_6_berlin": null,
+        "wdr3": [{
+            "streamURL": "http://wdr-wdr3-live.icecast.wdr.de/wdr/wdr3/live/mp3/128/stream.mp3",
+            "name": "WDR 3"
+        }],
+        "wdr2": [{
+            "streamURL": "http://wdr-wdr2-ruhrgebiet.icecast.wdr.de/wdr/wdr2/ruhrgebiet/mp3/128/stream.mp3",
+            "name": "WDR 2 - Ruhrgebiet"
+        }, {
+            "streamURL": "http://wdr-wdr2-rheinland.icecast.wdr.de/wdr/wdr2/rheinland/mp3/128/stream.mp3",
+            "name": "WDR 2 - Rheinland"
+        }, {
+            "streamURL": "http://wdr-wdr2-ostwestfalenlippe.icecast.wdr.de/wdr/wdr2/ostwestfalenlippe/mp3/128/stream.mp3",
+            "name": "WDR 2 - Ostwestfalen-Lippe"
+        }, {
+            "streamURL": "http://wdr-wdr2-suedwestfalen.icecast.wdr.de/wdr/wdr2/suedwestfalen/mp3/128/stream.mp3",
+            "name": "WDR 2 - Südwestfalen"
+        }, {
+            "streamURL": "http://wdr-wdr2-muensterland.icecast.wdr.de/wdr/wdr2/muensterland/mp3/128/stream.mp3",
+            "name": "WDR 2 - Münsterland"
+        }],
+        "jam_fm": null,
+        "ballermann": null
+    }
+}

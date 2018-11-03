@@ -422,6 +422,7 @@ public class SmartOpenHAB implements ServiceInterface {
 			}
 			//TODO: we should do a device name check too, but this is not taken into account in SmartDevice parameter yet :-( 
 			//e.g. "Light 1", "Lamp A" or "Desk-Lamp" ...
+			//I suggest to create an additional parameter called SMART_DEVICE_NAME
 		}
 		return matchingDevices;
 	}
