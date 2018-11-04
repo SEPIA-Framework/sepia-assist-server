@@ -1,7 +1,9 @@
 Kein Problem!;;		command=chat;;		reply=gut||ok||alles klar||alles klaro
 no problemo;;		command=chat;;		reply=alles klaro
 OK;;		command=chat;;		reply=gut||alles klar||alles klaro
+Ok cool;;		command=chat;;		reply=Kein Problem
 Okay;;		command=chat;;		reply=gut||alles klar||alles klaro
+Okay cool;;		command=chat;;		reply=Kein Problem
 ja;;		command=chat;;		reply=gut||ok||alles klar||alles klaro
 ja, definitiv;;		command=chat;;		reply=gut||ok||alles klar||alles klaro
 definitiv;;		command=chat;;		reply=gut||ok||alles klar||alles klaro
@@ -13,6 +15,9 @@ nein, natürlich nicht;;		command=chat;;		reply=ok||ok ok, kein Problem||kein Pr
 nein, definitiv nicht;;		command=chat;;		reply=ok||ok ok, kein Problem||kein Problem
 nein tue ich nicht;;		command=chat;;		reply=gut||ok
 nicht jetzt;;		command=chat;;		reply=ok||kein Problem||vielleicht später
+nichts;;		command=chat;;		reply=ok
+ach nichts;;		command=chat;;		reply=ok dann nicht
+schon gut;;		command=chat;;		reply=ok
 definitiv nicht;;		command=chat;;		reply=ok||ok ok, kein Problem||kein Problem
 ich weiß;;		command=chat;;		reply=alles klaro||ok :-)||ich wusste, dass du das sagen würdest :-)
 Auf zum Atom!;;		command=chat;;		reply=Auf zum Atem! :-)

@@ -28,12 +28,17 @@ one;;		command=count;;		number=1;;		memory=1;;
 =);;				command=chat;;		reply=#LAUGH01#||#LAUGH02#||#LAUGH03#
 :-);;				command=chat;;		reply=#LAUGH01#||#LAUGH02#||#LAUGH03#
 :);;				command=chat;;		reply=#LAUGH01#||#LAUGH02#||#LAUGH03#
-find smart home system;;		command=chat;;		reply=there is no smart home or car system around||there is no access to a smart home or car signal
-connect to a smart home system;;		command=chat;;		reply=there is no smart home or car system around||there is no access to a smart home or car signal
-connect to a smart car system;;		command=chat;;		reply=there is no smart home or car system around||there is no access to a smart home or car signal
-access smart home system;;		command=chat;;		reply=there is no smart home or car system around||there is no access to a smart home or car signal
-locate smart home system;;		command=chat;;		reply=there is no smart home or car system around||there is no access to a smart home or car signal
-search for smart home system;;		command=chat;;		reply=there is no smart home or car system around||there is no access to a smart home or car signal
 nps;; 	command=feedback_nps;;  
 evnts;; 	command=events_personal;; 
 test chain;;	command=sentence_connect;;		sentences=hello&&weather;;	reply=Here is your summary.||<summary_0a>;;
+Time;;		command=chat;;		reply=It is <local_time_hhmm> o'clock
+What's the time?;;		command=chat;;		reply=It is <local_time_hhmm> o'clock
+What time is it?;;		command=chat;;		reply=It is <local_time_hhmm> o'clock
+Do you have the time?;;		command=chat;;		reply=It is <local_time_hhmm> o'clock
+The time please;;		command=chat;;		reply=It is <local_time_hhmm> o'clock
+Date;;		command=chat;;		reply=Today is the <local_date_MMddyyyy>
+What's the date;;		command=chat;;		reply=Today is the <local_date_MMddyyyy>
+What date is today;;		command=chat;;		reply=Today is the <local_date_MMddyyyy>
+What is the date of today;;		command=chat;;		reply=Today is the <local_date_MMddyyyy>
+The date of today please;;		command=chat;;		reply=Today is the <local_date_MMddyyyy>
+

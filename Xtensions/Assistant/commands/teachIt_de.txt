@@ -37,12 +37,16 @@ eins;;		command=count;;				number=1;;		memory=1;;
 :);;				command=chat;;		reply=#LAUGH01#||#LAUGH02#||#LAUGH03#
 Favoriten hinzufügen;;		command=my_favorite;;
 Favoriten zeigen;;		command=my_favorite;;	action=open;;
-finde ein smart car system;;		command=chat;;		reply=es scheint kein Smart Home oder Car System zu geben hier||hab kein Smart Home oder Car System gefunden hier
-finde ein smart home system;;		command=chat;;		reply=es scheint kein Smart Home oder Car System zu geben hier||hab kein Smart Home oder Car System gefunden hier
-suche ein smart home system;;		command=chat;;		reply=es scheint kein Smart Home oder Car System zu geben hier||hab kein Smart Home oder Car System gefunden hier
-verbinde dich mit einem smart home system;;		command=chat;;		reply=es scheint kein Smart Home oder Car System zu geben hier||hab kein Smart Home oder Car System gefunden hier
-verbinde dich mit dem smart car system;;		command=chat;;		reply=es scheint kein Smart Home oder Car System zu geben hier||hab kein Smart Home oder Car System gefunden hier
-lokalisiere ein smart home system;;		command=chat;;		reply=es scheint kein Smart Home oder Car System zu geben hier||hab kein Smart Home oder Car System gefunden hier
 nps;; 	command=feedback_nps;;  
 evnts;; 	command=events_personal;;
 test chain;;	command=sentence_connect;;		sentences=hallo&&wetter;;	reply=Hier ist deine Zusammenfassung||<summary_0a>;;
+Uhrzeit;;		command=chat;;		reply=Es ist <local_time_hhmm> Uhr
+Wieviel Uhr ist es;;		command=chat;;		reply=Es ist <local_time_hhmm> Uhr
+Wie viel Uhr ist es;;		command=chat;;		reply=Es ist <local_time_hhmm> Uhr
+Wie viel Uhr haben wir;;		command=chat;;		reply=Es ist <local_time_hhmm> Uhr
+Die Uhrzeit bitte;;		command=chat;;		reply=Es ist <local_time_hhmm> Uhr
+Datum;;		command=chat;;		reply=Heute ist der <local_date_ddMMyyyy>
+Welches Datum ist Heute;;		command=chat;;		reply=Heute ist der <local_date_ddMMyyyy>
+Welches Datum haben wir;;		command=chat;;		reply=Heute ist der <local_date_ddMMyyyy>
+Wie ist das Datum;;		command=chat;;		reply=Heute ist der <local_date_ddMMyyyy>
+Das Datum von Heute;;		command=chat;;		reply=Heute ist der <local_date_ddMMyyyy>

@@ -2,6 +2,7 @@ package net.b07z.sepia.server.assist.answers;
 
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.server.Config;
+import net.b07z.sepia.server.assist.tools.DateTimeConverters;
 import net.b07z.sepia.server.assist.tools.RandomGen;
 
 /**
@@ -54,9 +55,11 @@ public class AnswerTools {
 	 * @return cleaned string
 	 */
 	public static String replaceSpecialTags(String answer, NluResult info){
-		String userName = info.input.user.getName(Config.superuserApiMng);
-		answer = answer.replaceAll("<user_name>", userName);
+		answer = answer.replaceAll("<user_name>", info.input.user.getName(Config.superuserApiMng));
 		answer = answer.replaceAll("<name>", Config.assistantName);
+		answer = answer.replaceAll("<local_time_hhmm>", DateTimeConverters.getToday("HH:mm", info.input));
+		answer = answer.replaceAll("<local_date_ddMMyyyy>", DateTimeConverters.getToday("dd.MM.yyyy", info.input));
+		answer = answer.replaceAll("<local_date_MMddyyyy>", DateTimeConverters.getToday("MM/dd/yyyy", info.input));
 		return answer;
 	}
 	
