@@ -77,9 +77,13 @@ public class CmdBuilder {
 		return CMD.KNOWLEDGEBASE + ";;" + PARAMETERS.SEARCH + "=" + search;
 	}
 
-	public static String getRadio(String station){
+	public static String getRadioStation(String station){
 		//return CMD.MUSIC_RADIO + ";;" + PARAMETERS.RADIO_STATION + "={\"value\":\"" + station + "\"};;";
 		return CMD.MUSIC_RADIO + ";;" + PARAMETERS.RADIO_STATION + "=" + station + ";;";
+	}
+	public static String getRadioGenre(String genre){
+		//return CMD.MUSIC_RADIO + ";;" + PARAMETERS.RADIO_STATION + "={\"value\":\"" + station + "\"};;";
+		return CMD.MUSIC_RADIO + ";;" + PARAMETERS.MUSIC_GENRE + "=" + genre + ";;";
 	}
 
 	public static String getTvProgram(String time){

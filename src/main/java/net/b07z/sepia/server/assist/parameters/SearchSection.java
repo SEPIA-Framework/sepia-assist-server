@@ -79,14 +79,14 @@ public class SearchSection implements ParameterHandler{
 		String type = "";
 		//German
 		if (language.matches(LANGUAGES.DE)){
-			type = NluTools.stringFindFirst(input, "bild(ern|er|)|rezept(en|e|)|video(s|)|movie(s|)|film(en|e|)|aktie(n|)|aktien(kurs|wert)|buecher(n|)|buch");
+			type = NluTools.stringFindFirst(input, "(-|)(bild(ern|er|)|rezept(en|e|)|video(s|)|movie(s|)|film(en|e|)|aktie(n|)|aktien(kurs|wert)|buecher(n|)|buch)");
 			
 		//English and other
 		}else{
-			type = NluTools.stringFindFirst(input, "picture(s|)|recipe(s|)|video(s|)|movie(s|)|film(s|)|share(s|)|stock(s|)|book(s|)");			
+			type = NluTools.stringFindFirst(input, "(-|)(picture(s|)|recipe(s|)|video(s|)|movie(s|)|film(s|)|share(s|)|stock(s|)|book(s|))");			
 		}
 		//System.out.println("searchType: " + type); 		//debug
-		return type;
+		return type.replaceFirst("-", "");
 	}
 
 	@Override

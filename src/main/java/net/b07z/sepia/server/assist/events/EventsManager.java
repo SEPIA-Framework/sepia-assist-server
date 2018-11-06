@@ -140,7 +140,7 @@ public class EventsManager {
 		if (localTimeIsKnown && (hod >= 5 && hod <= 21)){
 			//radio egoFM
 			addCommandButton(actionBuilder, EventLabels.getLabel(Constants.radio, input.language), 
-					CmdBuilder.getRadio("ego fm")
+					CmdBuilder.getRadioGenre("my")
 			);
 			actionBuilder.putActionInfo("options", JSON.make(
 					ACTIONS.SKIP_TTS, true,
@@ -150,7 +150,7 @@ public class EventsManager {
 		}else if (localTimeIsKnown && isNight){
 			//radio chill-out
 			addCommandButton(actionBuilder, EventLabels.getLabel(Constants.radio_night, input.language), 
-					CmdBuilder.getRadio("night")
+					CmdBuilder.getRadioStation("night")
 			);
 			actionBuilder.putActionInfo("options", JSON.make(
 					ACTIONS.SKIP_TTS, true,

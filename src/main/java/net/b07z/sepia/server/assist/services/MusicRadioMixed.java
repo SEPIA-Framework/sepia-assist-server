@@ -15,6 +15,7 @@ import net.b07z.sepia.server.core.assistant.ACTIONS;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 
 import java.net.URLEncoder;
@@ -45,8 +46,10 @@ public class MusicRadioMixed implements ServiceInterface {
 		//Parameter p4 = new Parameter(PARAMETERS.URL, "");					//custom stream URL - this is not a parameter one can extract so we don't include it here
 		info.addParameter(p2).addParameter(p3);
 		
-		//... but one of these optional parameters is required
-		info.getAtLeastOneOf("", p1, p2); 		//either station or genre is required, if both are missing ask for station
+		//... but either station or genre is required, if both are missing ask for station
+		info.getAtLeastOneOf("", p1, p2); 		
+		//TODO: this only works because "radio off" recognizes station=off ... if not "radio off" will not work without station question!
+		//... we should get rid of it and replace it by (if (action != off) check station and genre) 
 		
 		//Answers (these are the default answers, you can add a custom answer at any point in the module with api.setCustomAnswer(..)):
 		info.addSuccessAnswer("music_radio_1e")
@@ -69,27 +72,47 @@ public class MusicRadioMixed implements ServiceInterface {
 		//get from cache or make the external API call and build API_Result
 		try {
 			//get parameters
-			Parameter stationP = NLU_result.getOptionalParameter(PARAMETERS.RADIO_STATION, "");
-			String station = "";
-			String chacheStationName = "";
-			if (!stationP.isDataEmpty()){
+			
+			//Station
+			Parameter stationP = NLU_result.getOptionalParameter(PARAMETERS.RADIO_STATION, "");	//Note: the default defined here applies to all station keys
+			String station = (String) stationP.getDataFieldOrDefault(InterviewData.INPUT);
+			String stationNorm = (String) stationP.getDataFieldOrDefault(InterviewData.VALUE);
+			String chacheStationName = (String) stationP.getDataFieldOrDefault(InterviewData.CACHE_ENTRY);
+			/*if (!stationP.isDataEmpty()){
 				JSONObject stationJSON = stationP.getData();
-				station = (String) stationJSON.get(InterviewData.VALUE);
 				chacheStationName = (String) stationJSON.get(InterviewData.CACHE_ENTRY);
-			}
-			String genre = (String) NLU_result.getOptionalParameter(PARAMETERS.MUSIC_GENRE, "").getDataFieldOrDefault(InterviewData.VALUE);
+			}*/
+			
+			//Genre
+			Parameter genreP = NLU_result.getOptionalParameter(PARAMETERS.MUSIC_GENRE, "");		//Note: the default defined here applies to all genre keys
+			String genre = (String) genreP.getDataFieldOrDefault(InterviewData.INPUT);
+			String genreNorm = (String) genreP.getDataFieldOrDefault(InterviewData.VALUE);
+			
+			//Action
 			String action = (String) NLU_result.getOptionalParameter(PARAMETERS.ACTION, "").getDataFieldOrDefault(InterviewData.VALUE);
+			
+			//Stream
 			//String stream = (String) NLU_result.getOptionalParameter(PARAMETERS.URL, "").getDataFieldOrDefault(InterviewData.VALUE);
 			String stream = NLU_result.getParameter(PARAMETERS.URL);	//this parameter is not extractable but can be submitted by direct commands for example
 			
 			Debugger.println("cmd: Music radio, station: " + station + ", genre: " + genre + ", action: " + action, 2);				//debug
 			
-			//continue with station only
-			if (station.isEmpty()){
-				//in this case genre has to have a value
-				station = genre;
+			System.out.println("RADIO OVERVIEW: ");
+			System.out.println("station: " + station);
+			System.out.println("station_n: " + stationNorm);
+			System.out.println("chacheStationName: " + chacheStationName);
+			System.out.println("genre: " + genre);
+			System.out.println("genre_n: " + genreNorm);
+						
+			//define a title (used e.g. for labels and eventually for API search)
+			//NOTE: either station or genre is REQUIRED (if action is not OFF)
+			String title = "My stream";
+			if (!station.isEmpty()){
+				title = station;
+			}else if (!genre.isEmpty()){
+				title = genre;
 			}
-			api.resultInfoPut("station", station);
+			api.resultInfoPut("station", title);
 			
 			//check actions first
 			if (!action.isEmpty()){
@@ -112,10 +135,6 @@ public class MusicRadioMixed implements ServiceInterface {
 			//check if we have a stream
 			if (!stream.isEmpty()){
 				
-				String title = "My stream";
-				if (!station.isEmpty()){
-					title = station;
-				}
 				//add action
 				api.addAction(ACTIONS.PLAY_AUDIO_STREAM);
 				api.putActionInfo("audio_url", stream);
@@ -152,11 +171,22 @@ public class MusicRadioMixed implements ServiceInterface {
 			String active_stream = "";
 			String active_name = "";
 
-			//check cache for popular static stations
-			JSONArray stationsCollection;
-			boolean isPopular = (chacheStationName != null && !chacheStationName.isEmpty());
-			if (isPopular){
+			//check SEPIA radio list for stations
+			JSONArray stationsCollection = null;
+			boolean isInSepiaStationList = false;
+			boolean isInSepiaCollectionList = false;
+			if (!station.isEmpty()){
+				//Station list
+				isInSepiaStationList = Is.notNullOrEmpty(chacheStationName);
 				stationsCollection = RadioStation.getStation(chacheStationName);
+				
+			}else if (!genre.isEmpty()){
+				//Collection/genre list
+				stationsCollection = RadioStation.getGenreCollection(genreNorm);
+				isInSepiaCollectionList = !stationsCollection.isEmpty();
+			}
+			
+			if (isInSepiaStationList || isInSepiaCollectionList){
 				//get all from cache and finish
 				if (stationsCollection != null && !stationsCollection.isEmpty()){
 					long tic = System.currentTimeMillis();
@@ -183,12 +213,15 @@ public class MusicRadioMixed implements ServiceInterface {
 			
 			//search API 1 for non-popular stations
 			}else{
+				//search
+				String search = (station.isEmpty()? genre : station); 		//station or genre, one must be
+				
 				//---- make the HTTP GET call to Laut.FM API ----
 				//http://api.laut.fm/documentation/search
 				long tic = System.currentTimeMillis();
 				int limit = 5;
 				String url = "http://api.laut.fm/search/stations"
-										+ "?query=" + URLEncoder.encode(station, "UTF-8") 
+										+ "?query=" + URLEncoder.encode(search, "UTF-8") 
 										+ "&limit=" + limit;
 				JSONObject response = Connectors.httpGET(url.trim());
 				Statistics.addExternalApiHit("Radio laut.FM");
@@ -245,11 +278,15 @@ public class MusicRadioMixed implements ServiceInterface {
 							
 							api.setStatusSuccess();
 							//<----------- POSSIBLE END ------------
+						
+						}else{
+							Debugger.println("Radio Laut.FM API - search '" + search + "' - Found no result!", 1);
+							//<----------- POSSIBLE END ------------
 						}
 						
 					//Error
 					}catch (Exception e){
-						Debugger.println("Radio Laut.FM API - search: " + station + " - EXCEPTION: " + e.getMessage(), 1);
+						Debugger.println("Radio Laut.FM API - search '" + search + "' - EXCEPTION: " + e.getMessage(), 1);
 					}
 				}
 			}
@@ -258,8 +295,8 @@ public class MusicRadioMixed implements ServiceInterface {
 			if (card.isEmpty()){
 				stationsCollection =  new JSONArray();
 				
-				//search adjustments
-				String search = station.replaceAll("1live", "Einslive");
+				//search
+				String search = (station.isEmpty()? genre : station); 		//station or genre, one must be
 			
 				//---- make the HTTP GET call to Dirble API ----
 				
@@ -280,7 +317,7 @@ public class MusicRadioMixed implements ServiceInterface {
 					
 				}else{
 					//no results because we have no API key
-					Debugger.println("Radio Dirble API - search: " + station + " - No API key to make call", 1);
+					Debugger.println("Radio Dirble API - search '" + search + "' - No API key to make call", 1);
 				}
 				
 				//run through first N results (or less)
@@ -323,7 +360,7 @@ public class MusicRadioMixed implements ServiceInterface {
 						}
 						
 						card.addGroupeElement(ElementType.radio, "", stationCard);
-						if (isPopular){
+						if (isInSepiaStationList){
 							JSON.add(stationsCollection, stationCard);				//store result
 						}
 						if (hits >= N){
@@ -337,14 +374,14 @@ public class MusicRadioMixed implements ServiceInterface {
 					api.setStatusSuccess();
 					
 					//add stored Array to radio cache
-					if (isPopular && !stationsCollection.isEmpty()){
+					if (isInSepiaStationList && !stationsCollection.isEmpty()){
 						RadioStation.putStation(chacheStationName, stationsCollection);
 						Debugger.println("Radio cache - wrote: '" + chacheStationName + "' with " + stationsCollection.size() + " stations", 3);
 					}
 				
 				}else{
 					//no results or communication error
-					Debugger.println("Radio Dirble API - search: " + station + " - Communication error or no result", 1);
+					Debugger.println("Radio Dirble API - search '" + search + "' - Communication error or no result", 1);
 				}
 			}
 			

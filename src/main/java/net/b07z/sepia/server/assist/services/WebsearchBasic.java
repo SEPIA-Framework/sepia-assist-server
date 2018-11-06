@@ -229,7 +229,7 @@ public class WebsearchBasic implements ServiceInterface{
 			}else if (section.equals("videos")){
 				search_url = "https://www.google.com/search?tbm=vid&q=";	search = searchReduced;
 			}else if (section.equals("shares")){
-				search_url = "https://www.google.com/finance?q=";			search = searchReduced;
+				search_url = "https://www.google.com/search?tbm=fin&q=";	search = searchReduced;
 			}else if (section.equals("books")){
 				search_url = "https://www.google.com/search?tbm=bks&q=";	search = searchReduced;
 			}

@@ -85,17 +85,29 @@ public class MusicGenre implements ParameterHandler{
 			return genre;
 		}
 		
+		String common = "pop|"
+				+ "((hard|blues|classic)(-| |)|)rock|"
+				+ "hardcore|"
+				+ "((heavy|death)(-| |)|)metal|"
+				+ "disco|"
+				+ "(acid(-| |)|)jazz|"
+				+ "hip(-| |)hop|"
+				+ "r(n|&)b|"
+				+ "(deep(-| |)|)house|"
+				+ "(euro(-| |)|)dance|"
+				+ "blues|trance|electro|gabba";
+		
 		//German
 		if (language.matches("de")){
-			genre = NluTools.stringFindFirst(input, "klassik|pop|hard-rock|hardrock|hardcore|rock|metal|"
-					+ "disco|acid jazz|jazz|hip-hop|hiphop|hip hop|rnb|r&b|blues|trance|elektro|deep house|"
-					+ "house|eurodance|dance|gabba");
+			genre = NluTools.stringFindFirst(input, "(mein(s|en|e|) |)(" 
+					+ common + "|"
+					+ "klassik)|mein(s|en|e|)");
 			
 		//English and other
 		}else{
-			genre = NluTools.stringFindFirst(input, "classic|pop|hard-rock|hardrock|hardcore|rock|metal|"
-					+ "disco|acid jazz|jazz|hip-hop|hiphop|hip hop|rnb|r&b|blues|trance|electro|deep house|"
-					+ "house|eurodance|dance|gabba");
+			genre = NluTools.stringFindFirst(input, "(my |)("
+					+ common + "|"
+					+ "classic)|my");
 		}
 		this.found = genre;
 		
@@ -142,10 +154,23 @@ public class MusicGenre implements ParameterHandler{
 	public String build(String input) {
 		//build default result
 		JSONObject itemResultJSON = new JSONObject();
-			JSON.add(itemResultJSON, InterviewData.VALUE, input);
+			JSON.add(itemResultJSON, InterviewData.INPUT, input);
+			JSON.add(itemResultJSON, InterviewData.VALUE, normalizeGenreName(input));
 		
 		buildSuccess = true;
 		return itemResultJSON.toJSONString();
+	}
+	/**
+	 * Convert a genre name to normalized format (e.g. Heavy-Metal -> heavy_metal).
+	 */
+	public static String normalizeGenreName(String genreIn){
+		//optimize stations
+		genreIn = genreIn
+				.replaceFirst("(?i)\\b(mein(s|en|e|))\\b", "my")
+				.replaceFirst("(?i)\\b(klassik)\\b", "classic")
+				;
+		//clean
+		return genreIn.toLowerCase().replaceAll("(\\s+|-|_)", "").trim();
 	}
 
 	@Override
