@@ -41,10 +41,14 @@ public class SearchSection implements ParameterHandler{
 	 */
 	public static String getLocal(String value, String language){
 		String localName = "";
+		String valueWithBrackets = value;
+		if (!value.startsWith("<")){
+			valueWithBrackets = "<" + value + ">";
+		}
 		if (language.equals(LANGUAGES.DE)){
-			localName = sections_de.get(value);
+			localName = sections_de.get(valueWithBrackets);
 		}else if (language.equals(LANGUAGES.EN)){
-			localName = sections_en.get(value);
+			localName = sections_en.get(valueWithBrackets);
 		}
 		if (localName == null){
 			Debugger.println("SerachSection.java - getLocal() has no '" + language + "' version for '" + value + "'", 3);
