@@ -11,8 +11,10 @@ import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.data.Card;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.data.Card.ElementType;
+import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
+import net.b07z.sepia.server.assist.parameters.SearchSection;
 import net.b07z.sepia.server.assist.parameters.WebSearchEngine;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
@@ -65,20 +67,20 @@ public class WebsearchBasic implements ServiceInterface{
 	}
 
 	//result
-	public ServiceResult getResult(NluResult NLU_result){
+	public ServiceResult getResult(NluResult nluResult){
 		//initialize result
-		ServiceBuilder api = new ServiceBuilder(NLU_result, getInfo(""));
+		ServiceBuilder api = new ServiceBuilder(nluResult, getInfo(""));
 		
 		//get interview parameters
 		
 		//required
-		JSONObject searchJSON = NLU_result.getRequiredParameter(PARAMETERS.WEBSEARCH_REQUEST).getData();
+		JSONObject searchJSON = nluResult.getRequiredParameter(PARAMETERS.WEBSEARCH_REQUEST).getData();
 		String search = JSON.getStringOrDefault(searchJSON, InterviewData.VALUE, "");
 		String searchReduced = JSON.getStringOrDefault(searchJSON, InterviewData.VALUE_REDUCED, search);
 		api.resultInfoPut("search", search);
 		
 		//optional
-		Parameter sectionP = NLU_result.getOptionalParameter(PARAMETERS.SEARCH_SECTION, "");
+		Parameter sectionP = nluResult.getOptionalParameter(PARAMETERS.SEARCH_SECTION, "");
 		String section = "";
 		String sectionLocal = "";
 		if (!sectionP.isDataEmpty()){
@@ -88,7 +90,7 @@ public class WebsearchBasic implements ServiceInterface{
 		api.resultInfoPut("section", sectionLocal);
 		
 		//TODO: choose best engine or user favorite when no engine is given
-		Parameter engineP = NLU_result.getOptionalParameter(PARAMETERS.WEBSEARCH_ENGINE, "google");
+		Parameter engineP = nluResult.getOptionalParameter(PARAMETERS.WEBSEARCH_ENGINE, "google");
 		String engine = "";
 		if (!engineP.isDataEmpty()){
 			engine = (String) engineP.getData().get(InterviewData.VALUE);
@@ -110,9 +112,9 @@ public class WebsearchBasic implements ServiceInterface{
 		//build URL and clean up the search if necessary
 		//"^(bild(ern|er|)|rezept(en|e|)|video(s|)|movie(s|)|film(en|e|)|aktie(n|)|buecher(n|)|buch) (von|ueber|mit|)"
 		//get main
-		String[] getRes = getWebSearchUrl(engine, section, search, searchReduced);
+		String[] getRes = getWebSearchUrl(engine, section, search, searchReduced, nluResult.input);
 		//get a 2nd random engine
-		String[] getResRnd = getWebSearchUrl(getPseudoRandomEngine(engine, section), section, search, searchReduced);
+		String[] getResRnd = getWebSearchUrl(getPseudoRandomEngine(engine, section), section, search, searchReduced, nluResult.input);
 		String search_url = getRes[0];
 		String search_url_rnd = getResRnd[0];
 		String engineName = getRes[1];
@@ -186,7 +188,7 @@ public class WebsearchBasic implements ServiceInterface{
 	 * @param searchReduced - reduced term without section like "Berlin"
 	 * @return encoded URL [0] and engine name [1]
 	 */
-	public static String[] getWebSearchUrl(String engine, String section, String search, String searchReduced){
+	public static String[] getWebSearchUrl(String engine, String section, String search, String searchReduced, NluInput nluInput){
 		String search_url = "";
 		String iconUrl = Config.urlWebImages + "cards/search.png";
 		engine = engine.toLowerCase();
@@ -229,7 +231,9 @@ public class WebsearchBasic implements ServiceInterface{
 			}else if (section.equals("videos")){
 				search_url = "https://www.google.com/search?tbm=vid&q=";	search = searchReduced;
 			}else if (section.equals("shares")){
-				search_url = "https://www.google.com/finance?q=";			search = searchReduced;
+				//if (CLIENTS.isWebSite("")){}
+				search = searchReduced + " " + SearchSection.getLocal(section, nluInput.language);
+				//search_url = "https://www.google.com/search?tbm=fin&q=";	search = searchReduced; 		//TODO: not working on mobile
 			}else if (section.equals("books")){
 				search_url = "https://www.google.com/search?tbm=bks&q=";	search = searchReduced;
 			}

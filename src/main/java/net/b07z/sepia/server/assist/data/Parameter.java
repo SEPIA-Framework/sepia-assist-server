@@ -229,7 +229,8 @@ public class Parameter {
 		return this;
 	}
 	/**
-	 * Get data of field (key) in JSON data or defaultValue. Particularly (only?) useful for optional parameters.
+	 * Get data of field (key) in JSON data or defaultValue. Particularly (only?) useful for optional parameters.<br>
+	 * Note: The same default value will be applied to ALL keys.
 	 * @param key - field inside the JSON data 
 	 */
 	public Object getDataFieldOrDefault(String key){

@@ -74,10 +74,14 @@ public class Action implements ParameterHandler{
 	 */
 	public static String getLocal(String value, String language){
 		String localName = "";
+		String valueWithBrackets = value;
+		if (!value.startsWith("<")){
+			valueWithBrackets = "<" + value + ">";
+		}
 		if (language.equals(LANGUAGES.DE)){
-			localName = actions_de.get(value);
+			localName = actions_de.get(valueWithBrackets);
 		}else if (language.equals(LANGUAGES.EN)){
-			localName = actions_en.get(value);
+			localName = actions_en.get(valueWithBrackets);
 		}
 		if (localName == null){
 			Debugger.println("Action.java - getLocal() has no '" + language + "' version for '" + value + "'", 3);
