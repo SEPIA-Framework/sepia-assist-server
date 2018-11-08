@@ -76,7 +76,7 @@ public class MusicRadioMixed implements ServiceInterface {
 			//Station
 			Parameter stationP = NLU_result.getOptionalParameter(PARAMETERS.RADIO_STATION, "");	//Note: the default defined here applies to all station keys
 			String station = (String) stationP.getDataFieldOrDefault(InterviewData.INPUT);
-			String stationNorm = (String) stationP.getDataFieldOrDefault(InterviewData.VALUE);
+			//String stationNorm = (String) stationP.getDataFieldOrDefault(InterviewData.VALUE);	//Note: we could use this instead of chacheStationName. See comment near bottom.
 			String chacheStationName = (String) stationP.getDataFieldOrDefault(InterviewData.CACHE_ENTRY);
 			/*if (!stationP.isDataEmpty()){
 				JSONObject stationJSON = stationP.getData();
@@ -97,12 +97,14 @@ public class MusicRadioMixed implements ServiceInterface {
 			
 			Debugger.println("cmd: Music radio, station: " + station + ", genre: " + genre + ", action: " + action, 2);				//debug
 			
+			/*
 			System.out.println("RADIO OVERVIEW: ");
 			System.out.println("station: " + station);
 			System.out.println("station_n: " + stationNorm);
 			System.out.println("chacheStationName: " + chacheStationName);
 			System.out.println("genre: " + genre);
 			System.out.println("genre_n: " + genreNorm);
+			*/
 						
 			//define a title (used e.g. for labels and eventually for API search)
 			//NOTE: either station or genre is REQUIRED (if action is not OFF)
@@ -373,7 +375,7 @@ public class MusicRadioMixed implements ServiceInterface {
 					
 					api.setStatusSuccess();
 					
-					//add stored Array to radio cache
+					//add stored Array to radio cache (but only if there is a prepared slot in the list ...) - NOTE: we could switch to stationNorm here
 					if (isInSepiaStationList && !stationsCollection.isEmpty()){
 						RadioStation.putStation(chacheStationName, stationsCollection);
 						Debugger.println("Radio cache - wrote: '" + chacheStationName + "' with " + stationsCollection.size() + " stations", 3);

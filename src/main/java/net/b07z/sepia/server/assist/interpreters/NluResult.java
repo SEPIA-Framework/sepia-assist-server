@@ -310,7 +310,7 @@ public class NluResult {
 	}
 	
 	/**
-	 * Get a the command type of the best NLU result 
+	 * Get the command type of the best NLU result 
 	 * as a String, e.g. command="weather".
 	 * 
 	 * @return      command as string

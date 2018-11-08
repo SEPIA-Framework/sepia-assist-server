@@ -99,12 +99,17 @@ public class MusicGenre implements ParameterHandler{
 		
 		//German
 		if (language.matches("de")){
+			//split 'radio' if common
+			input = input.replaceFirst("(ein) (\\w+)(radio)", "$1 $2 $3"); 		//Note: this will mess with 'found' 
+			
 			genre = NluTools.stringFindFirst(input, "(mein(s|en|e|) |)(" 
 					+ common + "|"
 					+ "klassik)|mein(s|en|e|)");
 			
 		//English and other
 		}else{
+			input = input.replaceFirst("(a) (\\w+)(radio)", "$1 $2 $3"); 		//Note: this will mess with 'found'
+			
 			genre = NluTools.stringFindFirst(input, "(my |)("
 					+ common + "|"
 					+ "classic)|my");

@@ -397,7 +397,7 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 		}
 
 		//radio
-		if (NluTools.stringContains(text, "radio|radiochannel|radiostation|radiostream|music station|music channel") 
+		if (NluTools.stringContains(text, "\\w*radio(\\.|)(fm|\\d+|)|radiochannel|radiostation|radiostream|music station|music channel") 
 										&& !possibleCMDs.contains(CMD.KNOWLEDGEBASE)){
 			//String this_text = text;
 			possibleCMDs.add(CMD.MUSIC_RADIO);
@@ -408,7 +408,7 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 			
 			HashMap<String, String> pv = new HashMap<String, String>(); 		//TODO: pass this down to avoid additional checking
 			AbstractParameterSearch aps = new AbstractParameterSearch()
-					.setParameters(PARAMETERS.RADIO_STATION, PARAMETERS.MUSIC_GENRE, 
+					.setParameters(PARAMETERS.MUSIC_GENRE, PARAMETERS.RADIO_STATION, 
 										PARAMETERS.ACTION)
 					.setup(input, pv);
 			aps.getParameters();
