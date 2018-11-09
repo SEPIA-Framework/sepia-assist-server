@@ -506,6 +506,7 @@ public class DateAndTime implements ParameterHandler{
 			//System.out.println("FORMATTED DAY CONVERTED: " + dayDate);
 		}
 		//some cleaning
+		String dataTagOrg = dateTag; 						//<- we need this for clockTag because of the dot 
 		dateTag = dateTag.replaceAll("\\.", "").trim();
 		
 		//GERMAN
@@ -519,8 +520,8 @@ public class DateAndTime implements ParameterHandler{
 			}
 			
 			//TIME
-			String clockTag = NluTools.stringFindFirst(dateTag, "(\\d{1,2}:\\d\\d|\\d{1,2})" + CLOCK_TAGS_DE);
-			if (clockTag.isEmpty() && dateTag.matches("^\\d{1,2}$")){
+			String clockTag = NluTools.stringFindFirst(dataTagOrg, "(\\d{1,2}:\\d\\d|\\d{1,2})" + CLOCK_TAGS_DE);
+			if (clockTag.isEmpty() && dataTagOrg.matches("^\\d{1,2}$")){
 				//TODO: is that safe to assume? Probably depends on many correlated parameters
 				clockTag = dateTag;
 			}
@@ -561,8 +562,8 @@ public class DateAndTime implements ParameterHandler{
 			}
 			
 			//TIME
-			String clockTag = NluTools.stringFindFirst(dateTag, "(\\d{1,2}:\\d\\d|\\d{1,2})" + CLOCK_TAGS_EN);
-			if (clockTag.isEmpty() && dateTag.matches("^\\d{1,2}$")){
+			String clockTag = NluTools.stringFindFirst(dataTagOrg, "(\\d{1,2}:\\d\\d|\\d{1,2})" + CLOCK_TAGS_EN);
+			if (clockTag.isEmpty() && dataTagOrg.matches("^\\d{1,2}$")){
 				//TODO: is that safe to assume? Probably depends on many correlated parameters
 				clockTag = dateTag;
 			}
