@@ -199,13 +199,38 @@ public class AbstractInterview implements InterviewInterface{
 			//System.out.println("STAND-ALONE SERVICE-MODULE RESULT: " + results.get(0).getResultJSON()); 					//debug
 			return results.get(0);
 		}
-		
-		//build result - cards are collected from services, answer(s) (parameters) too, the rest is build here
+
+		//BUILD COLLECTED RESULT - cards are collected from services, answer(s) (parameters) too, the rest is build here
 		
 		//TODO: if there is only one service per command (which is usually the case) this leads to double-execution of build result ...
 		
-		ServiceBuilder servicesResult = new ServiceBuilder(assistant.nluResult, 
-				new ServiceInfo(Type.systemModule, Content.apiInterface, false));
+		//We build a new result but keep the apiInfo data from master service
+		ServiceInfo servicesInfo;
+		if (!results.isEmpty()){
+			//Get master data and adapt
+			servicesInfo = results.get(0).getApiInfo();
+			servicesInfo.setServiceType(Type.systemModule);
+			servicesInfo.setContentType(Content.apiInterface);
+			servicesInfo.setWorksStandalone(false);
+			
+			//If there was a service redirect/switch inside 'getServiceResults' we loose the correct InterviewInfo! So we need to rebuild it:
+			ServiceInfo primaryResultServiceInfo = results.get(0).getApiInfo();
+			String primaryResultIntendedCommand = primaryResultServiceInfo.intendedCommand;
+			if (primaryResultIntendedCommand != null && !primaryResultIntendedCommand.equals(command)){
+				/*
+				System.out.println("Intended command of primary result: " + primaryResultIntendedCommand); 		//debug
+				System.out.println("Previously set command: " + command); 										//debug
+				System.out.println("Result customAnswerMap: ");			 										//debug
+				Debugger.printMap(primaryResultServiceInfo.customAnswerMap);									//debug
+				*/
+				iInfo = new InterviewInfo(primaryResultIntendedCommand, primaryResultServiceInfo);	//use the MASTER service to get info
+				iInfo.setServices(services);
+			}
+		}else{
+			servicesInfo = new ServiceInfo(Type.systemModule, Content.apiInterface, false);
+		}
+		ServiceBuilder servicesResult = new ServiceBuilder(assistant.nluResult, servicesInfo);
+		
 		String status = "";
 		String customAnswer = "";
 		JSONArray cards = new JSONArray();

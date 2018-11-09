@@ -16,8 +16,8 @@ import net.b07z.sepia.server.assist.services.ServiceResult;
 public class ConvertResult {
 	
 	/**
-	 * Convert the API_Result from one service to another. Both services must support the new standard!
-	 * Supports one parameter transfer, if you need more or more complex changes you should edit the NLU_Result
+	 * Convert the {@link ServiceResult} from one service to another. Both services must support the new standard!
+	 * Supports one parameter transfer, if you need more or more complex changes you should edit the {@link NluResult}
 	 * in advance. 
 	 * @param cmd - target command that determines the service
 	 * @param nluResult - result of old service
@@ -41,11 +41,14 @@ public class ConvertResult {
 		interview.setCommand(cmd);
 		interview.setServices(services);
 		InterviewResult iResult = interview.getMissingParameters(nluResult);
+		ServiceResult sr;
 		if (iResult.isComplete()){
-			return interview.getServiceResults(iResult);
+			sr = interview.getServiceResults(iResult);
 		}else{
-			return iResult.getApiComment();
+			sr = iResult.getApiComment();
 		}
+		sr.getApiInfo().setIntendedCommand(cmd); 	//we need to make sure this is set so the InterviewInterface can adapt to command changes! 
+		return sr;
 	}
 
 }

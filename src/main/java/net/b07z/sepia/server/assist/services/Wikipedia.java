@@ -45,6 +45,8 @@ public class Wikipedia implements ServiceInterface{
 	//info
 	public ServiceInfo getInfo(String language){
 		return new ServiceInfo(Type.REST, Content.data, true);
+		
+		//TODO: This class should be updated to new format!
 	}
 
 	//result
@@ -66,12 +68,13 @@ public class Wikipedia implements ServiceInterface{
 			}
 			//search = NLU_Tools.capitalizeAll(search);			//this is kind of stupid but Wiki seems to be case sensitive somehow oO
 			//search = URLEncoder.encode(search, "UTF-8");
+			//System.out.println("Wiki search: " + search);			//debug
 		
 			//make the HTTP GET calls to Wikipedia API
 			
 			//first call is title search
 			String url = "https://" + api.language + ".wikipedia.org/w/api.php" + "?action=query&list=search" + "&format=json" + "&srlimit=4" + "&srsearch=" + URLEncoder.encode(search, "UTF-8");
-			//System.out.println("wiki url: " + url);			//debug
+			//System.out.println("Wiki url: " + url);			//debug
 			JSONObject response = Connectors.httpGET(url);
 			//TODO: check Connectors.httpSuccess(response)
 			JSONObject query = (JSONObject)response.get("query");
@@ -93,6 +96,7 @@ public class Wikipedia implements ServiceInterface{
 			
 			}else{
 				//second is content extraction
+				//System.out.println("Wiki hits: " + hits.size());			//debug
 				
 				//check all results
 				ArrayList<String> titles = new ArrayList<String>();
@@ -158,6 +162,7 @@ public class Wikipedia implements ServiceInterface{
 					//bad result - just use the best snippet
 					articleFits = false;
 					best_title = titles.get(best_snippet_index);
+					//System.out.println("Best title: " + best_title); 		//DEBUG
 					search = URLEncoder.encode(best_title.replaceAll("\\s+", "_"), "UTF-8");		//new search title
 					//best_snippet = snippets.get(best_snippet_index);		//new answer
 					titles.remove(best_snippet_index);
@@ -234,17 +239,18 @@ public class Wikipedia implements ServiceInterface{
 					
 					//return result_JSON.toJSONString();
 					return result;
-					*/	
+					*/
 					
 					//version C
-					return ConvertResult.switchService(CMD.WEB_SEARCH, NLU_result, PARAMETERS.SEARCH, 
+					ServiceResult sr = ConvertResult.switchService(CMD.WEB_SEARCH, NLU_result, PARAMETERS.SEARCH, 
 							PARAMETERS.WEBSEARCH_REQUEST, NLU_result.getParameter(PARAMETERS.SEARCH));
+					return sr;
 				}
 				//------------------------------------------------
 					
 				//new url call
 				url = "https://" + api.language + ".wikipedia.org/w/api.php" + "?action=query" + "&prop=extracts|pageimages" + "&format=json" + "&pithumbsize=100" + "&exintro=&explaintext=&redirects=&titles=" + search;
-				//System.out.println("wiki url: " + url);			//debug
+				//System.out.println("New Wiki url: " + url);			//debug
 				response = Connectors.httpGET(url);
 				//System.out.println(response.toJSONString());		//debug
 				

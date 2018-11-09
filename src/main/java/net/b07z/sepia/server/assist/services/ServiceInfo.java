@@ -93,6 +93,25 @@ public class ServiceInfo {
 	}
 	
 	/**
+	 * Use this e.g. to overwrite service type of existing info object.
+	 */
+	public void setServiceType(Type serviceType){
+		this.serviceType = serviceType.name();
+	}
+	/**
+	 * Use this e.g. to overwrite content type of existing info object.
+	 */
+	public void setContentType(Content contentType){
+		this.contentType = contentType.name();
+	}
+	/**
+	 * Use this e.g. to overwrite stand-alone value.
+	 */
+	public void setWorksStandalone(boolean newVal){
+		this.worksStandalone = newVal;
+	}
+	
+	/**
 	 * If this is a custom service should it become publicly available?
 	 */
 	public ServiceInfo makePublic(){
