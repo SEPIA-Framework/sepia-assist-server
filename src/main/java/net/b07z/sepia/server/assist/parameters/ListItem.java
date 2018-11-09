@@ -76,7 +76,7 @@ public class ListItem implements ParameterHandler{
 		//DE
 		if (language.matches(LANGUAGES.DE)){
 			input = input.replaceAll(".*?\\b(setze|fuege|loesche|entferne)( auch|)( bitte|)( noch|)\\b", "").trim();
-			input = input.replaceAll("(.*)\\b(auf |von |in |der |dem |den |zu(r|) |meiner ).*?\\b(list|\\w*liste|\\w*zettel|(einkaufs|shopping|to-do|todo|to do)(-| |)(list(e|)|zettel))\\b.*", "$1").trim();
+			input = input.replaceAll("(.*?)\\b(auf |von |in |der |dem |den |zu(r|) |meine(n|r|) ).*?\\b(list|\\w*liste|\\w*zettel|(einkaufs|shopping|to-do|todo|to do)(-| |)(list(e|)|zettel))\\b.*", "$1").trim();
 			//handle some exceptions
 			if (input.matches("etwas|was|das|dieses|es|dinge|sachen|eine sache|zeug|ein paar dinge|ein paar sachen")){
 				input = "";
@@ -88,13 +88,15 @@ public class ListItem implements ParameterHandler{
 			Normalizer normalizer = Config.inputNormalizers.get(language);
 			input = normalizer.reconstructPhrase(nluInput.textRaw, input);
 			if (!input.isEmpty()){
-				input = input.replaceAll("\\b(und|,)\\b"," && ");
+				input = input.replaceAll("\\b(und)\\b"," && ")
+						.replaceAll(",(?!\\d)"," && ")
+						.replaceAll("\\s+"," ");
 			}
 		
 		//EN
 		}else{
 			input = input.replaceAll(".*?\\b(add|put|set|remove|take|delete)\\b", "").trim();
-			input = input.replaceAll("(.*)\\b(on |off |from |to |in |inside ).*?\\b(list|(shopping|to-do|todo|to do)(-| |)(list))\\b.*", "$1").trim();
+			input = input.replaceAll("(.*?)\\b(on |off |from |to |in |inside ).*?\\b(list|(shopping|to-do|todo|to do)(-| |)(list))\\b.*", "$1").trim();
 			//handle some exceptions
 			if (input.matches("stuff|it|something|this|items|an item|a item|a thing|things|a few things|a few items")){
 				input = "";
@@ -107,7 +109,9 @@ public class ListItem implements ParameterHandler{
 			input = normalizer.reconstructPhrase(nluInput.textRaw, input);
 			
 			if (!input.isEmpty()){
-				input = input.replaceAll("\\b(and|,)\\b"," && ");
+				input = input.replaceAll("\\b(and)\\b"," && ")
+						.replaceAll(",(?!\\d)"," && ")
+						.replaceAll("\\s+"," ");
 			}
 		}
 		

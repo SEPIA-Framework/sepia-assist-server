@@ -101,6 +101,10 @@ public class Test_DateAndTime {
 		System.out.println("converted_date: " + Arrays.toString(DateAndTime.convertTagToDate(dateMap, input)));
 		text = "erinnere mich in 70 tagen an das Spiel";		System.out.println("\n" + text);	dateMap = RegexParameterSearch.get_date(text, input.language);	System.out.println("dateEx: " + dateMap.values());
 		System.out.println("converted_date: " + Arrays.toString(DateAndTime.convertTagToDate(dateMap, input)));
+		text = "erinnere mich am montag morgen an das meeting";		System.out.println("\n" + text);	dateMap = RegexParameterSearch.get_date(text, input.language);	System.out.println("dateEx: " + dateMap.values());
+		System.out.println("converted_date: " + Arrays.toString(DateAndTime.convertTagToDate(dateMap, input)));
+		text = "erinnere mich am montag abend an das meeting";		System.out.println("\n" + text);	dateMap = RegexParameterSearch.get_date(text, input.language);	System.out.println("dateEx: " + dateMap.values());
+		System.out.println("converted_date: " + Arrays.toString(DateAndTime.convertTagToDate(dateMap, input)));
 	}
 
 }
