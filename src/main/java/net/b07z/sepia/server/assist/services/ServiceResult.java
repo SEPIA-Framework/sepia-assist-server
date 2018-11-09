@@ -270,7 +270,7 @@ public class ServiceResult {
 	}
 	
 	/**
-	 * Get API_Info used to create this result.
+	 * Get {@link ServiceInfo} used to create this result.
 	 */
 	public ServiceInfo getApiInfo(){
 		return apiInfo;

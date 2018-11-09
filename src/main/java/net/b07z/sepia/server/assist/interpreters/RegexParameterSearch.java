@@ -121,61 +121,62 @@ public class RegexParameterSearch {
 		followedBy = "(" + followedBy + ")";
 		//German
 		if (language.matches("de")){
-			input = input.replaceAll("(null) " + followedBy, "0 $2");
-			input = input.replaceAll("(einer|eine|einem) " + followedBy, "1 $2");
-			input = input.replaceAll("(zwei) " + followedBy, "2 $2");
-			input = input.replaceAll("(drei) " + followedBy, "3 $2");
-			input = input.replaceAll("(vier) " + followedBy, "4 $2");
-			input = input.replaceAll("(fuenf) " + followedBy, "5 $2");
-			input = input.replaceAll("(sechs) " + followedBy, "6 $2");
-			input = input.replaceAll("(sieben) " + followedBy, "7 $2");
-			input = input.replaceAll("(acht) " + followedBy, "8 $2");
-			input = input.replaceAll("(neun) " + followedBy, "9 $2");
-			input = input.replaceAll("(zehn) " + followedBy, "10 $2");
-			input = input.replaceAll("(elf) " + followedBy, "11 $2");
-			input = input.replaceAll("(zwoelf) " + followedBy, "12 $2");
-			input = input.replaceAll("(dreizehn) " + followedBy, "13 $2");
-			input = input.replaceAll("(vierzehn) " + followedBy, "14 $2");
-			input = input.replaceAll("(fuenfzehn) " + followedBy, "15 $2");
-			input = input.replaceAll("(sechszehn) " + followedBy, "16 $2");
-			input = input.replaceAll("(siebzehn) " + followedBy, "17 $2");
-			input = input.replaceAll("(achtzehn) " + followedBy, "18 $2");
-			input = input.replaceAll("(neunzehn) " + followedBy, "19 $2");
-			input = input.replaceAll("(zwanzig) " + followedBy, "20 $2");
-			input = input.replaceAll("(einundzwanzig) " + followedBy, "21 $2");
-			input = input.replaceAll("(zweiundzwanzig) " + followedBy, "22 $2");
-			input = input.replaceAll("(dreiundzwanzig) " + followedBy, "23 $2");
-			input = input.replaceAll("(vierundzwanzig) " + followedBy, "24 $2");
+			input = input
+				.replaceAll("\\b(null) " + followedBy, "0 $2")
+				.replaceAll("\\b(einer|eine|einem) " + followedBy, "1 $2")
+				.replaceAll("\\b(zwei) " + followedBy, "2 $2")
+				.replaceAll("\\b(drei) " + followedBy, "3 $2")
+				.replaceAll("\\b(vier) " + followedBy, "4 $2")
+				.replaceAll("\\b(fuenf) " + followedBy, "5 $2")
+				.replaceAll("\\b(sechs) " + followedBy, "6 $2")
+				.replaceAll("\\b(sieben) " + followedBy, "7 $2")
+				.replaceAll("\\b(acht) " + followedBy, "8 $2")
+				.replaceAll("\\b(neun) " + followedBy, "9 $2")
+				.replaceAll("\\b(zehn) " + followedBy, "10 $2")
+				.replaceAll("\\b(elf) " + followedBy, "11 $2")
+				.replaceAll("\\b(zwoelf) " + followedBy, "12 $2")
+				.replaceAll("\\b(dreizehn) " + followedBy, "13 $2")
+				.replaceAll("\\b(vierzehn) " + followedBy, "14 $2")
+				.replaceAll("\\b(fuenfzehn) " + followedBy, "15 $2")
+				.replaceAll("\\b(sechszehn) " + followedBy, "16 $2")
+				.replaceAll("\\b(siebzehn) " + followedBy, "17 $2")
+				.replaceAll("\\b(achtzehn) " + followedBy, "18 $2")
+				.replaceAll("\\b(neunzehn) " + followedBy, "19 $2")
+				.replaceAll("\\b(zwanzig) " + followedBy, "20 $2")
+				.replaceAll("\\b(einundzwanzig) " + followedBy, "21 $2")
+				.replaceAll("\\b(zweiundzwanzig) " + followedBy, "22 $2")
+				.replaceAll("\\b(dreiundzwanzig) " + followedBy, "23 $2")
+				.replaceAll("\\b(vierundzwanzig) " + followedBy, "24 $2");
 			return input;
 		
 		//English - and missing language support ...
 		}else{
-			input = input.replaceAll("(null) " + followedBy, "0 $2");
-			input = input.replaceAll("(zero) " + followedBy, "0 $2");
-			input = input.replaceAll("(one) " + followedBy, "1 $2");
-			input = input.replaceAll("(two) " + followedBy, "2 $2");
-			input = input.replaceAll("(three) " + followedBy, "3 $2");
-			input = input.replaceAll("(four) " + followedBy, "4 $2");
-			input = input.replaceAll("(five) " + followedBy, "5 $2");
-			input = input.replaceAll("(six) " + followedBy, "6 $2");
-			input = input.replaceAll("(seven) " + followedBy, "7 $2");
-			input = input.replaceAll("(eight) " + followedBy, "8 $2");
-			input = input.replaceAll("(nine) " + followedBy, "9 $2");
-			input = input.replaceAll("(ten) " + followedBy, "10 $2");
-			input = input.replaceAll("(eleven) " + followedBy, "11 $2");
-			input = input.replaceAll("(twelve) " + followedBy, "12 $2");
-			input = input.replaceAll("(thirteen) " + followedBy, "13 $2");
-			input = input.replaceAll("(fourteen) " + followedBy, "14 $2");
-			input = input.replaceAll("(fifteen) " + followedBy, "15 $2");
-			input = input.replaceAll("(sixteen) " + followedBy, "16 $2");
-			input = input.replaceAll("(seventeen) " + followedBy, "17 $2");
-			input = input.replaceAll("(eighteen) " + followedBy, "18 $2");
-			input = input.replaceAll("(nineteen) " + followedBy, "19 $2");
-			input = input.replaceAll("(twenty(-| )one) " + followedBy, "21 $2");
-			input = input.replaceAll("(twenty(-| )two) " + followedBy, "22 $2");
-			input = input.replaceAll("(twenty(-| )three) " + followedBy, "23 $2");
-			input = input.replaceAll("(twenty(-| )four) " + followedBy, "24 $2");
-			input = input.replaceAll("(twenty) " + followedBy, "20 $2"); 	//twenty
+			input = input.replaceAll("\\b(null) " + followedBy, "0 $2")
+				.replaceAll("\\b(zero) " + followedBy, "0 $2")
+				.replaceAll("\\b(one) " + followedBy, "1 $2")
+				.replaceAll("\\b(two) " + followedBy, "2 $2")
+				.replaceAll("\\b(three) " + followedBy, "3 $2")
+				.replaceAll("\\b(four) " + followedBy, "4 $2")
+				.replaceAll("\\b(five) " + followedBy, "5 $2")
+				.replaceAll("\\b(six) " + followedBy, "6 $2")
+				.replaceAll("\\b(seven) " + followedBy, "7 $2")
+				.replaceAll("\\b(eight) " + followedBy, "8 $2")
+				.replaceAll("\\b(nine) " + followedBy, "9 $2")
+				.replaceAll("\\b(ten) " + followedBy, "10 $2")
+				.replaceAll("\\b(eleven) " + followedBy, "11 $2")
+				.replaceAll("\\b(twelve) " + followedBy, "12 $2")
+				.replaceAll("\\b(thirteen) " + followedBy, "13 $2")
+				.replaceAll("\\b(fourteen) " + followedBy, "14 $2")
+				.replaceAll("\\b(fifteen) " + followedBy, "15 $2")
+				.replaceAll("\\b(sixteen) " + followedBy, "16 $2")
+				.replaceAll("\\b(seventeen) " + followedBy, "17 $2")
+				.replaceAll("\\b(eighteen) " + followedBy, "18 $2")
+				.replaceAll("\\b(nineteen) " + followedBy, "19 $2")
+				.replaceAll("\\b(twenty(-| )one) " + followedBy, "21 $2")
+				.replaceAll("\\b(twenty(-| )two) " + followedBy, "22 $2")
+				.replaceAll("\\b(twenty(-| )three) " + followedBy, "23 $2")
+				.replaceAll("\\b(twenty(-| )four) " + followedBy, "24 $2")
+				.replaceAll("\\b(twenty) " + followedBy, "20 $2"); 	//twenty
 			return input;
 		}
 	}

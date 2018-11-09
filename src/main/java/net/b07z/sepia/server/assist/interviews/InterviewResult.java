@@ -4,7 +4,7 @@ import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.services.ServiceResult;
 
 /**
- * This class acts as a bridge between API_Result (that may be a question or comment) and NLU_Result.
+ * This class acts as a bridge between {@link ServiceResult} (that may be a question or comment) and {@link NluResult}.
  * 
  * @author Florian Quirin
  *

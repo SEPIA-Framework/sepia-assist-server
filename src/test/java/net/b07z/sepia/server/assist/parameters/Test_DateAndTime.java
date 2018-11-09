@@ -40,6 +40,8 @@ public class Test_DateAndTime {
 		System.out.println("converted_date: " + Arrays.toString(DateAndTime.convertTagToDate(dateMap, input)));
 		text = "erstelle einen timer fuer 20 minuten";	System.out.println("\n" + text);	dateMap = RegexParameterSearch.get_date(text, input.language);	System.out.println("dateEx: " + dateMap.values());
 		System.out.println("converted_date: " + Arrays.toString(DateAndTime.convertTagToDate(dateMap, input)));
+		text = "erstelle einen timer fuer fuenfzehn minuten";	System.out.println("\n" + text);	dateMap = RegexParameterSearch.get_date(text, input.language);	System.out.println("dateEx: " + dateMap.values());
+		System.out.println("converted_date: " + Arrays.toString(DateAndTime.convertTagToDate(dateMap, input)));
 		text = "weck mich in 20 minuten";			System.out.println("\n" + text);	dateMap = RegexParameterSearch.get_date(text, input.language);	System.out.println("dateEx: " + dateMap.values());
 		System.out.println("converted_date: " + Arrays.toString(DateAndTime.convertTagToDate(dateMap, input)));
 		text = "timer für 30s";						System.out.println("\n" + text);	dateMap = RegexParameterSearch.get_date(text, input.language);	System.out.println("dateEx: " + dateMap.values());
@@ -100,6 +102,12 @@ public class Test_DateAndTime {
 		text = "wetter morgen";		System.out.println("\n" + text);	dateMap = RegexParameterSearch.get_date(text, input.language);	System.out.println("dateEx: " + dateMap.values());
 		System.out.println("converted_date: " + Arrays.toString(DateAndTime.convertTagToDate(dateMap, input)));
 		text = "erinnere mich in 70 tagen an das Spiel";		System.out.println("\n" + text);	dateMap = RegexParameterSearch.get_date(text, input.language);	System.out.println("dateEx: " + dateMap.values());
+		System.out.println("converted_date: " + Arrays.toString(DateAndTime.convertTagToDate(dateMap, input)));
+		text = "erinnere mich am montag morgen an das meeting";		System.out.println("\n" + text);	dateMap = RegexParameterSearch.get_date(text, input.language);	System.out.println("dateEx: " + dateMap.values());
+		System.out.println("converted_date: " + Arrays.toString(DateAndTime.convertTagToDate(dateMap, input)));
+		text = "erinnere mich am montag abend an das meeting";		System.out.println("\n" + text);	dateMap = RegexParameterSearch.get_date(text, input.language);	System.out.println("dateEx: " + dateMap.values());
+		System.out.println("converted_date: " + Arrays.toString(DateAndTime.convertTagToDate(dateMap, input)));
+		text = "erinnere mich am 3.5 an das meeting";		System.out.println("\n" + text);	dateMap = RegexParameterSearch.get_date(text, input.language);	System.out.println("dateEx: " + dateMap.values());
 		System.out.println("converted_date: " + Arrays.toString(DateAndTime.convertTagToDate(dateMap, input)));
 	}
 

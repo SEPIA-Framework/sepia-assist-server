@@ -15,7 +15,7 @@ import net.b07z.sepia.server.core.tools.JSON;
 
 /**
  * Class that delivers info about an interview module. Info can be defined inside interview module or taken from first service.
- * It is to some degree a copy of API_Info which has historical and compatibility reasons, but should be fixed at some point. 
+ * It is to some degree a copy of {@link ServiceInfo} which has historical and compatibility reasons, but should be fixed at some point. 
  * 
  * @author Florian Quirin
  *

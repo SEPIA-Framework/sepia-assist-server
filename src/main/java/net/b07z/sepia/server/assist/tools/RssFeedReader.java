@@ -179,11 +179,21 @@ public class RssFeedReader {
 	    						desc = "";
 	    					}
 	    				}
+	    				//clean up
 	    				desc = desc.replaceAll("<img.*?>", "")
 	    						.replaceAll("\\r\\n|\\r|\\n|\\t", " ").replaceAll("\u00A0|\u200B", " ")
 	    						.replaceAll(Pattern.quote("<!--more-->") + ".*", "")
+	    						.replaceAll("<video.*?</video>", "")
+	    						.replaceAll("<audio.*?</audio>", "")
+	    						.replaceAll("<iframe.*?</iframe>", "")
+	    						.replaceAll("<object.*?</object>", "")
 	    						//.replaceAll("<a href=.*?>", "").replaceAll("</a>", "")
 	    						.replaceAll("\\s+", " ").trim();
+	    				//max. 2000 characters
+	    				if (desc.length() > 2000){
+	    					desc = desc.replaceAll("<.*?>", " ").replaceAll("\\s+", " "); 	//<- most aggressive html clean-up
+	    					desc = desc.substring(0, Math.min(2000, desc.length()));
+	    				}
 	    				JSON.add(jo, "description", desc);
 	    				
 	    				//filter by date and add

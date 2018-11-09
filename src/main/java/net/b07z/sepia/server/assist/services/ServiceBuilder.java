@@ -18,7 +18,7 @@ import net.b07z.sepia.server.core.tools.JSON;
 
 /**
  * This class is a helper to build services and it includes a default set of necessary variables.<br>
- * Use it to build the API_Result!<br> 
+ * Use it to build the {@link ServiceResult}!<br> 
  * To a large degree its a duplication of {@link ServiceResult} which should be resolved at some point.<br>
  * NOTE: manipulations in the variables may have to be copied back to {@link NluResult} to avoid bugs like
  * the "wrong-answer-repeat" due to "input.input_miss"

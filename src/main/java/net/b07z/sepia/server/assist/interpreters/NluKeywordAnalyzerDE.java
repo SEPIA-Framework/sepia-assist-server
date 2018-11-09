@@ -260,7 +260,7 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 						+ "(durchsuche|suche|schau|finde|zeig)( mir|)( mal| bitte|)( bitte| mal|)( im| das) (web|internet))|"
 						+ "^google|^bing|^yahoo|^duck duck|^duck duck go|"
 						+ "^(bild(ern|er|)|rezept(en|e|)|video(s|)|movie(s|)|film(en|e|)|\\w*(-|)aktie(n|)|aktien(wert|kurs)|buecher(n|)|buch)|"
-						+ "(wie|wo) (ist|steht|stehen) (der|die) (aktienkurs|aktienwert|aktie(n|)|kurs|wert) (von|vom|der)|(wie|wo) (steht|stehen) .*aktien|"
+						+ "(wie|wo) (ist|steht|stehen) (der|die) (aktienkurs|aktienwert|aktie(n|)|kurs|wert) (von|vom|der)|(wie|wo) (steht|stehen) .*aktie(n|)|"
 						+ "(durchsuche|suche|schau|finde|zeig)( | .* )(im (web|internet))|"
 						+ "(durchsuche|suche|schau|finde|zeig)( | .* )(mit|per|via|auf|ueber|mittels|bei) (google|bing|duck duck go|duck duck|yahoo)|"
 						+ "(durchsuche|suche|schau|finde|zeig)( | .* )(bilder(n|)|rezepte(n|)|video(s|)|youtube|movies|filme(n|)|buecher(n|)|(-|)aktie(n|)|aktien(wert|kurs))")
@@ -403,7 +403,7 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 		}
 		
 		//radio
-		if (NluTools.stringContains(text, "radio|radiokanal|radiostation|radiosender|radiostream|musikkanal|musikstation") 
+		if (NluTools.stringContains(text, "\\w*radio(\\.|)(fm|\\d+|)|radiokanal|radiostation|radiosender|radiostream|musikkanal|musikstation") 
 										&& !possibleCMDs.contains(CMD.KNOWLEDGEBASE)){
 			//String this_text = text;
 			possibleCMDs.add(CMD.MUSIC_RADIO);
@@ -414,7 +414,7 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 			
 			HashMap<String, String> pv = new HashMap<String, String>(); 		//TODO: pass this down to avoid additional checking
 			AbstractParameterSearch aps = new AbstractParameterSearch()
-					.setParameters(PARAMETERS.RADIO_STATION, PARAMETERS.MUSIC_GENRE, 
+					.setParameters(PARAMETERS.MUSIC_GENRE, PARAMETERS.RADIO_STATION, 
 										PARAMETERS.ACTION)
 					.setup(input, pv);
 			aps.getParameters();
