@@ -66,21 +66,28 @@ public class ListSubType implements ParameterHandler{
 		//String[] subTypeRes = null;
 		String extractedRawTerm = "";
 		String genericListWithPrefix;
+		boolean cleanParentType = true;
 		
 		//German
 		if (language.equals(LANGUAGES.DE)){
 			//old: (\\w+ |)(to do |\\w+(-| |)(\\w+-|))
-			genericListWithPrefix = "(\\w+ |)((to do )|(\\w+-\\w+(-| ))|(\\w+(-| |)))(list(en|e|)|zettel|note(s|)|notiz(en|))(?! (\\w+ |)(auf|von|zu(r|)))";
+			genericListWithPrefix = "(\\w+ und |)(\\w+ |)((to do )|(\\w+-\\w+(-| ))|(\\w+(-| |)))(list(en|e|)|zettel|note(s|)|notiz(en|))(?! (\\w+ |)(auf|von|zu(r|)))";
 			extractedRawTerm = NluTools.stringFindFirst(input, genericListWithPrefix);
 			extractedRawTerm = extractedRawTerm.replaceFirst("\\b(auf |von |zu(r|) )\\b", "").trim();
 			extractedRawTerm = extractedRawTerm.replaceFirst(".*\\b(meine(n|r|m|)|die|der|den|eine|einer|einen|einem|mir)\\b", "").trim();
+			if (extractedRawTerm.trim().contains("und")){
+				cleanParentType = false;
+			}
 			
 		//English and other
 		}else{
-			genericListWithPrefix = "(\\w+ |)((to do )|(\\w+-\\w+(-| ))|(\\w+(-| )))(list(s|)|note(s|))(?! (\\w+ |)(onto|on|to|at|from))";
+			genericListWithPrefix = "(\\w+ and |)(\\w+ |)((to do )|(\\w+-\\w+(-| ))|(\\w+(-| )))(list(s|)|note(s|))(?! (\\w+ |)(onto|on|to|at|from))";
 			extractedRawTerm = NluTools.stringFindFirst(input, genericListWithPrefix);
 			extractedRawTerm = extractedRawTerm.replaceFirst("\\b(on |onto |to |at |from )\\b", "").trim();
 			extractedRawTerm = extractedRawTerm.replaceFirst(".*\\b(my|a|the)\\b", "").trim();
+			if (extractedRawTerm.trim().contains("and")){
+				cleanParentType = false;
+			}
 		}
 		//System.out.println("subType e2.: " + extractedRawTerm);		//DEBUG
 		
@@ -89,7 +96,7 @@ public class ListSubType implements ParameterHandler{
 			extractedRawTerm = ParameterResult.cleanInputOfParameter(nluInput, PARAMETERS.ACTION, input, extractedRawTerm);
 		}
 		//clean sub-type of parent type
-		if (!extractedRawTerm.isEmpty()){
+		if (!extractedRawTerm.isEmpty() && cleanParentType){
 			ParameterResult prListType = ParameterResult.getResult(nluInput, PARAMETERS.LIST_TYPE, input);
 			String exListType = prListType.getExtracted();
 			if (exListType.isEmpty() || exListType.equals("<" + UserDataList.IndexType.unknown + ">")){

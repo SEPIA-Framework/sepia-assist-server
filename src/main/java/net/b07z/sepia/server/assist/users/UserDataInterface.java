@@ -114,7 +114,7 @@ public interface UserDataInterface {
 	 * @param user - list of who?
 	 * @param section - a userDataList section that groups certain lists and prevents cross-talk when reading without indexType
 	 * @param indexType - IndexType like "shopping" or "alarms" etc.
-	 * @param filters - e.g. "title" of list
+	 * @param filters - e.g. "title" of list or "resultsSize" and "resultsFrom" (for pagination)
 	 * @return null if there was an error, else filtered lists of the indexType
 	 */
 	public List<UserDataList> getUserDataList(User user, Section section, String indexType, Map<String, Object> filters);

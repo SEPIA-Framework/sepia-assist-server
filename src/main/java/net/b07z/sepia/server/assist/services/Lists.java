@@ -33,6 +33,7 @@ import net.b07z.sepia.server.core.tools.JSON;
  */
 public class Lists implements ServiceInterface{
 	
+	private static int lists_max_load = 20;		//maximum number of lists loaded with one call from server
 	private static int list_limit = 50;			//this many items are allowed in the list
 	private static int element_limit = 160;		//maximum length of an item
 	
@@ -62,6 +63,27 @@ public class Lists implements ServiceInterface{
 				return "Mixed";
 			}
 		}
+	}
+	/**
+	 * Default item for to-do and shopping lists.
+	 */
+	public static JSONObject makeProductivityListItem(String name, String indexType){
+		JSONObject item = new JSONObject();
+		String type = UserDataList.EleType.checkable.name();
+		String state = null;
+		if (indexType.equals(UserDataList.IndexType.todo.name())){
+			//type = UserDataList.EleType.checkable.name();
+			state = UserDataList.EleState.open.name();			//usually only to-do lists have a state in addition to 'checked'
+		}
+		JSON.put(item, "name", name.trim());
+		JSON.put(item, "eleType", type);
+		JSON.put(item, "lastChange", System.currentTimeMillis());
+		JSON.put(item, "checked", new Boolean(false));
+		if (state != null){
+			JSON.put(item, "state", state);
+		}
+		//JSON.put(item, "metaData", new JSONObject());
+		return item;
 	}
 	//-------------
 	
@@ -215,10 +237,19 @@ public class Lists implements ServiceInterface{
 		//Load list
 		UserDataInterface userData = user.getUserDataAccess();
 		List<UserDataList> udlList;
-		
 		HashMap<String, Object> filters = new HashMap<>();
+		
+		//list title
 		if (!title.isEmpty()) filters.put("title", title);
+		
+		//results size and pagination
+		filters.put("resultsFrom", 0);					//start at first result
+		filters.put("resultsSize", lists_max_load);		//we support 20 lists with one call for now
+		
+		//list section (a classification for this type of lists)
 		Section section = Section.productivity;
+		
+		//get
 		udlList = userData.getUserDataList(user, section, indexType, filters);
 				
 		//server communication error?
@@ -373,13 +404,7 @@ public class Lists implements ServiceInterface{
 			//modify and save
 			}else{
 				for (String i : items){
-					JSON.add(activeList.data, JSON.make(
-							"name", i.trim(),
-							"eleType", UserDataList.EleType.checkable.name(),
-							"lastChange", System.currentTimeMillis(),
-							//"desc": "",
-							"checked", new Boolean(false)
-					));
+					JSON.add(activeList.data, makeProductivityListItem(i, indexType));
 				}
 				//System.out.println("DATA: " + activeList.data); 		//debug
 				JSONObject writeResult = userData.setUserDataList(user, Section.productivity, activeList);

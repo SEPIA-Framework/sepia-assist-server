@@ -930,6 +930,10 @@ public class DB {
 			throw new RuntimeException("getListData - section is missing!");
 		}
 		String sectionName = section.name();
+		
+		//results pagination?
+		int resultsFrom = (filters.containsKey("resultsFrom"))? (int) filters.get("resultsFrom") : 0;
+		int resultsSize = (filters.containsKey("resultsSize"))? (int) filters.get("resultsSize") : 10;
 
 		List<QueryElement> matches = new ArrayList<>(); 
 		matches.add(new QueryElement("user", userId));
@@ -940,11 +944,13 @@ public class DB {
 		if (!title.isEmpty()){
 			matches.add(new QueryElement("title", filters.get("title"), ""));
 		}
-		String query = EsQueryBuilder.getBoolMustMatch(matches).toJSONString();
-		//System.out.println("query: " + query);
+		JSONObject queryJson = EsQueryBuilder.getBoolMustMatch(matches);
+		JSON.put(queryJson, "from", resultsFrom);
+		JSON.put(queryJson, "size", resultsSize);
+		//System.out.println("query: " + queryJson.toJSONString());
 		
 		JSONObject data = new JSONObject();
-		data = knowledge.searchByJson(USERDATA + "/" + UserDataList.LISTS_TYPE, query);
+		data = knowledge.searchByJson(USERDATA + "/" + UserDataList.LISTS_TYPE, queryJson.toJSONString());
 		
 		List<UserDataList> lists = null;
 		if (Connectors.httpSuccess(data)){

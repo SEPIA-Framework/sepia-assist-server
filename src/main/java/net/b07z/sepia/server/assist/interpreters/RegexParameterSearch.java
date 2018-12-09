@@ -146,7 +146,14 @@ public class RegexParameterSearch {
 				.replaceAll("\\b(einundzwanzig) " + followedBy, "21 $2")
 				.replaceAll("\\b(zweiundzwanzig) " + followedBy, "22 $2")
 				.replaceAll("\\b(dreiundzwanzig) " + followedBy, "23 $2")
-				.replaceAll("\\b(vierundzwanzig) " + followedBy, "24 $2");
+				.replaceAll("\\b(vierundzwanzig) " + followedBy, "24 $2")
+				.replaceAll("\\b(fuenfundzwanzig) " + followedBy, "25 $2")
+				.replaceAll("\\b(sechsundzwanzig) " + followedBy, "26 $2")
+				.replaceAll("\\b(siebenundzwanzig) " + followedBy, "27 $2")
+				.replaceAll("\\b(achtundzwanzig) " + followedBy, "28 $2")
+				.replaceAll("\\b(neunundzwanzig) " + followedBy, "29 $2")
+				.replaceAll("\\b(dreissig) " + followedBy, "30 $2")
+				;
 			return input;
 		
 		//English - and missing language support ...
@@ -176,7 +183,9 @@ public class RegexParameterSearch {
 				.replaceAll("\\b(twenty(-| )two) " + followedBy, "22 $2")
 				.replaceAll("\\b(twenty(-| )three) " + followedBy, "23 $2")
 				.replaceAll("\\b(twenty(-| )four) " + followedBy, "24 $2")
-				.replaceAll("\\b(twenty) " + followedBy, "20 $2"); 	//twenty
+				.replaceAll("\\b(twenty) " + followedBy, "20 $2")
+				.replaceAll("\\b(thirty) " + followedBy, "20 $2")
+				;
 			return input;
 		}
 	}
