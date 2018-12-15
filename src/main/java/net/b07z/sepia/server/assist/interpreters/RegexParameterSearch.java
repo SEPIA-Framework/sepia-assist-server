@@ -1054,7 +1054,7 @@ public class RegexParameterSearch {
 					+ "(in |fuer |auf |um |ab |)((\\d+:\\d+|\\d+)" + DateAndTime.CLOCK_TAGS_DE + ") (und |)(\\d+" + DateAndTime.TIME_TAGS_DE + ")|"
 					+ "(in |fuer |auf |um |ab |)((\\d+:\\d+|\\d+)" + DateAndTime.CLOCK_TAGS_DE + ") (am |an dem |dem |den |)" + DateAndTime.DATE_DIRECT_TAGS + "|"
 					+ "(in |fuer |auf |um |ab |)(\\d+" + DateAndTime.TIME_TAGS_SHORT + ") (und |)(\\d+" + DateAndTime.TIME_TAGS_SHORT + ")|"
-					+ "(in |fuer |auf |um |ab |)(\\d+" + DateAndTime.TIME_TAGS_DE + ")|"
+					+ "(in |fuer |auf |um |ab |)(\\d+" + DateAndTime.TIME_TAGS_DE + ")" + "( (um |fuer |ab |)((\\d+:\\d+|\\d+)" + DateAndTime.CLOCK_TAGS_DE + ")" + "|)|"
 					+ "(in |fuer |auf |um |ab |)(\\d+" + DateAndTime.TIME_TAGS_SHORT + ")|"
 					+ "(in |fuer |auf |um |ab |)((\\d+:\\d+|\\d+)" + DateAndTime.CLOCK_TAGS_DE + ")|"
 						+ "(^\\d{1,2}$)");
@@ -1080,7 +1080,7 @@ public class RegexParameterSearch {
 					+ "(in |for |at |to |from |)((\\d+:\\d+|\\d+)" + DateAndTime.CLOCK_TAGS_EN + ") (and |)(\\d+" + DateAndTime.TIME_TAGS_EN + ")|"
 					+ "(in |for |at |to |from |)((\\d+:\\d+|\\d+)" + DateAndTime.CLOCK_TAGS_DE + ") (at the |at |the |)" + DateAndTime.DATE_DIRECT_TAGS + "|"
 					+ "(in |for |at |to |from |)(\\d+" + DateAndTime.TIME_TAGS_SHORT + ") (and |)(\\d+" + DateAndTime.TIME_TAGS_SHORT + ")|"
-					+ "(in |for |at |to |from |)(\\d+" + DateAndTime.TIME_TAGS_EN + ")|"
+					+ "(in |for |at |to |from |)(\\d+" + DateAndTime.TIME_TAGS_EN + ")" + "( (at |for |from |)((\\d+:\\d+|\\d+)" + DateAndTime.CLOCK_TAGS_EN + ")" + "|)|"
 					+ "(in |for |at |to |from |)(\\d+" + DateAndTime.TIME_TAGS_SHORT + ")|"
 					+ "(in |for |at |to |from |)((\\d+:\\d+|\\d+)" + DateAndTime.CLOCK_TAGS_EN + ")|"
 						+ "(^\\d{1,2}$)");

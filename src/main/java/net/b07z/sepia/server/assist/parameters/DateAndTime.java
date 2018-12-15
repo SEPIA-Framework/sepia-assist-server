@@ -513,8 +513,9 @@ public class DateAndTime implements ParameterHandler{
 		if (nluInput.language.equals(LANGUAGES.DE)){
 			//DAY
 			if (dayDate.isEmpty()){
-				String dayTag = NluTools.stringFindFirst(dateTag, DAY_TAGS_DE + "|" + DAY_TAGS_RELATIVE_DE);
-				dayDate = getDateToDay(dayTag, "yyyy.MM.dd", nluInput);
+				String dayTag1 = NluTools.stringFindFirst(dateTag, DAY_TAGS_DE);
+				String dayTag2 = NluTools.stringFindFirst(dateTag, DAY_TAGS_RELATIVE_DE);
+				dayDate = getDateToDay((dayTag1.trim() + " " + dayTag2.trim()).trim(), "yyyy.MM.dd", nluInput);
 
 				//System.out.println("DAY: " + dayDate); 			//DEBUG
 			}
@@ -555,8 +556,9 @@ public class DateAndTime implements ParameterHandler{
 		}else{
 			//DAY
 			if (dayDate.isEmpty()){				
-				String dayTag = NluTools.stringFindFirst(dateTag, DAY_TAGS_EN + "|" + DAY_TAGS_RELATIVE_EN);
-				dayDate = getDateToDay(dayTag, "yyyy.MM.dd", nluInput);
+				String dayTag1 = NluTools.stringFindFirst(dateTag, DAY_TAGS_EN);
+				String dayTag2 = NluTools.stringFindFirst(dateTag, DAY_TAGS_RELATIVE_EN);
+				dayDate = getDateToDay((dayTag1.trim() + " " + dayTag2.trim()).trim(), "yyyy.MM.dd", nluInput);
 
 				//System.out.println("DAY: " + dayDate); 			//DEBUG
 			}

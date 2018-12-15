@@ -250,7 +250,11 @@ public class LocationStart implements ParameterHandler{
 			JSONArray places = GeoCoding.getPOI(searchPOI, poiType, "", "", nluInput.language);
 			if (places.isEmpty() && !searchPOI_coarse.isEmpty()){
 				places = GeoCoding.getPOI(searchPOI_coarse, poiType, "", "", nluInput.language);
-				Debugger.println("LocationParameter POI - performed 2 tries to find: " + searchPOI, 3);
+				Debugger.println("LocationParameter POI - performed 2nd try (types: " + poiType + ") to find: " + searchPOI, 3);
+				if (places.isEmpty()){
+					places = GeoCoding.getPOI(searchPOI_coarse, "", "", "", nluInput.language);
+					Debugger.println("LocationParameter POI - performed 3rd try (without type) to find: " + searchPOI, 3);
+				}
 			}
 			if (!places.isEmpty()){
 				JSONObject locationJSON = (JSONObject) places.get(0);

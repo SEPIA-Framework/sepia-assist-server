@@ -155,7 +155,7 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 							+ "(how do i get (to|home)\\b)|"
 							+ "(show|find) .* (from|to) .* (map|maps)\\b|"
 							+ "\\b(from) .* (to) |"
-							+ "how far |how long |distance |duration .*\\b(to)|to go to |to drive to |to travel to ")){
+							+ "how far |(how long |duration .*\\b(to) )(?!.*(timer|alarm|reminder)(s|))|distance |to go to |to drive to |to travel to ")){
 			//String this_text = text;
 			possibleCMDs.add(CMD.DIRECTIONS);
 			possibleScore.add(1);	index++;
