@@ -20,6 +20,7 @@ public class Test_RadioStation_MusicGenre {
 		String[] parametersToTest = new String[]{ PARAMETERS.MUSIC_GENRE, PARAMETERS.RADIO_STATION };
 		
 		String language = "de";
+		System.out.println("---------- DE ----------");
 				
 		ArrayList<String> texts = new ArrayList<>();
 		texts.add("Spiele ein Rock Radio");
@@ -31,6 +32,29 @@ public class Test_RadioStation_MusicGenre {
 		texts.add("Spiele Radio delta Föhnfrisur");
 		texts.add("Spiele delta Radio Föhnfrisur");
 		texts.add("delta Radio Föhnfrisur");
+		texts.add("Spiele ein Radio mit Rock");
+		texts.add("Spiele ein Radio mit Rockmusik");
+		texts.add("Spiele ein Radio mit Metallica");
+		texts.add("Spiele ein Radio mit Musik von Metallica");
+		texts.add("Spiele Rockradio");
+		
+		printTestResults(texts, parametersToTest, language);
+		
+		language = "en";
+		System.out.println("---------- EN ----------");
+		
+		texts = new ArrayList<>();
+		texts.add("play a rock radio");
+		texts.add("start Rockradio FM");
+		texts.add("play delta Radio");
+		texts.add("play radio delta Föhnfrisur");
+		texts.add("play delta Radio Föhnfrisur");
+		texts.add("delta Radio Föhnfrisur");
+		texts.add("play a radio with Rock");
+		texts.add("play a radio with rockmusic");
+		texts.add("play a radio with Metallica");
+		texts.add("play a radio with songs of Metallica");
+		texts.add("play rockstation");
 
 		printTestResults(texts, parametersToTest, language);
 	}

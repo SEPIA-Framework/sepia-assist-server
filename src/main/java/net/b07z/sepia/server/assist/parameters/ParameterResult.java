@@ -104,7 +104,7 @@ public class ParameterResult {
 		}
 	}
 	/**
-	 * Submit found result, build the parameter handler and remove it from input.
+	 * Submit found result, build the parameter handler and remove it from input. This will use the internal 'remove' method of the parameter.
 	 * @param nluInput - NLU_Input that hold necessary info
 	 * @param pName - name of the parameter to extract (as seen in PARAMETERS.XYZ)
 	 * @param pr - ParameterResult of previous extraction process
