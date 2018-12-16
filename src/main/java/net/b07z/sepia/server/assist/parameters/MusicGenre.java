@@ -100,7 +100,8 @@ public class MusicGenre implements ParameterHandler{
 		//German
 		if (language.matches("de")){
 			//split 'radio' if common
-			input = input.replaceFirst("(ein) (\\w+)(radio)", "$1 $2 $3"); 		//Note: this will mess with 'found' 
+			input = input.replaceFirst("(ein) (\\w+)(radio)", "$1 $2 $3")		//We keep the "ein" to distinguish "a rockradio" and "delta rockradio" (name)
+						.replaceFirst("(" + common + ")(musik)", "$1 $2");		//Note: this will mess with 'found' 
 			
 			genre = NluTools.stringFindFirst(input, "(mein(s|en|e|) |)(" 
 					+ common + "|"
@@ -108,13 +109,14 @@ public class MusicGenre implements ParameterHandler{
 			
 		//English and other
 		}else{
-			input = input.replaceFirst("(a) (\\w+)(radio)", "$1 $2 $3"); 		//Note: this will mess with 'found'
+			input = input.replaceFirst("(a) (\\w+)(radio|station)", "$1 $2 $3")	//We keep the "a" to distinguish "a rockradio" and "delta rockradio" (name)
+						.replaceFirst("(" + common + ")(music)", "$1 $2");		//Note: this will mess with 'found'
 			
 			genre = NluTools.stringFindFirst(input, "(my |)("
 					+ common + "|"
 					+ "classic)|my");
 		}
-		this.found = genre;
+		this.found = genre; 
 		
 		//reconstruct original phrase to get proper item names
 		if (!genre.isEmpty()){
@@ -141,7 +143,13 @@ public class MusicGenre implements ParameterHandler{
 
 	@Override
 	public String remove(String input, String found) {
-		return NluTools.stringRemoveFirst(input, Pattern.quote(found));
+		//extend found due to split in 'extract'
+		if (language.equals(LANGUAGES.DE)){
+			found = "(mit |)" + Pattern.quote(found) + "(radio|musik|)";
+		}else{
+			found = "(with |)" + Pattern.quote(found) + "(radio|music|)";
+		}
+		return NluTools.stringRemoveFirst(input, found);
 	}
 	
 	@Override

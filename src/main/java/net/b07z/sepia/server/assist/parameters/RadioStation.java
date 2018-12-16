@@ -163,50 +163,62 @@ public class RadioStation implements ParameterHandler{
 		ParameterResult prGenre = ParameterResult.getResult(nluInput, PARAMETERS.MUSIC_GENRE, input);
 		String genre = prGenre.getFound(); //.getExtracted();
 		/*
-		//one could try and remove it
+		//one could try and remove it ... we will use this in step5
 		if (!genre.isEmpty()){
 			input = ParameterResult.cleanInputOfFoundParameter(nluInput, PARAMETERS.MUSIC_GENRE, prGenre, input);
 		}
 		*/
 		
 		//German
-		if (language.matches("de")){
-			String radio = NluTools.stringFindFirst(input, "radiokanal|radio kanal|radiostation|radio station|radiosender|radio sender|radiostream|radio stream|"
-														+ "musikstation|musik station|musiksender|musik sender|kanal|sender|\\w*radio|\\w*station");
-			String action1 = NluTools.stringFindFirst(input, "einschalten|anmachen|oeffnen|starten|an|ein|hoeren|spielen|aktivieren|aufdrehen");
-			String action2 = NluTools.stringFindFirst(input, "oeffne|starte|spiel|spiele|aktiviere");
+		if (language.matches(LANGUAGES.DE)){
+			String radio = NluTools.stringFindFirst(input, "(radio|musik)( |-|)(kanal|station|sender|stream)|"
+														+ "kanal|sender|\\w*radio(?! fm)|\\w*station(?! fm)");
+			String action1 = NluTools.stringFindFirst(input, "einschalten|anmachen|oeffnen|start(en|$)|an$|ein$|hoeren|spielen|aktivieren|aufdrehen");
+			String action2 = NluTools.stringFindFirst(input, "oeffne|start(e|)|spiel(e|)|aktiviere");
 			
-			if (!radio.isEmpty()){
-				//v1
+			String artist = NluTools.stringFindFirst(input, "(musik|lieder(n|)|song(s|)) von .*");
+			
+			if (!artist.isEmpty()){
+				station = artist.replaceFirst(".*?\\b(von)\\s", "");
+			
+			}else if (!radio.isEmpty()){
+				//step1
 				if (!action1.isEmpty()){
 					station = NluTools.stringFindFirst(input, radio + "\\s(.*?\\s.*?|.*?)\\s" + action1);
 					station = station.replaceFirst(".*?\\b" + radio + "\\s", "").trim();
 					station = station.replaceFirst("\\s" + action1 + "\\b.*", "").trim();
 				}
-				//v2
+				//step2
 				if (station.trim().isEmpty() && !action1.isEmpty()){
 					station = NluTools.stringFindFirst(input, "\\b(.*?\\s.*?|.*?)\\s" + radio + "\\s" + action1);
 					station = station.replaceFirst("\\s" + radio + "\\b.*", "").trim();
 				}
-				//v3
+				//step3
 				if (station.trim().isEmpty() && !action2.isEmpty()){
 					station = NluTools.stringFindFirst(input, action2 + "\\s" + radio + "\\s(.*?\\s\\w+|\\w+)$");
 					station = station.replaceFirst(".*?\\s" + radio + "\\s", "").trim();
 				}
-				//v4
+				//step4
 				if (station.trim().isEmpty() && !action2.isEmpty()){
 					station = NluTools.stringFindFirst(input, action2 + "\\s" + "(.*?)\\s" + radio + "$");
 					station = station.replaceFirst(".*?\\b" + action2 + "\\s", "").trim();
 					station = station.replaceFirst("\\s" + radio, "").trim();
 				}
-				//v5
+				//step5
 				if (station.trim().isEmpty()){
-					String possibleStation = NluTools.stringRemoveFirst(input, radio);
+					String reducedInput = input;
+					if (!genre.isEmpty()){
+						//use this earlier?
+						reducedInput = ParameterResult.cleanInputOfFoundParameter(
+								nluInput, PARAMETERS.MUSIC_GENRE, prGenre, reducedInput
+						);
+					}
+					String possibleStation = NluTools.stringRemoveFirst(reducedInput, radio);
 					if (!action1.isEmpty()){
 						possibleStation = possibleStation.replaceFirst("\\s" + action1 + "\\b.*", "").trim();
 					}
 					if (!action2.isEmpty()){
-						possibleStation = possibleStation.replaceFirst(".*?\\b" + action2 + "\\s", "").trim();
+						possibleStation = possibleStation.replaceFirst(".*?\\b" + action2 + "(\\s|$)", "").trim();
 					}
 					if (NluTools.countWords(possibleStation) <= 3){
 						station = possibleStation;
@@ -214,13 +226,13 @@ public class RadioStation implements ParameterHandler{
 				}
 			}else{
 				//some even more special cases
-				String possibleStation = NluTools.stringFindFirst(input, "\\w*(radio|station)(\\.|)(fm|\\d+)")
+				String possibleStation = NluTools.stringFindFirst(input, "\\w*(radio|station)(\\.| |)(fm|\\d+)")
 						.replaceFirst("^(radio|station)$", "");
 				if (!action1.isEmpty()){
 					possibleStation = possibleStation.replaceFirst("\\s" + action1 + "\\b.*", "").trim();
 				}
 				if (!action2.isEmpty()){
-					possibleStation = possibleStation.replaceFirst(".*?\\b" + action2 + "\\s", "").trim();
+					possibleStation = possibleStation.replaceFirst(".*?\\b" + action2 + "(\\s|$)", "").trim();
 				}
 				if (NluTools.countWords(possibleStation) <= 3){
 					station = possibleStation;
@@ -232,6 +244,7 @@ public class RadioStation implements ParameterHandler{
 				Normalizer normalizer = new NormalizerAddStrongDE();
 				station = normalizer.normalizeText(station);
 				station = station.replaceFirst(".*?\\b(einen|ein|eine|die|den|das)\\b", "").trim();
+				station = station.replaceFirst("^(mit)\\b", "").trim();
 				//is just genre?
 				if (station.equals(genre)){
 					station = "";
@@ -239,43 +252,55 @@ public class RadioStation implements ParameterHandler{
 			}
 		
 		//English
-		}else if (language.matches("en")){
-			String radio = NluTools.stringFindFirst(input, "radiochannel|radiostation|radio station|radio channel|radiostream|radio stream|"
-														+ "music station|music channel|channel|sender|radio|station");
-			String action1 = NluTools.stringFindFirst(input, "on");
+		}else if (language.matches(LANGUAGES.EN)){
+			String radio = NluTools.stringFindFirst(input, "(radio|music)( |-|)(channel|station|stream)|"
+														+ "channel|sender|\\w*radio(?! fm)|\\w*station(?! fm)");
+			String action1 = NluTools.stringFindFirst(input, "on$");
 			String action2 = NluTools.stringFindFirst(input, "open|start|play|activate|tune in to|turn on|switch on");
 			
-			if (!radio.isEmpty()){
-				//v1
+			String artist = NluTools.stringFindFirst(input, "(music|song(s|)) (of|by) .*");
+			
+			if (!artist.isEmpty()){
+				station = artist.replaceFirst(".*?\\b(of|by)\\s", "");
+			
+			}else if (!radio.isEmpty()){
+				//step1
 				if (!action1.isEmpty()){
 					station = NluTools.stringFindFirst(input, radio + "\\s(.*?\\s.*?|.*?)\\s" + action1);
 					station = station.replaceFirst(".*?\\b" + radio + "\\s", "").trim();
 					station = station.replaceFirst("\\s" + action1 + "\\b.*", "").trim();
 				}
-				//v2
+				//step2
 				if (station.trim().isEmpty() && !action1.isEmpty()){
 					station = NluTools.stringFindFirst(input, "\\b(.*?\\s.*?|.*?)\\s" + radio + "\\s" + action1);
 					station = station.replaceFirst("\\s" + radio + "\\b.*", "").trim();
 				}
-				//v3
+				//step3
 				if (station.trim().isEmpty() && !action2.isEmpty()){
 					station = NluTools.stringFindFirst(input, action2 + "\\s" + radio + "\\s(.*?\\s\\w+|\\w+)$");
 					station = station.replaceFirst(".*?\\s" + radio + "\\s", "").trim();
 				}
-				//v4
+				//step4
 				if (station.trim().isEmpty() && !action2.isEmpty()){
 					station = NluTools.stringFindFirst(input, action2 + "\\s" + "(.*?)\\s" + radio + "$");
 					station = station.replaceFirst(".*?\\b" + action2 + "\\s", "").trim();
 					station = station.replaceFirst("\\s" + radio, "").trim();
 				}
-				//v5
+				//step5
 				if (station.trim().isEmpty()){
-					String possibleStation = NluTools.stringRemoveFirst(input, radio);
+					String reducedInput = input;
+					if (!genre.isEmpty()){
+						//use this earlier?
+						reducedInput = ParameterResult.cleanInputOfFoundParameter(
+								nluInput, PARAMETERS.MUSIC_GENRE, prGenre, reducedInput
+						);
+					}
+					String possibleStation = NluTools.stringRemoveFirst(reducedInput, radio);
 					if (!action1.isEmpty()){
 						possibleStation = possibleStation.replaceFirst("\\s" + action1 + "\\b.*", "").trim();
 					}
 					if (!action2.isEmpty()){
-						possibleStation = possibleStation.replaceFirst(".*?\\b" + action2 + "\\s", "").trim();
+						possibleStation = possibleStation.replaceFirst(".*?\\b" + action2 + "(\\s|$)", "").trim();
 					}
 					if (NluTools.countWords(possibleStation) <= 3){
 						station = possibleStation;
@@ -283,13 +308,13 @@ public class RadioStation implements ParameterHandler{
 				}
 			}else{
 				//some even more special cases
-				String possibleStation = NluTools.stringFindFirst(input, "(radio|station)(\\.|)(fm|\\d+)")
+				String possibleStation = NluTools.stringFindFirst(input, "\\w*(radio|station)(\\.| |)(fm|\\d+)")
 						.replaceFirst("^(radio|station)$", "");;
 				if (!action1.isEmpty()){
 					possibleStation = possibleStation.replaceFirst("\\s" + action1 + "\\b.*", "").trim();
 				}
 				if (!action2.isEmpty()){
-					possibleStation = possibleStation.replaceFirst(".*?\\b" + action2 + "\\s", "").trim();
+					possibleStation = possibleStation.replaceFirst(".*?\\b" + action2 + "(\\s|$)", "").trim();
 				}
 				if (NluTools.countWords(possibleStation) <= 3){
 					station = possibleStation;
@@ -301,6 +326,7 @@ public class RadioStation implements ParameterHandler{
 				Normalizer normalizer = new NormalizerAddStrongEN();
 				station = normalizer.normalizeText(station);
 				station = station.replaceFirst(".*?\\b(a|an|the|to)\\b", "").trim();
+				station = station.replaceFirst("^(with)\\b", "").trim();
 				//is just genre?
 				if (station.equals(genre)){
 					station = "";
