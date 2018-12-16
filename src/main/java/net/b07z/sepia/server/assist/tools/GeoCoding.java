@@ -443,6 +443,7 @@ public class GeoCoding {
 			);
 			url += addKey;
 			url += addGPS;
+			//System.out.println("google_get_POI - search: " + search);							//debug
 			//System.out.println("google_get_POI - URL: " + url); 								//debug
 			
 			//make the HTTP GET call to Google Geocode API

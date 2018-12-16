@@ -146,7 +146,14 @@ public class RegexParameterSearch {
 				.replaceAll("\\b(einundzwanzig) " + followedBy, "21 $2")
 				.replaceAll("\\b(zweiundzwanzig) " + followedBy, "22 $2")
 				.replaceAll("\\b(dreiundzwanzig) " + followedBy, "23 $2")
-				.replaceAll("\\b(vierundzwanzig) " + followedBy, "24 $2");
+				.replaceAll("\\b(vierundzwanzig) " + followedBy, "24 $2")
+				.replaceAll("\\b(fuenfundzwanzig) " + followedBy, "25 $2")
+				.replaceAll("\\b(sechsundzwanzig) " + followedBy, "26 $2")
+				.replaceAll("\\b(siebenundzwanzig) " + followedBy, "27 $2")
+				.replaceAll("\\b(achtundzwanzig) " + followedBy, "28 $2")
+				.replaceAll("\\b(neunundzwanzig) " + followedBy, "29 $2")
+				.replaceAll("\\b(dreissig) " + followedBy, "30 $2")
+				;
 			return input;
 		
 		//English - and missing language support ...
@@ -176,7 +183,9 @@ public class RegexParameterSearch {
 				.replaceAll("\\b(twenty(-| )two) " + followedBy, "22 $2")
 				.replaceAll("\\b(twenty(-| )three) " + followedBy, "23 $2")
 				.replaceAll("\\b(twenty(-| )four) " + followedBy, "24 $2")
-				.replaceAll("\\b(twenty) " + followedBy, "20 $2"); 	//twenty
+				.replaceAll("\\b(twenty) " + followedBy, "20 $2")
+				.replaceAll("\\b(thirty) " + followedBy, "20 $2")
+				;
 			return input;
 		}
 	}
@@ -1045,7 +1054,7 @@ public class RegexParameterSearch {
 					+ "(in |fuer |auf |um |ab |)((\\d+:\\d+|\\d+)" + DateAndTime.CLOCK_TAGS_DE + ") (und |)(\\d+" + DateAndTime.TIME_TAGS_DE + ")|"
 					+ "(in |fuer |auf |um |ab |)((\\d+:\\d+|\\d+)" + DateAndTime.CLOCK_TAGS_DE + ") (am |an dem |dem |den |)" + DateAndTime.DATE_DIRECT_TAGS + "|"
 					+ "(in |fuer |auf |um |ab |)(\\d+" + DateAndTime.TIME_TAGS_SHORT + ") (und |)(\\d+" + DateAndTime.TIME_TAGS_SHORT + ")|"
-					+ "(in |fuer |auf |um |ab |)(\\d+" + DateAndTime.TIME_TAGS_DE + ")|"
+					+ "(in |fuer |auf |um |ab |)(\\d+" + DateAndTime.TIME_TAGS_DE + ")" + "( (um |fuer |ab |)((\\d+:\\d+|\\d+)" + DateAndTime.CLOCK_TAGS_DE + ")" + "|)|"
 					+ "(in |fuer |auf |um |ab |)(\\d+" + DateAndTime.TIME_TAGS_SHORT + ")|"
 					+ "(in |fuer |auf |um |ab |)((\\d+:\\d+|\\d+)" + DateAndTime.CLOCK_TAGS_DE + ")|"
 						+ "(^\\d{1,2}$)");
@@ -1071,7 +1080,7 @@ public class RegexParameterSearch {
 					+ "(in |for |at |to |from |)((\\d+:\\d+|\\d+)" + DateAndTime.CLOCK_TAGS_EN + ") (and |)(\\d+" + DateAndTime.TIME_TAGS_EN + ")|"
 					+ "(in |for |at |to |from |)((\\d+:\\d+|\\d+)" + DateAndTime.CLOCK_TAGS_DE + ") (at the |at |the |)" + DateAndTime.DATE_DIRECT_TAGS + "|"
 					+ "(in |for |at |to |from |)(\\d+" + DateAndTime.TIME_TAGS_SHORT + ") (and |)(\\d+" + DateAndTime.TIME_TAGS_SHORT + ")|"
-					+ "(in |for |at |to |from |)(\\d+" + DateAndTime.TIME_TAGS_EN + ")|"
+					+ "(in |for |at |to |from |)(\\d+" + DateAndTime.TIME_TAGS_EN + ")" + "( (at |for |from |)((\\d+:\\d+|\\d+)" + DateAndTime.CLOCK_TAGS_EN + ")" + "|)|"
 					+ "(in |for |at |to |from |)(\\d+" + DateAndTime.TIME_TAGS_SHORT + ")|"
 					+ "(in |for |at |to |from |)((\\d+:\\d+|\\d+)" + DateAndTime.CLOCK_TAGS_EN + ")|"
 						+ "(^\\d{1,2}$)");

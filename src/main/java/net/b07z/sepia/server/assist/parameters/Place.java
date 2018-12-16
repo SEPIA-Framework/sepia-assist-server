@@ -150,30 +150,60 @@ public class Place implements ParameterHandler{
 	public static String getPoiType(String input, String language){
 		//DE
 		if (language.equals(LANGUAGES.DE)){
-			if (NluTools.stringContains(input, "bar|bars|pub|pubs|cafe|cafes|kaffee|coffeeshop|coffee-shop|kiosk")){
-				return "cafe|liquor_store|bar";
-			}else if (NluTools.stringContains(input, "baeckerei(en|)|baecker|(pizza|doener|pommes|schnitzel)(-| |)(laden|laeden|bude|buden|imbiss|)|imbiss|(\\b\\w{3,}(sches |sche )|)(restaurant|restaurants|imbiss)|\\b\\w{3,}(sches |sche )(essen)|(et|)was (zu |)(essen|futtern)|futter")){
-				return "food|meal_takeaway|restaurant|bakery";
-			}else if (NluTools.stringContains(input, "disco|discos|diskothek|club|clubs|bordell|nachtclub|puff|tanzen|feiern|party")){
-				return "night_club|casino";
-			}else if (NluTools.stringContains(input, "krankenhaus|krankenhaeuser")){
-				return "hospital";
-			}else if (NluTools.stringContains(input, "apotheke|doktor|arzt")){
-				return "pharmacy|doctor";
+			if (NluTools.stringContains(input, "bar|bars|pub|pubs|drinks|was trinken")){
+				return "bar";
+			}else if (NluTools.stringContains(input, "kiosk|bude")){
+				return "store|liquor_store";
+			}else if (NluTools.stringContains(input, "cafe|cafes|kaffee|coffeeshop|coffee-shop")){
+				return "cafe";
+			}else if (NluTools.stringContains(input, "(pizza|doener|pommes|schnitzel)(-| |)(laden|laeden|bude|buden|imbiss|)|imbiss|(\\b\\w{3,}(sches |sche )|)(restaurant|restaurants|imbiss)|\\b\\w{3,}(sches |sche )(essen)|(et|)was (zu |)(essen|futtern)|futter")){
+				return "food|restaurant|meal_takeaway";
+			}else if (NluTools.stringContains(input, "baeckerei(en|)|baecker")){
+				return "bakery";
 			}else if (NluTools.stringContains(input, "tankstelle|tankstellen|tanken")){
-				return "car_wash|gas_station";
-			}else if (NluTools.stringContains(input, "(polizei|feuerwehr)(-station|station| station|-wache| wache|wache|)(en|)")){
-				return "police|fire_station";
+				return "gas_station";
+			}else if (NluTools.stringContains(input, "auto waschen")){
+				return "car_wash";
 			}else if (NluTools.stringContains(input, "hotel|hotels|motel|hostel(s|)")){
 				return "lodging";
-			}else if (NluTools.stringContains(input, "kirche(n|)|moschee(n|)|tempel|synagoge(n|)")){
-				return "church|hindu_temple|mosque|synagogue|place_of_worship";
+			}else if (NluTools.stringContains(input, "disco|discos|diskothek|club|clubs|nachtclub|tanzen|feiern|party")){
+				return "night_club";
+			}else if (NluTools.stringContains(input, "\\w*(-bahnhof|bahnhof)|hbf")){
+				return "train_station";
+			}else if (NluTools.stringContains(input, "\\w*(-|)haltestelle|bus|u(-| |)bahn.*")){
+				if (NluTools.stringContains(input, "u(-| |)bahn.*")){
+					return "subway_station|transit_station";
+				}else if (NluTools.stringContains(input, ".*bus.*")){
+					return "bus_station";
+				}else{
+					return "transit_station|bus_station|subway_station|train_station";
+				}
+			}else if (NluTools.stringContains(input, "flughafen")){
+				return "airport";
+			}else if (NluTools.stringContains(input, "sixt|europcar|starcar|autovermietung")){
+				return "car_rental";
+			}else if (NluTools.stringContains(input, "taxi stand|taxi")){
+				return "taxi_stand";
+			}else if (NluTools.stringContains(input, "museum")){
+				return "museum";
+			}else if (NluTools.stringContains(input, "geldautomat(en|)|atm(s|)|geld (besorgen|abholen|holen|abheben)|geld")){
+				return "atm|bank|finance";
+			}else if (NluTools.stringContains(input, "bank(en|)")){
+				return "bank|finance";
 			}else if (NluTools.stringContains(input, "aldi|lidl|penny|edeka|netto|rewe|supermarkt|supermaerkte|markt|einkaufen")){
 				return "grocery_or_supermarket";
-			}else if (NluTools.stringContains(input, "\\w*(-bahnhof|bahnhof|bahn)|hbf|haltestelle|flughafen|sixt|europcar|starcar|autovermietung|taxi stand|taxi")){
-				return "airport|bus_station|car_rental|subway_station|train_station";
-			}else if (NluTools.stringContains(input, "geldautomat(en|)|atm(s|)|bank(en|)|geld (besorgen|abholen|holen|abheben)|geld")){
-				return "atm|bank|finance";
+			}else if (NluTools.stringContains(input, "krankenhaus|krankenhaeuser|notaufnahme")){
+				return "hospital";
+			}else if (NluTools.stringContains(input, "doktor|arzt")){
+				return "doctor";
+			}else if (NluTools.stringContains(input, "apotheke|medikamente")){
+				return "pharmacy";
+			}else if (NluTools.stringContains(input, "(polizei)(-station|station| station|-wache| wache|wache|)(en|)")){
+				return "police";
+			}else if (NluTools.stringContains(input, "(feuerwehr)(-station|station| station|-wache| wache|wache|)(en|)")){
+				return "fire_station";
+			}else if (NluTools.stringContains(input, "kirche(n|)|moschee(n|)|tempel|synagoge(n|)")){
+				return "place_of_worship|church|hindu_temple|mosque|synagogue";
 			}else if (NluTools.stringContains(input, "werkstatt|werkstaetten|auto schuppen|schrauber bude")){
 				return "car_repair";
 			}else if (NluTools.stringContains(input, "(fussball|basketball|football|baseball|hockey|)(| )(stadion|stadium)")){
@@ -182,37 +212,73 @@ public class Place implements ParameterHandler{
 				return "university";
 			}else if (NluTools.stringContains(input, "kino|cinemaxx|uci|imax")){
 				return "movie_theater";
-			}else if (NluTools.stringContains(input, "einkaufszentrum|shoppingcenter|shoppingzentrum|kaufen|shop|\\w*laden|geschaeft")){
+			}else if (NluTools.stringContains(input, "einkaufszentrum|shoppingcenter|shoppingzentrum")){
 				return "shopping_mall|store";
+			}else if (NluTools.stringContains(input, "kaufen|shop|\\w*laden|geschaeft")){
+				return "store";
+			}else if (NluTools.stringContains(input, "casino")){
+				return "casino";
+			}else if (NluTools.stringContains(input, "bordell|puff")){
+				return "establishment";
 			}else if (NluTools.stringContains(input, "zoo")){
 				return "zoo";
 			}
 		//EN	
 		}else if (language.equals(LANGUAGES.EN)){
-			if (NluTools.stringContains(input, "bar|bars|pub|pubs|cafe|cafes|coffeeshop|coffee-shop|kiosk")){
-				return "cafe|liquor_store|bar";
-			}else if (NluTools.stringContains(input, "bakery|bakers|bakehouse|(pizza|doener|fries|schnitzel|kebab)(-| |)(shop|imbiss|place|)|imbiss|(\\b\\w{3,}(an |nese )|)(restaurant|restaurants|diner|takeaway|food)|something to eat|food")){
-				return "food|meal_takeaway|restaurant|bakery";
-			}else if (NluTools.stringContains(input, "disco|discos|diskothek|club|clubs|brothel|nightclub|cathouse|party|dance")){
-				return "night_club|casino";
-			}else if (NluTools.stringContains(input, "hospital(s|)")){
+			if (NluTools.stringContains(input, "bar|bars|pub|pubs|drinks|get drunk")){
+				return "bar|liquor_store";
+			}else if (NluTools.stringContains(input, "cafe|cafes|coffee(-| |)(shop|)")){
+				return "cafe";
+			}else if (NluTools.stringContains(input, "liquor(-| |)store|get (alkohol|spirit|booze)")){
+				return "liquor_store";
+			}else if (NluTools.stringContains(input, "(pizza|doener|fries|schnitzel|kebab)(-| |)(shop|imbiss|place|)|imbiss|(\\b\\w{3,}(an |nese )|)(restaurant|restaurants|diner|takeaway|food)|something to eat|food")){
+				return "food|restaurant|meal_takeaway";
+			}else if (NluTools.stringContains(input, "bakery|bakers|bakehouse")){
+				return "bakery";
+			}else if (NluTools.stringContains(input, "disco|discos|diskothek|club|clubs|nightclub|party|dance")){
+				return "night_club";
+			}else if (NluTools.stringContains(input, "hospital(s|)|emergency room")){
 				return "hospital";
-			}else if (NluTools.stringContains(input, "pharmacy|drugstore|doctor")){
-				return "pharmacy|doctor";
-			}else if (NluTools.stringContains(input, "gas station|gas-station|petrol station|petrol-station|get gas|get petrol")){
-				return "car_wash|gas_station";
-			}else if (NluTools.stringContains(input, "(police|fire)(-station|station| station|department|)(s|)")){
-				return "police|fire_station";
+			}else if (NluTools.stringContains(input, "pharmacy|drugstore")){
+				return "pharmacy";
+			}else if (NluTools.stringContains(input, "doctor")){
+				return "doctor|pharmacy";
+			}else if (NluTools.stringContains(input, "\\w*(-station| station|train)|(bus|train) stop")){
+				if (NluTools.stringContains(input, ".*bus.*")){
+					return "bus_station";
+				}else if (NluTools.stringContains(input, ".*train.*")){
+					return "train_station";
+				}else if (NluTools.stringContains(input, ".*subway.*")){
+					return "subway_station|train_station";
+				}else{
+					return "transit_station|train_station";
+				}
+			}else if (NluTools.stringContains(input, "airport")){
+				return "airport";
+			}else if (NluTools.stringContains(input, "sixt|europcar|starcar|car rental")){
+				return "car_rental";
+			}else if (NluTools.stringContains(input, "need a cab|taxi stand|taxi")){
+				return "taxi_stand";
+			}else if (NluTools.stringContains(input, "museum")){
+				return "museum";
+			}else if (NluTools.stringContains(input, "(gas|petrol)(-| |)station|get (gas|petrol)")){
+				return "gas_station";
+			}else if (NluTools.stringContains(input, "car(-| |)wash|wash\\b.* car")){
+				return "car_wash";
+			}else if (NluTools.stringContains(input, "(police)(-station|station| station|department|)(s|)")){
+				return "police";
+			}else if (NluTools.stringContains(input, "(fire)(-station|station| station|department|)(s|)")){
+				return "fire_station";
 			}else if (NluTools.stringContains(input, "hotel|hotels|motel|hostel(s|)")){
 				return "lodging";
 			}else if (NluTools.stringContains(input, "church(es|)|mosque(s|)|temple(s|)|synagogue(s|)|synagog")){
-				return "church|hindu_temple|mosque|synagogue|place_of_worship";
+				return "place_of_worship|church|hindu_temple|mosque|synagogue";
 			}else if (NluTools.stringContains(input, "aldi|lidl|penny|edeka|netto|rewe|supermarket(s|)|market|buy stuff")){
 				return "grocery_or_supermarket";
-			}else if (NluTools.stringContains(input, "\\w*(-station| station|train)|(bus|train) stop|airport|sixt|europcar|starcar|car rental|need a cab|taxi stand|taxi")){
-				return "airport|bus_station|car_rental|subway_station|train_station";
-			}else if (NluTools.stringContains(input, "cash machine|atm(s|)|bank(s|)|get (money|cash)")){
+			}else if (NluTools.stringContains(input, "cash machine|atm(s|)|get (money|cash)")){
 				return "atm|bank|finance";
+			}else if (NluTools.stringContains(input, "bank(s|)")){
+				return "bank|finance";
 			}else if (NluTools.stringContains(input, "workshop(s|)")){
 				return "car_repair";
 			}else if (NluTools.stringContains(input, "(soccer|football|basketball|baseball|hockey|)( stadium|stadium)")){
@@ -221,8 +287,12 @@ public class Place implements ParameterHandler{
 				return "university";
 			}else if (NluTools.stringContains(input, "cinema|cinemaxx|uci|imax")){
 				return "movie_theater";
-			}else if (NluTools.stringContains(input, "shopping (center|mall)|\\w*shop|\\w*store")){
+			}else if (NluTools.stringContains(input, "shopping (center|mall)")){
 				return "shopping_mall|store";
+			}else if (NluTools.stringContains(input, "\\w*shop|\\w*store|kiosk")){
+				return "store";
+			}else if (NluTools.stringContains(input, "brothel|cathouse")){
+				return "establishment";
 			}else if (NluTools.stringContains(input, "zoo")){
 				return "zoo";
 			}

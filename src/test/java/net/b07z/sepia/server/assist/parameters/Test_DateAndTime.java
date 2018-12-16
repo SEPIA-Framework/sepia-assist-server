@@ -109,6 +109,14 @@ public class Test_DateAndTime {
 		System.out.println("converted_date: " + Arrays.toString(DateAndTime.convertTagToDate(dateMap, input)));
 		text = "erinnere mich am 3.5 an das meeting";		System.out.println("\n" + text);	dateMap = RegexParameterSearch.get_date(text, input.language);	System.out.println("dateEx: " + dateMap.values());
 		System.out.println("converted_date: " + Arrays.toString(DateAndTime.convertTagToDate(dateMap, input)));
+		text = "erinnere mich in einer woche um 11 uhr an das meeting";		System.out.println("\n" + text);	dateMap = RegexParameterSearch.get_date(text, input.language);	System.out.println("dateEx: " + dateMap.values());
+		System.out.println("converted_date: " + Arrays.toString(DateAndTime.convertTagToDate(dateMap, input)));
+		text = "erinnere mich in einer woche um 13 uhr an reifen";		System.out.println("\n" + text);	dateMap = RegexParameterSearch.get_date(text, input.language);	System.out.println("dateEx: " + dateMap.values());
+		System.out.println("converted_date: " + Arrays.toString(DateAndTime.convertTagToDate(dateMap, input)));
+		text = "erinnere mich samstag um 10 Uhr an das fest";		System.out.println("\n" + text);	dateMap = RegexParameterSearch.get_date(text, input.language);	System.out.println("dateEx: " + dateMap.values());
+		System.out.println("converted_date: " + Arrays.toString(DateAndTime.convertTagToDate(dateMap, input)));
+		text = "erinnere mich naechste woche samstag um 13 uhr an zeug";		System.out.println("\n" + text);	dateMap = RegexParameterSearch.get_date(text, input.language);	System.out.println("dateEx: " + dateMap.values());
+		System.out.println("converted_date: " + Arrays.toString(DateAndTime.convertTagToDate(dateMap, input)));
 	}
 
 }

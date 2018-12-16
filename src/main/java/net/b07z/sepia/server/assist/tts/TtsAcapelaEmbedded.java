@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import net.b07z.sepia.server.assist.server.Config;
+import net.b07z.sepia.server.core.tools.Debugger;
 
 /**
  * This is the TTS_Interface implementation for embedded Acapela supporting multiple languages and emotional voices.<br>
@@ -26,6 +27,7 @@ import net.b07z.sepia.server.assist.server.Config;
 public class TtsAcapelaEmbedded implements TtsInterface {
 	
 	//track files
+	private static int MAX_FILES = 30;
 	private static AtomicInteger fileID = new AtomicInteger(0);
 	private static String acapelaPath = Config.xtensionsFolder + "AcapelaTTS/";
 	private static String audioPath = acapelaPath + "audio_out/";
@@ -221,17 +223,17 @@ public class TtsAcapelaEmbedded implements TtsInterface {
 			});
 			if (ini_files != null && ini_files.length>0){
 				ini_path = ini_files[0].getPath();
-				System.out.println("TTS LOG - Voice INI: " +ini_path);		//debug
+				Debugger.println("TTS LOG - Voice INI: " + ini_path, 2);	//debug
 				
 			}else{
-				System.err.println("TTS LOG - CANNOT FIND VOICE CONFIGURATION (.ini)!");
+				Debugger.println("TTS LOG - CANNOT FIND VOICE CONFIGURATION (.ini)!", 1);
 				return "";
 			}
 			
 			//create files
 			
 			// - get new ID and prepare files
-			int max_files = 15;
+			int max_files = MAX_FILES;
 			int ID = fileID.addAndGet(1);
 			if (ID >= max_files){
 				fileID.set(1);
@@ -259,7 +261,7 @@ public class TtsAcapelaEmbedded implements TtsInterface {
 			if ((!Files.exists(pathText) && !Files.exists(pathAudio)) || (Files.isWritable(pathText) && Files.isWritable(pathAudio))){
 				
 				String audioURL = pathAudio.toAbsolutePath().toString();
-				System.out.println("TTS LOG - URL: " + audioURL);		//debug
+				Debugger.println("TTS LOG - URL: " + audioURL, 2);		//debug
 				
 				// - save textFile
 				ArrayList<String> lines = new ArrayList<String>();
@@ -276,7 +278,7 @@ public class TtsAcapelaEmbedded implements TtsInterface {
 				File dir = new File(Config.xtensionsFolder + "AcapelaTTS/audio_out");
 				String command = zip.getPath() + " e " + arc.getPath() + " -o" + dir.getPath() + " -y";
 				*/
-				System.out.println("TTS LOG - Command: " + command);		//debug
+				Debugger.println("TTS LOG - Command: " + command, 2);		//debug
 				//run process - note: its thread blocking but this should be considered "intended" here ;-) 
 				runProcess(command);
 				waitForProcess(maxWait_ms);
@@ -290,14 +292,14 @@ public class TtsAcapelaEmbedded implements TtsInterface {
 			
 			//ERROR - no file available
 			}else{
-				System.err.println("TTS LOG - CANNOT WRITE AUDIO FILE! ("+Files.exists(pathText)+","+Files.exists(pathAudio)+","+Files.isWritable(pathText) +","+ Files.isWritable(pathAudio)+")");
+				Debugger.println("TTS LOG - CANNOT WRITE AUDIO FILE! ("+Files.exists(pathText)+","+Files.exists(pathAudio)+","+Files.isWritable(pathText) +","+ Files.isWritable(pathAudio)+")", 1);
 				return "";
 			}
 
 		//ERROR
 		}catch (Exception e) {
 			e.printStackTrace();
-			System.out.println(e.toString());
+			Debugger.println(e.toString(), 1);
 			//throw e;
 			
 			return "";

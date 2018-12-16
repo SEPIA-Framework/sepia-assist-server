@@ -136,7 +136,7 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 		}
 		
 		//smart device control
-		if (NluTools.stringContains(text, "licht(er|)|lampe(n|)|beleuchtung|leuchte(n|)|helligkeit|"
+		if (NluTools.stringContains(text, "licht(er|es|)|lampe(n|)|beleuchtung|leuchte(n|)|helligkeit|"
 				+ "heiz(er|ungen|ung|koerper|luefter|strahler)|temperatur(regler|en|)|thermostat|"
 				+ "smart( |)home (control|steuerung)"
 			)){
@@ -155,7 +155,7 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 		//directions
 		if (NluTools.stringContains(text, "die richtung|geht es richtung|navigation|zeig mir den weg|navigiere mich|(?<!(guenstigste|guenstigsten) )weg |"
 							+ "bring mich |fahre mich |wie weit |entfernung |ich muss nach |"
-							+ "wie (lange|lang) (noch|muss|muessen|dauert|brauch|brauche|von)|"
+							+ "wie (lange|lang) (noch|muss|muessen|dauert|brauch|brauche|von)(?!.* (timer|alarm|wecker|erinnerung|termin))|"
 							+ "(wann|wo|wie) (.* |)(faehrt|geht|kommt|komme) (.* |)(nach|zu|zum|zur)|"
 							+ "(\\w*bahn|zug|bus)verbindung(en|)|"
 							+ "\\b(von|vom) .* (nach|zu|zum|zur) |komme ich (nach|zu|zum|zur) .* (von|vom) |"
