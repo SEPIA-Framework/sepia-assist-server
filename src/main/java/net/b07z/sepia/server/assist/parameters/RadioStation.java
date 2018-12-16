@@ -258,10 +258,10 @@ public class RadioStation implements ParameterHandler{
 			String action1 = NluTools.stringFindFirst(input, "on$");
 			String action2 = NluTools.stringFindFirst(input, "open|start|play|activate|tune in to|turn on|switch on");
 			
-			String artist = NluTools.stringFindFirst(input, "(music|song(s|)) (of|by) .*");
+			String artist = NluTools.stringFindFirst(input, "(music|song(s|)) (of|by|from) .*");
 			
 			if (!artist.isEmpty()){
-				station = artist.replaceFirst(".*?\\b(of|by)\\s", "");
+				station = artist.replaceFirst(".*?\\b(of|by|from)\\s", "");
 			
 			}else if (!radio.isEmpty()){
 				//step1
