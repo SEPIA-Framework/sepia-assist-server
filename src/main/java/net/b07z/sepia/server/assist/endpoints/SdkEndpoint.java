@@ -62,8 +62,8 @@ public class SdkEndpoint {
 	   		 	+ "</form>"
 	        + "</div></body>";
 	   	//stats
-	  	Statistics.addOtherApiHit("uploadService form");
-	  	Statistics.addOtherApiTime("uploadService form", tic);
+	  	Statistics.addOtherApiHit("upload-service form");
+	  	Statistics.addOtherApiTime("upload-service form", tic);
 		return html;
 	}
 
@@ -92,8 +92,8 @@ public class SdkEndpoint {
 		String userId = user.getUserID();
 		
 		//check role
-		if (!user.hasRole(Role.developer)){
-			Debugger.println("unauthorized access attempt to uploadService endpoint! User: " + userId, 3);
+		if (!user.hasRole(Role.developer) && !user.hasRole(Role.assistant)){
+			Debugger.println("unauthorized access attempt to upload-service endpoint (missing role)! User: " + userId, 3);
 			return SparkJavaFw.returnNoAccess(req, res);
 		}
 		try{
@@ -103,18 +103,18 @@ public class SdkEndpoint {
 	        	throw new RuntimeException("NOT A CLASS FILE!");
 	        }
 	        
-	    	String dir = Config.pluginsFolder + "services/" + userId;
+	    	String dir = Config.sdkClassesFolder + "services/" + userId;
 	    	File uploadDir = new File(dir);
 	        uploadDir.mkdir(); // create the upload directory if it doesn't exist
 	
 	        //Path tempFile = Files.createTempFile(uploadDir.toPath(), "", "");
 	        Path tempFile = Paths.get(uploadDir.toString(), fileName);
-	        Debugger.println("uploadService - Uploading file to " + dir + "/" + tempFile.getFileName(), 3);
+	        Debugger.println("upload-service - Uploading file to " + dir + "/" + tempFile.getFileName(), 3);
 	
 	        try (InputStream input = filePart.getInputStream()){
 	            Files.copy(input, tempFile, StandardCopyOption.REPLACE_EXISTING);
 	        }
-	        Debugger.println("uploadService - File '" + fileName + "' saved as '" + tempFile.toString() + "'", 3);
+	        Debugger.println("upload-service - File '" + fileName + "' saved as '" + tempFile.toString() + "'", 3);
 	        
 	        try{
 	        	//validate service
@@ -131,29 +131,29 @@ public class SdkEndpoint {
 	        	userData.registerCustomService(user, info, service);
 	        	
 	        	//stats
-	          	Statistics.addOtherApiHit("uploadService");
-	          	Statistics.addOtherApiTime("uploadService", tic);
+	          	Statistics.addOtherApiHit("upload-service");
+	          	Statistics.addOtherApiTime("upload-service", tic);
 	          	
 	          	return service.getClass().getCanonicalName() + " has been uploaded! (old triggers removed: " + deletedTriggers + ")";
 	        	
 	        }catch (Exception e){
-	        	Debugger.println("uploadService - " + e.getMessage(), 1);
+	        	Debugger.println("upload-service - " + e.getMessage(), 1);
 		      	Debugger.printStackTrace(e, 2);
 	        	try{ 
 	        		//loader.close();
 	        		Files.delete(tempFile);
-	        		Debugger.println("uploadService - File '" + fileName + "' removed, was no proper service!", 3);
+	        		Debugger.println("upload-service - File '" + fileName + "' removed, was no proper service!", 3);
 	        	}catch (Exception e1) {}
 	        	throw new RuntimeException(e);
 	        }
 		
 		}catch(Exception e){
-			Debugger.println("uploadService - " + e.getMessage(), 1);
+			Debugger.println("upload-service - " + e.getMessage(), 1);
 	      	//Debugger.printStackTrace(e, 2);
 	      	
 			//stats
-	      	Statistics.addOtherApiHit("uploadService fail");
-	      	Statistics.addOtherApiTime("uploadService fail", tic);
+	      	Statistics.addOtherApiHit("upload-service fail");
+	      	Statistics.addOtherApiTime("upload-service fail", tic);
 	      	
 	      	String errorMsg = "ERROR: " + e.getMessage() 
 				+ "<br><br>Check-list:"

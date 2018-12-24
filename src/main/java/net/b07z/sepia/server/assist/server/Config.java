@@ -62,6 +62,7 @@ public class Config {
 	public static String configFile = "Xtensions/assist.properties";		//external configuration file - note: this will be overwritten in "Setup" and "Start"
 	public static String xtensionsFolder = "Xtensions/";					//folder for all sorts of data
 	public static String pluginsFolder = xtensionsFolder + "Plugins/";		//folder for plugins
+	public static String sdkClassesFolder = pluginsFolder + "net/b07z/sepia/sdk/";		//folder for SDK plugin classes
 	public static String servicePropertiesFolder = xtensionsFolder + "ServiceProperties/";		//folder for service properties and static data
 	public static String dbSetupFolder = xtensionsFolder + "Database/";		//folder for database stuff
 	public static String webServerFolder = xtensionsFolder + "WebContent";	//folder for web-server

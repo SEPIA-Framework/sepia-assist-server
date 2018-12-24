@@ -94,7 +94,7 @@
 		<dependency>
 			<groupId>net.b07z.sepia.server.core</groupId>
 			<artifactId>sepia-core-tools</artifactId>
-			<version>2.1.0</version>
+			<version>2.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.mail</groupId>
