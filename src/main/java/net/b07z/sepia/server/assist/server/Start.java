@@ -206,7 +206,7 @@ public class Start {
 	public static void setupModules(){
 		Config.setupDatabases(); 		//DB modules
 		Config.setupAnswers();			//answers
-		Config.setupCommands();		//predefined commands
+		Config.setupCommands();			//predefined commands
 		Config.setupChats(); 			//predefined chats
 		Config.setup_nlu_steps(); 		//interpretation chain
 		Workers.setupWorkers(); 		//setup and start selected workers

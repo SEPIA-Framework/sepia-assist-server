@@ -17,7 +17,7 @@ public class Test_CustomServiceLoading {
     	System.out.println("Class name: " + className);
     	System.out.println("Access to dir '" + uploadDir.getAbsolutePath() + "'? " + uploadDir.isDirectory());
     	System.out.println("Access to file '" + classFile.getAbsolutePath() + "'? " + classFile.canRead());
-    	System.out.println("File URL: " + classFile.toURI().toURL());
+    	//System.out.println("File URL: " + classFile.toURI().toURL());
     	    	    	
     	/*
     	URLClassLoader classLoader = new URLClassLoader(new URL[]{uploadDir.toURI().toURL()});

@@ -7,9 +7,9 @@
 			"laut_fm_charts"
 		],
 		"rock": [ 
-			"laut_fm_musikhitmix",
 			"antenne_bayern_classic_rock",
-			"delta_indie"
+			"delta_indie",
+			"laut_fm_musikhitmix"
 		],
 		"classicrock": [ 
 			"antenne_bayern_classic_rock"
