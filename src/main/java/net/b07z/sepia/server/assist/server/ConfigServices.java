@@ -53,6 +53,11 @@ public class ConfigServices {
 	//see also UserData Objects
 	public static Map<String, SandboxClassLoader> classLoaders = new HashMap<>();
 	private static List<String> blackList;
+	/**
+	 * Return class loader for a certain class that was created previously.
+	 * @param className
+	 * @return
+	 */
 	public static SandboxClassLoader getCustomClassLoader(String className){
 		if (classLoaders.containsKey(className)){
 			return classLoaders.get(className);
@@ -60,6 +65,11 @@ public class ConfigServices {
 			return addCustomClassLoader(className);
 		}
 	}
+	/**
+	 * Create and add (or overwrite) a sand-box class loader for a dynamically loaded class. 
+	 * @param className
+	 * @return
+	 */
 	public static SandboxClassLoader addCustomClassLoader(String className){
 		try{
 			SandboxClassLoader classLoader = new SandboxClassLoader(new File(Config.pluginsFolder), blackList);
@@ -75,6 +85,12 @@ public class ConfigServices {
 	}
 	public static void setupSandbox(){
 		blackList = new ArrayList<>();
+		
+		//System stuff:
+		//blackList.add(Runtime.class.getPackage().getName());		//TODO: can only be handled by security manager?
+		//blackList.add(Process.class.getPackage().getName());		//"		"		"
+		
+		//Framework stuff:
 		blackList.add(Config.class.getPackage().getName()); 		//server.*
 		blackList.add(AuthEndpoint.class.getPackage().getName());	//endpoints.*
 		blackList.add(DB.class.getPackage().getName());				//database.*

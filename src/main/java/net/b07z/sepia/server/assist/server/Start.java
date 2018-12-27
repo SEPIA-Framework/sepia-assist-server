@@ -114,6 +114,7 @@ public class Start {
 		if (isSSL){
 			secure(Config.xtensionsFolder + "SSL/ssl-keystore.jks", keystorePwd, null, null);
 		}
+		Debugger.println("JAVA_HOME: " + System.getProperty("java.home"), 3);
 		
 		//load configuration
 		loadConfigFile(serverType);
