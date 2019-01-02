@@ -20,9 +20,16 @@ public interface ParameterHandler {
 	
 	/**
 	 * Is this parameter using a generic handler meaning a handler that integrates into an interview properly but cannot extract data,
-	 * so that it always returns value="" and input="...". 
+	 * so that it always returns VALUE=[normalized input] and INPUT_RAW=[original raw input]. 
 	 */
 	public default boolean isGeneric(){
+		return false;
+	}
+	
+	/**
+	 * A generic handler can have custom extractions.
+	 */
+	public default boolean hasCustomMethods(){
 		return false;
 	}
 	

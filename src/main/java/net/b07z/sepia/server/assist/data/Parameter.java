@@ -29,7 +29,8 @@ public class Parameter {
 	}
 	
 	private String name = "";					//as seen in PARAMETERS
-	private String handlerName = "";			//you can overwrite the parameter handler to make this parameter behave like any other 
+	private String handlerName;					//you can overwrite the parameter handler to make this parameter behave like any other (known one)
+	private ParameterHandler paramHandler;		//use e.g. for on-the-fly custom handler (SDK)
 	private boolean required = false;			//is definitely required?
 	private String input = "";					//input given by the user before validation and transformation to default data format
 	private JSONObject data = new JSONObject();	//data in default JSON structure
@@ -91,10 +92,21 @@ public class Parameter {
 	
 	/**
 	 * Overwrite the default handler by defining any other parameter's handler. This way a parameter can behave like any other parameter while keeping his name. 
-	 * @param handlerName - name of another parameter.
+	 * @param handlerName - name of another parameter (taken from PARAMETERS).
 	 */
 	public Parameter setHandler(String handlerName){
 		this.handlerName = handlerName;
+		return this;
+	}
+	/**
+	 * Overwrite the default handler by defining any other parameter's handler. This way a parameter can behave like any other parameter while keeping his name. 
+	 * @param handlerName - name of another parameter (taken from PARAMETERS).
+	 */
+	public Parameter setHandler(ParameterHandler paramHandler){
+		this.paramHandler = paramHandler;
+		System.out.println("set");
+		System.out.println(name);
+		System.out.println(this.paramHandler.getClass().getCanonicalName());
 		return this;
 	}
 	
@@ -102,10 +114,16 @@ public class Parameter {
 	 * Get the handler for this parameter.
 	 */
 	public ParameterHandler getHandler(){
-		if (handlerName.isEmpty()){
-			return (ParameterHandler) ClassBuilder.construct(ParameterConfig.getHandler(name));
-		}else{
+		System.out.println(name);
+		if (this.paramHandler != null) {
+			System.out.println("1");
+			return this.paramHandler;
+		}else if (handlerName != null && !handlerName.isEmpty()){
+			System.out.println("2");
 			return (ParameterHandler) ClassBuilder.construct(ParameterConfig.getHandler(handlerName));
+		}else{
+			System.out.println("3");
+			return (ParameterHandler) ClassBuilder.construct(ParameterConfig.getHandler(name));
 		}
 	}
 	

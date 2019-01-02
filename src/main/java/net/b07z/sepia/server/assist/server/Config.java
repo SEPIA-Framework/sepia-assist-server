@@ -131,13 +131,17 @@ public class Config {
 	public static String ttsModule = TtsAcapelaWeb.class.getCanonicalName();
 	public static String ttsName = "Acapela";
 	public static String emailModule = SendEmailBasicSmtp.class.getCanonicalName();
-	//toggles
+	//toggles and switches
 	public static void toggleAnswerModule(){
 		if (answerModule.equals(AnswerLoaderElasticsearch.class.getCanonicalName())){
 			answerModule = AnswerLoaderFile.class.getCanonicalName();
 		}else{
 			answerModule = AnswerLoaderElasticsearch.class.getCanonicalName();
 		}
+		setupAnswers();
+	}
+	public static void setAnswerModule(AnswerLoader module){
+		answerModule = module.getClass().getCanonicalName();
 		setupAnswers();
 	}
 	

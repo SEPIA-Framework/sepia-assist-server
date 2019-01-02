@@ -128,7 +128,7 @@ public class NluKeywordAnalyzer implements NluInterface {
 				possibleCMDs, possibleScore, possibleParameters, index);
 		}
 						
-		//Repeat me - overwrites all other commands!
+		//Repeat me - overwrites all other commands! - TODO: is this still valid or captured before? If it is make a function
 		if (NluTools.stringContains(text, "(^saythis|" + Pattern.quote(Config.assistantName) + " saythis)")){
 			String this_text = input.textRaw.replaceFirst(".*?\\bsaythis|.*?\\bSaythis", "").trim();
 			

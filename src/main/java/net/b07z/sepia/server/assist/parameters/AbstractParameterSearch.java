@@ -84,6 +84,7 @@ public class AbstractParameterSearch {
 			String name = pa.getName();
 			if (!preCheckedParameters.containsKey(name)){
 				paramHandler = pa.getHandler();
+				System.out.println("Handler: " + paramHandler.getClass().getCanonicalName()); //DEBUG
 				paramHandler.setup(nluInput);
 				String result = paramHandler.extract(thisText);
 				boolean guess = false;
@@ -109,7 +110,10 @@ public class AbstractParameterSearch {
 						Debugger.println("GUESS (CLEANED): " + result + " = " + name + "", 3);
 						guesses.add(name);
 					}
-					score++;
+					//Increase score (under certain conditions)
+					if (!paramHandler.isGeneric() || paramHandler.hasCustomMethods()){
+						score++;
+					}
 				}
 				preCheckedParameters.put(name, result);
 				pv.put(name, result);
