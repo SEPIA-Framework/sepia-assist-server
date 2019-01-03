@@ -38,7 +38,8 @@ public class Number implements ParameterHandler{
 		//volume,
 		//area,
 		//power,
-		//current,		
+		//current,
+		persons,
 		letterend,
 		//letterstart,
 		//...
@@ -75,11 +76,14 @@ public class Number implements ParameterHandler{
 	 */
 	public static String getTypeString(String input, String language){
 		String type = "";
+		//Handle abbreviations
+		input = input.replaceAll("\\.", "");
 		//German
 		if (language.matches(LANGUAGES.DE)){
 			type = NluTools.stringFindFirst(input, "(\\s+|)(%|prozent|"
 					+ "(°|grad)( |)(celsius|c|fahrenheit|f|)|celsius|fahrenheit|f|"
 					+ CURRENCY.TAGS_DE + "|"
+					+ "person(en|)|leute|"
 					+ "jahr(e|)|monat(e|)|tag(e|)|stunde(n|)|minute(n|)|sekunde(n|)|"
 					+ "(kilo|milli|mikro|)gramm|kg|mg|µg|g|tonne(n|)|"
 					+ "(kilo|milli|mikro|mega|)joule|kj|mj|µj|j|kcal|"
@@ -91,6 +95,7 @@ public class Number implements ParameterHandler{
 			type = NluTools.stringFindFirst(input, "(\\s+|)(%|percent|"
 					+ "(°|degree(s|))( |)(celsius|c|fahrenheit|f|)|celsius|fahrenheit|f|"
 					+ CURRENCY.TAGS_EN + "|"
+					+ "person(s|)|people|"
 					+ "year(s|)|month(s|)|day(s|)|hour(s|)|minute(s|)|second(s|)|"
 					+ "(kilo|milli|micro|)gram(me|s)|kg|mg|µg|g|ton(s|)|" 				//TODO: what about pound?
 					+ "(kilo|milli|micro|mega|)joule|kj|mj|µj|j|kcal|"
@@ -117,6 +122,9 @@ public class Number implements ParameterHandler{
 			
 		}else if (NluTools.stringContains(input, CURRENCY.TAGS_DE + "|" + CURRENCY.TAGS_EN)){
 			return "<" + Types.currency.name() + ">";
+			
+		}else if (NluTools.stringContains(input, "person(s|en|)|people|leute")){
+			return "<" + Types.persons.name() + ">";
 			
 		}else if (NluTools.stringContains(input, "jahr(e|)|monat(e|)|tag(e|)|stunde(n|)|minute(n|)|sekunde(n|)|"
 				+ "year(s|)|month(s|)|day(s|)|hour(s|)|minute(s|)|second(s|)")){
@@ -173,7 +181,8 @@ public class Number implements ParameterHandler{
 		if (type.trim().isEmpty()){
 			found = number.trim();
 		}else{
-			number = NluTools.stringFindFirst(number, PLAIN_NBR_REGEXP).trim();
+			number = NluTools.stringFindFirst(Pattern.quote(number), PLAIN_NBR_REGEXP).trim();
+			//System.out.println("PARAMETER-NUMBER - number: " + number);					//DEBUG
 			found = NluTools.stringFindFirst(input, Pattern.quote((number + type).trim()) + "|" + Pattern.quote((type + number).trim())); 
 		}		
 		return found;
@@ -191,7 +200,14 @@ public class Number implements ParameterHandler{
 			
 			return number;
 		}
+		
+		//remove dates if we found any before
+		ParameterResult prDateTime = nluInput.getStoredParameterResult(PARAMETERS.TIME);
+		if (prDateTime != null){
+			input = ParameterResult.cleanInputOfFoundParameter(nluInput, PARAMETERS.TIME, prDateTime, input);
+		}
 				
+		//get first (remaining) number
 		number = extract(input, this.nluInput);
 		if (number.trim().isEmpty()){
 			return "";

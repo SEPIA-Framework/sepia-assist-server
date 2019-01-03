@@ -58,16 +58,18 @@ public class DateAndTime implements ParameterHandler{
 	public static final String DAY_TAGS_EN = "(monday|tuesday|wednesday|thursday|friday|saturday|sunday|weekend)";
 	public static final String DAY_TAGS_RELATIVE_EN = "(today|now|day after tomorrow|tomorrow|next week|(this|the) week|next days|next few days)";
 	
-	public static final String CLOCK_TAGS_DE = "( |)(uhr)|(um (\\d(\\d|):\\d\\d|\\d\\d|\\d))(\\s|$)|"
-														+ "(fuer (\\d(\\d|):\\d\\d))(\\s|$)";
+	public static final String CLOCK_TAGS_DE =    "( |)(uhr)|"
+												+ "(um (\\d(\\d|):\\d\\d|\\d\\d|\\d))(\\s|$)|"
+												+ "(fuer (\\d(\\d|):\\d\\d))(\\s|$)";
 	/*
 	public static final String CLOCK_TAGS_DE = "( |)(uhr)|((um |fuer )(\\d\\d|\\d))(\\s|$)|"
 														+ "(\\d(\\d|):\\d\\d)(\\s|$)|"
 														+ "(^\\d(\\d|)$)"; 		//<- is that too general?
 	*/
-	public static final String CLOCK_TAGS_EN = "( |)(o('|)clock( p(\\.|)m(\\.|)| a(\\.|)m(\\.|)|)|p(\\.|)m(\\.|)|a(\\.|)m(\\.|))|"
-														+ "(at (\\d(\\d|):\\d\\d|\\d\\d|\\d))(\\s|$)|"
-														+ "(for (\\d(\\d|):\\d\\d))(\\s|$)";
+	public static final String CLOCK_TAGS_EN =    "( |)o('|)clock( (p|a)(\\.|)m(\\.|)|)|"
+												+ "( |)(p|a)(\\.|)m(\\.|)|"
+												+ "(at (\\d(\\d|):\\d\\d|\\d\\d|\\d))(( |)(p|a)(\\.|)m(\\.|)|)(\\s|$)|"
+												+ "(for (\\d(\\d|):\\d\\d))(( |)(p|a)(\\.|)m(\\.|)|)(\\s|$)";
 	/*
 	public static final String CLOCK_TAGS_EN = "( |)(o('|)clock( p(\\.|)m(\\.|)| a(\\.|)m(\\.|)|)|p(\\.|)m(\\.|)|a(\\.|)m(\\.|))|"
 														+ "((at |for )(\\d\\d|\\d))(\\s|$)|"
@@ -521,7 +523,7 @@ public class DateAndTime implements ParameterHandler{
 			}
 			
 			//TIME
-			String clockTag = NluTools.stringFindFirst(dataTagOrg, "(\\d{1,2}:\\d\\d|\\d{1,2})" + CLOCK_TAGS_DE);
+			String clockTag = NluTools.stringFindLongest(dataTagOrg, "(\\d{1,2}:\\d\\d|\\d{1,2})" + CLOCK_TAGS_DE);
 			if (clockTag.isEmpty() && dataTagOrg.matches("^\\d{1,2}$")){
 				//TODO: is that safe to assume? Probably depends on many correlated parameters
 				clockTag = dateTag;
@@ -564,7 +566,7 @@ public class DateAndTime implements ParameterHandler{
 			}
 			
 			//TIME
-			String clockTag = NluTools.stringFindFirst(dataTagOrg, "(\\d{1,2}:\\d\\d|\\d{1,2})" + CLOCK_TAGS_EN);
+			String clockTag = NluTools.stringFindLongest(dataTagOrg, "(\\d{1,2}:\\d\\d|\\d{1,2})" + CLOCK_TAGS_EN);
 			if (clockTag.isEmpty() && dataTagOrg.matches("^\\d{1,2}$")){
 				//TODO: is that safe to assume? Probably depends on many correlated parameters
 				clockTag = dateTag;
@@ -694,14 +696,14 @@ public class DateAndTime implements ParameterHandler{
 			
 			//OTHER
 			}else{
-				if (NluTools.stringContains(timeTag, "pm|afternoon|evening|night|late") || NluTools.stringContains(clockTag, "pm")){
+				if (NluTools.stringContains(timeTag, "p(\\.|)m(\\.|)|afternoon|evening|night|late") || NluTools.stringContains(clockTag, "p(\\.|)m(\\.|)")){
 					isPM = true;
 				}
 			}
 		}else{
 			//ENGLISH
 			if (nluInput.language.equals(LANGUAGES.EN)){
-				if (NluTools.stringContains(clockTag, "pm")){
+				if (NluTools.stringContains(clockTag, "p(\\.|)m(\\.|)")){
 					isPM = true;
 				}
 			}
