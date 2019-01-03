@@ -3,9 +3,9 @@ package net.b07z.sepia.server.assist.parameters;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
-import net.b07z.sepia.server.core.tools.ClassBuilder;
 import net.b07z.sepia.server.core.tools.Debugger;
 
 /**
@@ -27,7 +27,7 @@ public class ParameterConfig {
 		int nP = 0;
 		for (Entry<String, String> e : handlerToParameter.entrySet()){
 			String name = e.getKey();
-			ParameterHandler ph = (ParameterHandler) ClassBuilder.construct(ParameterConfig.getHandler(name));
+			ParameterHandler ph = new Parameter(name).getHandler();
 			//pseudo test
 			ph.buildSuccess();
 			Debugger.println("Parameter '" + name + "' is valid.", 2);
@@ -112,6 +112,8 @@ public class ParameterConfig {
 	 * @return true/false
 	 */
 	public static boolean hasHandler(String p){
+		//TODO: add test for custom SDK parameters ... (or clean-up references to this method)
+		
 		return handlerToParameter.containsKey(p);
 	}
 

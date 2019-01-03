@@ -27,13 +27,6 @@ public interface ParameterHandler {
 	}
 	
 	/**
-	 * A generic handler can have custom extractions.
-	 */
-	public default boolean hasCustomMethods(){
-		return false;
-	}
-	
-	/**
 	 * Try to extract the parameter from the given input. The result is usually the input for the 'build' method.
 	 */
 	public String extract(String input);

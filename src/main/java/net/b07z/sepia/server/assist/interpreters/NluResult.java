@@ -20,7 +20,7 @@ import net.b07z.sepia.server.core.tools.JSON;
  * necessary information to make an API call using the command type (e.g. "weather")
  * and related parameters (e.g. place="Berlin"). Usually one would use the best interpreter
  * result asking for get_command() and get_parameter(name), but lower scoring results can be
- * stored as well. Finally the http GET implementation will use the get_best_result_JSON()
+ * stored as well. Finally the http GET implementation will use the getBestResultJSON()
  * method to create and return an JSON string to the client.
  * NLU_Result is supposed to include NLU_Input to maintain access to user variables.
  * 

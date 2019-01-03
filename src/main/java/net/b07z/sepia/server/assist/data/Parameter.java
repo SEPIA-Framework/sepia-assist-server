@@ -43,20 +43,20 @@ public class Parameter {
 	 * Create parameter with name given in PARAMETERS.
 	 */
 	public Parameter(String name){
-		setName(name);
+		this.name = name;
 	}
 	/**
 	 * Create parameter with name given in PARAMETERS and JSON data object.
 	 */
 	public Parameter(String name, JSONObject data){
-		setName(name);
+		this.name = name;
 		setData(data);
 	}
 	/**
 	 * Create parameter with name given in PARAMETERS and tell that it is required.
 	 */
 	public Parameter(String name, boolean isRequired){
-		setName(name);
+		this.name = name;
 		setRequired(isRequired);
 	}
 	/**
@@ -64,7 +64,7 @@ public class Parameter {
 	 * NOTE: the default value will be set BEFORE the build() method of the ParameterHandler is executed and is NOT put between brackets (see constructor with enum). 
 	 */
 	public Parameter(String name, Object defaultValue){
-		setName(name);
+		this.name = name;
 		setDefaultValue(defaultValue);
 	}
 	/**
@@ -72,41 +72,33 @@ public class Parameter {
 	 * Note: enumerator values are put between brackets &lt...&gt automatically and will be set BEFORE the build() method.
 	 */
 	public Parameter(String name, Enum<?> defaultValue){
-		setName(name);
+		this.name = name;
 		setDefaultValue("<" + defaultValue.name() + ">");
+	}
+	/**
+	 * Create a parameter with a custom handler. Name is taken from handler class (canonical name).<br>
+	 * This constructor should be used for custom SDK based parameters.
+	 * @param parameterHandler - Handler for this parameter
+	 */
+	public Parameter(ParameterHandler parameterHandler){
+		this.name = parameterHandler.getClass().getCanonicalName();
+		this.paramHandler = parameterHandler;
 	}
 	
 	/**
-	 * Get name as seen in PARAMETERS.
+	 * Get name of parameter (as seen in PARAMETERS or canonical name of handler class).
 	 */
 	public String getName(){
 		return name;
 	}
-	/**
-	 * Set name as seen in PARAMETERS.
-	 */
-	public Parameter setName(String name){
-		this.name = name;
-		return this;
-	}
 	
 	/**
-	 * Overwrite the default handler by defining any other parameter's handler. This way a parameter can behave like any other parameter while keeping his name. 
+	 * Overwrite the default handler by defining any other parameter's handler. This way a parameter can behave like any other parameter while keeping his name.<br>
+	 * NOTE: This will only be active during the same session (info is not transfered to client). 
 	 * @param handlerName - name of another parameter (taken from PARAMETERS).
 	 */
 	public Parameter setHandler(String handlerName){
 		this.handlerName = handlerName;
-		return this;
-	}
-	/**
-	 * Overwrite the default handler by defining any other parameter's handler. This way a parameter can behave like any other parameter while keeping his name. 
-	 * @param handlerName - name of another parameter (taken from PARAMETERS).
-	 */
-	public Parameter setHandler(ParameterHandler paramHandler){
-		this.paramHandler = paramHandler;
-		System.out.println("set");
-		System.out.println(name);
-		System.out.println(this.paramHandler.getClass().getCanonicalName());
 		return this;
 	}
 	
@@ -114,24 +106,15 @@ public class Parameter {
 	 * Get the handler for this parameter.
 	 */
 	public ParameterHandler getHandler(){
-		System.out.println(name);
+		//TODO: add custom parameter class name check ...
+		
 		if (this.paramHandler != null) {
-			System.out.println("1");
 			return this.paramHandler;
 		}else if (handlerName != null && !handlerName.isEmpty()){
-			System.out.println("2");
 			return (ParameterHandler) ClassBuilder.construct(ParameterConfig.getHandler(handlerName));
 		}else{
-			System.out.println("3");
 			return (ParameterHandler) ClassBuilder.construct(ParameterConfig.getHandler(name));
 		}
-	}
-	
-	/**
-	 * Check if this parameter is generic. A generic parameter is a parameter that has no handler and thus only returns the exact input given.
-	 */
-	public boolean isGeneric(){
-		return getHandler().isGeneric();
 	}
 	
 	/**

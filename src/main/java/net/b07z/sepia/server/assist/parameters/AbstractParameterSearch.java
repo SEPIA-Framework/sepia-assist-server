@@ -28,6 +28,15 @@ public class AbstractParameterSearch {
 		}
 		return this;
 	}
+	/**
+	 * Set the parameters this search has to analyze.
+	 */
+	public AbstractParameterSearch setParameters(Parameter... parameters){
+		for (Parameter p : parameters){
+			this.parameters.add(p);
+		}
+		return this;
+	}
 	
 	//input
 	NluInput nluInput;
@@ -84,7 +93,7 @@ public class AbstractParameterSearch {
 			String name = pa.getName();
 			if (!preCheckedParameters.containsKey(name)){
 				paramHandler = pa.getHandler();
-				System.out.println("Handler: " + paramHandler.getClass().getCanonicalName()); //DEBUG
+				//System.out.println("Handler: " + paramHandler.getClass().getCanonicalName()); 	//DEBUG
 				paramHandler.setup(nluInput);
 				String result = paramHandler.extract(thisText);
 				boolean guess = false;
@@ -111,7 +120,7 @@ public class AbstractParameterSearch {
 						guesses.add(name);
 					}
 					//Increase score (under certain conditions)
-					if (!paramHandler.isGeneric() || paramHandler.hasCustomMethods()){
+					if (!paramHandler.isGeneric()){
 						score++;
 					}
 				}

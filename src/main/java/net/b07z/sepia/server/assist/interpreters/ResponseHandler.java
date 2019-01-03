@@ -14,7 +14,6 @@ import net.b07z.sepia.server.assist.services.ServiceInfo;
 import net.b07z.sepia.server.assist.services.ServiceInterface;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
-import net.b07z.sepia.server.core.tools.ClassBuilder;
 
 /**
  * This interpreter handles responses to questions the server (assistant) asked the client (user).
@@ -163,7 +162,7 @@ public class ResponseHandler implements NluInterface{
 		}
 		//now get the missing one:
 
-		ParameterHandler handler = (ParameterHandler) ClassBuilder.construct(ParameterConfig.getHandler(parameter));
+		ParameterHandler handler = new Parameter(parameter).getHandler();
 		handler.setup(input);
 		
 		//First try the normal 'extract' method:
@@ -185,7 +184,7 @@ public class ResponseHandler implements NluInterface{
 	//check for special (dynamic) parameters
 	public static NluResult confirmResponse(NluResult nluResult, String response, String parameter, String language, String command, NluInput input){
 		//Confirmation request
-		ParameterHandler handler = (ParameterHandler) ClassBuilder.construct(ParameterConfig.getHandler(PARAMETERS.CONFIRMATION));
+		ParameterHandler handler = new Parameter(PARAMETERS.CONFIRMATION).getHandler();
 		handler.setup(input);
 		String value = handler.extract(response);
 		nluResult.setParameter(parameter, value);

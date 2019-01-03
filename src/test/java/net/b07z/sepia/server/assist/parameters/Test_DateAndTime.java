@@ -64,7 +64,7 @@ public class Test_DateAndTime {
 		System.out.println("converted_date: " + Arrays.toString(DateAndTime.convertTagToDate(dateMap, input)));
 		text = "appointment for now 20:30oclock";	System.out.println("\n" + text);	dateMap = RegexParameterSearch.get_date(text, input.language);	System.out.println("dateEx: " + dateMap.values());
 		System.out.println("converted_date: " + Arrays.toString(DateAndTime.convertTagToDate(dateMap, input)));
-		text = "set an alarm for tomorrow morning 8 a.m.";		System.out.println("\n" + text);	dateMap = RegexParameterSearch.get_date(text, input.language);	System.out.println("dateEx: " + dateMap.values());
+		text = "set an alarm for tomorrow morning 9 a.m.";		System.out.println("\n" + text);	dateMap = RegexParameterSearch.get_date(text, input.language);	System.out.println("dateEx: " + dateMap.values());
 		System.out.println("converted_date: " + Arrays.toString(DateAndTime.convertTagToDate(dateMap, input)));
 		text = "set an alarm for tomorrow morning";	System.out.println("\n" + text);	dateMap = RegexParameterSearch.get_date(text, input.language);	System.out.println("dateEx: " + dateMap.values());
 		System.out.println("converted_date: " + Arrays.toString(DateAndTime.convertTagToDate(dateMap, input)));
