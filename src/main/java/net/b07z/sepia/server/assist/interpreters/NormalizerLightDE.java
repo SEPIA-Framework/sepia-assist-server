@@ -21,7 +21,7 @@ public class NormalizerLightDE implements Normalizer {
 		text = text.replaceAll("(!|\\?|(?<![oO])'|,(?!\\d))", "").toLowerCase().trim();
 		text = text.replaceAll("((?<!\\d)\\.$)", "").trim();
 		text = text.replaceFirst("^" + assiRegEx + " ","").trim();
-		text = text.replaceFirst(" " + assiRegEx + "$","").trim();
+		text = text.replaceFirst("(?<!(auf den namen|ist|fuer))\\s+" + assiRegEx + "$","").trim();
 		text = text.replaceAll("^(hallo |hi |hey |guten tag |guten morgen )","").trim();
 		text = text.replaceAll("^(ich habe gesagt |ich hab gesagt |ich sagte )","").trim();
 		text = text.replaceAll("\\b(^kannst du bitte |^bitte |bitte$)\\b", "").trim();

@@ -21,7 +21,7 @@ public class NormalizerLightEN implements Normalizer {
 		text = text.replaceAll("(!|\\?|(?<![oO])'|,(?!\\d))", "").toLowerCase().trim();
 		text = text.replaceAll("((?<!\\d)\\.$)", "").trim();
 		text = text.replaceFirst("^" + assiRegEx + " ","").trim();
-		text = text.replaceFirst(" " + assiRegEx + "$","").trim();
+		text = text.replaceFirst("(?<!(on the name|is|for))\\s+" + assiRegEx + "$","").trim();
 		text = text.replaceAll("^(hello |hi |hey |good day |good morning )","").trim();
 		text = text.replaceAll("^(i said )","").trim();
 		text = text.replaceAll("\\b(^can you please |^please |please$)\\b", "").trim();
