@@ -3,9 +3,12 @@ package net.b07z.sepia.server.assist.data;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.interviews.InterviewData;
+import net.b07z.sepia.server.assist.parameters.GenericParameter;
 import net.b07z.sepia.server.assist.parameters.ParameterConfig;
 import net.b07z.sepia.server.assist.parameters.ParameterHandler;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
+import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.Is;
 
 /**
  * This class represents a parameter with some additional info than just the name.
@@ -76,13 +79,21 @@ public class Parameter {
 		setDefaultValue("<" + defaultValue.name() + ">");
 	}
 	/**
-	 * Create a parameter with a custom handler. Name is taken from handler class (canonical name).<br>
+	 * Create a parameter with a custom handler. Name is taken from handler class (getName()).<br>
 	 * This constructor should be used for custom SDK based parameters.
 	 * @param parameterHandler - Handler for this parameter
 	 */
 	public Parameter(ParameterHandler parameterHandler){
-		this.name = parameterHandler.getClass().getCanonicalName();
+		this.name = parameterHandler.getClass().getName();
 		this.paramHandler = parameterHandler;
+	}
+	
+	/**
+	 * Check if the name of the parameter points to a custom one (e.g. from SDK) that is not in system PARAMETERS.
+	 * @param name - Parameter name as given by constructor
+	 */
+	public static boolean isCustom(String name){
+		return name.contains(".");
 	}
 	
 	/**
@@ -106,14 +117,21 @@ public class Parameter {
 	 * Get the handler for this parameter.
 	 */
 	public ParameterHandler getHandler(){
-		//TODO: add custom parameter class name check ...
-		
 		if (this.paramHandler != null) {
 			return this.paramHandler;
-		}else if (handlerName != null && !handlerName.isEmpty()){
-			return (ParameterHandler) ClassBuilder.construct(ParameterConfig.getHandler(handlerName));
+		}
+		String thisName = Is.notNullOrEmpty(handlerName)? handlerName : name;
+		if (isCustom(thisName)){
+			//Is already a class ... try to build
+			try{
+				return (ParameterHandler) ClassBuilder.construct(thisName); 	//TODO: what about the sand-box?
+			}catch (Exception e){
+				Debugger.println("Parameter.getHandler() for '" + thisName + "' triggered exception: " + e.getMessage(), 1);
+				return new GenericParameter();
+			}
 		}else{
-			return (ParameterHandler) ClassBuilder.construct(ParameterConfig.getHandler(name));
+			//Get the system's handler class
+			return (ParameterHandler) ClassBuilder.construct(ParameterConfig.getHandler(thisName));
 		}
 	}
 	

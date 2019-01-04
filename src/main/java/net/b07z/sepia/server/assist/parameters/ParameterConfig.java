@@ -92,7 +92,7 @@ public class ParameterConfig {
 	}
 	
 	/**
-	 * Get handler for parameter or return generic handler and log a warning.
+	 * Get system handler for parameter or return generic handler and log a warning.
 	 * @param p - name taken from 'PARAMETERS'
 	 */
 	public static String getHandler(String p){
@@ -100,20 +100,18 @@ public class ParameterConfig {
 		if (h == null || h.isEmpty()){
 			//throw new RuntimeException(DateTime.getLogDate() + " ERROR - ParameterConfig.java / getHandler() - NO HANDLER for: " + p);
 			//return generic handler
-			Debugger.println("ParameterConfig.java / getHandler() - NO HANDLER for: " + p, 3);
+			Debugger.println("ParameterConfig.getHandler() - NO HANDLER for: " + p, 3);
 			return GenericParameter.class.getCanonicalName();
 		}
 		return h;
 	}
 	
 	/**
-	 * Check if the parameter has a handler.
+	 * Check if the parameter has a system handler.
 	 * @param p - name taken from 'PARAMETERS'
 	 * @return true/false
 	 */
 	public static boolean hasHandler(String p){
-		//TODO: add test for custom SDK parameters ... (or clean-up references to this method)
-		
 		return handlerToParameter.containsKey(p);
 	}
 

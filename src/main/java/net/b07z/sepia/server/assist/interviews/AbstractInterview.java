@@ -174,7 +174,7 @@ public class AbstractInterview implements InterviewInterface{
 		
 		//"anything else" check for optional parameters
 		if (gotEmptyOptionals){
-			//TODO: ask for all optional parameters with one question if there are some of them empty
+			//TODO: Idea: ask for all optional parameters with one question if there are some of them empty
 		}
 		
 		//interview done
