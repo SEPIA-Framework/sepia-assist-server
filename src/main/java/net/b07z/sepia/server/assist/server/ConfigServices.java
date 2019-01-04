@@ -54,7 +54,7 @@ public class ConfigServices {
 	public static Map<String, SandboxClassLoader> classLoaders = new HashMap<>();
 	private static List<String> blackList;
 	/**
-	 * Return class loader for a certain class that was created previously.
+	 * Return class loader for a certain class that was created previously or create a new one.
 	 * @param className
 	 * @return
 	 */
@@ -62,7 +62,8 @@ public class ConfigServices {
 		if (classLoaders.containsKey(className)){
 			return classLoaders.get(className);
 		}else{
-			return addCustomClassLoader(className);
+			SandboxClassLoader sbcl = addCustomClassLoader(className);
+			return sbcl;
 		}
 	}
 	/**
@@ -71,6 +72,7 @@ public class ConfigServices {
 	 * @return
 	 */
 	public static SandboxClassLoader addCustomClassLoader(String className){
+		//TODO: we should pre-load then close the loader if everything is there and change all calls to the loader to remove "loadClass()"
 		try{
 			SandboxClassLoader classLoader = new SandboxClassLoader(new File(Config.pluginsFolder), blackList);
 			classLoaders.put(className, classLoader);

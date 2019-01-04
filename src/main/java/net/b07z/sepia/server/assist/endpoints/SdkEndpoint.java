@@ -105,7 +105,7 @@ public class SdkEndpoint {
 	        
 	    	String dir = Config.sdkClassesFolder + "services/" + userId;
 	    	File uploadDir = new File(dir);
-	        uploadDir.mkdir(); // create the upload directory if it doesn't exist
+	        uploadDir.mkdirs(); // create the upload directory if it doesn't exist
 	
 	        //Path tempFile = Files.createTempFile(uploadDir.toPath(), "", "");
 	        Path tempFile = Paths.get(uploadDir.toString(), fileName);
@@ -126,6 +126,7 @@ public class SdkEndpoint {
 	        	ServiceInfo info = service.getInfo(user.language);
 	        	UserDataInterface userData = user.getUserDataAccess();
 	        	long deletedTriggers = userData.deletePersonalSdkCommands(user, info.intendedCommand, null);
+	        	//Debugger.println("upload-service - Old triggers removed: " + deletedTriggers, 3);
 	        	
 	        	//register service (again)
 	        	userData.registerCustomService(user, info, service);
@@ -137,14 +138,16 @@ public class SdkEndpoint {
 	          	return service.getClass().getCanonicalName() + " has been uploaded! (old triggers removed: " + deletedTriggers + ")";
 	        	
 	        }catch (Exception e){
-	        	Debugger.println("upload-service - " + e.getMessage(), 1);
+	        	Debugger.println("upload-service - Issue in validation step: " + e.getMessage(), 1);
 		      	Debugger.printStackTrace(e, 2);
 	        	try{ 
 	        		//loader.close();
 	        		Files.delete(tempFile);
 	        		Debugger.println("upload-service - File '" + fileName + "' removed, was no proper service!", 3);
-	        	}catch (Exception e1) {}
-	        	throw new RuntimeException(e);
+	        	}catch (Exception e1) {
+	        		Debugger.println("upload-service - File '" + fileName + "' NOT removed: " + e1.getMessage(), 1);
+	        	}
+	        	throw e;
 	        }
 		
 		}catch(Exception e){
