@@ -80,6 +80,13 @@ public interface UserDataInterface {
 	 * @return true/false
 	 */
 	public boolean setCustomCommandMappings(User user, Set<CmdMap> mappings);
+	/**
+	 * Remove a set of mappings from the existing command-services mapping.
+	 * @param user - custom mapping for who?
+	 * @param mappings - a set of CmdMap objects to be removed
+	 * @return a value indicating how many documents have been deleted or -1 if there was an error
+	 */
+	public long deleteCustomCommandMappings(User user, Set<CmdMap> mappings);
 	
 	/**
 	 * Set a user specific address.<br>
@@ -107,7 +114,7 @@ public interface UserDataInterface {
 	 * @param filters - tbd
 	 * @return a value indicating how many documents have been deleted or -1 if there was an error
 	 */
-	long deleteAddress(User user, String docId, Map<String, Object> filters);
+	public long deleteAddress(User user, String docId, Map<String, Object> filters);
 	
 	/**
 	 * Get a user specific data list. Basically this can be anything from shopping list to reminders or alarms etc.

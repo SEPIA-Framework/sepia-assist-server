@@ -1,12 +1,13 @@
 package net.b07z.sepia.server.assist.server;
 
 import java.io.File;
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import net.b07z.sepia.server.assist.assistant.Assistant;
 import net.b07z.sepia.server.assist.database.DB;
@@ -22,8 +23,8 @@ import net.b07z.sepia.server.assist.users.UserDataInterface;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.data.CmdMap;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
-import net.b07z.sepia.server.core.tools.DateTime;
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.FilesAndStreams;
 import net.b07z.sepia.server.core.tools.SandboxClassLoader;
 
 /**
@@ -35,13 +36,22 @@ import net.b07z.sepia.server.core.tools.SandboxClassLoader;
  */
 public class ConfigServices {
 	
-	private static String CUSTOM_PACKAGE = "net.b07z.sepia.sdk.services";
+	private static final String CUSTOM_SERVICES_PACKAGE = "net.b07z.sepia.sdk.services";
 	
 	/**
-	 * Get package path to custom services (full name).
+	 * Get folder to "custom services package". It's usually the folder just before the user IDs start, e.g.:<br>
+	 * "Xtensions/Plugins/net/b07z/sepia/sdk/services/"
 	 */
-	public static String getCustomPackage(){
-		return CUSTOM_PACKAGE;
+	public static String getCustomServicesBaseFolder(){
+		return Config.sdkClassesFolder + "services/";
+	}
+	
+	/**
+	 * Get package path to custom services (full name), e.g.:<br>
+	 * "net.b07z.sepia.sdk.services"
+	 */
+	public static String getCustomServicesPackage(){
+		return CUSTOM_SERVICES_PACKAGE;
 	}
 	
 	//essential stand-alone services
@@ -53,38 +63,73 @@ public class ConfigServices {
 	//see also UserData Objects
 	public static Map<String, SandboxClassLoader> classLoaders = new HashMap<>();
 	private static List<String> blackList;
+	
 	/**
 	 * Return class loader for a certain class that was created previously or create a new one.
-	 * @param className
+	 * @param className - binary name of class this loader was created for 
 	 * @return
+	 * @throws ClassNotFoundException 
+	 * @throws IOException 
 	 */
-	public static SandboxClassLoader getCustomClassLoader(String className){
-		if (classLoaders.containsKey(className)){
-			return classLoaders.get(className);
+	public static SandboxClassLoader getCustomServiceClassLoader(String className) throws ClassNotFoundException, IOException{
+		//Inner classes will point to parent loader
+		String loaderName = className.replaceAll("\\$.*", "").trim();
+		//Check or create
+		if (classLoaders.containsKey(loaderName)){
+			return classLoaders.get(loaderName);
 		}else{
-			SandboxClassLoader sbcl = addCustomClassLoader(className);
+			SandboxClassLoader sbcl = addCustomServiceClassLoader(className);
 			return sbcl;
 		}
 	}
 	/**
-	 * Create and add (or overwrite) a sand-box class loader for a dynamically loaded class. 
-	 * @param className
+	 * Create or overwrite a sand-box class loader for a dynamically loaded class and 
+	 * pre-load class and inner classes (TheClass and all TheClass$...) by searching package folder. 
+	 * @param className - binary name of class this loader was created for (e.g. package + name + $inner)
 	 * @return
+	 * @throws ClassNotFoundException 
+	 * @throws IOException 
 	 */
-	public static SandboxClassLoader addCustomClassLoader(String className){
-		//TODO: we should pre-load then close the loader if everything is there and change all calls to the loader to remove "loadClass()"
-		try{
-			SandboxClassLoader classLoader = new SandboxClassLoader(new File(Config.pluginsFolder), blackList);
-			classLoaders.put(className, classLoader);
+	public static SandboxClassLoader addCustomServiceClassLoader(String className) throws ClassNotFoundException, IOException{
+		//Inner classes will point to parent loader
+		String loaderName = className.replaceAll("\\$.*", "").trim();
+		try (SandboxClassLoader classLoader = new SandboxClassLoader(new File(Config.pluginsFolder), blackList);){
+			classLoaders.put(loaderName, classLoader);
+			
+			//Get all classes that belong to this loader based on its name:
+			String simpleName = loaderName.replaceFirst(".*\\.", "").trim();
+			System.out.println("Base class name: " + simpleName); 					//DEBUG
+			List<File> allClassFiles = FilesAndStreams.directoryToFileList(getCustomServicesBaseFolder(), null, true);
+			for (File f : allClassFiles){
+				String fileName = f.getName();
+				if (fileName.matches(Pattern.quote(simpleName) + "(\\$.*|)\\.class")){
+					System.out.println("Found class file: " + fileName); 			//DEBUG
+					String binaryClassName = f.getPath()
+							.replaceAll(Pattern.quote(File.separator), ".")
+							.replaceFirst(".*(" + Pattern.quote(CUSTOM_SERVICES_PACKAGE) + ")", "$1")
+							.replace(".class", "").trim();
+					System.out.println("Binary class name: " + binaryClassName);	//DEBUG
+					//load
+					classLoader.loadClass(binaryClassName);
+				}
+			}
+			//Close the loader
+			classLoader.close();
+			
 			return classLoader;
 			
-		}catch (MalformedURLException e){
-			Debugger.println("Custom class loader could NOT be created!", 1);
-			Debugger.printStackTrace(e, 3);
-			//e.printStackTrace();
-			throw new RuntimeException(DateTime.getLogDate() + " - Custom class loader ERROR: " + e.getMessage(), e);
+		}catch (ClassNotFoundException e){
+			Debugger.println("Custom class loader could NOT be created due to ClassNotFoundException: " + e.getMessage(), 1);
+			throw e;
+		}catch (IOException e){
+			Debugger.println("Custom class loader could NOT be created due to IOException: " + e.getMessage(), 1);
+			throw e;
 		}
 	}
+	
+	/**
+	 * Setup sand-boxed class loader by building blacklist.
+	 */
 	public static void setupSandbox(){
 		blackList = new ArrayList<>();
 		
@@ -100,6 +145,10 @@ public class ConfigServices {
 		blackList.add(SendEmail.class.getPackage().getName()); 		//email.*
 		//TODO: complete blacklist
 	}
+	/**
+	 * Add more classes or packages to blacklist.
+	 * @param classOrPackageName
+	 */
 	public static void addToSandboxBlackList(String classOrPackageName){
     	blackList.add(classOrPackageName);
     }
@@ -184,7 +233,7 @@ public class ConfigServices {
 		if (isAssistant){
 			customMap = Assistant.customCommandsMap;		//note: reset in UserData_xy.registerCustomService(..)
 		}else{
-			customMap = nluInput.getCustomCommandToServicesMappings();
+			customMap = nluInput.getCustomCommandToServicesMappings(); 		//TODO: this is only a session based storage
 		}
 		if (customMap == null){
 			UserDataInterface userData = user.getUserDataAccess();
@@ -206,15 +255,15 @@ public class ConfigServices {
 	/**
 	 * Take a String list of services from the custom services and build the classes via the custom class loader. 
 	 * @param user 
-	 * @param refList - list of services
+	 * @param refList - list of services (canonical names of service classes)
 	 */
 	public static List<ServiceInterface> buildCustomServices(User user, List<String> refList){
 		List<ServiceInterface> apiList = new ArrayList<>();
 		for (String className : refList){
 			try{
-				ServiceInterface service = (ServiceInterface) getCustomClassLoader(className).loadClass(className).newInstance();
+				ServiceInterface service = (ServiceInterface) getCustomServiceClassLoader(className).loadClass(className).newInstance();
 				//check if service is public or the creator asks for it
-				if (service.getInfo("").makePublic || className.startsWith(CUSTOM_PACKAGE + "." + user.getUserID() + ".")){
+				if (service.getInfo("").makePublic || className.startsWith(CUSTOM_SERVICES_PACKAGE + "." + user.getUserID() + ".")){
 					apiList.add(service);
 				}else{
 					Debugger.println("buildCustomServices - user '" + user.getUserID() + "' tried to load non-public service: " + className, 1);

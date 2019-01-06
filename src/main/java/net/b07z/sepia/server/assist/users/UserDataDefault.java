@@ -23,6 +23,7 @@ import net.b07z.sepia.server.core.data.CmdMap;
 import net.b07z.sepia.server.core.data.UserDataList;
 import net.b07z.sepia.server.core.data.UserDataList.Section;
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 
 /**
@@ -254,6 +255,34 @@ public class UserDataDefault implements UserDataInterface {
 		params.put("userIds", user.getUserID());
 		
 		return (DB.setCommandMappings(true, mappings, params) == 0);
+	}
+	@Override
+	public long deleteCustomCommandMappings(User user, Set<CmdMap> mappings){
+		long deleted = -1;
+		List<CmdMap> fullMap = getCustomCommandMappings(user, null);
+		if (Is.notNullOrEmpty(fullMap)){
+			int initialSize = fullMap.size();
+			fullMap.removeAll(mappings);
+			Set<CmdMap> cleanSet = new HashSet<>();
+			cleanSet.addAll(fullMap);
+			deleted = initialSize - cleanSet.size();
+			if (deleted > 0){
+				Map<String, Object> params = new HashMap<>();
+				params.put("customOrSystem", CmdMap.CUSTOM);
+				params.put("userIds", user.getUserID());
+				if (DB.setCommandMappings(false, cleanSet, params) == 0){ 	//note the false here
+					return deleted;
+				}else{
+					return -1;
+				}
+			}else if (deleted == 0){
+				return 0;
+			}else{
+				return -1;
+			}
+		}else{
+			return -1;
+		}
 	}
 	
 	//--- ADDRESSES ---
