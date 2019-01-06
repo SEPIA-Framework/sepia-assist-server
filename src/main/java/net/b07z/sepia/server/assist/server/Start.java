@@ -267,6 +267,7 @@ public class Start {
 		//SDK
 		get("/upload-service", (request, response) -> 		SdkEndpoint.uploadServiceGet(request, response));
 		post("/upload-service", (request, response) -> 		SdkEndpoint.uploadServicePost(request, response));
+		post("/delete-service", (request, response) -> 		SdkEndpoint.deleteServicePost(request, response));
 		
 		//Remote controls
 		post("/remote-action", (request, response) ->		RemoteActionEndpoint.remoteActionAPI(request, response));
@@ -321,7 +322,7 @@ public class Start {
 	 */
 	public static String helloWorld(Request request, Response response){
 		//prepare parameters
-		RequestParameters params = new RequestGetOrFormParameters(request);
+		RequestParameters params = new RequestGetOrFormParameters(request); 	//TODO: because of form-post?	
 		
 		//authenticate
 		Authenticator token = authenticate(params, request);
@@ -371,7 +372,7 @@ public class Start {
 		//and we DON'T check 'Config.allowInternalCalls' (since this is required data)
 		
 		//prepare parameters
-		RequestParameters params = new RequestGetOrFormParameters(request);
+		RequestParameters params = new RequestGetOrFormParameters(request);		//TODO: because of form-post?
 		
 		//authenticate 
 		if (Validate.validateInternalCall(request, params.getString("sKey"), Config.clusterKey)){
@@ -401,7 +402,7 @@ public class Start {
 			}
 		}
 		//prepare parameters
-		RequestParameters params = new RequestGetOrFormParameters(request);
+		RequestParameters params = new RequestGetOrFormParameters(request);		//TODO: because of form-post?
 		
 		//authenticate
 		Authenticator token = authenticate(params, request);

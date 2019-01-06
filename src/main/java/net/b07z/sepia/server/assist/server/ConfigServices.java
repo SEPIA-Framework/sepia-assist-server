@@ -98,17 +98,17 @@ public class ConfigServices {
 			
 			//Get all classes that belong to this loader based on its name:
 			String simpleName = loaderName.replaceFirst(".*\\.", "").trim();
-			System.out.println("Base class name: " + simpleName); 					//DEBUG
+			//System.out.println("Base class name: " + simpleName); 					//DEBUG
 			List<File> allClassFiles = FilesAndStreams.directoryToFileList(getCustomServicesBaseFolder(), null, true);
 			for (File f : allClassFiles){
 				String fileName = f.getName();
 				if (fileName.matches(Pattern.quote(simpleName) + "(\\$.*|)\\.class")){
-					System.out.println("Found class file: " + fileName); 			//DEBUG
+					//System.out.println("Found class file: " + fileName); 				//DEBUG
 					String binaryClassName = f.getPath()
 							.replaceAll(Pattern.quote(File.separator), ".")
 							.replaceFirst(".*(" + Pattern.quote(CUSTOM_SERVICES_PACKAGE) + ")", "$1")
 							.replace(".class", "").trim();
-					System.out.println("Binary class name: " + binaryClassName);	//DEBUG
+					//System.out.println("Binary class name: " + binaryClassName);		//DEBUG
 					//load
 					classLoader.loadClass(binaryClassName);
 				}

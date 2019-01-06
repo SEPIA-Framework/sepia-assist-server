@@ -435,7 +435,7 @@ public class DateAndTime implements ParameterHandler{
 
 	@Override
 	public boolean buildSuccess() {
-		return buildSuccess = true;
+		return buildSuccess;
 	}
 	
 	//--------------- HELPERS -----------------

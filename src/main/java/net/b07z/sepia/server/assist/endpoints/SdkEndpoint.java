@@ -9,7 +9,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,6 +38,7 @@ import net.b07z.sepia.server.core.server.SparkJavaFw;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.FilesAndStreams;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 import spark.Request;
 import spark.Response;
@@ -55,7 +55,7 @@ public class SdkEndpoint {
 	
 	public static final String UPLOAD_FILE_KEY = "upload_file";
 	public static final String UPLOAD_CODE_KEY = "upload_code";
-	public static final String UPLOAD_CODE_CLASS_NAME = "upload_code_class_name";
+	public static final String UPLOAD_CODE_CLASS_NAME = "upload_code_class_name"; 	//simple class name
 
 	/**-- UPLOAD SERVICE HTML FORM --
 	 * End-point that returns the form to upload services. 
@@ -70,13 +70,24 @@ public class SdkEndpoint {
 		}
 		long tic = System.currentTimeMillis();
 	   	String html =
-	   		"<style>#upload-service-box *{margin:5px;font-family:sans-serif;text-align:center;}</style>"
+	   		  "<style>"
+	   				+ "#upload-service-box *{margin:5px;font-family:sans-serif;text-align:center;}"
+	   				+ "#code-box {width:80%; min-height:100px; overflow:auto; margin:8px; padding:8px; text-align:left; white-space:nowrap;}"
+	   		+ "</style>"
 	   		+ "<body><div id='upload-service-box'>"
-	   		 	+ "<h3>Service-module upload interface</h3>"
-	   		 	+ "<form action='" + uploadEndpointPath + "' method='post' enctype='multipart/form-data' target='_blank'>"
+	   		 	+ "<h3>SEPIA Smart-Service Upload Interface</h3>"
+	   		 	+ "<br>"
+	   		 	+ "<form id='upload-form' action='" + uploadEndpointPath + "' method='post' enctype='multipart/form-data' target='_blank'>"
 	   		 		+ "<label>Id: <input type='text' name='GUUID'></label>"
 	   		 		+ "<label>Pwd: <input type='password' name='PWD'></label><br>"
-	   		 		+ "<input type='file' name='" + UPLOAD_FILE_KEY + "' accept='.class|.java|.service'><br>"
+	   		 		+ "<br>"
+	   		 		+ "<input type='file' name='" + UPLOAD_FILE_KEY + "' accept='.class|.java|.sservice|.yaml'><br>"
+	   		 		+ "<br>Or use:<br><br>"
+	   		 		+ "<label>Class name: <input type='text' name='" + UPLOAD_CODE_CLASS_NAME + "'></label><br>"
+	   		 		+ "<br>"
+	   		 		+ "<label>Java source code: <br>"
+	   		 		+ "<textarea id='code-box' form='upload-form' name='" + UPLOAD_CODE_KEY + "'>Add source code here ...</textarea>"
+	   		 		+ "<br>"
 	   		 		+ "<button class='interface_button'>UPLOAD SERVICE</button>"
 	   		 	+ "</form>"
 	        + "</div></body>";
@@ -127,16 +138,35 @@ public class SdkEndpoint {
 		try{
 			//Check upload type
 			RequestParameters params = new RequestGetOrFormParameters(req);
-			String codeKey = params.getString(UPLOAD_CODE_KEY);
-			System.out.println("codeKey: " + codeKey); 		//DEBUG
+			String sourceCode = params.getString(UPLOAD_CODE_KEY);
+			String sourceCodeClassName = null;
+			boolean isSourceCodeTransfer = false;
+			if (Is.notNullOrEmpty(sourceCode)){
+				sourceCodeClassName = params.getString(UPLOAD_CODE_CLASS_NAME);
+				if (sourceCodeClassName != null){
+					isSourceCodeTransfer = true;
+					//System.out.println("source-code: " + sourceCode);					//DEBUG
+					//System.out.println("source-code-class: " + sourceCodeClassName);	//DEBUG
+				}
+			}
 					
-	        //receive and store file
-			List<Path> tempFiles = receiveServiceFile(req, params, userId);
-			String baseFileName = tempFiles.get(0).getFileName().toString().replaceFirst("\\$.*\\.", ".");
-	        
-	        try{
+			String fileName = null;
+			String classBaseName = null;
+			try{
+				//v1 - compile source code and store class file(s)
+				if (isSourceCodeTransfer){
+					classBaseName = sourceCodeClassName;
+					fileName = sourceCodeClassName + ".class"; 		//this is what it will be after compilation
+					compileServiceSourceCode(userId, sourceCodeClassName, sourceCode);
+				
+				//v2 - receive and store file or compile and class file(s)
+				}else{
+					fileName = receiveServiceFile(req, params, userId);
+					classBaseName = getSimpleClassNameFromFileName(fileName);
+				}
+				
 	        	//validate and register service
-	        	String className = ConfigServices.getCustomServicesPackage() + "." + userId + "." + baseFileName.replaceFirst("\\.(class|java|service)$", "");
+	        	String className = ConfigServices.getCustomServicesPackage() + "." + userId + "." + classBaseName;
 	        	ServiceUploadResult uploadRes = validateAndRegisterService(className, user);
 	        	
 	        	//stats
@@ -146,15 +176,25 @@ public class SdkEndpoint {
 	          	return uploadRes.getCanonicalName() + " has been uploaded! (old triggers removed: " + uploadRes.getCleanedTriggers() + ")";
 	        	
 	        }catch (Exception e){
-	        	Debugger.println("upload-service - Issue in validation step: " + e.getMessage(), 1);
+	        	Debugger.println("upload-service - Issue in code transfer, compilation or validation: " + e.getMessage(), 1);
 		      	Debugger.printStackTrace(e, 2);
-	        	try{ 
+	        	try{
+	        		//Get file name again?
+	        		if (!isSourceCodeTransfer && fileName == null){
+	        			Part filePart = req.raw().getPart(UPLOAD_FILE_KEY);
+	        			fileName = getFileName(filePart);
+	        			classBaseName = getSimpleClassNameFromFileName(fileName);
+	        		}
+	        		File uploadDir = new File(ConfigServices.getCustomServicesBaseFolder() + userId);
+	        		
+	        		//Check stored class files and clean up
+		        	List<Path> tempFiles = findCustomClassAndRelated(uploadDir, classBaseName);
 	        		for (Path p : tempFiles){
 	        			Files.delete(p);
 	        			Debugger.println("upload-service - File '" + p.toString() + "' removed, was no proper service!", 3);
 	        		}
 	        	}catch (Exception e1) {
-	        		Debugger.println("upload-service - File '" + baseFileName + "' (or related file) NOT removed: " + e1.getMessage(), 1);
+	        		Debugger.println("upload-service - File '" + fileName + "' (or related file) NOT removed: " + e1.getMessage(), 1);
 	        	}
 	        	throw e;
 	        }
@@ -196,6 +236,7 @@ public class SdkEndpoint {
 		}
 		//create user
 		User user = new User(null, token);
+		String userId = user.getUserID();
 		
 		//check role
 		//not required ... a user should always be allowed to delete his services
@@ -237,8 +278,23 @@ public class SdkEndpoint {
 			//Delete service files
 			String[] servicesArray = params.getStringArray("services");
 			long deletedFiles = 0;
+			long fileErrors = 0;
 			if (servicesArray != null && servicesArray.length > 0){
-				//TODO: delete files
+				File uploadDir = new File(ConfigServices.getCustomServicesBaseFolder() + userId);
+				for (String className : servicesArray){
+					//Check stored class files and clean up
+					try{
+			        	List<Path> tempFiles = findCustomClassAndRelated(uploadDir, className);
+		        		for (Path p : tempFiles){
+		        			Files.delete(p);
+		        			Debugger.println("delete-service - File '" + p.toString() + "' removed during clean-up!", 3);
+		        			deletedFiles++;
+		        		}
+		        	}catch (Exception e1) {
+		        		Debugger.println("delete-service - Error during deletion of file '" + userId + "/" + className + "'!", 1);
+		        		fileErrors++;
+		        	}
+				}
 			}
 			
 			if (deletedMappings == -1 || failedTriggerRemoves.size() > 0){
@@ -256,8 +312,9 @@ public class SdkEndpoint {
 			JSON.add(msg, "deletedMappings", deletedMappings);
 			JSON.add(msg, "ignoredCommands", ignoredCommands.toString());
 			JSON.add(msg, "deletedFiles", deletedFiles);
+			JSON.add(msg, "fileErrors", fileErrors);
 			
-			Debugger.println("delete-service - User '" + user.getUserID() 
+			Debugger.println("delete-service - User '" + userId 
 				+ "' requested deletion of commands: " + String.join(", ", commandsArray), 3);
 			
 			return SparkJavaFw.returnResult(req, res, msg.toJSONString(), 200);
@@ -286,9 +343,9 @@ public class SdkEndpoint {
 	 * @param userId - ID of user
 	 * @throws IOException 
 	 * @throws ServletException 
-	 * @return path of stored files
+	 * @return file name
 	 */
-	private static List<Path> receiveServiceFile(Request req, RequestParameters reqParams, String userId) throws IOException, ServletException{
+	private static String receiveServiceFile(Request req, RequestParameters reqParams, String userId) throws IOException, ServletException{
 		Part filePart = req.raw().getPart(UPLOAD_FILE_KEY);		//getPart needs to use same "name" as input field in form
         String fileName = getFileName(filePart);
         
@@ -307,32 +364,45 @@ public class SdkEndpoint {
                 Files.copy(input, tempFile, StandardCopyOption.REPLACE_EXISTING);
             }
             Debugger.println("upload-service - File '" + fileName + "' stored.", 3);
-            return Arrays.asList(tempFile);
         
         //Java file
         }else if (fileName.endsWith(".java")){
-        	//Get right folder and make sure it exists
-        	File uploadDir = new File(ConfigServices.getCustomServicesBaseFolder() + userId);
-            uploadDir.mkdirs();
-            Debugger.println("upload-service - Compiling class(es) to: " + uploadDir.getPath(), 3);
-        	
-        	//Compile file to target folder
-            String sourceCode;
+        	//Get source code
+        	String sourceCode;
             try (InputStream input = filePart.getInputStream()){
         		sourceCode = FilesAndStreams.getStringFromStream(input, StandardCharsets.UTF_8, "\n");
         	}
             String classNameSimple = fileName.replace(".java", "");
-        	String className = ConfigServices.getCustomServicesPackage() + "." + userId + "." + classNameSimple;
-    		ClassBuilder.compile(className, sourceCode, new File(Config.pluginsFolder));
-    		
-    		//Check stored class files
-        	List<Path> tempFiles = findCustomClassAndRelated(uploadDir, classNameSimple);
-        	return tempFiles;
+            
+        	//Compile code (or throw exception)
+            compileServiceSourceCode(userId, classNameSimple, sourceCode);
         	
         //Wrong or not supported file
         }else{
         	throw new RuntimeException("File '" + fileName + "' is NOT A VALID (or supported) SERVICE FILE!");
         }
+        
+        return fileName;
+	}
+	
+	/**
+	 * Compile source code of custom service and store class files in default folder.
+	 * @param userId - ID of user
+	 * @param simpleClassName - simple name of class (without any packages or modifiers)
+	 * @param sourceCode - source code as String (with proper line-breaks)
+	 */
+	private static void compileServiceSourceCode(String userId, String simpleClassName, String sourceCode){
+		//Get right folder and make sure it exists
+    	File uploadDir = new File(ConfigServices.getCustomServicesBaseFolder() + userId);
+        uploadDir.mkdirs();
+        Debugger.println("upload-service - Compiling class(es) to: " + uploadDir.getPath(), 3);
+    	
+    	//Compile file to target folder
+    	String className = ConfigServices.getCustomServicesPackage() + "." + userId + "." + simpleClassName;
+		String errors = ClassBuilder.compile(className, sourceCode, new File(Config.pluginsFolder));
+		if (!errors.isEmpty()){
+			throw new RuntimeException("Class '" + simpleClassName + "' - " + errors);
+		}
 	}
 	
 	/**
@@ -408,6 +478,12 @@ public class SdkEndpoint {
 	        }
 	    }
 	    return null;
+	}
+	/**
+	 * Simply use file name to get simple class name.
+	 */
+	private static String getSimpleClassNameFromFileName(String fileName){
+		return fileName.replaceFirst("\\$.*\\.", ".").replaceFirst("\\.(class|java|sservice|yaml)$", "").trim();
 	}
 
 }

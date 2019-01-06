@@ -23,7 +23,6 @@ import net.b07z.sepia.server.core.data.CmdMap;
 import net.b07z.sepia.server.core.data.UserDataList;
 import net.b07z.sepia.server.core.data.UserDataList.Section;
 import net.b07z.sepia.server.core.tools.Debugger;
-import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 
 /**
@@ -260,8 +259,11 @@ public class UserDataDefault implements UserDataInterface {
 	public long deleteCustomCommandMappings(User user, Set<CmdMap> mappings){
 		long deleted = -1;
 		List<CmdMap> fullMap = getCustomCommandMappings(user, null);
-		if (Is.notNullOrEmpty(fullMap)){
+		if (fullMap != null){
 			int initialSize = fullMap.size();
+			if (initialSize == 0){
+				return 0;
+			}
 			fullMap.removeAll(mappings);
 			Set<CmdMap> cleanSet = new HashSet<>();
 			cleanSet.addAll(fullMap);
@@ -275,10 +277,8 @@ public class UserDataDefault implements UserDataInterface {
 				}else{
 					return -1;
 				}
-			}else if (deleted == 0){
-				return 0;
 			}else{
-				return -1;
+				return deleted;
 			}
 		}else{
 			return -1;
