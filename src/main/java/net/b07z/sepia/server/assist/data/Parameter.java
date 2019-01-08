@@ -6,6 +6,7 @@ import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.parameters.GenericParameter;
 import net.b07z.sepia.server.assist.parameters.ParameterConfig;
 import net.b07z.sepia.server.assist.parameters.ParameterHandler;
+import net.b07z.sepia.server.assist.server.ConfigServices;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
@@ -122,9 +123,9 @@ public class Parameter {
 		}
 		String thisName = Is.notNullOrEmpty(handlerName)? handlerName : name;
 		if (isCustom(thisName)){
-			//Is already a class ... try to build
+			//Is already a class ... try to build with sand-box
 			try{
-				return (ParameterHandler) ClassBuilder.construct(thisName); 	//TODO: what about the sand-box?
+				return (ParameterHandler) ConfigServices.getCustomServiceClassLoader(thisName).loadClass(thisName).newInstance();
 			}catch (Exception e){
 				Debugger.println("Parameter.getHandler() for '" + thisName + "' triggered exception: " + e.getMessage(), 1);
 				return new GenericParameter();

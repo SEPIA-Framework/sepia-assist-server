@@ -18,7 +18,7 @@ public interface AccountInterface {
 	 * The database implementation has to check if the user is authenticated correctly (and not just a user created with an ID and access level)! 
 	 * 
 	 * @param user - the user we are looking for and the variable we modify
-	 * @param api - API_Manager used to get API specific, allowed database access
+	 * @param api - ServiceAccessManager used to get API specific, allowed database access
 	 * @param keys - string array of keys that describe database entries
 	 * 
 	 * @return error code (0 - no error, 1 - can't reach database, 2 - access denied (or invalid parameters), 3 - no account found, 4 - other error (e.g. wrong key combination)
@@ -31,7 +31,7 @@ public interface AccountInterface {
 	 * The database implementation has to check if the user is authenticated correctly (and not just a user created with an ID and access level)!
 	 * 
 	 * @param user - the user we are looking for
-	 * @param api - API_Manager used to get API specific, allowed database access
+	 * @param api - ServiceAccessManager used to get API specific, allowed database access
 	 * @param data - JSON data with (partial or full) document to set/update
 	 * 
 	 * @return error code (0 - no error, 1 - can't reach database, 2 - access denied, 3 - no account found, 4 - other error (e.g. wrong key combination))
@@ -43,7 +43,7 @@ public interface AccountInterface {
 	 * The database implementation has to check if the user is authenticated correctly (and not just a user created with an ID and access level)!
 	 * 
 	 * @param user - get info about this user
-	 * @param api - API_Manager used to get API specific, allowed database access
+	 * @param api - ServiceAccessManager used to get API specific, allowed database access
 	 * @param key - the key of the database entry we are looking for
 	 * 
 	 * @return info object or null if it is not found
@@ -55,7 +55,7 @@ public interface AccountInterface {
 	 * The database implementation has to check if the user is authenticated correctly (and not just a user created with an ID and access level)!
 	 * 
 	 * @param user - set info about this user
-	 * @param api - API_Manager used to get API specific, allowed database access
+	 * @param api - ServiceAccessManager used to get API specific, allowed database access
 	 * @param key - the key of the database entry we want to change
 	 * @param object - the object to add to the database
 	 * 
@@ -67,7 +67,7 @@ public interface AccountInterface {
 	 * Delete one or more fields from database.
 	 * 
 	 * @param user - the user we are looking for
-	 * @param api - API_Manager used to get API specific, allowed database access
+	 * @param api - ServiceAccessManager used to get API specific, allowed database access
 	 * @param keys - fields in the database (can include '.' to access single fields in objects)
 	 * @return error code (0 - no error, 1 - can't reach database, 2 - access denied, 3 - no account found, 4 - other error (e.g. wrong key combination)) 
 	 */

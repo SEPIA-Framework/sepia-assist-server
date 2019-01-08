@@ -158,7 +158,7 @@ public class Number implements ParameterHandler{
 		if (number.isEmpty()){
 			return "";
 		}
-		//System.out.println("PARAMETER-NUMBER - number: " + number); 							//DEBUG
+		//System.out.println("PARAMETER-NUMBER - number (1): " + number); 					//DEBUG
 		
 		String type = "";
 		String relevantTypeSearchString = "";
@@ -181,8 +181,7 @@ public class Number implements ParameterHandler{
 		if (type.trim().isEmpty()){
 			found = number.trim();
 		}else{
-			number = NluTools.stringFindFirst(Pattern.quote(number), PLAIN_NBR_REGEXP).trim();
-			//System.out.println("PARAMETER-NUMBER - number: " + number);					//DEBUG
+			number = NluTools.stringFindFirst(number, PLAIN_NBR_REGEXP).trim();
 			found = NluTools.stringFindFirst(input, Pattern.quote((number + type).trim()) + "|" + Pattern.quote((type + number).trim())); 
 		}		
 		return found;

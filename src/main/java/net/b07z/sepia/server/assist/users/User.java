@@ -195,7 +195,7 @@ public final class User {
 	/**
 	 * Get the users name, first look for nick then first name. Loads from account if account has not been checked yet.
 	 * 
-	 * @param api - API_Manager for the API that is calling this ...
+	 * @param api - ServiceAccessManager for the API that is calling this ...
 	 * @return nick name or first name or default
 	 */
 	public String getName(ServiceAccessManager api){
@@ -367,7 +367,7 @@ public final class User {
 	 * variables (user_name, ...) and/or in the dynamic store "info". Use user.info.get(...) afterwards. If the account has no info about
 	 * a specific key the field will be left empty or null.
 	 * 
-	 * @param api - API_Manager for the API that is calling this ...
+	 * @param api - ServiceAccessManager for the API that is calling this ...
 	 * @param keys - info array to look for in database
 	 * @return resultCode (0 - no error, 1 - can't reach database, 2 - access denied, 3 - no account found, 4 - other error)
 	 */
@@ -392,7 +392,7 @@ public final class User {
 	/**
 	 * Save multiple key objects to user account.
 	 *  
-	 * @param api - API_Manager for the API that is calling this ...
+	 * @param api - ServiceAccessManager for the API that is calling this ...
 	 * @param data - JSON with (full or partial) document data to set/update
 	 * @return resultCode (0 - no error, 1 - can't reach database, 2 - access denied, 3 - no account found, 4 - other error)
 	 */
@@ -403,7 +403,7 @@ public final class User {
 	/**
 	 * Save key object to user account.
 	 *  
-	 * @param api - API_Manager for the API that is calling this ...
+	 * @param api - ServiceAccessManager for the API that is calling this ...
 	 * @param key - info to look for in database
 	 * @param object - object to save at key position
 	 * @return resultCode (0 - no error, 1 - can't reach database, 2 - access denied, 3 - no account found, 4 - other error)
@@ -415,7 +415,7 @@ public final class User {
 	/**
 	 * Delete fields (keys) from user account.
 	 *  
-	 * @param api - API_Manager for the API that is calling this ...
+	 * @param api - ServiceAccessManager for the API that is calling this ...
 	 * @param keys - fields in account to delete. Can use "." to delete single fields from objects.
 	 * @return resultCode (0 - no error, 1 - can't reach database, 2 - access denied, 3 - no account found, 4 - other error)
 	 */
