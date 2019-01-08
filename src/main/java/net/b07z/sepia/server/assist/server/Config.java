@@ -146,7 +146,7 @@ public class Config {
 	}
 	
 	//Default users and managers
-	public static ServiceAccessManager superuserApiMng = new ServiceAccessManager("API_BOSS", "dev12345"); 	//universal API manager for internal procedures
+	public static ServiceAccessManager superuserApiMng = new ServiceAccessManager("API_BOSS"); 	//universal API manager for internal procedures
 	private static Authenticator superuserToken;
 	private static User superUser;
 	public static String superuserId = "uid1000";						//**for DB sentences check also Defaults.USER
