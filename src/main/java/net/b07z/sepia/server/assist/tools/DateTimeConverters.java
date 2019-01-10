@@ -35,22 +35,21 @@ public class DateTimeConverters {
 	 * Returns null if the user_time_local is missing.
 	 */
 	public static Calendar getUserCalendar(NluInput input){
-		String user_time_local = input.userTimeLocal;
-		return getUserCalendar(user_time_local);
+		String userTimeLocal = input.userTimeLocal;
+		return getUserCalendar(userTimeLocal);
 	}
 	/**
 	 * Get the local calendar of the user to determine things like dayOfWeek etc..
 	 * Returns null if the user_time_local is null, empty or in wrong format.
 	 */
-	public static Calendar getUserCalendar(String user_time_local){
-		if (user_time_local != null && !user_time_local.isEmpty()){
+	public static Calendar getUserCalendar(String userTimeLocal){
+		if (userTimeLocal != null && !userTimeLocal.isEmpty()){
 			//parse local date
-			SimpleDateFormat def_sdf = new SimpleDateFormat(Config.defaultSdf);
 			Date date;
 			try {
-				date = def_sdf.parse(user_time_local);
+				date = new SimpleDateFormat(Config.defaultSdf).parse(userTimeLocal);
 			} catch (ParseException e) {
-				Debugger.println("getUserCalendar() - failed to parse: " + user_time_local, 1);
+				Debugger.println("getUserCalendar() - failed to parse: " + userTimeLocal, 1);
 				return null;
 			}
 			Calendar c = Calendar.getInstance();
@@ -327,19 +326,19 @@ public class DateTimeConverters {
 	 * Get the date of a day of the week. If the day is equal to today or in the past it adds +7 for the week after.
 	 * @param day - integer value of day of week as given by Calendar.DAY_OF_WEEK
 	 * @param format - e.g.: "dd.MM.yyyy" or "HH:mm:ss" or "MM/dd/yy"
-	 * @param nlu_input - NLU_Input containing user_time 
+	 * @param nluInput - NluInput containing user_time 
 	 * @return date as string
 	 */
-	public static String getDateForDayOfWeek(int day, String format, NluInput nlu_input){
-		Calendar c = getUserCalendar(nlu_input);
+	public static String getDateForDayOfWeek(int day, String format, NluInput nluInput){
+		Calendar c = getUserCalendar(nluInput);
 		if (c != null){
 			int currentDay = c.get(Calendar.DAY_OF_WEEK);
 			int daysInFuture = day - currentDay;
 			if (daysInFuture < 1) daysInFuture += 7;
 			//make new one
-			String targetDate = getTodayPlusX_minutes(format, nlu_input, daysInFuture*24*60);
-			//System.out.println("TODAY IS " + parameters.Date.getDay(String.valueOf(currentDay), nlu_input.language) + " (" + getToday(Config.default_sdf, nlu_input) + ")");
-			//System.out.println("TARGET IS " + parameters.Date.getDay(String.valueOf(day), nlu_input.language) + "(" + targetDate + ")");
+			String targetDate = getTodayPlusX_minutes(format, nluInput, daysInFuture*24*60);
+			//System.out.println("TODAY IS " + currentDay + " (" + getToday(Config.defaultSdf, nluInput) + ")");
+			//System.out.println("TARGET IS " + day + " (" + targetDate + ")");
 			return targetDate;
 		}else{
 			return "";

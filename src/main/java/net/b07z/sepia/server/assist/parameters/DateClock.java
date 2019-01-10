@@ -61,7 +61,7 @@ public class DateClock implements ParameterHandler{
 		
 		//check for time and overwrite date with today
 		if (date.matches("<.*?>&&.*?&&.*")){
-			//replace date with today
+			//replace date with today - we keep this date so we can continue to use the master handler of DateAndTime
 			date = date.replaceFirst("&&.*?&&", ("&&" + DateTimeConverters.getToday("yyyy.MM.dd", nluInput) + "&&"));
 			return date;
 			
@@ -107,10 +107,11 @@ public class DateClock implements ParameterHandler{
 
 	@Override
 	public String build(String input) {
+		String dateJsonString = masterHandler.build(input);
 		if (!masterHandler.buildSuccess()){
 			return "";
 		}
-		String dateJsonString = masterHandler.build(input);
+		
 		if (dateJsonString == null || dateJsonString.isEmpty()){
 			return "";
 		}

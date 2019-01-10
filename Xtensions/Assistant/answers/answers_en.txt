@@ -44,7 +44,7 @@ summary_0a;;	rep=0|mood=5;;		Here is your summary <user_name>. ;;char=neutral
 alarms_0a;;	rep=0|mood=5;;		The next alarm is in <1>. ;;char=neutral
 alarms_0b;;	rep=0|mood=5;;		There seems to be no active <3> at the moment. ;;char=neutral
 alarms_0c;;	rep=0|mood=5;;		I can't find anything right now, please try again in a few moments. ;;char=neutral
-alarms_set_1a;;	rep=0|mood=5;;		Ok, alarm is set for the <2> <1> o'clock. ;;char=neutral
+alarms_set_1a;;	rep=0|mood=5;;		Ok, alarm is set for <2> <1> o'clock. ;;char=neutral
 alarms_set_1b;;	rep=0|mood=5;;		Ok, alarm is set to <1> o'clock at the <2>. ;;char=neutral
 alarms_set_1c;;	rep=0|mood=5;;		Ok, timer is set to <1>. ;;char=neutral
 alarms_show_1a;;	rep=0|mood=5;;		Here are your timers, the next one is in <1>. ;;char=neutral
@@ -54,7 +54,7 @@ alarms_show_1d;;	rep=0|mood=5;;		Here are your alarms. There is no active one at
 alarms_stop_1a;;	rep=0|mood=5;;		Ok, timer has been stopped. ;;char=neutral
 alarms_stop_1b;;	rep=0|mood=5;;		Ok, alarm has been removed. ;;char=neutral
 alarms_ask_0a;;				rep=0|mood=5;;		For when should I set the alarm? ;;char=neutral
-alarms_ask_0a;;				rep=0|mood=5;;		When should the alarm go off? ;;char=neutral
+alarms_ask_0a;;				rep=0|mood=5;;		When should the alarm start? ;;char=neutral
 alarms_ask_0a;;				rep=1|mood=5;;		Sorry, say again please. For what date or time? ;;char=neutral
 alarms_ask_0a;;				rep=2|mood=5;;		I need a date or a time or both please. For when should I set the alarm? ;;char=neutral
 alarms_ask_timer_0a;;		rep=0|mood=5;;		How long should the timer be? ;;char=neutral

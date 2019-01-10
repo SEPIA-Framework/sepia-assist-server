@@ -8,8 +8,8 @@ public interface NluInterface {
 	
 	/**
 	 * Method used to interpret the user input and return results.
-	 * @param input - user input as NLU_Input class
-	 * @return NLU_Result containing all information from command to parameters etc.
+	 * @param input - user input as {@link NluInput}
+	 * @return NluInput containing all information from command to parameters etc.
 	 */
 	public NluResult interpret(NluInput input);
 	

@@ -31,6 +31,7 @@ public class DateAndTime implements ParameterHandler{
 	
 	//REGEX CONSTANTS
 	public static final String TIME_TAGS_DE = "( |)(sekunde(n|)|minute(n|)|stunde(n|)|tag(en|e|)|woche(n|)|monat(en|e|)|jahr(en|e|))";
+	public static final String TIME_TAGS_LARGE_DE = "( |)(tag(en|e|)|woche(n|)|monat(en|e|)|jahr(en|e|))";
 	public static final String TIME_YEARS_DE = "( |)(jahr(en|e|)|j|a|yr|y)(\\.|)"; 
 	public static final String TIME_MONTHS_DE = "( |)(monat(en|e|)|mo)(\\.|)";
 	public static final String TIME_WEEKS_DE = "( |)(woche(n|)|wk)(\\.|)";
@@ -40,6 +41,7 @@ public class DateAndTime implements ParameterHandler{
 	public static final String TIME_SECONDS_DE = "( |)(sekunde(n|)|sek|sec|s)(\\.|)";
 	
 	public static final String TIME_TAGS_EN = "( |)(second(s|)|minute(s|)|hour(s|)|day(s|)|week(s|)|month(s|)|year(s|))";
+	public static final String TIME_TAGS_LARGE_EN = "( |)(day(s|)|week(s|)|month(s|)|year(s|))";
 	public static final String TIME_YEARS_EN = "( |)(year(s|)|a|yr|y)(\\.|)"; 
 	public static final String TIME_MONTHS_EN = "( |)(month(s|)|mo)(\\.|)";
 	public static final String TIME_WEEKS_EN = "( |)(week(s|)|wk)(\\.|)";
@@ -48,7 +50,7 @@ public class DateAndTime implements ParameterHandler{
 	public static final String TIME_MINUTES_EN = "( |)(minute(s|)|min)(\\.|)";
 	public static final String TIME_SECONDS_EN = "( |)(second(s|)|sec|s)(\\.|)";
 	
-	public static final String TIME_TAGS_SHORT = "( |)(sec|sek|s|min|std|h|hr|d|wk|mo|j|a|yr|y)(\\.|)";
+	public static final String TIME_TAGS_SHORT = "( |)(sec|sek|s|min|std|h|hr|d|wk|mo|j|a|yr|y)(\\.|)($|\\s)";
 	
 	public static final String TIME_UNSPECIFIC_TAGS_DE = "(am |)(am morgen|morgens|frueh|vormittag(s|)|mittag(s|)|nachmittag(s|)|abend(s|)|nacht(s|)|spaet)";
 	public static final String TIME_UNSPECIFIC_TAGS_EN = "(in the |at the |at |by |)(morning|early|forenoon|midday|afternoon|noon|evening|night|late)";
@@ -59,17 +61,16 @@ public class DateAndTime implements ParameterHandler{
 	public static final String DAY_TAGS_RELATIVE_EN = "(today|now|day after tomorrow|tomorrow|next week|(this|the) week|next days|next few days)";
 	
 	public static final String CLOCK_TAGS_DE =    "( |)(uhr)|"
-												+ "(um (\\d(\\d|):\\d\\d|\\d\\d|\\d))(\\s|$)|"
-												+ "(fuer (\\d(\\d|):\\d\\d))(\\s|$)";
+												+ "(um (\\d{1,2}:\\d\\d|\\d\\d|\\d))(\\s?|$)|"
+												+ "(fuer (\\d{1,2}:\\d\\d))(\\s?|$)";
 	/*
 	public static final String CLOCK_TAGS_DE = "( |)(uhr)|((um |fuer )(\\d\\d|\\d))(\\s|$)|"
 														+ "(\\d(\\d|):\\d\\d)(\\s|$)|"
 														+ "(^\\d(\\d|)$)"; 		//<- is that too general?
 	*/
-	public static final String CLOCK_TAGS_EN =    "( |)o('|)clock( (p|a)(\\.|)m(\\.|)|)|"
-												+ "( |)(p|a)(\\.|)m(\\.|)|"
-												+ "(at (\\d(\\d|):\\d\\d|\\d\\d|\\d))(( |)(p|a)(\\.|)m(\\.|)|)(\\s|$)|"
-												+ "(for (\\d(\\d|):\\d\\d))(( |)(p|a)(\\.|)m(\\.|)|)(\\s|$)";
+	public static final String CLOCK_TAGS_EN =    "( |)(o('|)clock( (p|a)(\\.|)m(\\.|)|)|(p|a)(\\.|)m(\\.|))|"
+												+ "(at (\\d{1,2}:\\d\\d|\\d\\d|\\d))(( |)(p|a)(\\.|)m(\\.|)|)(\\s?|$)|"
+												+ "(for (\\d{1,2}:\\d\\d))(( |)(p|a)(\\.|)m(\\.|)|)(\\s?|$)";
 	/*
 	public static final String CLOCK_TAGS_EN = "( |)(o('|)clock( p(\\.|)m(\\.|)| a(\\.|)m(\\.|)|)|p(\\.|)m(\\.|)|a(\\.|)m(\\.|))|"
 														+ "((at |for )(\\d\\d|\\d))(\\s|$)|"
@@ -703,7 +704,7 @@ public class DateAndTime implements ParameterHandler{
 		}else{
 			//ENGLISH
 			if (nluInput.language.equals(LANGUAGES.EN)){
-				if (NluTools.stringContains(clockTag, "p(\\.|)m(\\.|)")){
+				if (NluTools.stringContains(clockTag, "(\\d|\\s)(p(\\.|)m(\\.|))")){
 					isPM = true;
 				}
 			}

@@ -165,6 +165,15 @@ public class ServiceResult {
 	 * are updated once more before writing the result. 
 	 */
 	public String getResultJSON(){
+		resultJson = getResultJSONObject();
+		return resultJson.toJSONString();
+	}
+	/**
+	 * Get JSON result. Note: the JSON result is actually already built in API.build... so if you change variables 
+	 * of the API_Result this will have no effect anymore on the JSON :(. To make things a bit more safe the 3 basic data fields
+	 * are updated once more before writing the result. 
+	 */
+	public JSONObject getResultJSONObject(){
 		//the real info of this class is actually in the JSON as this is not generated here but the JSON itself is updated :(
 		// ... oh crimes of my youth ...
 		//TODO: make sure to update the class as well and not only the JSON
@@ -175,8 +184,7 @@ public class ServiceResult {
 		JSON.add(resultJson, "cardInfo", cardInfo);
 		JSON.add(resultJson, "hasAction", new Boolean(actionInfo != null && !actionInfo.isEmpty()));
 		JSON.add(resultJson, "actionInfo", actionInfo);
-		
-		return resultJson.toJSONString();
+		return resultJson;
 	}
 	
 	/**

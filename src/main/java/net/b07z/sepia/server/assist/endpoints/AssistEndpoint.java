@@ -209,14 +209,14 @@ public class AssistEndpoint {
 		CollectStuff.saveAsync(result); 				//store useful stuff to build up database and corpi 
 		
 		//different formats ... only JSON right now
-		String answer_JSON = answer.getResultJSON();
+		String answerJSON = answer.getResultJSON();
 		
 		//write basic statistics for user
 		input.user.saveStatistics();
 				
 		//return answer in requested format
 		//System.out.println(answer_JSON); 		//DEBUG
-		return SparkJavaFw.returnResult(request, response, answer_JSON, 200);
+		return SparkJavaFw.returnResult(request, response, answerJSON, 200);
 	}
 
 	/**-- EVENTS --<br>

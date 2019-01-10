@@ -1046,18 +1046,20 @@ public class RegexParameterSearch {
 			
 			String relativeOrSpecificDay = "(" + DateAndTime.DAY_TAGS_RELATIVE_DE + "( " + DateAndTime.DAY_TAGS_DE + "|)|" + DateAndTime.DAY_TAGS_DE + ")";
 			date_tag = NluTools.stringFindFirst(text, ""
-					+ DateAndTime.DATE_DIRECT_TAGS 	+ "( (um |fuer |ab |)((\\d+:\\d+|\\d+)" + DateAndTime.CLOCK_TAGS_DE + ")" + "|)|"
-					+ relativeOrSpecificDay 		+ " (um |fuer |ab |)((\\d+:\\d+|\\d+)" + DateAndTime.CLOCK_TAGS_DE + ")" + "|"
-					+ "(in |fuer |auf |um |ab |)((\\d+:\\d+|\\d+)" + DateAndTime.CLOCK_TAGS_DE + ")" + " (am |an dem |dem |den |)" + relativeOrSpecificDay + "|"
+					+ DateAndTime.DATE_DIRECT_TAGS 	+ "( (um |fuer |ab |)((\\d{1,2}:\\d\\d|\\d{1,2})" + DateAndTime.CLOCK_TAGS_DE + ")" + "|)|"
+					+ relativeOrSpecificDay 		+ " (um |fuer |ab |)((\\d{1,2}:\\d\\d|\\d{1,2})" + DateAndTime.CLOCK_TAGS_DE + ")" + "|"
+					+ "(in |fuer |auf |um |ab |)((\\d{1,2}:\\d\\d|\\d{1,2})" + DateAndTime.CLOCK_TAGS_DE + ")" 
+														+ "( (am |an dem |dem |den |)" + relativeOrSpecificDay
+														+ "| (in) \\d+" + DateAndTime.TIME_TAGS_LARGE_DE + ")|"
 					+ relativeOrSpecificDay + "|"
 					+ "(in |fuer |auf |um |ab |)(\\d+" + DateAndTime.TIME_TAGS_DE + ") (und |)(\\d+" + DateAndTime.TIME_TAGS_DE + ")|"
-					+ "(in |fuer |auf |um |ab |)((\\d+:\\d+|\\d+)" + DateAndTime.CLOCK_TAGS_DE + ") (und |)(\\d+" + DateAndTime.TIME_TAGS_DE + ")|"
-					+ "(in |fuer |auf |um |ab |)((\\d+:\\d+|\\d+)" + DateAndTime.CLOCK_TAGS_DE + ") (am |an dem |dem |den |)" + DateAndTime.DATE_DIRECT_TAGS + "|"
+					+ "(in |fuer |auf |um |ab |)((\\d{1,2}:\\d\\d|\\d{1,2})" + DateAndTime.CLOCK_TAGS_DE + ") (und |)(\\d+" + DateAndTime.TIME_TAGS_DE + ")|"
+					+ "(in |fuer |auf |um |ab |)((\\d{1,2}:\\d\\d|\\d{1,2})" + DateAndTime.CLOCK_TAGS_DE + ") (am |an dem |dem |den |)" + DateAndTime.DATE_DIRECT_TAGS + "|"
 					+ "(in |fuer |auf |um |ab |)(\\d+" + DateAndTime.TIME_TAGS_SHORT + ") (und |)(\\d+" + DateAndTime.TIME_TAGS_SHORT + ")|"
-					+ "(in |fuer |auf |um |ab |)(\\d+" + DateAndTime.TIME_TAGS_DE + ")" + "( (um |fuer |ab |)((\\d+:\\d+|\\d+)" + DateAndTime.CLOCK_TAGS_DE + ")" + "|)|"
+					+ "(in |fuer |auf |um |ab |)(\\d+" + DateAndTime.TIME_TAGS_DE + ")" + "( (um |fuer |ab |)((\\d{1,2}:\\d\\d|\\d{1,2})" + DateAndTime.CLOCK_TAGS_DE + ")" + "|)|"
 					+ "(in |fuer |auf |um |ab |)(\\d+" + DateAndTime.TIME_TAGS_SHORT + ")|"
-					+ "(in |fuer |auf |um |ab |)((\\d+:\\d+|\\d+)" + DateAndTime.CLOCK_TAGS_DE + ")|"
-						+ "(^\\d{1,2}$)");
+					+ "(in |fuer |auf |um |ab |)((\\d{1,2}:\\d\\d|\\d{1,2})" + DateAndTime.CLOCK_TAGS_DE + ")|"
+					+ "(^\\d{1,2}$)");
 			//System.out.println(text); 			//DEBUG
 			//System.out.println(date_tag); 		//DEBUG
 			
@@ -1071,21 +1073,23 @@ public class RegexParameterSearch {
 			
 			String relativeOrSpecificDay = "(" + DateAndTime.DAY_TAGS_RELATIVE_EN + "( " + DateAndTime.DAY_TAGS_EN + "|)|" + DateAndTime.DAY_TAGS_EN + ")";
 			date_tag = NluTools.stringFindFirst(text, "" 
-					+ DateAndTime.DATE_DIRECT_TAGS	+ "( (at |for |from |)((\\d+:\\d+|\\d+)" + DateAndTime.CLOCK_TAGS_EN + ")" + "|)|"
-					+ "(\\d\\dth|\\dth|1st|2nd|3rd)"	+ "( (at |for |from |)((\\d+:\\d+|\\d+)" + DateAndTime.CLOCK_TAGS_EN + ")" + "|)|"
-					+ relativeOrSpecificDay + " (at |for |from |)((\\d+:\\d+|\\d+)" + DateAndTime.CLOCK_TAGS_EN + ")" + "|"
-					+ "(in |for |at |to |from |)((\\d+:\\d+|\\d+)" + DateAndTime.CLOCK_TAGS_DE + ")" + " (at the |at |the |)" + relativeOrSpecificDay + "|"
+					+ DateAndTime.DATE_DIRECT_TAGS	+ "( (at |for |from |)((\\d{1,2}:\\d\\d|\\d{1,2})" + DateAndTime.CLOCK_TAGS_EN + ")" + "|)|"
+					+ "(\\d\\dth|\\dth|1st|2nd|3rd)"	+ "( (at |for |from |)((\\d{1,2}:\\d\\d|\\d{1,2})" + DateAndTime.CLOCK_TAGS_EN + ")" + "|)|"
+					+ relativeOrSpecificDay + " (at |for |from |)((\\d{1,2}:\\d\\d|\\d{1,2})" + DateAndTime.CLOCK_TAGS_EN + ")" + "|"
+					+ "(in |for |at |to |from |)((\\d{1,2}:\\d\\d|\\d{1,2})" + DateAndTime.CLOCK_TAGS_EN + ")" 
+														+ "( (at the |at |the |on |)" + relativeOrSpecificDay
+														+ "| (in) \\d+" + DateAndTime.TIME_TAGS_LARGE_EN + ")|"
 					+ relativeOrSpecificDay + "|"
 					+ "(in |for |at |to |from |)(\\d+" + DateAndTime.TIME_TAGS_EN + ") (and |)(\\d+" + DateAndTime.TIME_TAGS_EN + ")|"
-					+ "(in |for |at |to |from |)((\\d+:\\d+|\\d+)" + DateAndTime.CLOCK_TAGS_EN + ") (and |)(\\d+" + DateAndTime.TIME_TAGS_EN + ")|"
-					+ "(in |for |at |to |from |)((\\d+:\\d+|\\d+)" + DateAndTime.CLOCK_TAGS_DE + ") (at the |at |the |)" + DateAndTime.DATE_DIRECT_TAGS + "|"
+					+ "(in |for |at |to |from |)((\\d{1,2}:\\d\\d|\\d{1,2})" + DateAndTime.CLOCK_TAGS_EN + ") (and |)(\\d+" + DateAndTime.TIME_TAGS_EN + ")|"
+					+ "(in |for |at |to |from |)((\\d{1,2}:\\d\\d|\\d{1,2})" + DateAndTime.CLOCK_TAGS_EN + ") (at the |at |the |)" + DateAndTime.DATE_DIRECT_TAGS + "|"
 					+ "(in |for |at |to |from |)(\\d+" + DateAndTime.TIME_TAGS_SHORT + ") (and |)(\\d+" + DateAndTime.TIME_TAGS_SHORT + ")|"
 					+ "(in |for |at |to |from |)(\\d+" + DateAndTime.TIME_TAGS_EN + ")" + "( (at |for |from |)((\\d+:\\d+|\\d+)" + DateAndTime.CLOCK_TAGS_EN + ")" + "|)|"
 					+ "(in |for |at |to |from |)(\\d+" + DateAndTime.TIME_TAGS_SHORT + ")|"
-					+ "(in |for |at |to |from |)((\\d+:\\d+|\\d+)" + DateAndTime.CLOCK_TAGS_EN + ")|"
-						+ "(^\\d{1,2}$)");
-			//System.out.println(text); 			//DEBUG
-			//System.out.println(date_tag); 		//DEBUG
+					+ "(in |for |at |to |from |)((\\d{1,2}:\\d\\d|\\d{1,2})" + DateAndTime.CLOCK_TAGS_EN + ")|"
+					+ "(^\\d{1,2}$)");
+			//System.out.println(text); 					//DEBUG
+			//System.out.println(date_tag); 				//DEBUG
 		}
 		
 		/*
