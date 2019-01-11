@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import net.b07z.sepia.server.assist.parameters.ParameterResult;
+import net.b07z.sepia.server.assist.server.Config;
+import net.b07z.sepia.server.assist.tools.DateTimeConverters;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.data.CmdMap;
 
@@ -92,19 +94,36 @@ public class NluInput {
 		this.environment = environment;
 	}
 	
-	public void makeNewFromOld(NluInput input){
-		
+	/**
+	 * Set user local time.
+	 * @param timeString - Date in default format (Config.defaultSdf): "yyyy.MM.hh_HH:mm:ss"
+	 */
+	public void setTime(String timeString){
+		this.userTimeLocal = timeString;
+		this.userTime = DateTimeConverters.getUnixTimeOfDate(userTimeLocal, Config.defaultSdf);
 	}
 	
 	//handle STORAGEs:
 	
 	//custom command to services mappings
+	/**
+	 * A session storage to prevent multiple DB calls. See:<br> 
+	 * {@link net.b07z.sepia.server.assist.server.ConfigServices#restoreOrLoadCustomCommandMapping}
+	 */
 	public void setCustomCommandToServicesMappings(List<CmdMap> listOfMappings){
 		customCommandToServicesMappings = listOfMappings;
 	}
+	/**
+	 * A session storage to prevent multiple DB calls. See:<br> 
+	 * {@link net.b07z.sepia.server.assist.server.ConfigServices#restoreOrLoadCustomCommandMapping}
+	 */
 	public List<CmdMap> getCustomCommandToServicesMappings(){
 		return customCommandToServicesMappings;
 	}
+	/**
+	 * A session storage to prevent multiple DB calls. See:<br> 
+	 * {@link net.b07z.sepia.server.assist.server.ConfigServices#restoreOrLoadCustomCommandMapping}
+	 */
 	public void clearCustomCommandToServicesMappings(){
 		customCommandToServicesMappings.clear();
 	}

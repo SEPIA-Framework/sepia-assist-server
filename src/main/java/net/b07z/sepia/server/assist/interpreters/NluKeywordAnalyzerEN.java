@@ -15,8 +15,6 @@ import net.b07z.sepia.server.assist.parameters.FoodClass;
 import net.b07z.sepia.server.assist.parameters.FoodItem;
 import net.b07z.sepia.server.assist.parameters.Language;
 import net.b07z.sepia.server.assist.server.Config;
-import net.b07z.sepia.server.assist.server.ConfigServices;
-import net.b07z.sepia.server.assist.services.ServiceInterface;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 
@@ -914,24 +912,8 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 
 		//----- CUSTOM SERVICES -----
 		
-		//Abstract analyzer (should come at the end because of lower priority?)
-		List<ServiceInterface> customServices = ConfigServices.getCustomServicesList(input, input.user);
-		for (ServiceInterface service : customServices){
-			index = NluKeywordAnalyzer.abstractRegExAnalyzer(text, input, service,
-					possibleCMDs, possibleScore, possibleParameters, index);
-		}
-		
-		//----- ASSISTANT SDK SERVICES -----
-		
-		//Abstract analyzer (should come at the end because of lower priority?)
-		if (Config.enableSDK){
-			List<ServiceInterface> assistantServices = ConfigServices.getCustomServicesList(input, Config.getAssistantUser());
-			for (ServiceInterface service : assistantServices){
-				index = NluKeywordAnalyzer.abstractRegExAnalyzer(text, input, service,
-						possibleCMDs, possibleScore, possibleParameters, index);
-			}
-		}
-		
+		index = NluKeywordAnalyzer.runCustomSdkServices(input, possibleCMDs, possibleScore, possibleParameters, index);
+				
 		//---------------------------
 		
 		//Common search fallback

@@ -1,5 +1,6 @@
 package net.b07z.sepia.server.assist.server;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,6 +21,24 @@ import spark.Request;
 public class ConfigTestServer {
 	
 	//NOTE: see test data further down please ...
+	
+	/**
+	 * Load answers and parameter configurations. Useful for service testing.
+	 */
+	public static void loadAnswersAndParameters(){
+		Config.setupAnswers();
+		Start.setupServicesAndParameters();
+	}
+	
+	/**
+	 * Will set some objects so that data is not loaded from database, 
+	 * e.g.: custom command mapping buffers for users etc..<br>
+	 * Note: If you need this DB data obviously you should not use this here .. ;-)
+	 */
+	public static void reduceDatabaseAccess(String userId){
+		ConfigServices.assistantCustomCommandsMap = new ArrayList<>();
+		ConfigServices.userCustomCommandsMaps.put(userId, new ArrayList<>());
+	}
 
 	/**
 	 * Check if "skipAuth" is submitted as parameter and if the ID is allowed to skip database authentication.

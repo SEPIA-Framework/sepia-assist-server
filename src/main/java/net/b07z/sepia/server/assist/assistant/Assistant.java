@@ -1,24 +1,18 @@
 package net.b07z.sepia.server.assist.assistant;
 
-import java.util.List;
-
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.users.User;
-import net.b07z.sepia.server.core.data.CmdMap;
 
 /**
- * Some statics for "Config.assistant_id" and tools to influence the behavior of the assistant, like e.g. the mood
+ * Some statics for "Config.assistantId" and tools to influence the behavior of the assistant, like e.g. the mood
  * 
  * @author Florian Quirin
  *
  */
 public class Assistant {
 	
-	//NAME: is in server.Statics
-	
-	//Some buffered values usually read from database
-	public static List<CmdMap> customCommandsMap;			//note: reset in UserData_xy.registerCustomService(..)
+	//NAME: is in server.Config
 	
 	//--MOOD--
 	

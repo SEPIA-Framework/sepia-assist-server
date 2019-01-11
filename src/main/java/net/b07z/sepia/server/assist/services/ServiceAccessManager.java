@@ -10,7 +10,7 @@ import net.b07z.sepia.server.assist.users.ACCOUNT;
 /**
  * Class similar to "User" managing database access of services.<br>
  * NOTE: This class is not fully implemented yet (check references) and probably needs some conceptual and technical 
- * re-work before it can be used.
+ * re-work before it can be used. 
  * 
  * @author Florian Quirin
  *
@@ -26,6 +26,8 @@ public final class ServiceAccessManager {
 			ACCOUNT.USER_NAME_FIRST, ACCOUNT.USER_NAME_NICK		//TODO: load this during server setup
 	);
 	private List<String> allowedElements;
+	
+	//TODO: check net.b07z.sepia.server.core.data.CmdMap and make use of permissions data ...
 	
 	/**
 	 * Default constructor taking the calling binary class name and a private key to sign the manager and get allowed database elements.

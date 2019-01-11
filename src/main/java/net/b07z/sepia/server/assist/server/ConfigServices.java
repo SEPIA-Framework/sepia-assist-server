@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import net.b07z.sepia.server.assist.assistant.Assistant;
 import net.b07z.sepia.server.assist.database.DB;
 import net.b07z.sepia.server.assist.email.SendEmail;
 import net.b07z.sepia.server.assist.endpoints.AuthEndpoint;
@@ -22,6 +21,7 @@ import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.assist.users.UserDataInterface;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.data.CmdMap;
+import net.b07z.sepia.server.core.java.MaxSizeMap;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.FilesAndStreams;
@@ -37,6 +37,12 @@ import net.b07z.sepia.server.core.tools.SandboxClassLoader;
 public class ConfigServices {
 	
 	private static final String CUSTOM_SERVICES_PACKAGE = "net.b07z.sepia.sdk.services";
+	
+	//Some buffered values usually read from database
+	//Note: Reset in UserData*.registerCustomService(..) and .deleteCustomCommandMappings
+	public static int CCM_CACHE_SIZE = 10; 		//CACHE for custom service mappings, e.g. 10 means keep newest 10 users in cache
+	public static Map<String, List<CmdMap>> userCustomCommandsMaps = MaxSizeMap.getSynchronizedMap(CCM_CACHE_SIZE);
+	public static List<CmdMap> assistantCustomCommandsMap;
 	
 	/**
 	 * Get folder to "custom services package". It's usually the folder just before the user IDs start, e.g.:<br>
@@ -229,11 +235,13 @@ public class ConfigServices {
 	private static List<CmdMap> restoreOrLoadCustomCommandMapping(NluInput nluInput, User user){
 		//cached?
 		List<CmdMap> customMap;
-		boolean isAssistant = (user.getUserID().equals(Config.assistantId));
+		String userId = user.getUserID();
+		boolean isAssistant = (userId.equals(Config.assistantId));
 		if (isAssistant){
-			customMap = Assistant.customCommandsMap;		//note: reset in UserData_xy.registerCustomService(..)
+			customMap = assistantCustomCommandsMap; 
 		}else{
-			customMap = nluInput.getCustomCommandToServicesMappings(); 		//TODO: this is only a session based storage
+			customMap = userCustomCommandsMaps.get(userId);
+			//customMap = nluInput.getCustomCommandToServicesMappings(); 	//NOTE: optional session based storage. Use too?
 		}
 		if (customMap == null){
 			UserDataInterface userData = user.getUserDataAccess();
@@ -244,9 +252,10 @@ public class ConfigServices {
 			}
 			//cache result
 			if (isAssistant){
-				Assistant.customCommandsMap = customMap;
+				assistantCustomCommandsMap = customMap;
 			}else{
-				nluInput.setCustomCommandToServicesMappings(customMap);
+				//nluInput.setCustomCommandToServicesMappings(customMap);	//NOTE: optional session based storage. Use too?
+				userCustomCommandsMaps.put(userId, customMap);
 			}
 		}
 		return customMap;
