@@ -3,6 +3,7 @@ package net.b07z.sepia.server.assist.services;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import net.b07z.sepia.server.assist.answers.ServiceAnswers;
 import net.b07z.sepia.server.assist.assistant.Assistant;
 import net.b07z.sepia.server.assist.data.Card;
 import net.b07z.sepia.server.assist.data.Parameter;
@@ -62,7 +63,8 @@ public class ServiceBuilder {
 	
 	//not (yet) in JSON result included:
 	private NluResult nluResult;						//keep a reference to the NluResult for building the ServiceResult
-	public ServiceInfo apiInfo;							//related service info
+	public ServiceInfo serviceInfo;						//related service info
+	public ServiceAnswers serviceAnswers;				//service answers pool defined by service itself
 	public JSONObject customInfo = new JSONObject();	//any custom info that should be sent to the interview module (only, for client use "more")
 	public Parameter incompleteParameter;				//set a parameter that is incomplete and needs to be asked
 	public JSONArray extendedLog = new JSONArray();  	//list to write an extended log that could be sent to the client
@@ -85,7 +87,15 @@ public class ServiceBuilder {
 	 * Default constructor for a service including {@link ServiceInfo}. 
 	 * Some variables will be set to their proper values here. 
 	 */
-	public ServiceBuilder(NluResult nluResult, ServiceInfo apiInfo){
+	public ServiceBuilder(NluResult nluResult, ServiceInfo serviceInfo){
+		
+		this(nluResult, serviceInfo, null);
+	}
+	/**
+	 * Default constructor for a service including {@link ServiceInfo} and custom {@link ServiceAnswers}. 
+	 * Some variables will be set to their proper values here. 
+	 */
+	public ServiceBuilder(NluResult nluResult, ServiceInfo serviceInfo, ServiceAnswers customServiceAnswers){
 		
 		this.language = nluResult.language;
 		this.mood = nluResult.mood;
@@ -96,7 +106,21 @@ public class ServiceBuilder {
 		this.resultInfoPut("cmd", nluResult.getCommand());
 		
 		this.nluResult = nluResult;
-		this.apiInfo = apiInfo;
+		this.serviceInfo = serviceInfo;
+		this.serviceAnswers = customServiceAnswers;
+	}
+	
+	/**
+	 * Add the service info to the builder (if not done with constructor).
+	 */
+	public void setServiceInfo(ServiceInfo serviceInfo){
+		this.serviceInfo = serviceInfo;
+	}
+	/**
+	 * Add the custom answers pool to the builder (if not done with constructor).
+	 */
+	public void setServiceAnswers(ServiceAnswers serviceAnswers){
+		this.serviceAnswers = serviceAnswers;
 	}
 	
 	//--------- getter methods for SDK ---------
@@ -203,7 +227,8 @@ public class ServiceBuilder {
 	
 	/**
 	 * Put "value" to "key" in current actionInfo element. E.g.: putActionInfo("url", call_url). The current JSONArray element (action) is previously
-	 * set by using addAction(value), so be sure to first add an action and then add info for that action.
+	 * set by using addAction(value), so be sure to first add an action and then add info for that action.<br>
+	 * See also: {@link net.b07z.sepia.server.assist.assistant.ActionBuilder}
 	 * @param key
 	 * @param value
 	 */
@@ -219,7 +244,8 @@ public class ServiceBuilder {
 	/**
 	 * Add a new action to the queue, to be more specific: create a new JSONObject action, put "value" to "type"-key and add it to the actions array.
 	 * Note: the order in which actions are created can matter because clients would usually execute them one after another. 
-	 * E.g.: addAction(ACTIONS.OPEN_URL) or addAction(ACTIONS.OPEN_INFO)
+	 * E.g.: addAction(ACTIONS.OPEN_URL) or addAction(ACTIONS.OPEN_INFO).<br>
+	 * See also: {@link net.b07z.sepia.server.assist.assistant.ActionBuilder}
 	 * @param key
 	 * @param value
 	 */
@@ -259,7 +285,7 @@ public class ServiceBuilder {
 	 * Fill missing info with blanks. This is a solution/workaround to quickly fill up the answer-parameters that are not needed.
 	 */
 	public void resultInfoFill(){
-		for (String ap : this.apiInfo.answerParameters){
+		for (String ap : this.serviceInfo.answerParameters){
 			if (this.resultInfo.get(ap) == null){
 				resultInfoPut(ap, "");
 				//resultInfoPut(ap, ap.toUpperCase());
@@ -384,7 +410,7 @@ public class ServiceBuilder {
 	}	
 	
 	/**
-	 * Build ApiResult from the info in API. Handles some specific procedures like context management to generate all necessary info.
+	 * Build {@link ServiceResult} from the info in this class. Handles some specific procedures like context management to generate all necessary info.
 	 * 
 	 * @return {@link ServiceResult} to be sent to user client.
 	 */
@@ -401,7 +427,7 @@ public class ServiceBuilder {
 		JSON.add(more, "user", nluResult.input.user.getUserID());
 		
 		//check clean answer - NOTE: this is usually done in the AbstractInterview handler
-		if (apiInfo.worksStandalone){
+		if (serviceInfo.worksStandalone){
 			if (!answer.isEmpty() && answerClean.isEmpty()){
 				answerClean = Converters.removeHTML(answer);
 			}else if (answerClean.equals("<silent>")){
@@ -414,8 +440,9 @@ public class ServiceBuilder {
 		//finally build the API_Result
 		ServiceResult result = new ServiceResult(status, answer, answerClean, htmlInfo, cardInfo, actionInfo, hasInfo, hasCard, hasAction);
 		
-		//add API_Info - note: not included in JSON result (yet?)
-		result.apiInfo = apiInfo;
+		//add ServiceInfo and ServiceAnswers - note: not included in JSON result (yet?)
+		result.serviceInfo = serviceInfo;
+		result.serviceAnswers = serviceAnswers;
 		
 		//add resultInfo
 		/* sanity check
@@ -437,7 +464,7 @@ public class ServiceBuilder {
 		
 		//add extended log
 		result.extendedLog = extendedLog;
-		if (!apiInfo.makePublic && !extendedLog.isEmpty()){
+		if (!serviceInfo.makePublic && !extendedLog.isEmpty()){
 			JSON.add(more, "extendedLog", extendedLog);
 		}
 		

@@ -3,6 +3,7 @@ package net.b07z.sepia.server.assist.services;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import net.b07z.sepia.server.assist.answers.ServiceAnswers;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.core.tools.JSON;
 
@@ -12,7 +13,8 @@ import net.b07z.sepia.server.core.tools.JSON;
  * and a compact info element for a "cards" or individual style representation of the answer.<br>
  * Preferred constructor is:<br> ServiceResult(status, answer, answer_clean, htmlInfo, cardInfo, hasInfo, hasCard, result_JSON)
  * <br>More parameters can be stored in the "more" Map<String, String><br>
- * A JSON string representation can be obtained using getResultJSON(). 
+ * A JSON string representation can be obtained using getResultJSON().<br>
+ * Most variables are assigned during {@link ServiceBuilder#buildResult()}.
  *   
  * @author Florian Quirin
  *
@@ -44,7 +46,8 @@ public class ServiceResult {
 	
 	//not (yet) in JSON result included:
 	String environment = "default";
-	ServiceInfo apiInfo;
+	ServiceInfo serviceInfo; 					//assigned during ServiceBuilder.buildResult() - we should really use setter and getter methods for all this!
+	ServiceAnswers serviceAnswers; 				//assigned during ServiceBuilder.buildResult() - "" ""
 	JSONObject customInfo = new JSONObject();	//any custom info that should be sent to the interview module (only, for client use "more")
 	Parameter incompleteParameter;				//a parameter that is incomplete and needs to be asked
 	JSONArray extendedLog = new JSONArray();  	//list to write an extended log that could be sent to the client
@@ -160,8 +163,8 @@ public class ServiceResult {
 	}
 	
 	/**
-	 * Get JSON result as string. Note: the JSON result is actually already built in API.build... so if you change variables 
-	 * of the API_Result this will have no effect anymore on the JSON :(. To make things a bit more safe the 3 basic data fields
+	 * Get JSON result as string. Note: the JSON result is actually already built in {@link ServiceBuilder#buildResult()} so if you change variables 
+	 * of the ServiceResult this will have no effect anymore on the JSON :(. To make things a bit more safe the 3 basic data fields
 	 * are updated once more before writing the result. 
 	 */
 	public String getResultJSON(){
@@ -169,8 +172,8 @@ public class ServiceResult {
 		return resultJson.toJSONString();
 	}
 	/**
-	 * Get JSON result. Note: the JSON result is actually already built in API.build... so if you change variables 
-	 * of the API_Result this will have no effect anymore on the JSON :(. To make things a bit more safe the 3 basic data fields
+	 * Get JSON result. Note: the JSON result is actually already built in {@link ServiceBuilder#buildResult()} so if you change variables 
+	 * of the ServiceResult this will have no effect anymore on the JSON :(. To make things a bit more safe the 3 basic data fields
 	 * are updated once more before writing the result. 
 	 */
 	public JSONObject getResultJSONObject(){
@@ -244,7 +247,7 @@ public class ServiceResult {
 	}
 	
 	/**
-	 * Get result info.
+	 * Get result info that holds for example answer parameters and the command name used in this service.
 	 */
 	public JSONObject getResultInfo(){
 		return resultInfo;
@@ -278,9 +281,17 @@ public class ServiceResult {
 	}
 	
 	/**
-	 * Get {@link ServiceInfo} used to create this result.
+	 * Get {@link ServiceInfo} used to create this result. Assigned during {@link ServiceBuilder#buildResult()}.
 	 */
-	public ServiceInfo getApiInfo(){
-		return apiInfo;
+	public ServiceInfo getServiceInfo(){
+		return serviceInfo;
+	}
+	
+	/**
+	 * Return custom {@link ServiceAnswers} pool defined inside service and obtained 
+	 * during result creation in {@link ServiceBuilder#buildResult()}.
+	 */
+	public ServiceAnswers getServiceAnswers(){
+		return serviceAnswers;
 	}
 }

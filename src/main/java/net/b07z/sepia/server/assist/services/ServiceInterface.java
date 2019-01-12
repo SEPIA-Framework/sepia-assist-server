@@ -2,6 +2,7 @@ package net.b07z.sepia.server.assist.services;
 
 import java.util.TreeSet;
 
+import net.b07z.sepia.server.assist.answers.ServiceAnswers;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 
 /**
@@ -30,6 +31,16 @@ public interface ServiceInterface {
 	 * @return service info
 	 */
 	public ServiceInfo getInfo(String language);
+	
+	/**
+	 * Get the custom answers pool defined in this service. For system services this is usually null
+	 * because they take answers from the global pool.
+	 * @param language - language code ("de", "en", ...)
+	 * return answer pool for this language or null
+	 */
+	public default ServiceAnswers getAnswersPool(String language){
+		return null;
+	}
 	
 	/**
 	 * Return a set of sample sentences for a specific language.

@@ -17,9 +17,9 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
- * This is an implementation of the answers loader interfaces (ANS_Loader_Interface) loading answers 
+ * This is an implementation of the answer loader interface ({@link AnswerLoader}) loading answers 
  * stored on the server. The answers will be pre-loaded during server start-up to a HashMap
- * which is done by the Config class using the DataLoader.
+ * which is done by the {@link Config} using the DataLoader.
  * 
  * @author Florian Quirin
  *

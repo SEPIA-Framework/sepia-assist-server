@@ -3,6 +3,7 @@ package net.b07z.sepia.server.assist.answers;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interpreters.NluTools;
+import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.tools.RandomGen;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.assistant.CMD;
@@ -15,9 +16,9 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
- * This is an implementation of the answers loader interfaces (ANS_Loader_Interface) loading answers 
- * stored on the server. The answers can be pre-loaded during server start-up to a HashMap which is 
- * done by the Config class using the DataLoader, in case there are no pre-loaded answers it falls back 
+ * This is an implementation of the answer loader interface ({@link AnswerLoader}) loading answers 
+ * stored in the Elasticsearch DB. The answers can be pre-loaded during server start-up to a HashMap which is 
+ * done by the {@link Config} using the DataLoader, in case there are no pre-loaded answers it falls back 
  * to live DB loading.
  * 
  * @author Florian Quirin
