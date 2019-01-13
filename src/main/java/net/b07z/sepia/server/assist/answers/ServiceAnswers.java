@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.b07z.sepia.server.core.data.Answer;
+import net.b07z.sepia.server.core.data.Language;
 import net.b07z.sepia.server.core.tools.Is;
 
 /**
@@ -18,12 +19,15 @@ import net.b07z.sepia.server.core.tools.Is;
 public class ServiceAnswers {
 	
 	private Map<String, List<Answer>> answersMap;
-	//private String language; 		//this info usually is inside the answer object
+	private String language; 		//used to determine the language during "addAnswer"
 	
 	/**
 	 * Create empty object that can be filled with {@link #addAnswer(Answer)}. 
+	 * @param language - language code used when you add answers
 	 */
-	public ServiceAnswers(){}
+	public ServiceAnswers(String language){
+		this.language = language;
+	}
 	/**
 	 * Create a service answers object to hold a custom answer mapping.
 	 * @param answersMap - map with answer-key and list of answers for a specific language 
@@ -48,7 +52,8 @@ public class ServiceAnswers {
 	
 	/**
 	 * Add an {@link Answer} to this pool.<br>
-	 * Note: Duplicates need to be handled manually.
+	 * Note: Duplicates need to be handled manually, but you can add multiple answers of the same type (key).
+	 * They will be chosen randomly then.  
 	 * @param answer - answer to add
 	 * @return
 	 */
@@ -65,10 +70,23 @@ public class ServiceAnswers {
 		theseAnswers.add(answer);
 		return this;
 	}
+	/**
+	 * Shortcut to build an {@link Answer} with 'Character.neutral' and mood 5.<br>
+	 * Note: Duplicates need to be handled manually, but you can add multiple answers of the same type (key).
+	 * They will be chosen randomly then.
+	 * @param key - answer key, basically an ID to find an answer in the pool (don't use '.' (dot) in the name!)
+	 * @param repeatStage - 0: first answer given, 1: first repetition, 2: 2nd and more repetitions 
+	 * @param answerText - actual answer text
+	 * @return
+	 */
+	public ServiceAnswers addAnswer(String key, int repeatStage, String answerText){
+		return addAnswer(new Answer(Language.from(this.language), 
+				key, answerText, Answer.Character.neutral, repeatStage, 5));
+	}
 	
 	/**
 	 * Check if there is a custom answer in the pool for a certain key.
-	 * @param key - key for the answer, e.g. chat_hello_0a etc. (don't use modifiers like &ltdirect&gt)
+	 * @param key - key for the answer, e.g. hello_0a etc. (don't use modifiers like &ltdirect&gt or any '.' (dots) in the name!)
 	 * @return
 	 */
 	public boolean containsAnswerFor(String key){
