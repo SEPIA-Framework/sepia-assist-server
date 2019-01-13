@@ -79,7 +79,8 @@ public class SoccerBundesligaInfo implements ServiceInterface{
 	//result
 	public ServiceResult getResult(NluResult nluResult){
 		//initialize result
-		ServiceBuilder api = new ServiceBuilder(nluResult, getInfo(""));
+		ServiceBuilder api = new ServiceBuilder(nluResult, 
+				getInfoFreshOrCache(nluResult.input, this.getClass().getCanonicalName()));
 		
 		//Button options:
 		JSONObject optionsNoActions = JSON.make(ACTIONS.SKIP_TTS, true, ACTIONS.SKIP_TEXT, true, ACTIONS.SKIP_ACTIONS, true);

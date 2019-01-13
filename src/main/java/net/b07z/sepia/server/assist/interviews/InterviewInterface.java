@@ -2,6 +2,7 @@ package net.b07z.sepia.server.assist.interviews;
 
 import java.util.List;
 
+import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.services.ServiceInterface;
 import net.b07z.sepia.server.assist.services.ServiceResult;
@@ -39,9 +40,9 @@ public interface InterviewInterface {
 	
 	/**
 	 * Get info of interview module.
-	 * @param language - language code ("de", "en", ...)
+	 * @param nluInput - NLU input
 	 */
-	public InterviewInfo getInfo(String language);
+	public InterviewInfo getInfo(NluInput nluInput);
 
 }
 

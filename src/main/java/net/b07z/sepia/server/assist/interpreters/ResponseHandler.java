@@ -139,7 +139,7 @@ public class ResponseHandler implements NluInterface{
 		
 		//get all non-final, optional parameters and remove them
 		List<ServiceInterface> services = ConfigServices.getCustomOrSystemServices(input, input.user, command);
-		ServiceInfo info = services.get(0).getInfo(nluResult.language);
+		ServiceInfo info = services.get(0).getInfoFreshOrCache(nluResult.input, services.get(0).getClass().getCanonicalName());
 		for (Parameter p : info.optionalParameters){
 			//is parameter already final?
 			if (nluResult.isParameterFinal(p.getName())){

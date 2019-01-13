@@ -32,7 +32,7 @@ public class Answers {
 			String serviceCommand = nluResult.getCommand();
 			
 			//we might have them in the session cache
-			ServiceAnswers answerPool = nluResult.getCachedServiceAnswers(serviceCommand);
+			ServiceAnswers answerPool = nluResult.input.getCachedServiceAnswers(serviceCommand);
 			if (answerPool == null){
 				//ok we need to load it then
 				List<ServiceInterface> possibleServices = ConfigServices.getCustomOrSystemServices(

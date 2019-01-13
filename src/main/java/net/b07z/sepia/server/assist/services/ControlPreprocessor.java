@@ -53,6 +53,7 @@ public class ControlPreprocessor implements ServiceInterface{
 				nluResult.setParameter(PARAMETERS.ROOM, info);
 				nluResult.removeParameter(PARAMETERS.TYPE);
 				nluResult.removeParameter(PARAMETERS.INFO);
+				//TODO: use result converter?
 				return ConfigServices.buildServices(CMD.SMARTDEVICE).get(0).getResult(nluResult); //.smartDevices.getResult(NLU_result);
 			}
 			

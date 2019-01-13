@@ -107,7 +107,8 @@ public class Alarms implements ServiceInterface{
 	@Override
 	public ServiceResult getResult(NluResult nluResult) {
 		//initialize result
-		ServiceBuilder api = new ServiceBuilder(nluResult, getInfo(""));
+		ServiceBuilder api = new ServiceBuilder(nluResult, 
+				getInfoFreshOrCache(nluResult.input, this.getClass().getCanonicalName()));
 		User user = nluResult.input.user;
 		
 		//get parameters:
@@ -253,7 +254,6 @@ public class Alarms implements ServiceInterface{
 					dateDay = DateTimeConverters.getTomorrow("yyyy.MM.dd", nluResult.input);
 					changedDateAndTime = true;
 				}
-				
 				//TODO: add more
 				
 				//update time ...

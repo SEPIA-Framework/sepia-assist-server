@@ -63,7 +63,7 @@ public class Test_Interviews {
 		assistant.setCommand(CMD.FLIGHTS);
 		
 		//Interview info
-		JSONObject info = assistant.getInfo("en").getJSON();
+		JSONObject info = assistant.getInfo(input).getJSON();
 		System.out.println("Interview info: ");
 		JSON.printJSONpretty(info);
 		System.out.println("");
@@ -126,7 +126,7 @@ public class Test_Interviews {
 		assistant.setCommand(CMD.WEATHER);
 		
 		//Interview info
-		JSONObject info = assistant.getInfo("en").getJSON();
+		JSONObject info = assistant.getInfo(input).getJSON();
 		System.out.println("Interview info: ");
 		JSON.printJSONpretty(info);
 		System.out.println("");
@@ -167,7 +167,7 @@ public class Test_Interviews {
 		assistant.setCommand(CMD.FASHION);
 		
 		//Interview info
-		JSONObject info = assistant.getInfo("en").getJSON();
+		JSONObject info = assistant.getInfo(input).getJSON();
 		System.out.println("Interview info: ");
 		JSON.printJSONpretty(info);
 		System.out.println("");

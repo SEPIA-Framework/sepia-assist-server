@@ -147,7 +147,8 @@ public class Lists implements ServiceInterface{
 	//result
 	public ServiceResult getResult(NluResult nluResult){
 		//initialize result
-		ServiceBuilder api = new ServiceBuilder(nluResult, getInfo(""));
+		ServiceBuilder api = new ServiceBuilder(nluResult, 
+				getInfoFreshOrCache(nluResult.input, this.getClass().getCanonicalName()));
 		User user = nluResult.input.user;
 		
 		//get parameters

@@ -78,7 +78,8 @@ public class GenericService implements ServiceInterface{
 	@Override
 	public ServiceResult getResult(NluResult nluResult) {
 		//initialize result
-		ServiceBuilder api = new ServiceBuilder(nluResult, getInfo(nluResult.language));
+		ServiceBuilder api = new ServiceBuilder(nluResult, 
+				getInfoFreshOrCache(nluResult.input, this.getClass().getCanonicalName()));
 		
 		//get required parameters
 		//NONE

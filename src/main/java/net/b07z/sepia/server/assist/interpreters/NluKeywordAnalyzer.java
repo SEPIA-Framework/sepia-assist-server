@@ -44,7 +44,7 @@ public class NluKeywordAnalyzer implements NluInterface {
 						List<String> possibleCMDs, List<Integer> possibleScore, List<Map<String, String>> possibleParameters,
 						int index){
 		//get service info
-		ServiceInfo serviceInfo = service.getInfo(input.language);
+		ServiceInfo serviceInfo = service.getInfoFreshOrCache(input, service.getClass().getCanonicalName());
 		String regEx = serviceInfo.getCustomTriggerRegX(input.language);
 		
 		//has regEx at all?

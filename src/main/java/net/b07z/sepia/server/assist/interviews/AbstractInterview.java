@@ -10,6 +10,7 @@ import net.b07z.sepia.server.assist.answers.AnswerTools;
 import net.b07z.sepia.server.assist.answers.Answers;
 import net.b07z.sepia.server.assist.answers.ServiceAnswers;
 import net.b07z.sepia.server.assist.data.Parameter;
+import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.parameters.Confirm;
 import net.b07z.sepia.server.assist.services.ServiceBuilder;
@@ -46,7 +47,7 @@ public class AbstractInterview implements InterviewInterface{
 	}
 	
 	@Override
-	public InterviewInfo getInfo(String language) {
+	public InterviewInfo getInfo(NluInput nluInput) {
 		//check command
 		if (command == null || command.isEmpty()){
 			throw new RuntimeException(DateTime.getLogDate() + " ERROR - AbstractInterview / getInfo() - NO COMMAND CONNECTED!");
@@ -56,8 +57,10 @@ public class AbstractInterview implements InterviewInterface{
 			throw new RuntimeException(DateTime.getLogDate() + " ERROR - AbstractInterview / getInfo() - NO SERVICES ADDED!");
 		}
 		//first service wins
-		//TODO: we could cache the ServiceInfo here or load from cache ...
-		InterviewInfo iInfo = new InterviewInfo(command, services.get(0).getInfo(language));	//use the MASTER service to get info
+		InterviewInfo iInfo = new InterviewInfo(command,
+				//use the MASTER service to get info
+				services.get(0).getInfoFreshOrCache(nluInput, services.get(0).getClass().getCanonicalName()
+		));
 		iInfo.setServices(services);
 		return iInfo;
 	}
@@ -68,7 +71,7 @@ public class AbstractInterview implements InterviewInterface{
 		Interview assistant = new Interview(nluResult);
 		
 		//Get info
-		InterviewInfo iInfo = getInfo(nluResult.language);
+		InterviewInfo iInfo = getInfo(nluResult.input);
 		
 		//required parameters
 		for (Parameter p : iInfo.requiredParameters){
@@ -219,7 +222,7 @@ public class AbstractInterview implements InterviewInterface{
 			
 			//We cache some info because we might need it later
 			if (masterServiceAnswers != null){
-				assistant.nluResult.cacheServiceAnswers(masterServiceInfo.intendedCommand, masterServiceAnswers);
+				assistant.nluResult.input.cacheServiceAnswers(masterServiceInfo.intendedCommand, masterServiceAnswers);
 			}
 			
 			//If there was a service redirect/switch inside 'getServiceResults' we loose the correct InterviewInfo! So we need to rebuild it:

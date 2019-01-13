@@ -189,7 +189,7 @@ public class ConfigServices {
 		List<CmdMap> customMap = restoreOrLoadCustomCommandMapping(nluInput, user);
 		for (CmdMap cm : customMap){
 			List<String> cmList = (ArrayList<String>) cm.getServices();
-			services.addAll(buildCustomServices(user, cmList));
+			services.addAll(buildCustomServices(nluInput, cmList));
 		}
 		return services;
 	}
@@ -223,7 +223,7 @@ public class ConfigServices {
 				if (cm.getCommand().equals(cmd)){
 					List<String> cmList = (ArrayList<String>) cm.getServices();
 					//System.out.println("getCustomOrSystemServices - FOUND CUSTOM SERVICE(S): " + cmList); 		//debug
-					services = buildCustomServices(user, cmList);
+					services = buildCustomServices(nluInput, cmList);
 				}
 			}
 		}
@@ -263,19 +263,20 @@ public class ConfigServices {
 	
 	/**
 	 * Take a String list of services from the custom services and build the classes via the custom class loader. 
-	 * @param user 
+	 * @param input
 	 * @param refList - list of services (canonical names of service classes)
 	 */
-	public static List<ServiceInterface> buildCustomServices(User user, List<String> refList){
+	public static List<ServiceInterface> buildCustomServices(NluInput nluInput, List<String> refList){
 		List<ServiceInterface> apiList = new ArrayList<>();
 		for (String className : refList){
 			try{
 				ServiceInterface service = (ServiceInterface) getCustomServiceClassLoader(className).loadClass(className).newInstance();
 				//check if service is public or the creator asks for it
-				if (service.getInfo("").makePublic || className.startsWith(CUSTOM_SERVICES_PACKAGE + "." + user.getUserID() + ".")){
+				if (service.getInfoFreshOrCache(nluInput, service.getClass().getCanonicalName()).makePublic 
+							|| className.startsWith(CUSTOM_SERVICES_PACKAGE + "." + nluInput.user.getUserID() + ".")){
 					apiList.add(service);
 				}else{
-					Debugger.println("buildCustomServices - user '" + user.getUserID() + "' tried to load non-public service: " + className, 1);
+					Debugger.println("buildCustomServices - user '" + nluInput.user.getUserID() + "' tried to load non-public service: " + className, 1);
 				}
 			}catch (Exception e) {
 				e.printStackTrace();
