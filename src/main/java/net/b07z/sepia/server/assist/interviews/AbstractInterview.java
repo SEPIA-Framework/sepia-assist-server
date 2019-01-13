@@ -7,11 +7,11 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.answers.AnswerTools;
+import net.b07z.sepia.server.assist.answers.Answers;
 import net.b07z.sepia.server.assist.answers.ServiceAnswers;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.parameters.Confirm;
-import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.services.ServiceBuilder;
 import net.b07z.sepia.server.assist.services.ServiceInfo;
 import net.b07z.sepia.server.assist.services.ServiceInterface;
@@ -56,6 +56,7 @@ public class AbstractInterview implements InterviewInterface{
 			throw new RuntimeException(DateTime.getLogDate() + " ERROR - AbstractInterview / getInfo() - NO SERVICES ADDED!");
 		}
 		//first service wins
+		//TODO: we could cache the ServiceInfo here or load from cache ...
 		InterviewInfo iInfo = new InterviewInfo(command, services.get(0).getInfo(language));	//use the MASTER service to get info
 		iInfo.setServices(services);
 		return iInfo;
@@ -216,6 +217,11 @@ public class AbstractInterview implements InterviewInterface{
 			masterServiceInfo.setWorksStandalone(false);
 			masterServiceAnswers = results.get(0).getServiceAnswers();
 			
+			//We cache some info because we might need it later
+			if (masterServiceAnswers != null){
+				assistant.nluResult.cacheServiceAnswers(masterServiceInfo.intendedCommand, masterServiceAnswers);
+			}
+			
 			//If there was a service redirect/switch inside 'getServiceResults' we loose the correct InterviewInfo! So we need to rebuild it:
 			if (masterServiceInfo.intendedCommand != null && !masterServiceInfo.intendedCommand.equals(command)){
 				/*
@@ -313,10 +319,10 @@ public class AbstractInterview implements InterviewInterface{
 			}
 			//custom answers available?
 			if (masterServiceAnswers != null && masterServiceAnswers.containsAnswerFor(ansTag)){
-				servicesResult.answer = Config.answers.getAnswer(masterServiceAnswers.getMap(), assistant.nluResult, ansTag, aps);
+				servicesResult.answer = Answers.getAnswerString(masterServiceAnswers.getMap(), assistant.nluResult, ansTag, aps);
 			//.. or use system pool
 			}else{
-				servicesResult.answer = Config.answers.getAnswer(assistant.nluResult, ansTag, aps);
+				servicesResult.answer = Answers.getAnswerString(assistant.nluResult, ansTag, aps);
 			}
 			//modify "clean" answer? (the one that goes to the TTS)
 			if (isSilent){

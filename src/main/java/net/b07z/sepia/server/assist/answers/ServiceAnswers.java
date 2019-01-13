@@ -18,6 +18,8 @@ import net.b07z.sepia.server.core.tools.Is;
  */
 public class ServiceAnswers {
 	
+	public static final String ANS_PREFIX = "service.";
+	
 	private Map<String, List<Answer>> answersMap;
 	private String language; 		//used to determine the language during "addAnswer"
 	
@@ -53,15 +55,18 @@ public class ServiceAnswers {
 	/**
 	 * Add an {@link Answer} to this pool.<br>
 	 * Note: Duplicates need to be handled manually, but you can add multiple answers of the same type (key).
-	 * They will be chosen randomly then.  
-	 * @param answer - answer to add
+	 * They will be chosen randomly then.
+	 * @param answer - answer to add (key/type has to start with ANS_PREFIX)
 	 * @return
 	 */
 	public ServiceAnswers addAnswer(Answer answer){
+		String key = answer.getType();
+		if (!key.startsWith(ANS_PREFIX)){
+			throw new RuntimeException("Answer key (type) for ServiceAnswers has to start with prefix '" + ANS_PREFIX + "'.");
+		}
 		if (this.answersMap == null){
 			this.answersMap = new HashMap<>();
 		}
-		String key = answer.getType();
 		List<Answer> theseAnswers = this.answersMap.get(key);
 		if (theseAnswers == null){
 			theseAnswers = new ArrayList<>();
@@ -74,7 +79,7 @@ public class ServiceAnswers {
 	 * Shortcut to build an {@link Answer} with 'Character.neutral' and mood 5.<br>
 	 * Note: Duplicates need to be handled manually, but you can add multiple answers of the same type (key).
 	 * They will be chosen randomly then.
-	 * @param key - answer key, basically an ID to find an answer in the pool (don't use '.' (dot) in the name!)
+	 * @param key - answer key, basically an ID to find an answer in the pool (don't use '.' (dot) in the name!). Has to start with ANS_PREFIX.
 	 * @param repeatStage - 0: first answer given, 1: first repetition, 2: 2nd and more repetitions 
 	 * @param answerText - actual answer text
 	 * @return
@@ -86,7 +91,7 @@ public class ServiceAnswers {
 	
 	/**
 	 * Check if there is a custom answer in the pool for a certain key.
-	 * @param key - key for the answer, e.g. hello_0a etc. (don't use modifiers like &ltdirect&gt or any '.' (dots) in the name!)
+	 * @param key - key for the answer, e.g. hello_0a etc. (don't use modifiers like &ltdirect&gt). Has to start with ANS_PREFIX.
 	 * @return
 	 */
 	public boolean containsAnswerFor(String key){

@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import org.json.simple.JSONObject;
 
+import net.b07z.sepia.server.assist.answers.ServiceAnswers;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
@@ -57,6 +58,9 @@ public class NluResult {
 	List<String> possibleCMDs = new ArrayList<String>();			//make a list of possible interpretations (commands) of the text
 	List<Map<String, String>> possibleParameters = new ArrayList<>();		//possible parameters of these commands
 	List<Integer> possibleScore = new ArrayList<Integer>();		//save scores to decide which one is correct/best command
+	
+	//different session caches - we use NluResult here because it is passed down to most of the relevant locations
+	private Map<String, ServiceAnswers> sessionCacheServiceAnswers; 	//cache custom service answers by trigger command, so we don't have to rebuild all the time
 	
 	/**
 	 * Use this constructor only if you know what you are doing! ^^.
@@ -347,5 +351,31 @@ public class NluResult {
 	 */
 	public double getCertaintyLevel() {
 		return certaintyLvl;
+	}
+	
+	//--- session caches ---
+	
+	/**
+	 * Cache the {@link ServiceAnswers} of a certain command for this session.
+	 * @param serviceCommand - command that triggered the service with custom answers
+	 * @param answers - {@link ServiceAnswers} to be cached 
+	 */
+	public void cacheServiceAnswers(String serviceCommand, ServiceAnswers answers){
+		if (sessionCacheServiceAnswers == null){
+			sessionCacheServiceAnswers = new HashMap<>();
+		}
+		sessionCacheServiceAnswers.put(serviceCommand, answers);
+	}
+	/**
+	 * Get the cached custom service answers or null. 
+	 * @param serviceCommand - command that triggered the service with custom answers
+	 * @return
+	 */
+	public ServiceAnswers getCachedServiceAnswers(String serviceCommand){
+		if (sessionCacheServiceAnswers != null){
+			return sessionCacheServiceAnswers.get(serviceCommand);
+		}else{
+			return null;
+		}
 	}
 }
