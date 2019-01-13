@@ -6,6 +6,7 @@ import java.net.URLEncoder;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.answers.AnswerTools;
+import net.b07z.sepia.server.assist.answers.Answers;
 import net.b07z.sepia.server.assist.assistant.ActionBuilder;
 import net.b07z.sepia.server.assist.data.Card;
 import net.b07z.sepia.server.assist.data.Card.ElementType;
@@ -125,7 +126,7 @@ public class OpenCustomLink {
 		
 		//make answer - if more than one direct answer choose randomly
 		String answer_key = AnswerTools.handleUserAnswerSets(answer_set);		//check for direct answer or database link and handle random selection
-		api.answer = Config.answers.getAnswer(nluResult, answer_key, params_obj);
+		api.answer = Answers.getAnswerString(nluResult, answer_key, params_obj);
 		api.answerClean = Converters.removeHTML(api.answer);
 		
 		//make action: browser url call

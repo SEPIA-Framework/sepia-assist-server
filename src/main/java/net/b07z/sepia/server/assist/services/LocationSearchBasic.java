@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import net.b07z.sepia.server.assist.answers.AnswerStatics;
+import net.b07z.sepia.server.assist.answers.Answers;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.assistant.LOCATION;
 import net.b07z.sepia.server.assist.data.Card;
@@ -136,7 +137,7 @@ public class LocationSearchBasic implements ServiceInterface{
 		}
 		
 		//get answer
-		api.answer = Config.answers.getAnswer(nluResult, "location_1a", end_to_say);
+		api.answer = Answers.getAnswerString(nluResult, "location_1a", end_to_say);
 		api.answerClean = Converters.removeHTML(api.answer);
 		
 		//make action: browser url call

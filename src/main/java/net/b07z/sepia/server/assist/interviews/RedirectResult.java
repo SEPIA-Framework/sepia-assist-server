@@ -1,7 +1,7 @@
 package net.b07z.sepia.server.assist.interviews;
 
+import net.b07z.sepia.server.assist.answers.Answers;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
-import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.services.ServiceBuilder;
 import net.b07z.sepia.server.assist.services.ServiceInfo;
 import net.b07z.sepia.server.assist.services.ServiceInterface;
@@ -36,35 +36,35 @@ public class RedirectResult implements ServiceInterface{
 		return info;
 	}
 	@Override
-	public ServiceResult getResult(NluResult NLU_result) {
-		return get( NLU_result);
+	public ServiceResult getResult(NluResult nluResult) {
+		return get(nluResult);
 	}
 	
 	/**
 	 * Get "redirect" result with default key "redirect_result_0a".
 	 * @return
 	 */
-	public static ServiceResult get(NluResult NLU_result){
-		return get(NLU_result, "redirect_result_0a");
+	public static ServiceResult get(NluResult nluResult){
+		return get(nluResult, "redirect_result_0a");
 	}
 	/**
 	 * Get "redirect" answer with custom answer key.
-	 * @param NLU_result
-	 * @param answer_key - link to answer database like "redirect_result_0a"
+	 * @param nluResult
+	 * @param answerKey - link to answer database like "redirect_result_0a"
 	 * @return
 	 */
-	public static ServiceResult get(NluResult NLU_result, String answer_key){
+	public static ServiceResult get(NluResult nluResult, String answerKey){
 		//initialize result
-		ServiceBuilder api = new ServiceBuilder(NLU_result);
+		ServiceBuilder api = new ServiceBuilder(nluResult);
 		
 		Debugger.println("cmd: redirect_result", 2);		//debug
-		Debugger.println("SERVICE REDIRECT: '" + NLU_result.getCommand() + "' - text: " + NLU_result.input.textRaw, 3);		//debug
+		Debugger.println("SERVICE REDIRECT: '" + nluResult.getCommand() + "' - text: " + nluResult.input.textRaw, 3);		//debug
 		
 		//get answer
-		api.answer = Config.answers.getAnswer(NLU_result, answer_key);		//default is "redirect_result_0a"
+		api.answer = Answers.getAnswerString(nluResult, answerKey);		//default is "redirect_result_0a"
 		api.answerClean = Converters.removeHTML(api.answer);
 		
-		api.resultInfoPut("cmd", NLU_result.getCommand());
+		api.resultInfoPut("cmd", nluResult.getCommand());
 		
 		//no result makes ILA sad :-(
 		//api.mood = Assistant.mood_decrease(api.mood);

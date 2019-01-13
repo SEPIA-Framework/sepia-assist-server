@@ -1,8 +1,8 @@
 package net.b07z.sepia.server.assist.services;
 
+import net.b07z.sepia.server.assist.answers.Answers;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interviews.AskClient;
-import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
@@ -23,21 +23,21 @@ public class FunCountToThree implements ServiceInterface {
 	}
 
 	//result
-	public ServiceResult getResult(NluResult NLU_result){
+	public ServiceResult getResult(NluResult nluResult){
 		//initialize result
-		ServiceBuilder api = new ServiceBuilder(NLU_result);
+		ServiceBuilder api = new ServiceBuilder(nluResult);
 		
 		//get parameters
-		String number = NLU_result.getParameter(PARAMETERS.NUMBER);
-		String memory = NLU_result.getParameter(PARAMETERS.MEMORY);
+		String number = nluResult.getParameter(PARAMETERS.NUMBER);
+		String memory = nluResult.getParameter(PARAMETERS.MEMORY);
 		Debugger.println("cmd: funny_count, number=" + number + ", memory=" + memory, 2);		//debug
 		
 		//check number
-		if (number.isEmpty() && NLU_result.input.isAnswerToQuestion()){
+		if (number.isEmpty() && nluResult.input.isAnswerToQuestion()){
 			//keep counting ^^ - what is the next number?
 			if (memory.isEmpty()){
-				NLU_result.setParameter(PARAMETERS.MEMORY, "1");
-				return AskClient.question("<direct>1", PARAMETERS.NUMBER, NLU_result);
+				nluResult.setParameter(PARAMETERS.MEMORY, "1");
+				return AskClient.question("<direct>1", PARAMETERS.NUMBER, nluResult);
 			
 			//search biggest number that has been said already and add something
 			}else{
@@ -62,20 +62,20 @@ public class FunCountToThree implements ServiceInterface {
 				
 				if (res >= 3.0d){
 					//make answer
-					api.answer = Config.answers.getAnswer(NLU_result, "<direct>3! go go go!");
+					api.answer = Answers.getAnswerString(nluResult, "<direct>3! go go go!");
 					api.answerClean = Converters.removeHTML(api.answer);
 				}else{
 					String new_num = String.valueOf(res).replaceAll("[0]*$", "").replaceAll("\\.$", "");
 					//save new num in memory
-					NLU_result.setParameter(PARAMETERS.MEMORY, memory + "||" + new_num);
-					return AskClient.question("<direct>" + new_num, PARAMETERS.NUMBER, NLU_result);
+					nluResult.setParameter(PARAMETERS.MEMORY, memory + "||" + new_num);
+					return AskClient.question("<direct>" + new_num, PARAMETERS.NUMBER, nluResult);
 				}
 			}
 			
 		}else if (number.isEmpty()){
 			//start with one
-			NLU_result.setParameter(PARAMETERS.MEMORY, "1");
-			return AskClient.question("<direct>1", PARAMETERS.NUMBER, NLU_result);
+			nluResult.setParameter(PARAMETERS.MEMORY, "1");
+			return AskClient.question("<direct>1", PARAMETERS.NUMBER, nluResult);
 		}
 		
 		//valid number - use it:
@@ -84,7 +84,7 @@ public class FunCountToThree implements ServiceInterface {
 		//bigger or equal to 3 is "go go go"
 		if (d_user >= 3.0d){
 			//make answer
-			api.answer = Config.answers.getAnswer(NLU_result, "<direct>go go go!");
+			api.answer = Answers.getAnswerString(nluResult, "<direct>go go go!");
 			api.answerClean = Converters.removeHTML(api.answer);
 		
 		//else increase number but check what has been said before
@@ -110,13 +110,13 @@ public class FunCountToThree implements ServiceInterface {
 			
 			if (res >= 3.0d){
 				//make answer
-				api.answer = Config.answers.getAnswer(NLU_result, "<direct>3! go go go!");
+				api.answer = Answers.getAnswerString(nluResult, "<direct>3! go go go!");
 				api.answerClean = Converters.removeHTML(api.answer);
 			}else{
 				String new_num = String.valueOf(res).replaceAll("[0]*$", "").replaceAll("\\.$", "").trim();
 				//save new num in memory
-				NLU_result.setParameter(PARAMETERS.MEMORY, memory + "||" + new_num);
-				return AskClient.question("<direct>" + new_num, PARAMETERS.NUMBER, NLU_result);
+				nluResult.setParameter(PARAMETERS.MEMORY, memory + "||" + new_num);
+				return AskClient.question("<direct>" + new_num, PARAMETERS.NUMBER, nluResult);
 			}
 		}
 		

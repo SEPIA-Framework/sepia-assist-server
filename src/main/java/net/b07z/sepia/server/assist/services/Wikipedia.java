@@ -1,12 +1,12 @@
 package net.b07z.sepia.server.assist.services;
 
+import net.b07z.sepia.server.assist.answers.Answers;
 import net.b07z.sepia.server.assist.assistant.CmdBuilder;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.interviews.AskClient;
 import net.b07z.sepia.server.assist.interviews.ConvertResult;
-import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.assist.tools.StringCompare;
@@ -46,25 +46,25 @@ public class Wikipedia implements ServiceInterface{
 	public ServiceInfo getInfo(String language){
 		return new ServiceInfo(Type.REST, Content.data, true);
 		
-		//TODO: This class should be updated to new format!
+		//TODO: This class should be updated to new format!!
 	}
 
 	//result
-	public ServiceResult getResult(NluResult NLU_result){
+	public ServiceResult getResult(NluResult nluResult){
 		//initialize result
-		ServiceBuilder api = new ServiceBuilder(NLU_result);
+		ServiceBuilder api = new ServiceBuilder(nluResult);
 		
 		//looking at these parameters: 	search
 		//requires at least:			search
 		
 		//make the external API call and build API_Result
 		try {
-			String search = NLU_result.getParameter(PARAMETERS.SEARCH);
+			String search = nluResult.getParameter(PARAMETERS.SEARCH);
 			//String org_search = search;
 			Debugger.println("cmd: Knowledgebase, search: " + search, 2);		//debug
 			
 			if (search == null || search.isEmpty()){
-				return AskClient.question("knowledgeB_3a", PARAMETERS.SEARCH, NLU_result);
+				return AskClient.question("knowledgeB_3a", PARAMETERS.SEARCH, nluResult);
 			}
 			//search = NLU_Tools.capitalizeAll(search);			//this is kind of stupid but Wiki seems to be case sensitive somehow oO
 			//search = URLEncoder.encode(search, "UTF-8");
@@ -81,7 +81,7 @@ public class Wikipedia implements ServiceInterface{
 			JSONArray hits = (JSONArray) query.get("search");
 			//check for NO SEARCH RESULT
 			if (hits.isEmpty()){
-				api.answer = Config.answers.getAnswer(NLU_result, "knowledgeB_0a", NLU_result.getParameter("search"));
+				api.answer = Answers.getAnswerString(nluResult, "knowledgeB_0a", nluResult.getParameter("search"));
 				api.answerClean = Converters.removeHTML(api.answer);
 				api.htmlInfo = "";
 				api.hasInfo = false;	api.hasCard = false;	
@@ -242,8 +242,8 @@ public class Wikipedia implements ServiceInterface{
 					*/
 					
 					//version C
-					ServiceResult sr = ConvertResult.switchService(CMD.WEB_SEARCH, NLU_result, PARAMETERS.SEARCH, 
-							PARAMETERS.WEBSEARCH_REQUEST, NLU_result.getParameter(PARAMETERS.SEARCH));
+					ServiceResult sr = ConvertResult.switchService(CMD.WEB_SEARCH, nluResult, PARAMETERS.SEARCH, 
+							PARAMETERS.WEBSEARCH_REQUEST, nluResult.getParameter(PARAMETERS.SEARCH));
 					return sr;
 				}
 				//------------------------------------------------
@@ -342,7 +342,7 @@ public class Wikipedia implements ServiceInterface{
 					
 					}else{
 						//answer
-						api.answer = Config.answers.getAnswer(NLU_result, "knowledgeB_1a");
+						api.answer = Answers.getAnswerString(nluResult, "knowledgeB_1a");
 						api.answerClean = Converters.removeHTML(api.answer);
 						
 						//URL action
@@ -371,7 +371,7 @@ public class Wikipedia implements ServiceInterface{
 							api.htmlInfo = "<div><b>Wikipedia: <a href='" + wikiURL + "'>" + wikiTitle + "</a></b><br><br>" + relatedInfo + "</div>";
 						}
 					}else{
-						if (CLIENTS.hasWebView(NLU_result.input.clientInfo)){
+						if (CLIENTS.hasWebView(nluResult.input.clientInfo)){
 							api.htmlInfo = "<object type='text/html' style='width: 100%; height: 300%; overflow-y: hidden;' data='" + wikiURL_m + "'></object>";
 						}else{
 							api.htmlInfo = wikiURL_m;
@@ -403,7 +403,7 @@ public class Wikipedia implements ServiceInterface{
 					
 				//no result
 				}else{
-					api.answer = Config.answers.getAnswer(NLU_result, "knowledgeB_0a", NLU_result.getParameter("search"));
+					api.answer = Answers.getAnswerString(nluResult, "knowledgeB_0a", nluResult.getParameter("search"));
 					api.answerClean = Converters.removeHTML(api.answer);
 					api.htmlInfo = "";
 					api.hasInfo = false;	api.hasCard = false;	
@@ -423,7 +423,7 @@ public class Wikipedia implements ServiceInterface{
 			
 		//Error / no result - error handling still needs improvement 
 		} catch (Exception e) {
-			api.answer = Config.answers.getAnswer(NLU_result, "knowledgeB_0a", NLU_result.getParameter("search"));
+			api.answer = Answers.getAnswerString(nluResult, "knowledgeB_0a", nluResult.getParameter("search"));
 			api.answerClean = Converters.removeHTML(api.answer);
 			api.htmlInfo = "";
 			api.hasInfo = false;	api.hasCard = false;	api.hasAction = false;

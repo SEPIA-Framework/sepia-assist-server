@@ -1,8 +1,8 @@
 package net.b07z.sepia.server.assist.chats;
 
+import net.b07z.sepia.server.assist.answers.Answers;
 import net.b07z.sepia.server.assist.assistant.Assistant;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
-import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.services.ServiceBuilder;
 import net.b07z.sepia.server.assist.services.ServiceResult;
 import net.b07z.sepia.server.core.assistant.CMD;
@@ -16,9 +16,9 @@ import net.b07z.sepia.server.core.tools.Converters;
  */
 public class HowAreYou {
 
-	public static ServiceResult get(NluResult NLU_result){
+	public static ServiceResult get(NluResult nluResult){
 		//initialize result
-		ServiceBuilder api = new ServiceBuilder(NLU_result);
+		ServiceBuilder api = new ServiceBuilder(nluResult);
 		
 		//TODO: make it interactive! For now its simple
 		api.mood = Assistant.mood_increase(api.mood);
@@ -32,7 +32,7 @@ public class HowAreYou {
 		*/
 		
 		//get answer
-		api.answer = Config.answers.getAnswer(NLU_result, "chat_how_are_you_0a");
+		api.answer = Answers.getAnswerString(nluResult, "chat_how_are_you_0a");
 		api.answerClean = Converters.removeHTML(api.answer);
 		
 		api.status = "success";

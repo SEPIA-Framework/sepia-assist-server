@@ -1,8 +1,8 @@
 package net.b07z.sepia.server.assist.chats;
 
+import net.b07z.sepia.server.assist.answers.Answers;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
-import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.services.ServiceBuilder;
 import net.b07z.sepia.server.assist.services.ServiceResult;
 import net.b07z.sepia.server.core.assistant.ACTIONS;
@@ -183,7 +183,7 @@ public class Help {
 		ServiceBuilder api = new ServiceBuilder(nluResult);
 		
 		//get answer
-		api.answer = Config.answers.getAnswer(nluResult, "chat_help_0a");
+		api.answer = Answers.getAnswerString(nluResult, "chat_help_0a");
 		api.answerClean = Converters.removeHTML(api.answer);
 		
 		//add help action

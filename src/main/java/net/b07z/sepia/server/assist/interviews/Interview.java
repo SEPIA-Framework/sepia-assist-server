@@ -50,14 +50,14 @@ public class Interview {
 	
 	/**
 	 * Default constructor for an interview. 
-	 * @param NLU_result - result coming from NL-Processor
+	 * @param nluResult - result coming from NL-Processor
 	 */
-	public Interview(NluResult NLU_result){
-		this.nluResult = NLU_result;
-		this.user = NLU_result.input.user;
+	public Interview(NluResult nluResult){
+		this.nluResult = nluResult;
+		this.user = nluResult.input.user;
 		//get final parameters
 		finals = new HashSet<>();
-		String finals_str = NLU_result.getParameter(PARAMETERS.FINAL).replaceAll("^\\[|\\]$", "");
+		String finals_str = nluResult.getParameter(PARAMETERS.FINAL).replaceAll("^\\[|\\]$", "");
 		if (!finals_str.isEmpty()){
 			for (String p : finals_str.split(",")){
 				finals.add(p);
@@ -65,7 +65,7 @@ public class Interview {
 		}
 		//get dynamic parameters
 		dynamics = new HashSet<>();
-		String dynamics_str = NLU_result.getParameter(PARAMETERS.DYNAMIC).replaceAll("^\\[|\\]$", "");
+		String dynamics_str = nluResult.getParameter(PARAMETERS.DYNAMIC).replaceAll("^\\[|\\]$", "");
 		if (!dynamics_str.isEmpty()){
 			for (String p : dynamics_str.split(",")){
 				dynamics.add(p);
@@ -284,7 +284,7 @@ public class Interview {
 		}
 		//handle it now
 		String resultJSON = handler.build(input);
-		if (handler.buildSuccess()){ 			//TODO: better use? (handler.validate(resultJSON)){
+		if (handler.buildSuccess()){ 			//TODO: better use? (handler.validate(resultJSON) and check for empty before?){
 			makeFinal(parameter, resultJSON);
 			return null; //this means "all fine, no comments" ^^
 			

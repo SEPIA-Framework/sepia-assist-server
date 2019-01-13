@@ -1,13 +1,13 @@
 package net.b07z.sepia.server.assist.services;
 
 import net.b07z.sepia.server.assist.answers.AnswerTools;
+import net.b07z.sepia.server.assist.answers.Answers;
 import net.b07z.sepia.server.assist.assistant.Assistant;
 import net.b07z.sepia.server.assist.chats.Help;
 import net.b07z.sepia.server.assist.chats.HowAreYou;
 import net.b07z.sepia.server.assist.chats.WhatLanguages;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interviews.NoResult;
-import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.core.assistant.ACTIONS;
@@ -29,21 +29,21 @@ public class ChatPreprocessor implements ServiceInterface{
 	}
 
 	//result
-	public ServiceResult getResult(NluResult NLU_result){
+	public ServiceResult getResult(NluResult nluResult){
 		//initialize result
-		ServiceBuilder api = new ServiceBuilder(NLU_result);
+		ServiceBuilder api = new ServiceBuilder(nluResult);
 		
 		//get parameters
-		String reply = NLU_result.getParameter(PARAMETERS.REPLY);
-		String type = NLU_result.getParameter(PARAMETERS.TYPE);
-		String info = NLU_result.getParameter(PARAMETERS.INFO);
+		String reply = nluResult.getParameter(PARAMETERS.REPLY);
+		String type = nluResult.getParameter(PARAMETERS.TYPE);
+		String info = nluResult.getParameter(PARAMETERS.INFO);
 		Debugger.println("cmd: chat, reply=" + reply + ", type=" + type + ", info=" + info, 2);		//debug
 		
 		//check if there is already a reply given
 		if (!reply.isEmpty()){
 			//check if its direct or an link to database
 			String key = AnswerTools.handleUserAnswerSets(reply);
-			api.answer = Config.answers.getAnswer(NLU_result, key);
+			api.answer = Answers.getAnswerString(nluResult, key);
 			api.status = "success";
 			
 			//TODO: influence mood?
@@ -65,7 +65,7 @@ public class ChatPreprocessor implements ServiceInterface{
 			//greeting
 			if (type.matches("greeting")){
 				//any greeting
-				api.answer = Config.answers.getAnswer(NLU_result, "chat_hello_0a");
+				api.answer = Answers.getAnswerString(nluResult, "chat_hello_0a");
 				api.status = "success";
 				
 				//makes a bit happy :-)
@@ -74,7 +74,7 @@ public class ChatPreprocessor implements ServiceInterface{
 			
 			else if (type.matches("goodbye")){
 				//any greeting
-				api.answer = Config.answers.getAnswer(NLU_result, "chat_goodbye_0a");
+				api.answer = Answers.getAnswerString(nluResult, "chat_goodbye_0a");
 				api.status = "success";
 				
 				//makes a bit sad
@@ -84,7 +84,7 @@ public class ChatPreprocessor implements ServiceInterface{
 			//help!
 			else if (type.matches("help")){
 				//help API
-				return Help.get(NLU_result);
+				return Help.get(nluResult);
 			}
 			
 			//questions
@@ -95,11 +95,11 @@ public class ChatPreprocessor implements ServiceInterface{
 				
 				//how are you?
 				if (info.matches("how_are_you")){
-					return HowAreYou.get(NLU_result);
+					return HowAreYou.get(nluResult);
 				
 				//languages?
 				}else if (info.matches("languages")){
-					return WhatLanguages.get(NLU_result);
+					return WhatLanguages.get(nluResult);
 				
 				//skills?
 				}else if (info.matches("skills")){
@@ -110,66 +110,66 @@ public class ChatPreprocessor implements ServiceInterface{
 					api.putActionInfo("data", data);
 					api.hasAction = true;
 					
-					api.answer = Config.answers.getAnswer(NLU_result, "chat_skills_0a");
+					api.answer = Answers.getAnswerString(nluResult, "chat_skills_0a");
 					
 				//name?
 				}else if (info.matches("name")){
-					api.answer = Config.answers.getAnswer(NLU_result, "chat_name_0a");
+					api.answer = Answers.getAnswerString(nluResult, "chat_name_0a");
 					
 				//meaning of life?
 				}else if (info.matches("meaning_of_life")){
-					api.answer = Config.answers.getAnswer(NLU_result, "chat_meaning_of_life_0a");
+					api.answer = Answers.getAnswerString(nluResult, "chat_meaning_of_life_0a");
 					
 				//origin?
 				}else if (info.matches("origin")){
-					api.answer = Config.answers.getAnswer(NLU_result, "chat_origin_0a");
+					api.answer = Answers.getAnswerString(nluResult, "chat_origin_0a");
 				
 				//age?
 				}else if (info.matches("age")){
-					api.answer = Config.answers.getAnswer(NLU_result, "chat_age_0a");
+					api.answer = Answers.getAnswerString(nluResult, "chat_age_0a");
 					
 				//creator?
 				}else if (info.matches("creator")){
-					api.answer = Config.answers.getAnswer(NLU_result, "chat_creator_0a");
+					api.answer = Answers.getAnswerString(nluResult, "chat_creator_0a");
 					
 				//kind of creation
 				}else if (info.matches("kind_of_creation")){
-					api.answer = Config.answers.getAnswer(NLU_result, "chat_kind_of_creation_0a");
+					api.answer = Answers.getAnswerString(nluResult, "chat_kind_of_creation_0a");
 				
 				//Daniel's additions
 				}else if (info.matches("humans_only")){
-					api.answer = Config.answers.getAnswer(NLU_result, "chat_humans_only_0a");
+					api.answer = Answers.getAnswerString(nluResult, "chat_humans_only_0a");
 				}else if (info.matches("real")){
-					api.answer = Config.answers.getAnswer(NLU_result, "chat_real_0a");
+					api.answer = Answers.getAnswerString(nluResult, "chat_real_0a");
 				}else if (info.matches("rhetorical")){
-					api.answer = Config.answers.getAnswer(NLU_result, "chat_rhetorical_0a");
+					api.answer = Answers.getAnswerString(nluResult, "chat_rhetorical_0a");
 				}else if (info.matches("deny")){
-					api.answer = Config.answers.getAnswer(NLU_result, "chat_deny_0a");
+					api.answer = Answers.getAnswerString(nluResult, "chat_deny_0a");
 				}else if (info.matches("programmed")){
-					api.answer = Config.answers.getAnswer(NLU_result, "chat_programmed_0a");
+					api.answer = Answers.getAnswerString(nluResult, "chat_programmed_0a");
 				}else if (info.matches("nobody_knows")){
-					api.answer = Config.answers.getAnswer(NLU_result, "chat_nobody_knows_0a");
+					api.answer = Answers.getAnswerString(nluResult, "chat_nobody_knows_0a");
 				}else if (info.matches("news")){
-					api.answer = Config.answers.getAnswer(NLU_result, "chat_news_0a");
+					api.answer = Answers.getAnswerString(nluResult, "chat_news_0a");
 				}else if (info.matches("with_pleasure")){
-					api.answer = Config.answers.getAnswer(NLU_result, "chat_with_pleasure_0a");
+					api.answer = Answers.getAnswerString(nluResult, "chat_with_pleasure_0a");
 				}else if (info.matches("no_eat")){
-					api.answer = Config.answers.getAnswer(NLU_result, "chat_no_eat_0a");
+					api.answer = Answers.getAnswerString(nluResult, "chat_no_eat_0a");
 				}else if (info.matches("impossible_command")){
-					api.answer = Config.answers.getAnswer(NLU_result, "chat_impossible_command_0a");
+					api.answer = Answers.getAnswerString(nluResult, "chat_impossible_command_0a");
 				}else if (info.matches("whenever_you_want")){
-					api.answer = Config.answers.getAnswer(NLU_result, "chat_whenever_you_want_0a");
+					api.answer = Answers.getAnswerString(nluResult, "chat_whenever_you_want_0a");
 				
 				//unknown question
 				}else{
-					return NoResult.get(NLU_result);
+					return NoResult.get(nluResult);
 				}
 			}
 			
 			//compliments
 			else if (type.matches("compliment")){
 				//any compliment
-				api.answer = Config.answers.getAnswer(NLU_result, "chat_compliment_0a");
+				api.answer = Answers.getAnswerString(nluResult, "chat_compliment_0a");
 				api.status = "success";
 				
 				//compliments make happy :-)
@@ -180,7 +180,7 @@ public class ChatPreprocessor implements ServiceInterface{
 			//complaints
 			else if (type.matches("complain")){
 				//any complain
-				api.answer = Config.answers.getAnswer(NLU_result, "chat_complain_0a");
+				api.answer = Answers.getAnswerString(nluResult, "chat_complain_0a");
 				api.status = "success";
 				
 				//complaints make sad :-)
@@ -191,7 +191,7 @@ public class ChatPreprocessor implements ServiceInterface{
 			//thanks
 			else if (type.matches("thanks")){
 				//any thanks
-				api.answer = Config.answers.getAnswer(NLU_result, "chat_thanks_0a");
+				api.answer = Answers.getAnswerString(nluResult, "chat_thanks_0a");
 				api.status = "success";
 				
 				//makes happier :-)
@@ -201,7 +201,7 @@ public class ChatPreprocessor implements ServiceInterface{
 			//apology
 			else if (type.matches("apology")){
 				//any apology
-				api.answer = Config.answers.getAnswer(NLU_result, "chat_apology_0a");
+				api.answer = Answers.getAnswerString(nluResult, "chat_apology_0a");
 				api.status = "success";
 				
 				//makes happier :-)
@@ -212,7 +212,7 @@ public class ChatPreprocessor implements ServiceInterface{
 			//game_cool 8-)
 			else if (type.matches("game_cool")){
 				//any thanks
-				api.answer = Config.answers.getAnswer(NLU_result, "chat_game_cool");
+				api.answer = Answers.getAnswerString(nluResult, "chat_game_cool");
 				api.status = "success";
 				
 				//makes happier :-)
@@ -221,7 +221,7 @@ public class ChatPreprocessor implements ServiceInterface{
 			
 			//no result
 			else{
-				return NoResult.get(NLU_result);
+				return NoResult.get(nluResult);
 			}
 		}
 		

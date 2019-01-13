@@ -1,7 +1,7 @@
 package net.b07z.sepia.server.assist.services;
 
+import net.b07z.sepia.server.assist.answers.Answers;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
-import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.core.assistant.ACTIONS;
@@ -24,15 +24,15 @@ public class OpenDashboard implements ServiceInterface{
 	}
 
 	//result
-	public ServiceResult getResult(NluResult NLU_result){
+	public ServiceResult getResult(NluResult nluResult){
 		//initialize result
-		ServiceBuilder api = new ServiceBuilder(NLU_result);
+		ServiceBuilder api = new ServiceBuilder(nluResult);
 		
 		//Parameters
-		String type = NLU_result.getParameter(PARAMETERS.TYPE);			//common, addresses, settings, etc...
-		String action = NLU_result.getParameter(PARAMETERS.ACTION);		//open, add, ... can be used to modify answer
-		String info = NLU_result.getParameter(PARAMETERS.INFO);			//details
-		String reply = NLU_result.getParameter(PARAMETERS.REPLY);		//custom reply tag used with ADD
+		String type = nluResult.getParameter(PARAMETERS.TYPE);			//common, addresses, settings, etc...
+		String action = nluResult.getParameter(PARAMETERS.ACTION);		//open, add, ... can be used to modify answer
+		String info = nluResult.getParameter(PARAMETERS.INFO);			//details
+		String reply = nluResult.getParameter(PARAMETERS.REPLY);		//custom reply tag used with ADD
 		Debugger.println("cmd: Dashboard, type=" + type + ", action=" + action + ", info=" + info, 2);		//debug
 		
 		//check requirements
@@ -52,12 +52,12 @@ public class OpenDashboard implements ServiceInterface{
 		//get answer
 		if (action.equals("add")){
 			if (!reply.isEmpty()){
-				api.answer = Config.answers.getAnswer(NLU_result, reply);
+				api.answer = Answers.getAnswerString(nluResult, reply);
 			}else{
-				api.answer = Config.answers.getAnswer(NLU_result, "dashboard_0b");
+				api.answer = Answers.getAnswerString(nluResult, "dashboard_0b");
 			}
 		}else{
-			api.answer = Config.answers.getAnswer(NLU_result, "dashboard_0a");
+			api.answer = Answers.getAnswerString(nluResult, "dashboard_0a");
 		}
 		api.answerClean = Converters.removeHTML(api.answer);
 		

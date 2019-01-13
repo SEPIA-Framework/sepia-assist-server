@@ -60,8 +60,9 @@ public interface ParameterHandler {
 	/**
 	 * Build a default parameter result by transforming specific data like "my favorite restaurant", "&lt;user_home&gt;", "&lt;color tags&gt;", personal or contacts data as required. 
 	 * If none of these apply just build a result out of the input. 
-	 * Output of the 'extract', 'guess' and 'responseTweaker' methods can be complex (see DateAndTime) so this method needs to be able to handle that. 
-	 * @return default result string in JSON format or an "action" like "add", "select", "confirm" ... or simply empty
+	 * Output of the 'extract', 'guess' and 'responseTweaker' methods can be complex (see DateAndTime) so this method needs to be able to handle that
+	 * and identify if the input makes sense!
+	 * @return default result string in JSON format or an "action" like "add", "select", "confirm" ... or simply empty (if there was nothing valid)
 	 */
 	public String build(String input);
 	
