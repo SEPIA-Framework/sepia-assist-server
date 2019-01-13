@@ -61,7 +61,7 @@ public interface ParameterHandler {
 	 * Build a default parameter result by transforming specific data like "my favorite restaurant", "&lt;user_home&gt;", "&lt;color tags&gt;", personal or contacts data as required. 
 	 * If none of these apply just build a result out of the input. 
 	 * Output of the 'extract', 'guess' and 'responseTweaker' methods can be complex (see DateAndTime) so this method needs to be able to handle that. 
-	 * @return default result string in JSON format or an "action" like "add", "select", "confirm" ...
+	 * @return default result string in JSON format or an "action" like "add", "select", "confirm" ... or simply empty
 	 */
 	public String build(String input);
 	
@@ -71,7 +71,7 @@ public interface ParameterHandler {
 	public boolean validate(String input);
 	
 	/**
-	 * Was the parameter successfully built or is the result an action, error, comment (in the form of an API_Result)?
+	 * Was the parameter successfully built or is the result an action, error, comment (in the form of an ServiceResult)?
 	 */
 	public boolean buildSuccess();
 }

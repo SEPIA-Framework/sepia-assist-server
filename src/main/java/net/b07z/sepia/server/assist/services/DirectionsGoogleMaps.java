@@ -436,25 +436,27 @@ public class DirectionsGoogleMaps implements ServiceInterface{
 		
 		//google
 		Card googleCard = new Card(Card.TYPE_SINGLE);
-		JSONObject linkCard1 = googleCard.addElement(ElementType.link, 
+		//JSONObject linkCard1 = 
+		googleCard.addElement(ElementType.link, 
 				JSON.make("title", "Google Maps", "desc", description),
 				null, null, "", 
 				googleMapsURL, 
 				Config.urlWebImages + "/brands/google-maps.png", 
 				null, null);
-		JSON.put(linkCard1, "imageBackground", "transparent");	//use any CSS background option you wish
+		//JSON.put(linkCard1, "imageBackground", "transparent");	//use any CSS background option you wish
 		api.addCard(googleCard.getJSON());
 		
 		//apple
 		if (!appleMapsURL.isEmpty()){
 			Card appleCard = new Card(Card.TYPE_SINGLE);
-			JSONObject linkCard2 = appleCard.addElement(ElementType.link, 
+			//JSONObject linkCard2 = 
+			appleCard.addElement(ElementType.link, 
 					JSON.make("title", "Apple Maps", "desc", description),
 					null, null, "", 
 					appleMapsURL, 
 					Config.urlWebImages + "/brands/apple-maps.png", 
 					null, null);
-			JSON.put(linkCard2, "imageBackground", "transparent");	//use any CSS background option you wish
+			//JSON.put(linkCard2, "imageBackground", "transparent");	//use any CSS background option you wish
 			api.addCard(appleCard.getJSON());
 		}
 		
@@ -566,13 +568,14 @@ public class DirectionsGoogleMaps implements ServiceInterface{
 			else desc += ((locStreet.isEmpty())? "" : (locStreet + ", ")) + locCity;
 			
 			Card card = new Card(Card.TYPE_SINGLE);
-			JSONObject linkCard = card.addElement(ElementType.link, 
+			//JSONObject linkCard = 
+			card.addElement(ElementType.link, 
 					JSON.make("title", "", "desc", (locName.isEmpty()? "" : ("<b>" + locName + "</b><br>")) + desc.trim()),		//we dont use title because names are so loooong most of the time :(
 					null, null, "", 
 					mapUrl, 
 					locImage, 
 					null, null);
-			JSON.put(linkCard, "imageBackground", "transparent");
+			//JSON.put(linkCard, "imageBackground", "transparent");
 			
 			cardElements.add(card);
 		}

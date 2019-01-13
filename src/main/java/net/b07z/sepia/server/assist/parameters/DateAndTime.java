@@ -17,6 +17,7 @@ import net.b07z.sepia.server.assist.tools.DateTimeConverters;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 
 /**
@@ -217,7 +218,13 @@ public class DateAndTime implements ParameterHandler{
 		dateMap = RegexParameterSearch.get_date(input, language);
 		String dateTag = dateMap.get("date_tag");
 		String timeTag = dateMap.get("time_tag");
-		//System.out.println("DATE-TAG: " + dateTag); 		//DEBUG
+		//System.out.println("DATE-MAP: "); 		//DEBUG
+		//Debugger.printMap(dateMap); 				//DEBUG
+		
+		//Nothing found?
+		if (Is.nullOrEmpty(dateTag) && Is.nullOrEmpty(timeTag)){
+			return "";
+		}
 		
 		//TODO: date_tag can be normalized and differ from original input
 		this.found = (dateTag.isEmpty()? timeTag : dateTag);
@@ -268,8 +275,10 @@ public class DateAndTime implements ParameterHandler{
 			}
 			if (!dateTag.isEmpty() && dateRes[0].isEmpty() && dateRes[1].isEmpty()){
 				date = "<" + dateType + ">&&" + dateTag;
+				
 			}else if (dateTag.isEmpty() && dateRes[0].isEmpty() && dateRes[1].isEmpty()){
 				date = "";
+				
 			}else{
 				date = "<" + dateType + ">&&" + date;
 			} 
@@ -347,14 +356,18 @@ public class DateAndTime implements ParameterHandler{
 				day = dateSplit[0];
 				time = dateSplit[1];
 				input = day + Config.defaultSdfSeparator + time;
+				
 			}else if (input.matches("\\d\\d\\d\\d\\.\\d\\d\\.\\d\\d")){
 				day = input;
+			
 			}else{
 				//???
 			}
 			
 		}else{
-			//TODO: what does that mean? Empty input or raw, unconverted format? 
+			//TODO: what does that mean? Empty input or raw, unconverted format?
+			//End with build success or empty string?
+			return "";
 		}
 		
 		//check for unspecific date
@@ -410,14 +423,14 @@ public class DateAndTime implements ParameterHandler{
 		
 		//build default result
 		JSONObject timeResultJSON = new JSONObject();
-			JSON.add(timeResultJSON, InterviewData.TIME_TYPE, dateType);
-			if (day.isEmpty()){
-				JSON.add(timeResultJSON, InterviewData.DATE_INPUT, input);
-			}else{
-				JSON.add(timeResultJSON, InterviewData.DATE_DAY, day);
-			}
-			if (!time.isEmpty()) JSON.add(timeResultJSON, InterviewData.DATE_TIME, time);
-			JSON.add(timeResultJSON, InterviewData.TIME_DIFF, diff);
+		JSON.put(timeResultJSON, InterviewData.TIME_TYPE, dateType);
+		if (day.isEmpty()){
+			JSON.put(timeResultJSON, InterviewData.DATE_INPUT, input);
+		}else{
+			JSON.put(timeResultJSON, InterviewData.DATE_DAY, day);
+		}
+		if (!time.isEmpty()) JSON.put(timeResultJSON, InterviewData.DATE_TIME, time);
+		JSON.put(timeResultJSON, InterviewData.TIME_DIFF, diff);
 		
 		buildSuccess = true;
 		//System.out.println("BUILD DATE: " + timeResultJSON.toJSONString()); 		//DEBUG
@@ -525,7 +538,7 @@ public class DateAndTime implements ParameterHandler{
 			
 			//TIME
 			String clockTag = NluTools.stringFindLongest(dataTagOrg, "(\\d{1,2}:\\d\\d|\\d{1,2})" + CLOCK_TAGS_DE);
-			if (clockTag.isEmpty() && dataTagOrg.matches("^\\d{1,2}$")){
+			if (clockTag.isEmpty() && dataTagOrg.matches("^(\\d{1,2}:\\d\\d|\\d{1,2})$")){
 				//TODO: is that safe to assume? Probably depends on many correlated parameters
 				clockTag = dateTag;
 			}
@@ -568,7 +581,7 @@ public class DateAndTime implements ParameterHandler{
 			
 			//TIME
 			String clockTag = NluTools.stringFindLongest(dataTagOrg, "(\\d{1,2}:\\d\\d|\\d{1,2})" + CLOCK_TAGS_EN);
-			if (clockTag.isEmpty() && dataTagOrg.matches("^\\d{1,2}$")){
+			if (clockTag.isEmpty() && dataTagOrg.matches("^(\\d{1,2}:\\d\\d|\\d{1,2})$")){
 				//TODO: is that safe to assume? Probably depends on many correlated parameters
 				clockTag = dateTag;
 			}

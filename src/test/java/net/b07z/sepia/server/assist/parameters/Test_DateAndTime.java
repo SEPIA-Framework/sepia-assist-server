@@ -37,6 +37,7 @@ public class Test_DateAndTime {
 		input.language = "de";
 		System.out.println("\n----- de -----");
 		testTimeString("8", 									"[2018.01.14, 08:00:00]", input); 		//this is debatable
+		testTimeString("14:30",									"[2018.01.14, 14:30:00]", input); 		//this is debatable
 		testTimeString("erstelle einen timer fuer 8", 			"[, ]", input);
 		testTimeString("erstelle einen timer fuer 8:30", 		"[2018.01.14, 08:30:00]", input);		
 		testTimeString("erstelle einen timer fuer 20 minuten", 	"[2018.01.14, 10:20:00]", input);
@@ -49,6 +50,7 @@ public class Test_DateAndTime {
 		testTimeString("set a timer for 20 minutes", 	"[2018.01.14, 10:20:00]", input);
 		testTimeString("wake me up in 20 minutes", 		"[2018.01.14, 10:20:00]", input);
 		testTimeString("timer for 30 s", 				"[2018.01.14, 10:00:30]", input);
+		testTimeString("14:30", 						"[2018.01.14, 14:30:00]", input);
 				
 		System.out.println("-----------");
 		

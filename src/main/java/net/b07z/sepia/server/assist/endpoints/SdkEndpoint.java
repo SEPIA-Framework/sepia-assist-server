@@ -81,14 +81,14 @@ public class SdkEndpoint {
 	   		 		+ "<label>Id: <input type='text' name='GUUID'></label>"
 	   		 		+ "<label>Pwd: <input type='password' name='PWD'></label><br>"
 	   		 		+ "<br>"
-	   		 		+ "<input type='file' name='" + UPLOAD_FILE_KEY + "' accept='.class|.java|.sservice|.yaml'><br>"
+	   		 		+ "<input type='file' name='" + UPLOAD_FILE_KEY + "' accept='.class,.java,.sservice,.yaml'><br>"
 	   		 		+ "<br>Or use:<br><br>"
 	   		 		+ "<label>Class name: <input type='text' name='" + UPLOAD_CODE_CLASS_NAME + "'></label><br>"
 	   		 		+ "<br>"
 	   		 		+ "<label>Java source code: <br>"
 	   		 		+ "<textarea id='code-box' form='upload-form' name='" + UPLOAD_CODE_KEY + "'>Add source code here ...</textarea>"
 	   		 		+ "<br>"
-	   		 		+ "<button class='interface_button'>UPLOAD SERVICE</button>"
+	   		 		+ "<button class='interface_button' type='submit'>UPLOAD SERVICE</button>"
 	   		 	+ "</form>"
 	        + "</div></body>";
 	   	//stats

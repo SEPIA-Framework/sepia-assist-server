@@ -1059,7 +1059,7 @@ public class RegexParameterSearch {
 					+ "(in |fuer |auf |um |ab |)(\\d+" + DateAndTime.TIME_TAGS_DE + ")" + "( (um |fuer |ab |)((\\d{1,2}:\\d\\d|\\d{1,2})" + DateAndTime.CLOCK_TAGS_DE + ")" + "|)|"
 					+ "(in |fuer |auf |um |ab |)(\\d+" + DateAndTime.TIME_TAGS_SHORT + ")|"
 					+ "(in |fuer |auf |um |ab |)((\\d{1,2}:\\d\\d|\\d{1,2})" + DateAndTime.CLOCK_TAGS_DE + ")|"
-					+ "(^\\d{1,2}$)");
+					+ "(^(\\d{1,2}:\\d\\d|\\d{1,2})$)");
 			//System.out.println(text); 			//DEBUG
 			//System.out.println(date_tag); 		//DEBUG
 			
@@ -1087,7 +1087,7 @@ public class RegexParameterSearch {
 					+ "(in |for |at |to |from |)(\\d+" + DateAndTime.TIME_TAGS_EN + ")" + "( (at |for |from |)((\\d+:\\d+|\\d+)" + DateAndTime.CLOCK_TAGS_EN + ")" + "|)|"
 					+ "(in |for |at |to |from |)(\\d+" + DateAndTime.TIME_TAGS_SHORT + ")|"
 					+ "(in |for |at |to |from |)((\\d{1,2}:\\d\\d|\\d{1,2})" + DateAndTime.CLOCK_TAGS_EN + ")|"
-					+ "(^\\d{1,2}$)");
+					+ "(^(\\d{1,2}:\\d\\d|\\d{1,2})$)");
 			//System.out.println(text); 					//DEBUG
 			//System.out.println(date_tag); 				//DEBUG
 		}

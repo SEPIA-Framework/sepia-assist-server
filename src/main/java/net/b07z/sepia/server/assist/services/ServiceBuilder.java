@@ -320,7 +320,7 @@ public class ServiceBuilder {
 	/**
 	 * Use this to add a custom answer at a specific point in the service module if you realize that the default success or fail answer 
 	 * do not fit. Has the highest priority that means it overrules all default answers. 
-	 * @param customAnswer - answer tag or "&ltdirect&gtanswer" (not the name but the tag! you used for API_Info)
+	 * @param customAnswer - answer tag (not the name but the tag! you used in {@link ServiceInfo}) or "&ltdirect&gtanswer"
 	 */
 	public void setCustomAnswer(String customAnswer){
 		customInfoAdd("customAnswer", customAnswer);
