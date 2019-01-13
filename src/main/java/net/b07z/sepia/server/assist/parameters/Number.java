@@ -244,6 +244,10 @@ public class Number implements ParameterHandler{
 
 	@Override
 	public String build(String input) {
+		//extracted any number?
+		if (!NluTools.stringContains(input, ".*\\d.*")){
+			return "";
+		}
 		
 		//expects a number including type as string
 		String type = getTypeClass(input, language).replaceAll("^<|>$", "").trim();

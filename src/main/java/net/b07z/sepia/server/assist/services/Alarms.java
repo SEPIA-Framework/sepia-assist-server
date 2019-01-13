@@ -121,7 +121,7 @@ public class Alarms implements ServiceInterface{
 		String dateTime = (String) clockP.getDataFieldOrDefault(InterviewData.DATE_TIME);
 		
 		api.resultInfoPut("day", dateDay);
-		api.resultInfoPut("time", dateTime.replaceFirst(":\\d\\d$", "").trim());
+		api.resultInfoPut("time", dateTime.replaceFirst(":\\d\\d$", "").trim()); 	//might be overwritten later
 		
 		//-alarm type
 		Parameter alarmTypeP = nluResult.getOptionalParameter(PARAMETERS.ALARM_TYPE, "");
@@ -243,7 +243,6 @@ public class Alarms implements ServiceInterface{
 			}
 			//what if the time lies in the past? Make some smart decisions!
 			if (totalDiff_ms <= 0){
-				//TODO: add more
 				boolean changedDateAndTime = false; 	//TODO: we could use this to modify the answer slightly (to point out the change) 
 				
 				//user probably meant next day?
@@ -254,6 +253,8 @@ public class Alarms implements ServiceInterface{
 					dateDay = DateTimeConverters.getTomorrow("yyyy.MM.dd", nluResult.input);
 					changedDateAndTime = true;
 				}
+				
+				//TODO: add more
 				
 				//update time ...
 				if (changedDateAndTime){
@@ -354,7 +355,8 @@ public class Alarms implements ServiceInterface{
 			}else if (isAlarm){
 				String repeat = "onetime";
 								
-				//answer
+				//answer:
+				
 				//get a nice, speakable day by correcting diffDays for hours, minutes, seconds to midnight and convert
 				long correctedDiffDays = DateTimeConverters.getIntuitiveDaysDifference(nluResult.input, diffDays, diffHours, diffMinutes, diffSeconds);
 				String speakableDay = DateTimeConverters.getSpeakableDateSpecial(dateDay, correctedDiffDays, "yyyy.MM.dd", nluResult.input, false);
@@ -365,6 +367,10 @@ public class Alarms implements ServiceInterface{
 					api.setCustomAnswer(answerSetAlarmFar);
 				}
 				api.resultInfoPut("day", speakableDay);
+				
+				//... and for time
+				String speakableTime = DateTimeConverters.getSpeakableTime(dateTime, "HH:mm:ss", api.language);
+				api.resultInfoPut("time", speakableTime);
 				
 				String name = "";
 				if (alarmName != null && !alarmName.isEmpty()){
@@ -462,7 +468,7 @@ public class Alarms implements ServiceInterface{
 					}else{
 						//day should be nice already
 						//String speakableDay = Tools_DateTime.getSpeakableDate(JSON.getString(nextAlarm, "day"), "yyyy.MM.dd", api.language);
-						api.resultInfoPut("time", JSON.getString(nextAlarm, "time").replaceFirst(":\\d\\d$", "").trim());
+						api.resultInfoPut("time", DateTimeConverters.getSpeakableTime(JSON.getString(nextAlarm, "time"), "HH:mm:ss", api.language));
 						api.resultInfoPut("day", JSON.getString(nextAlarm, "day"));
 						api.setCustomAnswer(answerNextAlarm);
 					}

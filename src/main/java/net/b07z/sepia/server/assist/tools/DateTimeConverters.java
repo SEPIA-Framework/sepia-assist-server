@@ -191,6 +191,25 @@ public class DateTimeConverters {
 	}
 	
 	/**
+	 * Convert a time (usually in 'HH:mm:ss' format) to a speakable time like 6:00 PM. or 18:00.
+	 * @param timeIn - string with time in given format, usually 'HH:mm:ss'
+	 * @param formatIn - usually 'HH:mm:ss'
+	 * @param language - ISO language code, e.g. 'en'
+	 * @return
+	 */
+	public static String getSpeakableTime(String timeIn, String formatIn, String language){
+		if (language.equals(LANGUAGES.EN)){
+			return convertDateFormat(timeIn, formatIn, "h:mm a");
+		}else{
+			if (formatIn.equals("HH:mm:ss")){
+				return timeIn.replaceFirst(":\\d\\d$", "").trim();
+			}else{
+				return timeIn;
+			}
+		}
+	}
+	
+	/**
 	 * Get the user's today-date in the desired format. If users system time is not available it returns an empty string.
 	 * @param format - e.g.: "dd.MM.yyyy" or "HH:mm:ss" or "MM/dd/yy"
 	 * @param nlu_input - NLU_Input containing user_time_local
