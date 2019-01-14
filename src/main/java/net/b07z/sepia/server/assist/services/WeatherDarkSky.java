@@ -153,8 +153,8 @@ public class WeatherDarkSky implements ServiceInterface{
 				getInfoFreshOrCache(nluResult.input, this.getClass().getCanonicalName()));
 		
 		//get interview parameters
-		JSONObject placeJSON = nluResult.getRequiredParameter(PARAMETERS.PLACE).getData();
-		JSONObject timeJSON = nluResult.getRequiredParameter(PARAMETERS.TIME).getData();
+		JSONObject placeJSON = nluResult.getRequiredParameter(PARAMETERS.PLACE).getData(); 	//note: we use getRequiredParameter here 
+		JSONObject timeJSON = nluResult.getRequiredParameter(PARAMETERS.TIME).getData();	//... because we set default values in getInfo
 				
 		//parameter adaptation to service format
 		String coords = placeJSON.get(InterviewData.LOCATION_LAT).toString() + "," + placeJSON.get(InterviewData.LOCATION_LNG).toString();

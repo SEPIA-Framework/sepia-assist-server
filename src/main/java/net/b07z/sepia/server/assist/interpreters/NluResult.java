@@ -209,7 +209,7 @@ public class NluResult {
 	}
 	/**
 	 * Get a parameter that is optional. Check for "isEmpty()" and use "getData" or "getDefaultValue" accordingly.
-	 * NOTE: compared to the "defaultValue" set in the API_Info Parameter constructor this value is (probably) never influencing the
+	 * NOTE: compared to the "defaultValue" set in the ServiceInfo Parameter constructor this value is (probably) never influencing the
 	 * build() process of the parameter.  
 	 */
 	public Parameter getOptionalParameter(String p, Object defaultValue){

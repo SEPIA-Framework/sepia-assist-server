@@ -6,6 +6,7 @@ import java.util.HashMap;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
+import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interpreters.NluTools;
@@ -346,6 +347,7 @@ public class DateAndTime implements ParameterHandler{
 		String day = "";
 		String time = "";
 
+		//extracted time-date
 		if (input.startsWith("<") && input.contains("&&")){
 			String[] dateSplit = input.split("&&", 2);
 			dateType = dateSplit[0].replaceAll("^<|>$", "").trim();
@@ -364,6 +366,15 @@ public class DateAndTime implements ParameterHandler{
 				//???
 			}
 			
+		//user-time
+		}else if (input.equals("<" + Parameter.Defaults.user_time + ">")){
+			input = nluInput.userTimeLocal;
+			String[] dateSplit = input.split(Config.defaultSdfSeparatorRegex, 2);
+			day = dateSplit[0];
+			time = dateSplit[1];
+			dateType = DateType.pointInTime.name();
+		
+		//nothing or error?
 		}else{
 			//TODO: what does that mean? Empty input or raw, unconverted format?
 			//End with build success or empty string?
@@ -380,15 +391,6 @@ public class DateAndTime implements ParameterHandler{
 			
 			buildSuccess = true;
 			return timeResultJSON.toJSONString();
-		}
-		
-		//check for <user_time>
-		if (input.equals("<user_time>")){
-			input = nluInput.userTimeLocal;
-			String[] dateSplit = input.split(Config.defaultSdfSeparatorRegex, 2);
-			day = dateSplit[0];
-			time = dateSplit[1];
-			dateType = DateType.pointInTime.name();
 		}
 		
 		//TODO: can this still happen? Yes! We need to replace it with extract->repeat build
