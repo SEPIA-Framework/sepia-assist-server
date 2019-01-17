@@ -89,6 +89,8 @@ public class MusicGenre implements ParameterHandler{
 				+ "((hard|blues|classic)(-| |)|)rock|"
 				+ "hardcore|"
 				+ "((heavy|death)(-| |)|)metal|"
+				+ "alternative|"
+				+ "indie|"
 				+ "disco|"
 				+ "(acid(-| |)|)jazz|"
 				+ "hip(-| |)hop|"
@@ -96,6 +98,8 @@ public class MusicGenre implements ParameterHandler{
 				+ "(deep(-| |)|)house|"
 				+ "(euro(-| |)|)dance|"
 				+ "blues|trance|electro|gabba";
+		
+		//TODO: this parameter need a little upgrade ... we should generalize the names better (see below normalizeGenreName)
 		
 		//German
 		if (language.matches("de")){
@@ -179,8 +183,9 @@ public class MusicGenre implements ParameterHandler{
 	public static String normalizeGenreName(String genreIn){
 		//optimize stations
 		genreIn = genreIn
-				.replaceFirst("(?i)\\b(mein(s|en|e|))\\b", "my")
+				.replaceFirst("(?i)\\b(mein(s|en|e|))\\b", "my") 		//TODO: this is inefficient!
 				.replaceFirst("(?i)\\b(klassik)\\b", "classic")
+				.replaceFirst("(?i)\\b(alternativ)\\b", "alternative")
 				;
 		//clean
 		return genreIn.toLowerCase().replaceAll("(\\s+|-|_)", "").trim();

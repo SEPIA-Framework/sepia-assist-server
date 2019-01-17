@@ -118,7 +118,7 @@ public class SdkEndpoint {
 	    	JSONObject result = new JSONObject();
 			JSON.add(result, "result", "fail");
 			JSON.add(result, "error", "endpoint requires content-type 'multipart/form-data' but saw: " + contentType);
-			return SparkJavaFw.returnResult(req, res, result.toJSONString(), 200);
+			return SparkJavaFw.returnResult(req, res, result.toJSONString(), 400);
 	    }
 		
 		//authenticate

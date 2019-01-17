@@ -16,6 +16,9 @@ abort_0b;;		rep=0|mood=5;;		Ich glaube wir hängen hier irgendwie fest. Lass uns
 abort_0b;;		rep=0|mood=5;;		Irgendwie kapiere ich gerade nicht was du mir sagen willst. Lass uns später darüber reden. ;;char=rude
 abort_0b;;		rep=0|mood=5;;		Es tut mir leid, aber ich verstehe nicht was du mir sagen willst. Lass es uns doch später noch mal probieren. ;;char=polite,neutral
 abort_0c;;		rep=0|mood=5;;		Tut mir leid, aber ich konnte dazu keine Resultate finden. ;;char=polite,neutral
+ok_0a;;		rep=0|mood=5;;		Ok.		;;char=neutral
+ok_0b;;		rep=0|mood=5;;		Ok, wird erledigt.		;;char=neutral
+ok_0c;;		rep=0|mood=5;;		Ok, ist erledigt.		;;char=neutral
 default_ask_parameter_0a;;		rep=0|mood=5;;		Hmm, die Anfrage ist scheinbar unvollständig, was ist der fehlende Parameter? ;;char=polite,neutral
 default_ask_parameter_0a;;		rep=1|mood=5;;		Und der nächste fehlende Parameter? ;;char=cool,rude,neutral
 default_ask_parameter_0a;;		rep=2|mood=5;;		Und noch einen Parameter bitte! ;;char=cool,rude

@@ -6,7 +6,8 @@ import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.core.tools.JSON;
 
 /**
- * The generic parameters simply returns the input. Should be used for parameters that have no handler yet.
+ * The generic parameters simply returns the input. Should be used for parameters that have no handler yet
+ * or for those that can only be called by direct-commands (where you parse the data yourself).
  * 
  * @author Florian Quirin
  *

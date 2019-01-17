@@ -18,6 +18,11 @@
 			"delta_radio_föhnfrisur",
 			"rock_antenne_heavy_metal", 
 			"hotmixradio_metal"
+		],
+		"alternative": [
+			"kexp",
+			"delta_indie",
+			"ego_fm_pure"
 		]
 	},
     "playlists": {
@@ -105,6 +110,10 @@
             "streamURL": "http://egofm-live.cast.addradio.de/egofm/snow/mp3/high/stream.mp3",
             "name": "egoFM Snow"
         }],
+		"kexp": [{
+			"streamURL": "https://kexp-mp3-128.streamguys1.com/kexp128.mp3",
+			"name": "KEXP"
+		}],
         "ndr3": null,
         "ndr2": null,
         "ndr1": null,

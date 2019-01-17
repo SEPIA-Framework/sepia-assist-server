@@ -81,6 +81,11 @@ public class ParameterConfig {
 		//Generics / Exceptions / Specials
 		handlerToParameter.put(PARAMETERS.SENTENCES, Config.parentPackage + ".parameters.Sentences");
 		handlerToParameter.put(PARAMETERS.REPLY, GenericParameter.class.getCanonicalName());
+		handlerToParameter.put(PARAMETERS.REPLY_SUCCESS, GenericParameter.class.getCanonicalName());
+		handlerToParameter.put(PARAMETERS.REPLY_FAIL, GenericParameter.class.getCanonicalName());
+		handlerToParameter.put(PARAMETERS.MESH_NODE_URL, GenericParameter.class.getCanonicalName());
+		handlerToParameter.put(PARAMETERS.MESH_NODE_PLUGIN_NAME, GenericParameter.class.getCanonicalName());
+		handlerToParameter.put(PARAMETERS.MESH_NODE_PLUGIN_DATA, GenericParameter.class.getCanonicalName());
 	}
 	/**
 	 * Add another parameter handler.

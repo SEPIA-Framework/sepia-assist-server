@@ -17,6 +17,7 @@ import net.b07z.sepia.server.assist.services.FunCountToThree;
 import net.b07z.sepia.server.assist.services.Wikipedia;
 import net.b07z.sepia.server.assist.services.Lists;
 import net.b07z.sepia.server.assist.services.LocationSearchBasic;
+import net.b07z.sepia.server.assist.services.MeshNodeConnector;
 import net.b07z.sepia.server.assist.services.MusicRadioMixed;
 import net.b07z.sepia.server.assist.services.NewsRssFeeds;
 import net.b07z.sepia.server.assist.services.SentenceConnect;
@@ -218,6 +219,10 @@ public class InterviewServicesMap {
 		ArrayList<String> sentence_connect = new ArrayList<String>();
 			sentence_connect.add(SentenceConnect.class.getCanonicalName());
 			systemInterviewServicesMap.put(CMD.SENTENCE_CONNECT, sentence_connect);
+		//MESH NODE PLUGIN
+		ArrayList<String> mesh_node_plugin = new ArrayList<String>();
+			mesh_node_plugin.add(MeshNodeConnector.class.getCanonicalName());
+			systemInterviewServicesMap.put(CMD.MESH_NODE_PLUGIN, mesh_node_plugin);
 		//PARROT (REPEAT USER)
 		ArrayList<String> parrot = new ArrayList<String>();
 			parrot.add(RepeatMe.class.getCanonicalName());

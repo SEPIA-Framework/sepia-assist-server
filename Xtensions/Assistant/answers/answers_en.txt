@@ -16,6 +16,10 @@ abort_0b;;		rep=0|mood=5;;		Sorry, I didn't get it! Can you try again later plea
 abort_0b;;		rep=0|mood=5;;		I really don't get what you want. Let's talk about it later again. ;;char=rude
 abort_0b;;		rep=0|mood=5;;		I'm really sorry, but I don't understand. Please try it again later. ;;char=polite,neutral
 abort_0c;;		rep=0|mood=5;;		I'm sorry but I couldn't find any results. ;;char=polite,neutral
+ok_0a;;		rep=0|mood=5;;		Ok.		;;char=neutral
+ok_0b;;		rep=0|mood=5;;		Ok will be done.	;;char=neutral
+ok_0b;;		rep=0|mood=5;;		Ok I'll take care of it.	;;char=neutral
+ok_0c;;		rep=0|mood=5;;		Ok it's done.		;;char=neutral
 default_ask_parameter_0a;;		rep=0|mood=5;;		Hmm the request seems incomplete, what is the missing parameter? ;;char=neutral
 default_ask_parameter_0a;;		rep=1|mood=5;;		And the next missing parameter? ;;char=neutral
 default_ask_parameter_0a;;		rep=2|mood=5;;		And another missing parameter? ;;char=neutral
