@@ -162,7 +162,7 @@ public class SdkEndpoint {
 				//v2 - receive and store file or compile and class file(s)
 				}else{
 					fileName = receiveServiceFile(req, params, userId);
-					classBaseName = getSimpleClassNameFromFileName(fileName);
+					classBaseName = ClassBuilder.getSimpleClassNameFromFileName(fileName);
 				}
 				
 	        	//validate and register service
@@ -183,7 +183,7 @@ public class SdkEndpoint {
 	        		if (!isSourceCodeTransfer && fileName == null){
 	        			Part filePart = req.raw().getPart(UPLOAD_FILE_KEY);
 	        			fileName = getFileName(filePart);
-	        			classBaseName = getSimpleClassNameFromFileName(fileName);
+	        			classBaseName = ClassBuilder.getSimpleClassNameFromFileName(fileName);
 	        		}
 	        		File uploadDir = new File(ConfigServices.getCustomServicesBaseFolder() + userId);
 	        		
@@ -478,12 +478,6 @@ public class SdkEndpoint {
 	        }
 	    }
 	    return null;
-	}
-	/**
-	 * Simply use file name to get simple class name.
-	 */
-	private static String getSimpleClassNameFromFileName(String fileName){
-		return fileName.replaceFirst("\\$.*\\.", ".").replaceFirst("\\.(class|java|sservice|yaml)$", "").trim();
 	}
 
 }

@@ -3,10 +3,10 @@ package net.b07z.sepia.server.assist.server;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import net.b07z.sepia.server.assist.database.DB;
@@ -67,7 +67,7 @@ public class ConfigServices {
 	
 	//custom services
 	//see also UserData Objects
-	public static Map<String, SandboxClassLoader> classLoaders = new HashMap<>();
+	public static Map<String, SandboxClassLoader> classLoaders = new ConcurrentHashMap<>();
 	private static List<String> blackList;
 	
 	/**
