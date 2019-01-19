@@ -72,6 +72,8 @@ public class Config {
 	public static int serverPort = 20721;									//**server port
 	public static boolean enableCORS = true;								//enable CORS (set access-control headers)
 	public static String clusterKey = "KantbyW3YLh8jTQPs5uzt2SzbmXZyphW";	//**one step of inter-API communication security
+	public static String clusterKeyLight = "KantbyW3YLh8jTQPs";				//used as private secret for lower priority/more risky tasks to keep full key safe
+	public static int cklHashIterations = ((int) clusterKeyLight.charAt(clusterKeyLight.length()-1)) + 5;		//well defined but "random" hash iterations due to random key
 	public static boolean allowInternalCalls = true;			//**allow API-to-API authentication via cluster-key
 	public static boolean allowGlobalDevRequests = false;		//**restrict certain developer-specific requests to private network
 	
@@ -377,6 +379,8 @@ public class Config {
 			localSecret = settings.getProperty("server_local_secret");
 			serverPort = Integer.valueOf(settings.getProperty("server_port"));
 			clusterKey = settings.getProperty("cluster_key");
+				clusterKeyLight = clusterKey.substring(0, 17);
+				cklHashIterations = ((int) clusterKeyLight.charAt(clusterKeyLight.length()-1)) + 5;
 			allowInternalCalls = Boolean.valueOf(settings.getProperty("allow_internal_calls"));
 			allowGlobalDevRequests = Boolean.valueOf(settings.getProperty("allow_global_dev_requests"));
 			//policies

@@ -1,5 +1,7 @@
 package net.b07z.sepia.server.assist.endpoints;
 
+import java.util.List;
+
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
@@ -9,12 +11,16 @@ import net.b07z.sepia.server.assist.server.Start;
 import net.b07z.sepia.server.assist.server.Statistics;
 import net.b07z.sepia.server.assist.users.Authenticator;
 import net.b07z.sepia.server.assist.users.ID;
+import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.server.RequestParameters;
 import net.b07z.sepia.server.core.server.RequestPostParameters;
 import net.b07z.sepia.server.core.server.SparkJavaFw;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
+import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
+import net.b07z.sepia.server.core.users.Account;
 import net.b07z.sepia.server.core.users.AuthenticationInterface;
 import spark.Request;
 import spark.Response;
@@ -26,6 +32,94 @@ import spark.Response;
  *
  */
 public class AuthEndpoint {
+	
+	//temporary token is valid for
+	public static final long TEMP_TOKEN_VALID_FOR = 300000l; 	//5minutes
+	
+	/**
+	 * This class can be used to create and restore a temporary token. A temporary token is issued by the
+	 * server to validate a request that follows within the next ~5min and can only be checked with secret
+	 * server info.
+	 */
+	public static class TemporaryToken {
+		public String userId;
+		public List<String> userRoles;
+		public long timestamp;
+		public String tKey;
+		public String tKeySubmitted;
+		/**
+		 * Get the expected temporary token (from the submitted parameters and the server specific secrets)
+		 * and compare its 'tKey' to the submitted data.
+		 * @param params - server input parameters (e.g. from POST request)
+		 * @return
+		 * @throws Exception
+		 */
+		public TemporaryToken(RequestParameters params) throws Exception{
+			JSONObject tToken = params.getJson("tToken"); 		//MUST BE SAME AS NOTED IN getJson()
+			if (tToken != null){
+				this.userId = JSON.getString(tToken, "userId");
+				this.userRoles = Converters.jsonArrayToStringList(JSON.getJArray(tToken, "userRoles"));
+				this.timestamp = JSON.getLongOrDefault(tToken, "timestamp", 0);
+				this.tKey = Account.getTemporaryValidationToken(
+						userId, userRoles, 
+						Config.clusterKeyLight, String.valueOf(timestamp), 
+						Config.cklHashIterations
+				);
+				this.tKeySubmitted = JSON.getString(tToken, "tKey");
+			}
+		}
+		/**
+		 * Create a temporary, short-lived token from some user data that can be used to make an "allow"
+		 * request to the authentication endpoint. An "allow" request is the simplest form of authentication
+		 * that can be used to confirm that an user is allowed to do a certain action because he has been 
+		 * given the rights temporary by the server. Usually the token is valid for ~5 minutes. The token can
+		 * only be validated with server specific secret info.
+		 * @param user - user data
+		 * @return
+		 * @throws Exception
+		 */
+		public TemporaryToken(User user) throws Exception{
+			this.userId = user.getUserID();
+			this.userRoles = user.getUserRoles();
+			this.timestamp = System.currentTimeMillis();
+			this.tKey = Account.getTemporaryValidationToken(
+					userId, userRoles, 
+					Config.clusterKeyLight, String.valueOf(timestamp), 
+					Config.cklHashIterations
+			);
+		}
+		/**
+		 * Add this to the request body as key "tToken" (e.g. JSON.put(reqBody, "tToken", thisJson)) when you want to use the 
+		 * temp. token to authenticate a call to the "allow" section of this endpoint.
+		 */
+		public JSONObject getJson(){
+			return JSON.make(
+					"userId", userId,
+					"userRoles", userRoles,
+					"timestamp", timestamp,
+					"tKey", tKey
+			);
+		}
+		/**
+		 * Is the token still valid? (checks e.g. if the timestamp is 'fresh' enough).
+		 */
+		public boolean isStillValid() {
+			return (Is.notNullOrEmpty(this.tKey) &&
+					((System.currentTimeMillis() - this.timestamp) < TEMP_TOKEN_VALID_FOR));
+		}
+		/**
+		 * Is the submitted token the same as the expected token?
+		 */
+		public boolean isSameAsSubmitted(){
+			if (Is.notNullOrEmpty(this.tKeySubmitted)){
+				//NOTE: this will only work if tKeySubmitted was generated with SAME CLUSTER KEY!
+				if (isStillValid() && this.tKey.equals(this.tKeySubmitted)){
+					return true;
+				}
+			}
+			return false;
+		}
+	}
 
 	/**
 	 * ---AUTHENTICATION API---<br>
@@ -45,6 +139,31 @@ public class AuthEndpoint {
 		//no action
 		if (action == null || action.trim().isEmpty()){
 			return SparkJavaFw.returnResult(request, response, "no action", 204);
+		}
+		//get permission by server to execute a certain task by validating the given information using local cluster key (light)
+		else if (action.trim().equals("allow")){
+			//authenticate via temporary token
+			try{
+				TemporaryToken tToken = new TemporaryToken(params);
+				//NOTE: this will only work if tKeyInput was generated with SAME CLUSTER KEY!
+				if (tToken.isSameAsSubmitted()){
+					//success
+					JSONObject msg = new JSONObject();
+					JSON.add(msg, "result", "success");
+					JSON.add(msg, "access_level", 0);
+					JSON.add(msg, "request", "allowed");
+					//basic info is accepted
+					JSON.add(msg, Authenticator.GUUID, tToken.userId);
+					JSON.add(msg, Authenticator.USER_ROLES, tToken.userRoles);
+					JSON.add(msg, "duration_ms", Debugger.toc(tic));
+					return SparkJavaFw.returnResult(request, response, msg.toJSONString(), 200);
+				}else{
+					return SparkJavaFw.returnNoAccess(request, response);
+				}
+			}catch (Exception e){
+				e.printStackTrace();
+				return SparkJavaFw.returnNoAccess(request, response);
+			}
 		}
 		//check user - this is mainly a service for other APIs - basically same as validate but without token generation
 		else if (action.trim().equals("check")){

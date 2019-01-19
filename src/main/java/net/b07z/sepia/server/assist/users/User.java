@@ -119,7 +119,11 @@ public final class User {
 			//roles
 			if (token.getBasicInfo().containsKey(Authenticator.USER_ROLES)){
 				@SuppressWarnings("unchecked")
-				List<String> roles = (List<String>) token.getBasicInfo().get(Authenticator.USER_ROLES);
+				List<Object> roleObjects = (List<Object>) token.getBasicInfo().get(Authenticator.USER_ROLES);
+				List<String> roles = new ArrayList<>(); 
+				for (Object o : roleObjects){
+					roles.add(o.toString()); 		//we need to make a proper transformation
+				}
 				this.userRoles = roles;
 				info.put(ACCOUNT.ROLES, roles);
 				checked.put(ACCOUNT.ROLES, true);
