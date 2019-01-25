@@ -133,14 +133,23 @@ public class Config {
 	public static String ttsModule = TtsAcapelaWeb.class.getCanonicalName();
 	public static String ttsName = "Acapela";
 	public static String emailModule = SendEmailBasicSmtp.class.getCanonicalName();
-	//toggles and switches
-	public static void toggleAnswerModule(){
+	
+	//toggles and switches:
+	
+	/**
+	 * Toggle answer module and return entry value for config file.
+	 */
+	public static String toggleAnswerModule(){
+		String settingsEntry;
 		if (answerModule.equals(AnswerLoaderElasticsearch.class.getCanonicalName())){
 			answerModule = AnswerLoaderFile.class.getCanonicalName();
+			settingsEntry = "file";
 		}else{
 			answerModule = AnswerLoaderElasticsearch.class.getCanonicalName();
+			settingsEntry = "elasticsearch";
 		}
 		setupAnswers();
+		return settingsEntry;
 	}
 	public static void setAnswerModule(AnswerLoader module){
 		answerModule = module.getClass().getCanonicalName();
@@ -393,12 +402,27 @@ public class Config {
 				if (authAndAccountModule.equals("dynamo_db")){
 					accountModule = AccountDynamoDB.class.getCanonicalName();
 					authenticationModule = AuthenticationDynamoDB.class.getCanonicalName();
+				}else if (authAndAccountModule.equals("elasticsearch")){
+					accountModule = AccountElasticsearch.class.getCanonicalName();
+					authenticationModule = AuthenticationElasticsearch.class.getCanonicalName();
 				}else{
+					//In case we have more modules we need to change this here:
 					accountModule = AccountElasticsearch.class.getCanonicalName();
 					authenticationModule = AuthenticationElasticsearch.class.getCanonicalName();
 				}
 			}
+			String answerModuleValue = settings.getProperty("module_answers");
+			if (answerModuleValue != null){
+				if (answerModuleValue.equals("file")){
+					answerModule = AnswerLoaderFile.class.getCanonicalName();
+				}else if (answerModuleValue.equals("elasticsearch")){
+					answerModule = AnswerLoaderElasticsearch.class.getCanonicalName();
+				}else{
+					answerModule = answerModuleValue;
+				}
+			}
 			enableSDK = Boolean.valueOf(settings.getProperty("enable_sdk"));
+			useSentencesDB = Boolean.valueOf(settings.getProperty("enable_custom_commands"));
 			//databases
 			defaultRegion = settings.getProperty("db_default_region", "eu");
 			ConfigDynamoDB.region_custom = settings.getProperty("db_dynamo_region_custom", "");
@@ -484,6 +508,7 @@ public class Config {
 		config.setProperty("db_elastic_endpoint_us1", ConfigElasticSearch.endpoint_us1);
 		//modules
 		config.setProperty("enable_sdk", String.valueOf(enableSDK));
+		config.setProperty("enable_custom_commands", String.valueOf(useSentencesDB));
 		//chat
 		config.setProperty("connect_to_websocket", String.valueOf(connectToWebSocket));
 		//workers
@@ -524,6 +549,21 @@ public class Config {
 		}catch (Exception e){
 			Debugger.println("saving settings to " + confFile + "... failed!" , 1);
 		}
+	}
+	
+	/**
+	 * Replace a key-value pair in settings file or append it if not found.
+	 * @param confFile
+	 * @param keyToReplace
+	 * @param newValue
+	 */
+	public static void replaceSettings(String confFile, String keyToReplace, String newValue){
+		if (confFile == null || confFile.isEmpty())	confFile = configFile;
+		FilesAndStreams.replaceLineOrAppend(
+				configFile,
+				("^" + keyToReplace + "=.*"),	
+				(oldLine) -> { return (keyToReplace + "=" + newValue); }
+		);
 	}
 
 }

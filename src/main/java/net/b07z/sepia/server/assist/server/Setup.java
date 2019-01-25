@@ -571,8 +571,7 @@ public class Setup {
 		}
 		//add worker to assistant config
 		boolean assistFileSuccess = FilesAndStreams.replaceLineInFile(scf.assist, 
-				"^background_workers=.*", 
-				(oldLine) -> {
+				"^background_workers=.*", (oldLine) -> {
 					//add worker and make sure its not in there twice (remove then add again)
 					String newLine = oldLine.replaceFirst("(,|)\\s*" + DuckDnsWorker.workerName + "\\b", "").trim();
 					if (newLine.isEmpty()){

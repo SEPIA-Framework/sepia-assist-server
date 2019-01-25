@@ -423,7 +423,8 @@ public class Start {
 			//-answers
 			String toggleAnswerModule = params.getString("answers");
 			if (toggleAnswerModule != null && toggleAnswerModule.equals("toggle")){
-				Config.toggleAnswerModule();
+				String newConfigEntryValue = Config.toggleAnswerModule();
+				Config.replaceSettings(Config.configFile, "module_answers", newConfigEntryValue);
 				Debugger.println("Config - answers module changed by user: " + user.getUserID(), 3);
 			}
 			//-commands
@@ -434,6 +435,7 @@ public class Start {
 				}else{
 					Config.useSentencesDB = true;
 				}
+				Config.replaceSettings(Config.configFile, "enable_custom_commands", Boolean.toString(Config.useSentencesDB));
 				Debugger.println("Config - loading of DB commands was changed by user: " + user.getUserID(), 3);
 			}
 			//-email bcc
@@ -449,6 +451,7 @@ public class Start {
 				}else{
 					Config.enableSDK = true;
 				}
+				Config.replaceSettings(Config.configFile, "enable_sdk", Boolean.toString(Config.enableSDK));
 				Debugger.println("Config - sdk status changed by user: " + user.getUserID(), 3);
 			}
 			//-database
