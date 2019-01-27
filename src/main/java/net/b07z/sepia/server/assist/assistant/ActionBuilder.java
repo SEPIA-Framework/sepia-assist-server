@@ -23,8 +23,21 @@ public class ActionBuilder {
 	public static JSONArray makeSimpleAction(String type, String key, String value){
 		JSONArray ja = new JSONArray();
 		JSONObject jo = new JSONObject();
-		JSON.add(jo, "type", type);
-		JSON.add(jo, key, value);
+		JSON.put(jo, "type", type);
+		JSON.put(jo, key, value);
+		JSON.add(ja, jo);
+		return ja;
+	}
+	/**
+	 * Make a simple action with added JSON data. 
+	 * @param type - ACTIONS.xyt action type
+	 * @param json - JSON object to add. NOTE: the key "type" may not be used and will be overwritten by the ACTION type!
+	 * @return JSONArray with action
+	 */
+	public static JSONArray makeSimpleAction(String type, JSONObject json){
+		JSONArray ja = new JSONArray();
+		JSONObject jo = json;
+		JSON.put(jo, "type", type);
 		JSON.add(ja, jo);
 		return ja;
 	}
