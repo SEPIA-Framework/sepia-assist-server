@@ -82,6 +82,12 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!-- force certain surefire version for testing -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.0.0-M3</version>
+			</plugin>
 			
 			<!-- Java docs, use with: mvn javadoc:jar -->
 			<plugin>
