@@ -248,9 +248,9 @@ public class Alarms implements ServiceInterface{
 				
 				//user probably meant next day?
 				long absTotalDiff_ms = Math.abs(totalDiff_ms);
-				long elevenHours = 11*60*60*1000;
-				long twoHours = 2*60*60*1000;
-				if (absTotalDiff_ms > twoHours && absTotalDiff_ms < elevenHours){
+				long maxHours = 23*60*60*1000;
+				long minHours = 1*60*60*1000;
+				if (absTotalDiff_ms > minHours && absTotalDiff_ms < maxHours){
 					dateDay = DateTimeConverters.getTomorrow("yyyy.MM.dd", nluResult.input);
 					changedDateAndTime = true;
 				}
