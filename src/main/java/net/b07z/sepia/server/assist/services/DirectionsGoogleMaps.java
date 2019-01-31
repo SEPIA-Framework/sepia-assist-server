@@ -154,22 +154,23 @@ public class DirectionsGoogleMaps implements ServiceInterface{
 	private static final String alternatives = "directions_2a";
 
 	//result
-	public ServiceResult getResult(NluResult NLU_result){
+	public ServiceResult getResult(NluResult nluResult){
 		//initialize result
-		ServiceBuilder api = new ServiceBuilder(NLU_result, getInfo(""));
+		ServiceBuilder api = new ServiceBuilder(nluResult, 
+				getInfoFreshOrCache(nluResult.input, this.getClass().getCanonicalName()));
 		
 		//get interview parameters:
 		
 		//required
-		JSONObject endJSON = NLU_result.getRequiredParameter(PARAMETERS.LOCATION_END).getData();
+		JSONObject endJSON = nluResult.getRequiredParameter(PARAMETERS.LOCATION_END).getData();
 		//required but defaults to user location as optional
-		JSONObject startJSON = NLU_result.getOptionalParameter(PARAMETERS.LOCATION_START, "").getData();
+		JSONObject startJSON = nluResult.getOptionalParameter(PARAMETERS.LOCATION_START, "").getData();
 		//JSON.printJSONpretty(startJSON); 		//DEBUG
 		
 		//optional
-		Parameter waypointP = NLU_result.getOptionalParameter(PARAMETERS.LOCATION_WAYPOINT, "");
-		Parameter typeP = NLU_result.getOptionalParameter(PARAMETERS.TRAVEL_TYPE, DEFAULT_TRAVEL_TYPE);
-		Parameter infoP = NLU_result.getOptionalParameter(PARAMETERS.TRAVEL_REQUEST_INFO, DEFAULT_TRAVEL_REQUEST_INFO);
+		Parameter waypointP = nluResult.getOptionalParameter(PARAMETERS.LOCATION_WAYPOINT, "");
+		Parameter typeP = nluResult.getOptionalParameter(PARAMETERS.TRAVEL_TYPE, DEFAULT_TRAVEL_TYPE);
+		Parameter infoP = nluResult.getOptionalParameter(PARAMETERS.TRAVEL_REQUEST_INFO, DEFAULT_TRAVEL_REQUEST_INFO);
 						
 		//parameter adaptation to service format
 		
@@ -201,7 +202,7 @@ public class DirectionsGoogleMaps implements ServiceInterface{
 		//end options
 		JSONArray optionsArray = (JSONArray) endJSON.get(InterviewData.OPTIONS);
 		boolean hasOptions = (optionsArray != null);
-		boolean showAlternatives = Boolean.parseBoolean(NLU_result.getParameter(SHOW_ALTERNATIVES));
+		boolean showAlternatives = Boolean.parseBoolean(nluResult.getParameter(SHOW_ALTERNATIVES));
 		if (hasOptions){
 			//add (reduced) first result to options
 			endJSON.remove(InterviewData.OPTIONS);
@@ -298,7 +299,7 @@ public class DirectionsGoogleMaps implements ServiceInterface{
 			googleMapsURL = makeGoogleMapsURL(start, end, wp, googleTravelType, googleViews);
 			
 			//APPLE
-			if (CLIENTS.isAppleCompatible(NLU_result.input.clientInfo)){
+			if (CLIENTS.isAppleCompatible(nluResult.input.clientInfo)){
 				appleMapsURL = makeAppleMapsURL(start, end, wp, googleTravelType);
 			}
 			
@@ -436,25 +437,27 @@ public class DirectionsGoogleMaps implements ServiceInterface{
 		
 		//google
 		Card googleCard = new Card(Card.TYPE_SINGLE);
-		JSONObject linkCard1 = googleCard.addElement(ElementType.link, 
+		//JSONObject linkCard1 = 
+		googleCard.addElement(ElementType.link, 
 				JSON.make("title", "Google Maps", "desc", description),
 				null, null, "", 
 				googleMapsURL, 
 				Config.urlWebImages + "/brands/google-maps.png", 
 				null, null);
-		JSON.put(linkCard1, "imageBackground", "transparent");	//use any CSS background option you wish
+		//JSON.put(linkCard1, "imageBackground", "transparent");	//use any CSS background option you wish
 		api.addCard(googleCard.getJSON());
 		
 		//apple
 		if (!appleMapsURL.isEmpty()){
 			Card appleCard = new Card(Card.TYPE_SINGLE);
-			JSONObject linkCard2 = appleCard.addElement(ElementType.link, 
+			//JSONObject linkCard2 = 
+			appleCard.addElement(ElementType.link, 
 					JSON.make("title", "Apple Maps", "desc", description),
 					null, null, "", 
 					appleMapsURL, 
 					Config.urlWebImages + "/brands/apple-maps.png", 
 					null, null);
-			JSON.put(linkCard2, "imageBackground", "transparent");	//use any CSS background option you wish
+			//JSON.put(linkCard2, "imageBackground", "transparent");	//use any CSS background option you wish
 			api.addCard(appleCard.getJSON());
 		}
 		
@@ -566,13 +569,14 @@ public class DirectionsGoogleMaps implements ServiceInterface{
 			else desc += ((locStreet.isEmpty())? "" : (locStreet + ", ")) + locCity;
 			
 			Card card = new Card(Card.TYPE_SINGLE);
-			JSONObject linkCard = card.addElement(ElementType.link, 
+			//JSONObject linkCard = 
+			card.addElement(ElementType.link, 
 					JSON.make("title", "", "desc", (locName.isEmpty()? "" : ("<b>" + locName + "</b><br>")) + desc.trim()),		//we dont use title because names are so loooong most of the time :(
 					null, null, "", 
 					mapUrl, 
 					locImage, 
 					null, null);
-			JSON.put(linkCard, "imageBackground", "transparent");
+			//JSON.put(linkCard, "imageBackground", "transparent");
 			
 			cardElements.add(card);
 		}

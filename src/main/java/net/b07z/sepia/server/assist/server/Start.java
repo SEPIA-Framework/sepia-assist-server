@@ -114,6 +114,7 @@ public class Start {
 		if (isSSL){
 			secure(Config.xtensionsFolder + "SSL/ssl-keystore.jks", keystorePwd, null, null);
 		}
+		Debugger.println("JAVA_HOME: " + System.getProperty("java.home"), 3);
 		
 		//load configuration
 		loadConfigFile(serverType);
@@ -206,7 +207,7 @@ public class Start {
 	public static void setupModules(){
 		Config.setupDatabases(); 		//DB modules
 		Config.setupAnswers();			//answers
-		Config.setupCommands();		//predefined commands
+		Config.setupCommands();			//predefined commands
 		Config.setupChats(); 			//predefined chats
 		Config.setup_nlu_steps(); 		//interpretation chain
 		Workers.setupWorkers(); 		//setup and start selected workers
@@ -266,6 +267,7 @@ public class Start {
 		//SDK
 		get("/upload-service", (request, response) -> 		SdkEndpoint.uploadServiceGet(request, response));
 		post("/upload-service", (request, response) -> 		SdkEndpoint.uploadServicePost(request, response));
+		post("/delete-service", (request, response) -> 		SdkEndpoint.deleteServicePost(request, response));
 		
 		//Remote controls
 		post("/remote-action", (request, response) ->		RemoteActionEndpoint.remoteActionAPI(request, response));
@@ -320,7 +322,7 @@ public class Start {
 	 */
 	public static String helloWorld(Request request, Response response){
 		//prepare parameters
-		RequestParameters params = new RequestGetOrFormParameters(request);
+		RequestParameters params = new RequestGetOrFormParameters(request); 	//TODO: because of form-post?	
 		
 		//authenticate
 		Authenticator token = authenticate(params, request);
@@ -370,7 +372,7 @@ public class Start {
 		//and we DON'T check 'Config.allowInternalCalls' (since this is required data)
 		
 		//prepare parameters
-		RequestParameters params = new RequestGetOrFormParameters(request);
+		RequestParameters params = new RequestGetOrFormParameters(request);		//TODO: because of form-post?
 		
 		//authenticate 
 		if (Validate.validateInternalCall(request, params.getString("sKey"), Config.clusterKey)){
@@ -400,7 +402,7 @@ public class Start {
 			}
 		}
 		//prepare parameters
-		RequestParameters params = new RequestGetOrFormParameters(request);
+		RequestParameters params = new RequestGetOrFormParameters(request);		//TODO: because of form-post?
 		
 		//authenticate
 		Authenticator token = authenticate(params, request);
@@ -421,7 +423,8 @@ public class Start {
 			//-answers
 			String toggleAnswerModule = params.getString("answers");
 			if (toggleAnswerModule != null && toggleAnswerModule.equals("toggle")){
-				Config.toggleAnswerModule();
+				String newConfigEntryValue = Config.toggleAnswerModule();
+				Config.replaceSettings(Config.configFile, "module_answers", newConfigEntryValue);
 				Debugger.println("Config - answers module changed by user: " + user.getUserID(), 3);
 			}
 			//-commands
@@ -432,6 +435,7 @@ public class Start {
 				}else{
 					Config.useSentencesDB = true;
 				}
+				Config.replaceSettings(Config.configFile, "enable_custom_commands", Boolean.toString(Config.useSentencesDB));
 				Debugger.println("Config - loading of DB commands was changed by user: " + user.getUserID(), 3);
 			}
 			//-email bcc
@@ -447,6 +451,7 @@ public class Start {
 				}else{
 					Config.enableSDK = true;
 				}
+				Config.replaceSettings(Config.configFile, "enable_sdk", Boolean.toString(Config.enableSDK));
 				Debugger.println("Config - sdk status changed by user: " + user.getUserID(), 3);
 			}
 			//-database

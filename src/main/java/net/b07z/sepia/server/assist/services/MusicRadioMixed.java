@@ -65,16 +65,17 @@ public class MusicRadioMixed implements ServiceInterface {
 	private static String radioOffAns = "music_radio_2a";
 	
 	//result
-	public ServiceResult getResult(NluResult NLU_result){
+	public ServiceResult getResult(NluResult nluResult){
 		//initialize result
-		ServiceBuilder api = new ServiceBuilder(NLU_result, getInfo(""));
+		ServiceBuilder api = new ServiceBuilder(nluResult, 
+				getInfoFreshOrCache(nluResult.input, this.getClass().getCanonicalName()));
 		
 		//get from cache or make the external API call and build API_Result
 		try {
 			//get parameters
 			
 			//Station
-			Parameter stationP = NLU_result.getOptionalParameter(PARAMETERS.RADIO_STATION, "");	//Note: the default defined here applies to all station keys
+			Parameter stationP = nluResult.getOptionalParameter(PARAMETERS.RADIO_STATION, "");	//Note: the default defined here applies to all station keys
 			String station = (String) stationP.getDataFieldOrDefault(InterviewData.INPUT);
 			//String stationNorm = (String) stationP.getDataFieldOrDefault(InterviewData.VALUE);	//Note: we could use this instead of chacheStationName. See comment near bottom.
 			String chacheStationName = (String) stationP.getDataFieldOrDefault(InterviewData.CACHE_ENTRY);
@@ -84,16 +85,16 @@ public class MusicRadioMixed implements ServiceInterface {
 			}*/
 			
 			//Genre
-			Parameter genreP = NLU_result.getOptionalParameter(PARAMETERS.MUSIC_GENRE, "");		//Note: the default defined here applies to all genre keys
+			Parameter genreP = nluResult.getOptionalParameter(PARAMETERS.MUSIC_GENRE, "");		//Note: the default defined here applies to all genre keys
 			String genre = (String) genreP.getDataFieldOrDefault(InterviewData.INPUT);
 			String genreNorm = (String) genreP.getDataFieldOrDefault(InterviewData.VALUE);
 			
 			//Action
-			String action = (String) NLU_result.getOptionalParameter(PARAMETERS.ACTION, "").getDataFieldOrDefault(InterviewData.VALUE);
+			String action = (String) nluResult.getOptionalParameter(PARAMETERS.ACTION, "").getDataFieldOrDefault(InterviewData.VALUE);
 			
 			//Stream
 			//String stream = (String) NLU_result.getOptionalParameter(PARAMETERS.URL, "").getDataFieldOrDefault(InterviewData.VALUE);
-			String stream = NLU_result.getParameter(PARAMETERS.URL);	//this parameter is not extractable but can be submitted by direct commands for example
+			String stream = nluResult.getParameter(PARAMETERS.URL);	//this parameter is not extractable but can be submitted by direct commands for example
 			
 			Debugger.println("cmd: Music radio, station: " + station + ", genre: " + genre + ", action: " + action, 2);				//debug
 			

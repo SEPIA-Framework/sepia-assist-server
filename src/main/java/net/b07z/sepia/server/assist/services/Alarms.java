@@ -1,5 +1,6 @@
 package net.b07z.sepia.server.assist.services;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -26,6 +27,7 @@ import net.b07z.sepia.server.core.assistant.ACTIONS;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.data.UserDataList;
+import net.b07z.sepia.server.core.data.UserDataList.IndexType;
 import net.b07z.sepia.server.core.data.UserDataList.Section;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.JSON;
@@ -39,6 +41,7 @@ import net.b07z.sepia.server.core.tools.JSON;
 public class Alarms implements ServiceInterface{
 	
 	private static int list_limit = 50;			//this many alarms are allowed in each list (timer and alarm are seperate e.g.)
+	public static boolean testMode = false; 	//use only for testing - skips database access
 
 	@Override
 	public ServiceInfo getInfo(String language) {
@@ -104,7 +107,8 @@ public class Alarms implements ServiceInterface{
 	@Override
 	public ServiceResult getResult(NluResult nluResult) {
 		//initialize result
-		ServiceBuilder api = new ServiceBuilder(nluResult, getInfo(""));
+		ServiceBuilder api = new ServiceBuilder(nluResult, 
+				getInfoFreshOrCache(nluResult.input, this.getClass().getCanonicalName()));
 		User user = nluResult.input.user;
 		
 		//get parameters:
@@ -118,7 +122,7 @@ public class Alarms implements ServiceInterface{
 		String dateTime = (String) clockP.getDataFieldOrDefault(InterviewData.DATE_TIME);
 		
 		api.resultInfoPut("day", dateDay);
-		api.resultInfoPut("time", dateTime.replaceFirst(":\\d\\d$", "").trim());
+		api.resultInfoPut("time", dateTime.replaceFirst(":\\d\\d$", "").trim()); 	//might be overwritten later
 		
 		//-alarm type
 		Parameter alarmTypeP = nluResult.getOptionalParameter(PARAMETERS.ALARM_TYPE, "");
@@ -238,14 +242,40 @@ public class Alarms implements ServiceInterface{
 					diffSeconds = diff.get("ss");
 				}
 			}
-			//TODO: what if the time lies in the past? Make some smart decisions!
+			//what if the time lies in the past? Make some smart decisions!
 			if (totalDiff_ms <= 0){
-				//for now just abort
-				api.setCustomAnswer(timeIsPast);
-				api.setStatusOkay();
+				boolean changedDateAndTime = false; 	//TODO: we could use this to modify the answer slightly (to point out the change) 
 				
-				ServiceResult result = api.buildResult();
-				return result;
+				//user probably meant next day?
+				long absTotalDiff_ms = Math.abs(totalDiff_ms);
+				long maxHours = 23*60*60*1000;
+				long minHours = 1*60*60*1000;
+				if (absTotalDiff_ms > minHours && absTotalDiff_ms < maxHours){
+					dateDay = DateTimeConverters.getTomorrow("yyyy.MM.dd", nluResult.input);
+					changedDateAndTime = true;
+				}
+				//TODO: add more
+				
+				//update time ...
+				if (changedDateAndTime){
+					HashMap<String, Long> diff = DateTimeConverters.dateDifference(nluResult.input.userTimeLocal, 
+							dateDay + Config.defaultSdfSeparator + dateTime);
+					if (diff != null){
+						totalDiff_ms = diff.get("total_ms");
+						diffDays = diff.get("dd");
+						diffHours = diff.get("hh");
+						diffMinutes = diff.get("mm");
+						diffSeconds = diff.get("ss");
+					}
+					
+				//...or just abort with "is past" message
+				}else{
+					api.setCustomAnswer(timeIsPast);
+					api.setStatusOkay();
+					
+					ServiceResult result = api.buildResult();
+					return result;
+				}
 				
 			}else{
 				timeUnix = System.currentTimeMillis() + totalDiff_ms;
@@ -325,7 +355,8 @@ public class Alarms implements ServiceInterface{
 			}else if (isAlarm){
 				String repeat = "onetime";
 								
-				//answer
+				//answer:
+				
 				//get a nice, speakable day by correcting diffDays for hours, minutes, seconds to midnight and convert
 				long correctedDiffDays = DateTimeConverters.getIntuitiveDaysDifference(nluResult.input, diffDays, diffHours, diffMinutes, diffSeconds);
 				String speakableDay = DateTimeConverters.getSpeakableDateSpecial(dateDay, correctedDiffDays, "yyyy.MM.dd", nluResult.input, false);
@@ -336,6 +367,10 @@ public class Alarms implements ServiceInterface{
 					api.setCustomAnswer(answerSetAlarmFar);
 				}
 				api.resultInfoPut("day", speakableDay);
+				
+				//... and for time
+				String speakableTime = DateTimeConverters.getSpeakableTime(dateTime, "HH:mm:ss", api.language);
+				api.resultInfoPut("time", speakableTime);
 				
 				String name = "";
 				if (alarmName != null && !alarmName.isEmpty()){
@@ -433,7 +468,7 @@ public class Alarms implements ServiceInterface{
 					}else{
 						//day should be nice already
 						//String speakableDay = Tools_DateTime.getSpeakableDate(JSON.getString(nextAlarm, "day"), "yyyy.MM.dd", api.language);
-						api.resultInfoPut("time", JSON.getString(nextAlarm, "time").replaceFirst(":\\d\\d$", "").trim());
+						api.resultInfoPut("time", DateTimeConverters.getSpeakableTime(JSON.getString(nextAlarm, "time"), "HH:mm:ss", api.language));
 						api.resultInfoPut("day", JSON.getString(nextAlarm, "day"));
 						api.setCustomAnswer(answerNextAlarm);
 					}
@@ -533,13 +568,22 @@ public class Alarms implements ServiceInterface{
 	//---------- helpers ----------
 	
 	private List<UserDataList> getTimeEventsList(UserDataInterface userData, User user, String alarmType){
-		HashMap<String, Object> filters = new HashMap<>();
-		if (!alarmType.isEmpty()) filters.put("title", alarmType);
-		List<UserDataList> udlList = userData.getUserDataList(user, Section.timeEvents, UserDataList.IndexType.alarms.name(), filters);
+		List<UserDataList> udlList;
+		if (testMode){
+			udlList = new ArrayList<>();
+			udlList.add(new UserDataList(user.getUserID(), Section.timeEvents, IndexType.alarms.name(), "Test", new JSONArray()));
+		}else{
+			HashMap<String, Object> filters = new HashMap<>();
+			if (!alarmType.isEmpty()) filters.put("title", alarmType);
+			udlList = userData.getUserDataList(user, Section.timeEvents, IndexType.alarms.name(), filters);
+		}
 		return udlList;
 	}
 	
 	private boolean writeTimeEventsList(UserDataInterface userData, User user, UserDataList activeList){
+		if (testMode){
+			return true;
+		}
 		//System.out.println("DATA: " + activeList.data); 		//debug
 		JSONObject writeResult = userData.setUserDataList(user, Section.timeEvents, activeList);
 		//System.out.println("RESULT CODE: " + code); 		//debug

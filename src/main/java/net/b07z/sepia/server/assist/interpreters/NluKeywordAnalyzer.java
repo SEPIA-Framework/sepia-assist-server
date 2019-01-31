@@ -27,12 +27,12 @@ import net.b07z.sepia.server.core.assistant.PARAMETERS;
  */
 public class NluKeywordAnalyzer implements NluInterface {
 
-	private double certainty_lvl = 0.0d;		//how certain is ILA about a result
+	private double certainty_lvl = 0.0d;		//how certain is ILA about a result (I mean SEPIA ^^)
 	
 	/**
 	 * This is an abstract regular expression analyzer that can be used to evaluate a custom service that has a defined regular expression trigger.
 	 * @param text - the text to search
-	 * @param input - NLU_Input
+	 * @param input - NluInput
 	 * @param service - a service (custom or system) that has all the necessary apiInfo
 	 * @param possibleCMDs - required list of the parent NLU method that collects possible commands
 	 * @param possibleScore - required list that stores the scores of the possible commands
@@ -44,7 +44,7 @@ public class NluKeywordAnalyzer implements NluInterface {
 						List<String> possibleCMDs, List<Integer> possibleScore, List<Map<String, String>> possibleParameters,
 						int index){
 		//get service info
-		ServiceInfo serviceInfo = service.getInfo(input.language);
+		ServiceInfo serviceInfo = service.getInfoFreshOrCache(input, service.getClass().getCanonicalName());
 		String regEx = serviceInfo.getCustomTriggerRegX(input.language);
 		
 		//has regEx at all?
@@ -62,6 +62,7 @@ public class NluKeywordAnalyzer implements NluInterface {
 			List<Parameter> paramsList = serviceInfo.getAllParameters();
 			Map<String, String> pv = new HashMap<>(); 		//TODO: pass this down to avoid additional checking? Is it still relevant with parameter cache?
 			if (!paramsList.isEmpty()){
+				/*
 				String[] params = new String[paramsList.size()];
 				int i = 0;
 				for (Parameter p : paramsList){
@@ -69,8 +70,10 @@ public class NluKeywordAnalyzer implements NluInterface {
 					//System.out.println("RegX Analyzer, param: " + params[i]); 		//DEBUG
 					i++;
 				}
+				*/
 				AbstractParameterSearch aps = new AbstractParameterSearch()
-						.setParameters(params)
+						//.setParameters(params)
+						.setParameters(paramsList.toArray(new Parameter[paramsList.size()]))
 						.setup(input, pv);
 				aps.getParameters();
 				possibleScore.set(index, possibleScore.get(index) + aps.getScore());
@@ -80,6 +83,46 @@ public class NluKeywordAnalyzer implements NluInterface {
 		return index;
 	}
 	
+	/**
+	 * Run keyword analyzer for custom SDK made services using user-ID and assistant-ID.
+	 * @param input - NluInput with normalized .text
+	 * @param possibleCMDs - Empty or pre-filled list that gets updated
+	 * @param possibleScore - Empty or pre-filled list that gets updated
+	 * @param possibleParameters - Empty or pre-filled list that gets updated
+	 * @param index - integer indicating the current position in the possibleCMDs list
+	 * @return new index position in possibleCMDs, will be unchanged compared to input if no custom service regEx triggers
+	 */
+	public static int runCustomSdkServices(NluInput input, List<String> possibleCMDs, 
+				List<Integer> possibleScore, List<Map<String, String>> possibleParameters, int index){
+		//SDK allowed?
+		if (Config.enableSDK){
+			
+			String text = input.text;
+			
+			//----- USER SDK SERVICES -----
+			
+			//Abstract analyzer (should come at the end because of lower priority?)
+			List<ServiceInterface> customServices = ConfigServices.getCustomServicesList(input, input.user);
+			for (ServiceInterface service : customServices){
+				index = NluKeywordAnalyzer.abstractRegExAnalyzer(text, input, service,
+						possibleCMDs, possibleScore, possibleParameters, index);
+			}
+			
+			//----- ASSISTANT SDK SERVICES -----
+			
+			//Abstract analyzer (should come at the end because of lower priority?)
+			List<ServiceInterface> assistantServices = ConfigServices.getCustomServicesList(input, Config.getAssistantUser());
+			for (ServiceInterface service : assistantServices){
+				index = NluKeywordAnalyzer.abstractRegExAnalyzer(text, input, service,
+						possibleCMDs, possibleScore, possibleParameters, index);
+			}
+		}
+		return index;
+	}
+	
+	//----------- Interface -----------
+	
+	@Override
 	public NluResult interpret(NluInput input) {
 		
 		//get parameters from input
@@ -128,7 +171,7 @@ public class NluKeywordAnalyzer implements NluInterface {
 				possibleCMDs, possibleScore, possibleParameters, index);
 		}
 						
-		//Repeat me - overwrites all other commands!
+		//Repeat me - overwrites all other commands! - TODO: is this still valid or captured before? If it is make a function
 		if (NluTools.stringContains(text, "(^saythis|" + Pattern.quote(Config.assistantName) + " saythis)")){
 			String this_text = input.textRaw.replaceFirst(".*?\\bsaythis|.*?\\bSaythis", "").trim();
 			
@@ -189,6 +232,7 @@ public class NluKeywordAnalyzer implements NluInterface {
 	}
 
 	//certainty
+	@Override
 	public double getCertaintyLevel(NluResult result) {
 		return result.certaintyLvl;
 	}

@@ -47,7 +47,7 @@ public class ConvertResult {
 		}else{
 			sr = iResult.getApiComment();
 		}
-		sr.getApiInfo().setIntendedCommand(cmd); 	//we need to make sure this is set so the InterviewInterface can adapt to command changes! 
+		sr.getServiceInfo().setIntendedCommand(cmd); 	//we need to make sure this is set so the InterviewInterface can adapt to command changes! 
 		return sr;
 	}
 

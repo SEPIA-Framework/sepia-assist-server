@@ -147,13 +147,14 @@ public class WeatherDarkSky implements ServiceInterface{
 	private static final String answerNoApiKey = "default_no_access_0a";
 
 	//result
-	public ServiceResult getResult(NluResult NLU_result){
+	public ServiceResult getResult(NluResult nluResult){
 		//initialize result
-		ServiceBuilder api = new ServiceBuilder(NLU_result, getInfo(""));
+		ServiceBuilder api = new ServiceBuilder(nluResult, 
+				getInfoFreshOrCache(nluResult.input, this.getClass().getCanonicalName()));
 		
 		//get interview parameters
-		JSONObject placeJSON = NLU_result.getRequiredParameter(PARAMETERS.PLACE).getData();
-		JSONObject timeJSON = NLU_result.getRequiredParameter(PARAMETERS.TIME).getData();
+		JSONObject placeJSON = nluResult.getRequiredParameter(PARAMETERS.PLACE).getData(); 	//note: we use getRequiredParameter here 
+		JSONObject timeJSON = nluResult.getRequiredParameter(PARAMETERS.TIME).getData();	//... because we set default values in getInfo
 				
 		//parameter adaptation to service format
 		String coords = placeJSON.get(InterviewData.LOCATION_LAT).toString() + "," + placeJSON.get(InterviewData.LOCATION_LNG).toString();
@@ -187,7 +188,7 @@ public class WeatherDarkSky implements ServiceInterface{
 			long minutes = Converters.obj2LongOrDefault((timeDiff).get("mm"), null);
 			long seconds = Converters.obj2LongOrDefault((timeDiff).get("ss"), null);
 			if (hours > 0 || minutes > 0 || seconds > 0){
-				long correctedDiffDays = DateTimeConverters.getIntuitiveDaysDifference(NLU_result.input, days, hours, minutes, seconds);
+				long correctedDiffDays = DateTimeConverters.getIntuitiveDaysDifference(nluResult.input, days, hours, minutes, seconds);
 				days = correctedDiffDays;
 			}
 			
@@ -209,7 +210,7 @@ public class WeatherDarkSky implements ServiceInterface{
 			//leave it with the default answer
 		}
 		//TODO: fix this with new TIME data
-		String nowDate = DateTimeConverters.getToday(Config.defaultSdf, NLU_result.input);
+		String nowDate = DateTimeConverters.getToday(Config.defaultSdf, nluResult.input);
 		String nowTime = nowDate.replaceFirst(".*_", "").replaceFirst(":.*?$", "").trim();
 		nowDate = nowDate.replaceFirst("_.*", "").trim();
 		

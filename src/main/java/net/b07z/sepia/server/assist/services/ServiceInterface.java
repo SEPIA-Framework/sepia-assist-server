@@ -2,6 +2,8 @@ package net.b07z.sepia.server.assist.services;
 
 import java.util.TreeSet;
 
+import net.b07z.sepia.server.assist.answers.ServiceAnswers;
+import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 
 /**
@@ -25,11 +27,38 @@ public interface ServiceInterface {
 	public ServiceResult getResult(NluResult nluResult);
 	
 	/**
+	 * This method calls the getInfo method but checks in advance if there is already a version in session cache.<br>
+	 * Don't override this one, it is not necessary, override only 'getInfo'.
+	 * @param input - NLU input (with session cache)
+	 * @return
+	 */
+	public default ServiceInfo getInfoFreshOrCache(NluInput input, String serviceCanonicalName){
+		ServiceInfo si = input.getCachedServiceInfo(serviceCanonicalName);
+		if (si == null){
+			si = getInfo(input.language);
+			input.cacheServiceInfo(serviceCanonicalName, si);
+		}
+		/*else{
+			System.out.println("Cache size: " + input.getServiceInfoCacheSize()); 		//DEBUG
+		}*/
+		return si; 
+	}
+	/**
 	 * Get all necessary info about the service/API.
 	 * @param language - language code ("de", "en", ...)
 	 * @return service info
 	 */
 	public ServiceInfo getInfo(String language);
+	
+	/**
+	 * Get the custom answers pool defined in this service. For system services this is usually null
+	 * because they take answers from the global pool.
+	 * @param language - language code ("de", "en", ...)
+	 * return answer pool for this language or null
+	 */
+	public default ServiceAnswers getAnswersPool(String language){
+		return null;
+	}
 	
 	/**
 	 * Return a set of sample sentences for a specific language.

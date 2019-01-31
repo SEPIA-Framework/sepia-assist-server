@@ -20,7 +20,7 @@ public interface ParameterHandler {
 	
 	/**
 	 * Is this parameter using a generic handler meaning a handler that integrates into an interview properly but cannot extract data,
-	 * so that it always returns value="" and input="...". 
+	 * so that it always returns VALUE=[normalized input] and INPUT_RAW=[original raw input]. 
 	 */
 	public default boolean isGeneric(){
 		return false;
@@ -60,8 +60,9 @@ public interface ParameterHandler {
 	/**
 	 * Build a default parameter result by transforming specific data like "my favorite restaurant", "&lt;user_home&gt;", "&lt;color tags&gt;", personal or contacts data as required. 
 	 * If none of these apply just build a result out of the input. 
-	 * Output of the 'extract', 'guess' and 'responseTweaker' methods can be complex (see DateAndTime) so this method needs to be able to handle that. 
-	 * @return default result string in JSON format or an "action" like "add", "select", "confirm" ...
+	 * Output of the 'extract', 'guess' and 'responseTweaker' methods can be complex (see DateAndTime) so this method needs to be able to handle that
+	 * and identify if the input makes sense!
+	 * @return default result string in JSON format or an "action" like "add", "select", "confirm" ... or simply empty (if there was nothing valid)
 	 */
 	public String build(String input);
 	
@@ -71,7 +72,7 @@ public interface ParameterHandler {
 	public boolean validate(String input);
 	
 	/**
-	 * Was the parameter successfully built or is the result an action, error, comment (in the form of an API_Result)?
+	 * Was the parameter successfully built or is the result an action, error, comment (in the form of an ServiceResult)?
 	 */
 	public boolean buildSuccess();
 }

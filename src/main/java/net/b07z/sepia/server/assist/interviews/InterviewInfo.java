@@ -14,7 +14,7 @@ import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.JSON;
 
 /**
- * Class that delivers info about an interview module. Info can be defined inside interview module or taken from first service.
+ * Class that holds info about an interview module. Info can be defined inside interview module or taken from first service.
  * It is to some degree a copy of {@link ServiceInfo} which has historical and compatibility reasons, but should be fixed at some point. 
  * 
  * @author Florian Quirin
@@ -37,14 +37,14 @@ public class InterviewInfo {
 	/**
 	 * InterviewInfo can be generated out of a command and an API_Info of a service module.
 	 */
-	public InterviewInfo(String cmd, ServiceInfo apiInfo){
+	public InterviewInfo(String cmd, ServiceInfo serviceInfo){
 		this.cmd = cmd;
-		this.requiredParameters = apiInfo.requiredParameters;
-		this.optionalParameters = apiInfo.optionalParameters;
-		this.listOfRequiredChoices = apiInfo.listOfRequiredChoices;
-		this.listOfChoiceQuestions = apiInfo.listOfChoiceQuestions;
-		this.customAnswerMap = apiInfo.customAnswerMap;
-		this.answerParameters = apiInfo.answerParameters;
+		this.requiredParameters = serviceInfo.requiredParameters;
+		this.optionalParameters = serviceInfo.optionalParameters;
+		this.listOfRequiredChoices = serviceInfo.listOfRequiredChoices;
+		this.listOfChoiceQuestions = serviceInfo.listOfChoiceQuestions;
+		this.customAnswerMap = serviceInfo.customAnswerMap;
+		this.answerParameters = serviceInfo.answerParameters;
 	}
 	
 	/**

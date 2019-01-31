@@ -4,7 +4,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.b07z.sepia.server.assist.answers.ServiceAnswers;
 import net.b07z.sepia.server.assist.parameters.ParameterResult;
+import net.b07z.sepia.server.assist.server.Config;
+import net.b07z.sepia.server.assist.services.ServiceInfo;
+import net.b07z.sepia.server.assist.tools.DateTimeConverters;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.data.CmdMap;
 
@@ -48,11 +52,11 @@ public class NluInput {
 	
 	//Stuff to cache during all processes from NLU to service result:
 	
-	//custom services storage
-	List<CmdMap> customCommandToServicesMappings;
-	
-	//parameter result storage for extracted ones during NLU processing
-	public Map<String, ParameterResult> parameterResultStorage = new HashMap<>();
+	//Some session cache variables:
+	List<CmdMap> customCommandToServicesMappings;					//custom services session storage (currently not used?)
+	private Map<String, ServiceInfo> sessionCacheServiceInfo;		//cache service info by canonical name, so we don't have to rebuild all the time
+	private Map<String, ServiceAnswers> sessionCacheServiceAnswers; //cache custom service answers by trigger command, so we don't have to rebuild all the time
+	public Map<String, ParameterResult> parameterResultStorage = new HashMap<>();	//parameter result storage for extracted ones during NLU processing
 		
 	//CONTRUCTORs
 	public NluInput(){
@@ -92,19 +96,36 @@ public class NluInput {
 		this.environment = environment;
 	}
 	
-	public void makeNewFromOld(NluInput input){
-		
+	/**
+	 * Set user local time.
+	 * @param timeString - Date in default format (Config.defaultSdf): "yyyy.MM.hh_HH:mm:ss"
+	 */
+	public void setTime(String timeString){
+		this.userTimeLocal = timeString;
+		this.userTime = DateTimeConverters.getUnixTimeOfDate(userTimeLocal, Config.defaultSdf);
 	}
 	
-	//handle STORAGEs:
+	//handle (session) STORAGEs:
 	
 	//custom command to services mappings
+	/**
+	 * A session storage to prevent multiple DB calls. See:<br> 
+	 * {@link net.b07z.sepia.server.assist.server.ConfigServices#restoreOrLoadCustomCommandMapping}
+	 */
 	public void setCustomCommandToServicesMappings(List<CmdMap> listOfMappings){
 		customCommandToServicesMappings = listOfMappings;
 	}
+	/**
+	 * A session storage to prevent multiple DB calls. See:<br> 
+	 * {@link net.b07z.sepia.server.assist.server.ConfigServices#restoreOrLoadCustomCommandMapping}
+	 */
 	public List<CmdMap> getCustomCommandToServicesMappings(){
 		return customCommandToServicesMappings;
 	}
+	/**
+	 * A session storage to prevent multiple DB calls. See:<br> 
+	 * {@link net.b07z.sepia.server.assist.server.ConfigServices#restoreOrLoadCustomCommandMapping}
+	 */
 	public void clearCustomCommandToServicesMappings(){
 		customCommandToServicesMappings.clear();
 	}
@@ -134,6 +155,66 @@ public class NluInput {
 	 */
 	public void clearParameterResult(String pName){
 		parameterResultStorage.remove(pName);
+	}
+	
+	//Service info cache
+	/**
+	 * Cache the {@link ServiceInfo} of a certain command for this session.
+	 * @param serviceCanonicalName - command that triggered the service with custom answers
+	 * @param info - {@link ServiceInfo} to be cached 
+	 */
+	public void cacheServiceInfo(String serviceCanonicalName, ServiceInfo info){
+		if (sessionCacheServiceInfo == null){
+			sessionCacheServiceInfo = new HashMap<>();
+		}
+		sessionCacheServiceInfo.put(serviceCanonicalName, info);
+	}
+	/**
+	 * Get the cached service info or null. 
+	 * @param serviceCanonicalName - command that triggered the service with custom answers
+	 * @return
+	 */
+	public ServiceInfo getCachedServiceInfo(String serviceCanonicalName){
+		if (sessionCacheServiceInfo != null){
+			return sessionCacheServiceInfo.get(serviceCanonicalName);
+		}else{
+			return null;
+		}
+	}
+	/**
+	 * Get service info cache size.
+	 */
+	public int getServiceInfoCacheSize(){
+		if (sessionCacheServiceInfo != null){
+			return sessionCacheServiceInfo.size();
+		}else{
+			return 0;
+		}
+	}
+	
+	//ServiceAnswers cache
+	/**
+	 * Cache the {@link ServiceAnswers} of a certain command for this session.
+	 * @param serviceCommand - command that triggered the service with custom answers
+	 * @param answers - {@link ServiceAnswers} to be cached 
+	 */
+	public void cacheServiceAnswers(String serviceCommand, ServiceAnswers answers){
+		if (sessionCacheServiceAnswers == null){
+			sessionCacheServiceAnswers = new HashMap<>();
+		}
+		sessionCacheServiceAnswers.put(serviceCommand, answers);
+	}
+	/**
+	 * Get the cached custom service answers or null. 
+	 * @param serviceCommand - command that triggered the service with custom answers
+	 * @return
+	 */
+	public ServiceAnswers getCachedServiceAnswers(String serviceCommand){
+		if (sessionCacheServiceAnswers != null){
+			return sessionCacheServiceAnswers.get(serviceCommand);
+		}else{
+			return null;
+		}
 	}
 	
 	//-------helper methods--------

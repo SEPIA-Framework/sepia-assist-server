@@ -52,7 +52,7 @@ import net.b07z.sepia.server.core.tools.FilesAndStreams;
  */
 public class Config {
 	public static final String SERVERNAME = "SEPIA-Assist-API"; 		//public server name
-	public static final String apiVersion = "v2.1.4";					//API version
+	public static final String apiVersion = "v2.2.0";					//API version
 	public static String privacyPolicyLink = "";						//Link to privacy policy
 	
 	//helper for dynamic class creation (e.g. from strings in config-file) - TODO: reduce dependencies further 
@@ -62,6 +62,7 @@ public class Config {
 	public static String configFile = "Xtensions/assist.properties";		//external configuration file - note: this will be overwritten in "Setup" and "Start"
 	public static String xtensionsFolder = "Xtensions/";					//folder for all sorts of data
 	public static String pluginsFolder = xtensionsFolder + "Plugins/";		//folder for plugins
+	public static String sdkClassesFolder = pluginsFolder + "net/b07z/sepia/sdk/";		//folder for SDK plugin classes - NOTE: has to be sub-folder of plugins
 	public static String servicePropertiesFolder = xtensionsFolder + "ServiceProperties/";		//folder for service properties and static data
 	public static String dbSetupFolder = xtensionsFolder + "Database/";		//folder for database stuff
 	public static String webServerFolder = xtensionsFolder + "WebContent";	//folder for web-server
@@ -71,6 +72,8 @@ public class Config {
 	public static int serverPort = 20721;									//**server port
 	public static boolean enableCORS = true;								//enable CORS (set access-control headers)
 	public static String clusterKey = "KantbyW3YLh8jTQPs5uzt2SzbmXZyphW";	//**one step of inter-API communication security
+	public static String clusterKeyLight = "KantbyW3YLh8jTQPs";				//used as private secret for lower priority/more risky tasks to keep full key safe
+	public static int cklHashIterations = ((int) clusterKeyLight.charAt(clusterKeyLight.length()-1)) + 5;		//well defined but "random" hash iterations due to random key
 	public static boolean allowInternalCalls = true;			//**allow API-to-API authentication via cluster-key
 	public static boolean allowGlobalDevRequests = false;		//**restrict certain developer-specific requests to private network
 	
@@ -130,18 +133,31 @@ public class Config {
 	public static String ttsModule = TtsAcapelaWeb.class.getCanonicalName();
 	public static String ttsName = "Acapela";
 	public static String emailModule = SendEmailBasicSmtp.class.getCanonicalName();
-	//toggles
-	public static void toggleAnswerModule(){
+	
+	//toggles and switches:
+	
+	/**
+	 * Toggle answer module and return entry value for config file.
+	 */
+	public static String toggleAnswerModule(){
+		String settingsEntry;
 		if (answerModule.equals(AnswerLoaderElasticsearch.class.getCanonicalName())){
 			answerModule = AnswerLoaderFile.class.getCanonicalName();
+			settingsEntry = "file";
 		}else{
 			answerModule = AnswerLoaderElasticsearch.class.getCanonicalName();
+			settingsEntry = "elasticsearch";
 		}
+		setupAnswers();
+		return settingsEntry;
+	}
+	public static void setAnswerModule(AnswerLoader module){
+		answerModule = module.getClass().getCanonicalName();
 		setupAnswers();
 	}
 	
 	//Default users and managers
-	public static ServiceAccessManager superuserApiMng = new ServiceAccessManager("API_BOSS", "dev12345"); 	//universal API manager for internal procedures
+	public static ServiceAccessManager superuserApiMng = new ServiceAccessManager("API_BOSS"); 	//universal API manager for internal procedures
 	private static Authenticator superuserToken;
 	private static User superUser;
 	public static String superuserId = "uid1000";						//**for DB sentences check also Defaults.USER
@@ -372,6 +388,8 @@ public class Config {
 			localSecret = settings.getProperty("server_local_secret");
 			serverPort = Integer.valueOf(settings.getProperty("server_port"));
 			clusterKey = settings.getProperty("cluster_key");
+				clusterKeyLight = clusterKey.substring(0, 17);
+				cklHashIterations = ((int) clusterKeyLight.charAt(clusterKeyLight.length()-1)) + 5;
 			allowInternalCalls = Boolean.valueOf(settings.getProperty("allow_internal_calls"));
 			allowGlobalDevRequests = Boolean.valueOf(settings.getProperty("allow_global_dev_requests"));
 			//policies
@@ -384,12 +402,27 @@ public class Config {
 				if (authAndAccountModule.equals("dynamo_db")){
 					accountModule = AccountDynamoDB.class.getCanonicalName();
 					authenticationModule = AuthenticationDynamoDB.class.getCanonicalName();
+				}else if (authAndAccountModule.equals("elasticsearch")){
+					accountModule = AccountElasticsearch.class.getCanonicalName();
+					authenticationModule = AuthenticationElasticsearch.class.getCanonicalName();
 				}else{
+					//In case we have more modules we need to change this here:
 					accountModule = AccountElasticsearch.class.getCanonicalName();
 					authenticationModule = AuthenticationElasticsearch.class.getCanonicalName();
 				}
 			}
+			String answerModuleValue = settings.getProperty("module_answers");
+			if (answerModuleValue != null){
+				if (answerModuleValue.equals("file")){
+					answerModule = AnswerLoaderFile.class.getCanonicalName();
+				}else if (answerModuleValue.equals("elasticsearch")){
+					answerModule = AnswerLoaderElasticsearch.class.getCanonicalName();
+				}else{
+					answerModule = answerModuleValue;
+				}
+			}
 			enableSDK = Boolean.valueOf(settings.getProperty("enable_sdk"));
+			useSentencesDB = Boolean.valueOf(settings.getProperty("enable_custom_commands"));
 			//databases
 			defaultRegion = settings.getProperty("db_default_region", "eu");
 			ConfigDynamoDB.region_custom = settings.getProperty("db_dynamo_region_custom", "");
@@ -475,6 +508,7 @@ public class Config {
 		config.setProperty("db_elastic_endpoint_us1", ConfigElasticSearch.endpoint_us1);
 		//modules
 		config.setProperty("enable_sdk", String.valueOf(enableSDK));
+		config.setProperty("enable_custom_commands", String.valueOf(useSentencesDB));
 		//chat
 		config.setProperty("connect_to_websocket", String.valueOf(connectToWebSocket));
 		//workers
@@ -515,6 +549,21 @@ public class Config {
 		}catch (Exception e){
 			Debugger.println("saving settings to " + confFile + "... failed!" , 1);
 		}
+	}
+	
+	/**
+	 * Replace a key-value pair in settings file or append it if not found.
+	 * @param confFile
+	 * @param keyToReplace
+	 * @param newValue
+	 */
+	public static void replaceSettings(String confFile, String keyToReplace, String newValue){
+		if (confFile == null || confFile.isEmpty())	confFile = configFile;
+		FilesAndStreams.replaceLineOrAppend(
+				configFile,
+				("^" + keyToReplace + "=.*"),	
+				(oldLine) -> { return (keyToReplace + "=" + newValue); }
+		);
 	}
 
 }

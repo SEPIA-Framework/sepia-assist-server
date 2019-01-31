@@ -1,5 +1,6 @@
 package net.b07z.sepia.server.assist.interviews;
 
+import net.b07z.sepia.server.assist.answers.Answers;
 import net.b07z.sepia.server.assist.assistant.CmdBuilder;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.server.Config;
@@ -32,10 +33,10 @@ public class NoResult {
 	/**
 	 * Get "no answer" with custom answer key.
 	 * @param nluResult
-	 * @param answer_key - link to answer database like "no_answer_0a"
+	 * @param answerKey - link to answer database like "no_answer_0a"
 	 * @return
 	 */
-	public static ServiceResult get(NluResult nluResult, String answer_key){
+	public static ServiceResult get(NluResult nluResult, String answerKey){
 		//initialize result
 		ServiceBuilder api = new ServiceBuilder(nluResult);
 		
@@ -43,7 +44,7 @@ public class NoResult {
 		Debugger.println("NO_RESULT: " + nluResult.input.textRaw + " - LANGUAGE: " + nluResult.language + " - CLIENT: " + nluResult.input.clientInfo + " - API: " + Config.apiVersion, 3);		//debug
 		
 		//get answer
-		api.answer = Config.answers.getAnswer(nluResult, answer_key);		//default is "no_answer_0a"
+		api.answer = Answers.getAnswerString(nluResult, answerKey);		//default is "no_answer_0a"
 		api.answerClean = Converters.removeHTML(api.answer);
 		
 		//websearch action

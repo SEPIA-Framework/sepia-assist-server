@@ -11,10 +11,10 @@ import java.util.Set;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import net.b07z.sepia.server.assist.assistant.Assistant;
 import net.b07z.sepia.server.assist.data.Address;
 import net.b07z.sepia.server.assist.database.DB;
 import net.b07z.sepia.server.assist.server.Config;
+import net.b07z.sepia.server.assist.server.ConfigServices;
 import net.b07z.sepia.server.assist.server.Statistics;
 import net.b07z.sepia.server.assist.services.ServiceInfo;
 import net.b07z.sepia.server.assist.services.ServiceInterface;
@@ -197,10 +197,11 @@ public class UserDataDefault implements UserDataInterface {
 			cmSet.add(cm);
 		boolean addedMapping = setCustomCommandMappings(user, cmSet);
 		if (addedMapping){
-			//check user id
+			//Reset buffered mappings
 			if (userId.equals(Config.assistantId)){
-				//RESET buffered assistant mappings
-				Assistant.customCommandsMap = null;
+				ConfigServices.assistantCustomCommandsMap = null;
+			}else{
+				ConfigServices.userCustomCommandsMaps.remove(userId);
 			}
 			Debugger.println("UserData.registerCustomService - registered class: " 
 					+ clazz.getClass().getCanonicalName() + ", cmd: " + command + ", user: " + userId, 3);
@@ -254,6 +255,43 @@ public class UserDataDefault implements UserDataInterface {
 		params.put("userIds", user.getUserID());
 		
 		return (DB.setCommandMappings(true, mappings, params) == 0);
+	}
+	@Override
+	public long deleteCustomCommandMappings(User user, Set<CmdMap> mappings){
+		String userId = user.getUserID();
+		//Reset buffered mappings first
+		if (userId.equals(Config.assistantId)){
+			ConfigServices.assistantCustomCommandsMap = null;
+		}else{
+			ConfigServices.userCustomCommandsMaps.remove(userId);
+		}
+		//Now load and remove from DB
+		long deleted = -1;
+		List<CmdMap> fullMap = getCustomCommandMappings(user, null);
+		if (fullMap != null){
+			int initialSize = fullMap.size();
+			if (initialSize == 0){
+				return 0;
+			}
+			fullMap.removeAll(mappings);
+			Set<CmdMap> cleanSet = new HashSet<>();
+			cleanSet.addAll(fullMap);
+			deleted = initialSize - cleanSet.size();
+			if (deleted > 0){
+				Map<String, Object> params = new HashMap<>();
+				params.put("customOrSystem", CmdMap.CUSTOM);
+				params.put("userIds", userId);
+				if (DB.setCommandMappings(false, cleanSet, params) == 0){ 	//note the false here
+					return deleted;
+				}else{
+					return -1;
+				}
+			}else{
+				return deleted;
+			}
+		}else{
+			return -1;
+		}
 	}
 	
 	//--- ADDRESSES ---

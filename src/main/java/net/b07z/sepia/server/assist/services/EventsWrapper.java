@@ -34,15 +34,16 @@ public class EventsWrapper implements ServiceInterface{
 		return info;
 	}
 	@Override
-	public ServiceResult getResult(NluResult NLU_result) {
+	public ServiceResult getResult(NluResult nluResult) {
 		//initialize result
-		ServiceBuilder api = new ServiceBuilder(NLU_result, getInfo(""));
+		ServiceBuilder api = new ServiceBuilder(nluResult, 
+				getInfoFreshOrCache(nluResult.input, this.getClass().getCanonicalName()));
 		
 		Debugger.println("cmd: trigger events as service", 2);		//debug
 		
 		try{
 			//get events
-			JSONObject actionsJSON = EventsManager.buildCommonEvents(NLU_result.input);
+			JSONObject actionsJSON = EventsManager.buildCommonEvents(nluResult.input);
 			
 			//action
 			api.actionInfo = (JSONArray) actionsJSON.get("actions");

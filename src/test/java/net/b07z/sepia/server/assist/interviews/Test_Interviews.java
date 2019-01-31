@@ -2,6 +2,7 @@ package net.b07z.sepia.server.assist.interviews;
 
 import org.json.simple.JSONObject;
 
+import net.b07z.sepia.server.assist.answers.AnswerLoaderFile;
 import net.b07z.sepia.server.assist.answers.DefaultReplies;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluInterface;
@@ -28,13 +29,15 @@ public class Test_Interviews {
 		//check time
 		long tic = Debugger.tic();
 		
+		//TODO: load settings before?
+		
 		//setup answers
-		Config.toggleAnswerModule(); 	//default is ES so this sets txt-file
-		DefaultReplies.setupDefaults(); 			//setup default question mapping for parameters and stuff
+		Config.setAnswerModule(new AnswerLoaderFile()); 	//choose txt-file answers-module
+		DefaultReplies.setupDefaults(); 	//setup default question mapping for parameters and stuff
 		
 		//setup commands and parameters
-		InterviewServicesMap.load();	//services connected to interviews
-		ParameterConfig.setup(); 		//connect parameter names to handlers and other stuff
+		InterviewServicesMap.load();		//services connected to interviews
+		ParameterConfig.setup(); 			//connect parameter names to handlers and other stuff
 		
 		//test interviews
 		testFlightSearch();
@@ -60,7 +63,7 @@ public class Test_Interviews {
 		assistant.setCommand(CMD.FLIGHTS);
 		
 		//Interview info
-		JSONObject info = assistant.getInfo("en").getJSON();
+		JSONObject info = assistant.getInfo(input).getJSON();
 		System.out.println("Interview info: ");
 		JSON.printJSONpretty(info);
 		System.out.println("");
@@ -123,7 +126,7 @@ public class Test_Interviews {
 		assistant.setCommand(CMD.WEATHER);
 		
 		//Interview info
-		JSONObject info = assistant.getInfo("en").getJSON();
+		JSONObject info = assistant.getInfo(input).getJSON();
 		System.out.println("Interview info: ");
 		JSON.printJSONpretty(info);
 		System.out.println("");
@@ -164,7 +167,7 @@ public class Test_Interviews {
 		assistant.setCommand(CMD.FASHION);
 		
 		//Interview info
-		JSONObject info = assistant.getInfo("en").getJSON();
+		JSONObject info = assistant.getInfo(input).getJSON();
 		System.out.println("Interview info: ");
 		JSON.printJSONpretty(info);
 		System.out.println("");

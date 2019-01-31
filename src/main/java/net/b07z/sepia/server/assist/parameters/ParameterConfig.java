@@ -3,9 +3,9 @@ package net.b07z.sepia.server.assist.parameters;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
-import net.b07z.sepia.server.core.tools.ClassBuilder;
 import net.b07z.sepia.server.core.tools.Debugger;
 
 /**
@@ -27,7 +27,7 @@ public class ParameterConfig {
 		int nP = 0;
 		for (Entry<String, String> e : handlerToParameter.entrySet()){
 			String name = e.getKey();
-			ParameterHandler ph = (ParameterHandler) ClassBuilder.construct(ParameterConfig.getHandler(name));
+			ParameterHandler ph = new Parameter(name).getHandler();
 			//pseudo test
 			ph.buildSuccess();
 			Debugger.println("Parameter '" + name + "' is valid.", 2);
@@ -81,6 +81,11 @@ public class ParameterConfig {
 		//Generics / Exceptions / Specials
 		handlerToParameter.put(PARAMETERS.SENTENCES, Config.parentPackage + ".parameters.Sentences");
 		handlerToParameter.put(PARAMETERS.REPLY, GenericParameter.class.getCanonicalName());
+		handlerToParameter.put(PARAMETERS.REPLY_SUCCESS, GenericParameter.class.getCanonicalName());
+		handlerToParameter.put(PARAMETERS.REPLY_FAIL, GenericParameter.class.getCanonicalName());
+		handlerToParameter.put(PARAMETERS.MESH_NODE_URL, GenericParameter.class.getCanonicalName());
+		handlerToParameter.put(PARAMETERS.MESH_NODE_PLUGIN_NAME, GenericParameter.class.getCanonicalName());
+		handlerToParameter.put(PARAMETERS.MESH_NODE_PLUGIN_DATA, GenericParameter.class.getCanonicalName());
 	}
 	/**
 	 * Add another parameter handler.
@@ -92,7 +97,7 @@ public class ParameterConfig {
 	}
 	
 	/**
-	 * Get handler for parameter or return generic handler and log a warning.
+	 * Get system handler for parameter or return generic handler and log a warning.
 	 * @param p - name taken from 'PARAMETERS'
 	 */
 	public static String getHandler(String p){
@@ -100,14 +105,14 @@ public class ParameterConfig {
 		if (h == null || h.isEmpty()){
 			//throw new RuntimeException(DateTime.getLogDate() + " ERROR - ParameterConfig.java / getHandler() - NO HANDLER for: " + p);
 			//return generic handler
-			Debugger.println("ParameterConfig.java / getHandler() - NO HANDLER for: " + p, 3);
+			Debugger.println("ParameterConfig.getHandler() - NO HANDLER for: " + p, 3);
 			return GenericParameter.class.getCanonicalName();
 		}
 		return h;
 	}
 	
 	/**
-	 * Check if the parameter has a handler.
+	 * Check if the parameter has a system handler.
 	 * @param p - name taken from 'PARAMETERS'
 	 * @return true/false
 	 */

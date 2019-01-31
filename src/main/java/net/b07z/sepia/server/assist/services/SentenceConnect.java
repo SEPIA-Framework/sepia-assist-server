@@ -64,7 +64,8 @@ public class SentenceConnect implements ServiceInterface{
 	@Override
 	public ServiceResult getResult(NluResult nluResult) {
 		//initialize result
-		ServiceBuilder api = new ServiceBuilder(nluResult, getInfo(""));
+		ServiceBuilder api = new ServiceBuilder(nluResult, 
+				getInfoFreshOrCache(nluResult.input, this.getClass().getCanonicalName()));
 		
 		//get interview parameters
 		JSONObject sentenceJson = nluResult.getRequiredParameter(PARAMETERS.SENTENCES).getData();

@@ -1,7 +1,7 @@
 package net.b07z.sepia.server.assist.services;
 
+import net.b07z.sepia.server.assist.answers.Answers;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
-import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.ConfigServices;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
@@ -26,39 +26,40 @@ public class ControlPreprocessor implements ServiceInterface{
 	}
 
 	//result
-	public ServiceResult getResult(NluResult NLU_result){
+	public ServiceResult getResult(NluResult nluResult){
 		//initialize result
-		ServiceBuilder api = new ServiceBuilder(NLU_result);
+		ServiceBuilder api = new ServiceBuilder(nluResult);
 		
 		//get parameters
-		String action = NLU_result.getParameter(PARAMETERS.ACTION);
-		String type = NLU_result.getParameter(PARAMETERS.TYPE);
-		String info = NLU_result.getParameter(PARAMETERS.INFO);
-		String number = NLU_result.getParameter(PARAMETERS.NUMBER);
+		String action = nluResult.getParameter(PARAMETERS.ACTION);
+		String type = nluResult.getParameter(PARAMETERS.TYPE);
+		String info = nluResult.getParameter(PARAMETERS.INFO);
+		String number = nluResult.getParameter(PARAMETERS.NUMBER);
 		Debugger.println("cmd: chat, type=" + type + ", action=" + action + ", info=" + info + ", number= " + number, 2);		//debug
 		//System.out.println("Control dialog stage: " + NLU_result.input.dialog_stage);
 		
 		//System.out.println("Last CMD N: " + NLU_result.input.last_cmd_N);
-		if (NLU_result.input.lastCmdN > 1){
+		if (nluResult.input.lastCmdN > 1){
 			//abort
-			api.answer = Config.answers.getAnswer(NLU_result, "control_0b");
+			api.answer = Answers.getAnswerString(nluResult, "control_0b");
 			api.status = "success";
 		}else{
 			
 			//device control
 			if (type.matches("<device.*")){
 				
-				NLU_result.setCommand(CMD.SMARTDEVICE);
-				NLU_result.setParameter(PARAMETERS.SMART_DEVICE, type);
-				NLU_result.setParameter(PARAMETERS.ROOM, info);
-				NLU_result.removeParameter(PARAMETERS.TYPE);
-				NLU_result.removeParameter(PARAMETERS.INFO);
-				return ConfigServices.buildServices(CMD.SMARTDEVICE).get(0).getResult(NLU_result); //.smartDevices.getResult(NLU_result);
+				nluResult.setCommand(CMD.SMARTDEVICE);
+				nluResult.setParameter(PARAMETERS.SMART_DEVICE, type);
+				nluResult.setParameter(PARAMETERS.ROOM, info);
+				nluResult.removeParameter(PARAMETERS.TYPE);
+				nluResult.removeParameter(PARAMETERS.INFO);
+				//TODO: use result converter?
+				return ConfigServices.buildServices(CMD.SMARTDEVICE).get(0).getResult(nluResult); //.smartDevices.getResult(NLU_result);
 			}
 			
 			//app control
 			else if (type.matches("<app.*")){
-				api.answer = Config.answers.getAnswer(NLU_result, "control_0a");
+				api.answer = Answers.getAnswerString(nluResult, "control_0a");
 				api.status = "success";
 			}
 			
@@ -67,7 +68,7 @@ public class ControlPreprocessor implements ServiceInterface{
 				//what to control?
 				if (!action.isEmpty()){
 					//please specify
-					api.answer = Config.answers.getAnswer(NLU_result, "control_0c");
+					api.answer = Answers.getAnswerString(nluResult, "control_0c");
 					api.status = "success";
 				}	
 				/*
@@ -77,7 +78,7 @@ public class ControlPreprocessor implements ServiceInterface{
 				*/
 				else{
 					//no command yet
-					api.answer = Config.answers.getAnswer(NLU_result, "control_0a");
+					api.answer = Answers.getAnswerString(nluResult, "control_0a");
 					api.status = "success";
 				}
 			}

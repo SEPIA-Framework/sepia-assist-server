@@ -41,7 +41,7 @@ public class Test_ListItem {
 		texts.add("add milk to my shoppinglist");
 		texts.add("Bread on my shoppinglist");
 		texts.add("Water on shoppinglist");
-		texts.add("Put milk, water, brad and juice on my supermarket list");
+		texts.add("Put milk, water, bread and juice on my supermarket list");
 		texts.add("Put 3,1415 on my Pi list");
 
 		printTestResults(texts, parametersToTest, language);

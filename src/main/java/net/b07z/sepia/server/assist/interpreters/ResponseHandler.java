@@ -14,7 +14,6 @@ import net.b07z.sepia.server.assist.services.ServiceInfo;
 import net.b07z.sepia.server.assist.services.ServiceInterface;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
-import net.b07z.sepia.server.core.tools.ClassBuilder;
 
 /**
  * This interpreter handles responses to questions the server (assistant) asked the client (user).
@@ -74,12 +73,12 @@ public class ResponseHandler implements NluInterface{
 			}
 			
 		*/	
-		//open_link
-		if (!cmd.matches("") && cmd.matches(CMD.OPEN_LINK)){
+		//open_link - TODO: this is legacy but still kind of interesting ... should we follow up on this some time?
+		if (cmd.equals(CMD.OPEN_LINK)){
 			//parameter_set
 			if (missing_input.matches("parameter_set")){
 				String p_set = result.getParameter("parameter_set");
-				if (!p_set.matches("")){
+				if (!p_set.isEmpty()){
 					//get parameter type if specified
 					String p_type = p_set.replaceFirst(".*?(\\*\\*\\*)(.*?)(&&|$).*", "$2");
 					response = tweak_parameters(response, p_type, language, cmd, input);
@@ -98,9 +97,13 @@ public class ResponseHandler implements NluInterface{
 			if (ParameterConfig.hasHandler(missing_input)){
 				result = tweakResult(result, response, missing_input, language, cmd, input);
 			
-			//check for special (dynamic) parameters
+			//check for special (dynamic) parameters (can also be custom)
 			}else if (missing_input.startsWith(Confirm.PREFIX)){
 				result = confirmResponse(result, response, missing_input, language, cmd, input);
+				
+			//SDK or custom handler?
+			}else if (Parameter.isCustom(missing_input)){
+				result = tweakResult(result, response, missing_input, language, cmd, input);
 			
 			//legacy parameters
 			}else{
@@ -121,12 +124,22 @@ public class ResponseHandler implements NluInterface{
 	
 	//-------HELPER METHODS--------
 	
+	/**
+	 * Convert response into a proper parameter (remove unfinished and optional parameters then extract or tweak). 
+	 * @param nluResult
+	 * @param response - given response (e.g. normalized user-input)
+	 * @param parameter - name of parameter
+	 * @param language
+	 * @param command
+	 * @param input
+	 * @return
+	 */
 	public static NluResult tweakResult(NluResult nluResult, String response, String parameter, String language, String command, NluInput input){
 		String tweaked = response;		//by default it is the pure response
 		
 		//get all non-final, optional parameters and remove them
 		List<ServiceInterface> services = ConfigServices.getCustomOrSystemServices(input, input.user, command);
-		ServiceInfo info = services.get(0).getInfo(nluResult.language);
+		ServiceInfo info = services.get(0).getInfoFreshOrCache(nluResult.input, services.get(0).getClass().getCanonicalName());
 		for (Parameter p : info.optionalParameters){
 			//is parameter already final?
 			if (nluResult.isParameterFinal(p.getName())){
@@ -148,7 +161,7 @@ public class ResponseHandler implements NluInterface{
 				//nluResult.remove_final(p.getName());
 				nluResult.setParameter(p.getName(), value);
 				//TODO: use the remove method?
-				if (command.equals(CMD.FASHION)){
+				if (command.equals(CMD.FASHION)){ 				//TODO: this should not be here ... find a more consistent, logical location ...
 					if (p.getName().equals(PARAMETERS.COLOR)){
 						tweaked = handler.remove(tweaked, handler.getFound());
 					}else if (p.getName().equals(PARAMETERS.FASHION_SIZE)){
@@ -163,7 +176,7 @@ public class ResponseHandler implements NluInterface{
 		}
 		//now get the missing one:
 
-		ParameterHandler handler = (ParameterHandler) ClassBuilder.construct(ParameterConfig.getHandler(parameter));
+		ParameterHandler handler = new Parameter(parameter).getHandler();
 		handler.setup(input);
 		
 		//First try the normal 'extract' method:
@@ -185,7 +198,7 @@ public class ResponseHandler implements NluInterface{
 	//check for special (dynamic) parameters
 	public static NluResult confirmResponse(NluResult nluResult, String response, String parameter, String language, String command, NluInput input){
 		//Confirmation request
-		ParameterHandler handler = (ParameterHandler) ClassBuilder.construct(ParameterConfig.getHandler(PARAMETERS.CONFIRMATION));
+		ParameterHandler handler = new Parameter(PARAMETERS.CONFIRMATION).getHandler();
 		handler.setup(input);
 		String value = handler.extract(response);
 		nluResult.setParameter(parameter, value);
@@ -194,6 +207,7 @@ public class ResponseHandler implements NluInterface{
 	}
 	
 	/**
+	 * NOTE: Use {@link #tweakResult} instead.<br><br>
 	 * Tweak response parameters by cleaning up the string (database check is done by APIs). Also replaces here etc. with [user_home] etc..
 	 * @param response - response given by user
 	 * @param p_type - parameter type declared in parameter_set (e.g.: ***place) or somewhere else
@@ -201,6 +215,7 @@ public class ResponseHandler implements NluInterface{
 	 * @param command - the tweaking might depend on a command
 	 * @return cleaned up parameter
 	 */
+	@Deprecated
 	public static String tweak_parameters(String response, String p_type, String language, String command, NluInput input){
 		String tweaked = response;		//by default it is the pure response
 		p_type = p_type.toLowerCase().trim();

@@ -75,8 +75,8 @@ public class NluTools {
 	
 	//--conventional help methods---
 	
-	static String BREAK_S = "(\\b|\\s|<|>|^)"; 		//TODO: note that "-" is considered as a word ending (\\b)
-	static String BREAK_E = "(\\b|\\s|>|<|$)";
+	private final static String BREAK_S = "(?:\\b|\\s|<|>|^)"; 		//TODO: note that "-" is considered as a word ending (\\b)
+	private final static String BREAK_E = "(?:\\b|\\s|>|<|$)";		//... and ?: triggers non-capture mode for the bracket
 	
 	/**
 	 * String contains one of these ... <br>
@@ -113,7 +113,20 @@ public class NluTools {
 	 */
 	public static String stringFindFirst(String text, String find_first_of){
 		if (text.matches(".*?"+BREAK_S+"(" + find_first_of + ")"+BREAK_E+".*")){
-			return text.replaceAll(".*?"+BREAK_S+"(" + find_first_of + ")"+BREAK_E+".*", "$2");
+			return text.replaceAll(".*?"+BREAK_S+"(" + find_first_of + ")"+BREAK_E+".*", "$1");
+		}else{
+			return "";
+		}
+	}
+	/**
+	 * Find first match of these ...
+	 * @param text - string with text to analyze
+	 * @param find_first_of - string with terms to find separated by "|" e.g. a|b|c
+	 * @return string with first match or empty string for "no match"
+	 */
+	public static String stringFindLongest(String text, String find_first_of){
+		if (text.matches(".*?"+BREAK_S+"(" + find_first_of + ")"+BREAK_E+".*?")){
+			return text.replaceAll(".*?"+BREAK_S+"(" + find_first_of + ")"+BREAK_E+"(.*?).*", "$1");
 		}else{
 			return "";
 		}
@@ -126,7 +139,7 @@ public class NluTools {
 	 */
 	public static String stringFindLastMin(String text, String find_last_of){
 		if (text.matches(".*"+BREAK_S+"(" + find_last_of + ")"+BREAK_E+".*")){
-			return text.replaceFirst(".*"+BREAK_S+"(" + find_last_of + ")"+BREAK_E+".*", "$2");
+			return text.replaceFirst(".*"+BREAK_S+"(" + find_last_of + ")"+BREAK_E+".*", "$1");
 		}else{
 			return "";
 		}

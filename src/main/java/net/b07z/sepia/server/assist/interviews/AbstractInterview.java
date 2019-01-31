@@ -7,10 +7,12 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.answers.AnswerTools;
+import net.b07z.sepia.server.assist.answers.Answers;
+import net.b07z.sepia.server.assist.answers.ServiceAnswers;
 import net.b07z.sepia.server.assist.data.Parameter;
+import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.parameters.Confirm;
-import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.services.ServiceBuilder;
 import net.b07z.sepia.server.assist.services.ServiceInfo;
 import net.b07z.sepia.server.assist.services.ServiceInterface;
@@ -45,7 +47,7 @@ public class AbstractInterview implements InterviewInterface{
 	}
 	
 	@Override
-	public InterviewInfo getInfo(String language) {
+	public InterviewInfo getInfo(NluInput nluInput) {
 		//check command
 		if (command == null || command.isEmpty()){
 			throw new RuntimeException(DateTime.getLogDate() + " ERROR - AbstractInterview / getInfo() - NO COMMAND CONNECTED!");
@@ -55,7 +57,10 @@ public class AbstractInterview implements InterviewInterface{
 			throw new RuntimeException(DateTime.getLogDate() + " ERROR - AbstractInterview / getInfo() - NO SERVICES ADDED!");
 		}
 		//first service wins
-		InterviewInfo iInfo = new InterviewInfo(command, services.get(0).getInfo(language));	//use the MASTER service to get info
+		InterviewInfo iInfo = new InterviewInfo(command,
+				//use the MASTER service to get info
+				services.get(0).getInfoFreshOrCache(nluInput, services.get(0).getClass().getCanonicalName()
+		));
 		iInfo.setServices(services);
 		return iInfo;
 	}
@@ -66,7 +71,7 @@ public class AbstractInterview implements InterviewInterface{
 		Interview assistant = new Interview(nluResult);
 		
 		//Get info
-		InterviewInfo iInfo = getInfo(nluResult.language);
+		InterviewInfo iInfo = getInfo(nluResult.input);
 		
 		//required parameters
 		for (Parameter p : iInfo.requiredParameters){
@@ -174,7 +179,7 @@ public class AbstractInterview implements InterviewInterface{
 		
 		//"anything else" check for optional parameters
 		if (gotEmptyOptionals){
-			//TODO: ask for all optional parameters with one question if there are some of them empty
+			//TODO: Idea: ask for all optional parameters with one question if there are some of them empty
 		}
 		
 		//interview done
@@ -195,7 +200,7 @@ public class AbstractInterview implements InterviewInterface{
 		List<ServiceResult> results = assistant.getServiceResults(iInfo.getServices());
 		
 		//LEGACY SUPPORT: if service is tagged as 'stand-alone' simply take the result
-		if ((results.size() == 1) && results.get(0).getApiInfo().worksStandalone){
+		if ((results.size() == 1) && results.get(0).getServiceInfo().worksStandalone){
 			//System.out.println("STAND-ALONE SERVICE-MODULE RESULT: " + results.get(0).getResultJSON()); 					//debug
 			return results.get(0);
 		}
@@ -204,32 +209,38 @@ public class AbstractInterview implements InterviewInterface{
 		
 		//TODO: if there is only one service per command (which is usually the case) this leads to double-execution of build result ...
 		
-		//We build a new result but keep the apiInfo data from master service
-		ServiceInfo servicesInfo;
+		//We build a new result but keep the servicesInfo data from master service
+		ServiceInfo masterServiceInfo;
+		ServiceAnswers masterServiceAnswers;
 		if (!results.isEmpty()){
 			//Get master data and adapt
-			servicesInfo = results.get(0).getApiInfo();
-			servicesInfo.setServiceType(Type.systemModule);
-			servicesInfo.setContentType(Content.apiInterface);
-			servicesInfo.setWorksStandalone(false);
+			masterServiceInfo = results.get(0).getServiceInfo();
+			masterServiceInfo.setServiceType(Type.systemModule);
+			masterServiceInfo.setContentType(Content.apiInterface);
+			masterServiceInfo.setWorksStandalone(false);
+			masterServiceAnswers = results.get(0).getServiceAnswers();
+			
+			//We cache some info because we might need it later
+			if (masterServiceAnswers != null){
+				assistant.nluResult.input.cacheServiceAnswers(masterServiceInfo.intendedCommand, masterServiceAnswers);
+			}
 			
 			//If there was a service redirect/switch inside 'getServiceResults' we loose the correct InterviewInfo! So we need to rebuild it:
-			ServiceInfo primaryResultServiceInfo = results.get(0).getApiInfo();
-			String primaryResultIntendedCommand = primaryResultServiceInfo.intendedCommand;
-			if (primaryResultIntendedCommand != null && !primaryResultIntendedCommand.equals(command)){
+			if (masterServiceInfo.intendedCommand != null && !masterServiceInfo.intendedCommand.equals(command)){
 				/*
-				System.out.println("Intended command of primary result: " + primaryResultIntendedCommand); 		//debug
+				System.out.println("Intended command of primary result: " + masterServiceInfo.intendedCommand); //debug
 				System.out.println("Previously set command: " + command); 										//debug
 				System.out.println("Result customAnswerMap: ");			 										//debug
-				Debugger.printMap(primaryResultServiceInfo.customAnswerMap);									//debug
+				Debugger.printMap(masterServiceInfo.customAnswerMap);											//debug
 				*/
-				iInfo = new InterviewInfo(primaryResultIntendedCommand, primaryResultServiceInfo);	//use the MASTER service to get info
+				iInfo = new InterviewInfo(masterServiceInfo.intendedCommand, masterServiceInfo);	//use the MASTER service to get info
 				iInfo.setServices(services);
 			}
 		}else{
-			servicesInfo = new ServiceInfo(Type.systemModule, Content.apiInterface, false);
+			masterServiceInfo = new ServiceInfo(Type.systemModule, Content.apiInterface, false);
+			masterServiceAnswers = null;
 		}
-		ServiceBuilder servicesResult = new ServiceBuilder(assistant.nluResult, servicesInfo);
+		ServiceBuilder servicesResult = new ServiceBuilder(assistant.nluResult, masterServiceInfo);
 		
 		String status = "";
 		String customAnswer = "";
@@ -309,7 +320,14 @@ public class AbstractInterview implements InterviewInterface{
 			for (int i=0; i<aps.length; i++){
 				aps[i] = servicesResult.resultInfoGet(ansParams.get(i));
 			}
-			servicesResult.answer = Config.answers.getAnswer(assistant.nluResult, ansTag, aps);
+			//custom answers available?
+			if (masterServiceAnswers != null && masterServiceAnswers.containsAnswerFor(ansTag)){
+				servicesResult.answer = Answers.getAnswerString(masterServiceAnswers.getMap(), assistant.nluResult, ansTag, aps);
+			//.. or use system pool
+			}else{
+				servicesResult.answer = Answers.getAnswerString(assistant.nluResult, ansTag, aps);
+			}
+			//modify "clean" answer? (the one that goes to the TTS)
 			if (isSilent){
 				servicesResult.answerClean = "<silent>";
 			}else{

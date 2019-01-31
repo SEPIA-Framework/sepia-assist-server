@@ -188,8 +188,9 @@ public class ServiceInfo {
 		return this;
 	}
 	/**
-	 * Add a custom answer with a "meaningful" name. This is used to identify answers when requesting the service-info.<br>
-	 * This method is only for info purposes, to activate one of these answers anywhere in the service use API.setCustomAnswer(..). 
+	 * Add a custom answer with a "meaningful" name. This is used to identify answers when requesting the service-info.
+	 * It is only for information purposes and basically optional. To activate one of these answers anywhere in the service 
+	 * use {@link ServiceBuilder#setCustomAnswer}. 
 	 * @param name - name this answer to find it later (don't use "success" and "fail"!)
 	 * @param answer - tag or direct
 	 */

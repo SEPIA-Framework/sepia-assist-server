@@ -1,38 +1,55 @@
 package net.b07z.sepia.server.assist.services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import net.b07z.sepia.server.assist.server.Config;
+import net.b07z.sepia.server.assist.users.ACCOUNT;
 
 /**
  * Class similar to "User" managing database access of services.<br>
  * NOTE: This class is not fully implemented yet (check references) and probably needs some conceptual and technical 
- * re-work before it can be used.
+ * re-work before it can be used. 
  * 
  * @author Florian Quirin
  *
  */
-public class ServiceAccessManager {
+public final class ServiceAccessManager {
 	
 	private String serviceName = "";
 	private String serviceAccessKey = "";
 	private boolean signed = false;
 	
-	private List<String> allowedElements;		//list of elements allowed to access
+	//list of elements allowed to access (by default or by service)
+	public static final List<String> defaultAllowedElements = Arrays.asList(
+			ACCOUNT.USER_NAME_FIRST, ACCOUNT.USER_NAME_NICK		//TODO: load this during server setup
+	);
+	private List<String> allowedElements;
+	
+	//TODO: check net.b07z.sepia.server.core.data.CmdMap and make use of permissions data ...
 	
 	/**
-	 * Default constructor taking the service name and private key to sign the manager and get allowed database elements.
-	 * @param name - name of service
+	 * Default constructor taking the calling binary class name and a private key to sign the manager and get allowed database elements.
 	 * @param key - key acquired during registration of service
 	 */
-	public ServiceAccessManager(String name, String key){
+	public ServiceAccessManager(String key){
 		//authenticate API and get allowed commands list
-		serviceName = name;
-		serviceAccessKey = key;
+		this.serviceName = getCallerClassName();
+		this.serviceAccessKey = key;
+		
+		//TODO: implement properly and get allowed elements too
+		this.signed = true;
 		//
-		signed = true;		//TODO: implement and get allowed elements too
-		//
-		allowedElements = new ArrayList<String>();
+		this.allowedElements = new ArrayList<String>();
 		allowedElements.add(serviceName);		//every signed API can have its own field inside the user account with full access
+	}
+	private String getCallerClassName(){
+		try{
+			return new Exception().getStackTrace()[2].getClassName(); 
+		}catch(Exception e){
+			return null;
+		}
 	}
 	
 	/**
@@ -66,7 +83,8 @@ public class ServiceAccessManager {
 	 * @return true/false
 	 */
 	public boolean isAllowedToAccess(String request){
-		if (allowedElements.contains(request) || serviceName.equals("API_BOSS")){
+		if (allowedElements.contains(request) || defaultAllowedElements.contains(request) 
+				|| serviceName.equals(Config.class.getName())){ 		//NOTE: Config.class is the former API_BOSS
 			return true;
 		}else{
 			return false;

@@ -159,7 +159,7 @@ public class AssistEndpoint {
 			}
 		}
 		
-		//TODO: add a check if the user is allowed to use API xy
+		//TODO: add a check if the user is allowed to use API xy ?
 		
 		//interview module with services
 		List<ServiceInterface> services = ConfigServices.getCustomOrSystemServices(input, input.user, cmd);
@@ -173,13 +173,6 @@ public class AssistEndpoint {
 			}else{
 				answer = iResult.getApiComment();
 			}
-		
-			/* ???
-			ConfigServices.load_command_map(); 			//plug-ins to commands
-			API_Interface plugin = ConfigServices.command_map.get(result.get_command());
-			if (plugin != null){
-				answer = plugin.getResult(result);
-			*/
 		
 		//abort
 		} else if (cmd.matches(CMD.ABORT)){
@@ -209,14 +202,14 @@ public class AssistEndpoint {
 		CollectStuff.saveAsync(result); 				//store useful stuff to build up database and corpi 
 		
 		//different formats ... only JSON right now
-		String answer_JSON = answer.getResultJSON();
+		String answerJSON = answer.getResultJSON();
 		
 		//write basic statistics for user
 		input.user.saveStatistics();
 				
 		//return answer in requested format
 		//System.out.println(answer_JSON); 		//DEBUG
-		return SparkJavaFw.returnResult(request, response, answer_JSON, 200);
+		return SparkJavaFw.returnResult(request, response, answerJSON, 200);
 	}
 
 	/**-- EVENTS --<br>

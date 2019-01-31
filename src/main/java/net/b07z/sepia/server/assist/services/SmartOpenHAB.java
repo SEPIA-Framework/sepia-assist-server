@@ -104,7 +104,8 @@ public class SmartOpenHAB implements ServiceInterface {
 	@Override
 	public ServiceResult getResult(NluResult nluResult){
 		//initialize result
-		ServiceBuilder service = new ServiceBuilder(nluResult, getInfo(nluResult.language));
+		ServiceBuilder service = new ServiceBuilder(nluResult, 
+				getInfoFreshOrCache(nluResult.input, this.getClass().getCanonicalName()));
 		
 		//check if we know an OpenHAB server
 		if (Is.nullOrEmpty(Config.openhab_host)){

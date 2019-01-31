@@ -6,6 +6,7 @@ import java.util.HashMap;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
+import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interpreters.NluTools;
@@ -17,6 +18,7 @@ import net.b07z.sepia.server.assist.tools.DateTimeConverters;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 
 /**
@@ -31,6 +33,7 @@ public class DateAndTime implements ParameterHandler{
 	
 	//REGEX CONSTANTS
 	public static final String TIME_TAGS_DE = "( |)(sekunde(n|)|minute(n|)|stunde(n|)|tag(en|e|)|woche(n|)|monat(en|e|)|jahr(en|e|))";
+	public static final String TIME_TAGS_LARGE_DE = "( |)(tag(en|e|)|woche(n|)|monat(en|e|)|jahr(en|e|))";
 	public static final String TIME_YEARS_DE = "( |)(jahr(en|e|)|j|a|yr|y)(\\.|)"; 
 	public static final String TIME_MONTHS_DE = "( |)(monat(en|e|)|mo)(\\.|)";
 	public static final String TIME_WEEKS_DE = "( |)(woche(n|)|wk)(\\.|)";
@@ -40,6 +43,7 @@ public class DateAndTime implements ParameterHandler{
 	public static final String TIME_SECONDS_DE = "( |)(sekunde(n|)|sek|sec|s)(\\.|)";
 	
 	public static final String TIME_TAGS_EN = "( |)(second(s|)|minute(s|)|hour(s|)|day(s|)|week(s|)|month(s|)|year(s|))";
+	public static final String TIME_TAGS_LARGE_EN = "( |)(day(s|)|week(s|)|month(s|)|year(s|))";
 	public static final String TIME_YEARS_EN = "( |)(year(s|)|a|yr|y)(\\.|)"; 
 	public static final String TIME_MONTHS_EN = "( |)(month(s|)|mo)(\\.|)";
 	public static final String TIME_WEEKS_EN = "( |)(week(s|)|wk)(\\.|)";
@@ -48,7 +52,7 @@ public class DateAndTime implements ParameterHandler{
 	public static final String TIME_MINUTES_EN = "( |)(minute(s|)|min)(\\.|)";
 	public static final String TIME_SECONDS_EN = "( |)(second(s|)|sec|s)(\\.|)";
 	
-	public static final String TIME_TAGS_SHORT = "( |)(sec|sek|s|min|std|h|hr|d|wk|mo|j|a|yr|y)(\\.|)";
+	public static final String TIME_TAGS_SHORT = "( |)(sec|sek|s|min|std|h|hr|d|wk|mo|j|a|yr|y)(\\.|)($|\\s)";
 	
 	public static final String TIME_UNSPECIFIC_TAGS_DE = "(am |)(am morgen|morgens|frueh|vormittag(s|)|mittag(s|)|nachmittag(s|)|abend(s|)|nacht(s|)|spaet)";
 	public static final String TIME_UNSPECIFIC_TAGS_EN = "(in the |at the |at |by |)(morning|early|forenoon|midday|afternoon|noon|evening|night|late)";
@@ -58,16 +62,17 @@ public class DateAndTime implements ParameterHandler{
 	public static final String DAY_TAGS_EN = "(monday|tuesday|wednesday|thursday|friday|saturday|sunday|weekend)";
 	public static final String DAY_TAGS_RELATIVE_EN = "(today|now|day after tomorrow|tomorrow|next week|(this|the) week|next days|next few days)";
 	
-	public static final String CLOCK_TAGS_DE = "( |)(uhr)|(um (\\d(\\d|):\\d\\d|\\d\\d|\\d))(\\s|$)|"
-														+ "(fuer (\\d(\\d|):\\d\\d))(\\s|$)";
+	public static final String CLOCK_TAGS_DE =    "( |)(uhr)|"
+												+ "(um (\\d{1,2}:\\d\\d|\\d\\d|\\d))(\\s?|$)|"
+												+ "(fuer (\\d{1,2}:\\d\\d))(\\s?|$)";
 	/*
 	public static final String CLOCK_TAGS_DE = "( |)(uhr)|((um |fuer )(\\d\\d|\\d))(\\s|$)|"
 														+ "(\\d(\\d|):\\d\\d)(\\s|$)|"
 														+ "(^\\d(\\d|)$)"; 		//<- is that too general?
 	*/
-	public static final String CLOCK_TAGS_EN = "( |)(o('|)clock( p(\\.|)m(\\.|)| a(\\.|)m(\\.|)|)|p(\\.|)m(\\.|)|a(\\.|)m(\\.|))|"
-														+ "(at (\\d(\\d|):\\d\\d|\\d\\d|\\d))(\\s|$)|"
-														+ "(for (\\d(\\d|):\\d\\d))(\\s|$)";
+	public static final String CLOCK_TAGS_EN =    "( |)(o('|)clock( (p|a)(\\.|)m(\\.|)|)|(p|a)(\\.|)m(\\.|))|"
+												+ "(at (\\d{1,2}:\\d\\d|\\d\\d|\\d))(( |)(p|a)(\\.|)m(\\.|)|)(\\s?|$)|"
+												+ "(for (\\d{1,2}:\\d\\d))(( |)(p|a)(\\.|)m(\\.|)|)(\\s?|$)";
 	/*
 	public static final String CLOCK_TAGS_EN = "( |)(o('|)clock( p(\\.|)m(\\.|)| a(\\.|)m(\\.|)|)|p(\\.|)m(\\.|)|a(\\.|)m(\\.|))|"
 														+ "((at |for )(\\d\\d|\\d))(\\s|$)|"
@@ -214,7 +219,13 @@ public class DateAndTime implements ParameterHandler{
 		dateMap = RegexParameterSearch.get_date(input, language);
 		String dateTag = dateMap.get("date_tag");
 		String timeTag = dateMap.get("time_tag");
-		//System.out.println("DATE-TAG: " + dateTag); 		//DEBUG
+		//System.out.println("DATE-MAP: "); 		//DEBUG
+		//Debugger.printMap(dateMap); 				//DEBUG
+		
+		//Nothing found?
+		if (Is.nullOrEmpty(dateTag) && Is.nullOrEmpty(timeTag)){
+			return "";
+		}
 		
 		//TODO: date_tag can be normalized and differ from original input
 		this.found = (dateTag.isEmpty()? timeTag : dateTag);
@@ -265,8 +276,10 @@ public class DateAndTime implements ParameterHandler{
 			}
 			if (!dateTag.isEmpty() && dateRes[0].isEmpty() && dateRes[1].isEmpty()){
 				date = "<" + dateType + ">&&" + dateTag;
+				
 			}else if (dateTag.isEmpty() && dateRes[0].isEmpty() && dateRes[1].isEmpty()){
 				date = "";
+				
 			}else{
 				date = "<" + dateType + ">&&" + date;
 			} 
@@ -334,6 +347,7 @@ public class DateAndTime implements ParameterHandler{
 		String day = "";
 		String time = "";
 
+		//extracted time-date
 		if (input.startsWith("<") && input.contains("&&")){
 			String[] dateSplit = input.split("&&", 2);
 			dateType = dateSplit[0].replaceAll("^<|>$", "").trim();
@@ -344,14 +358,27 @@ public class DateAndTime implements ParameterHandler{
 				day = dateSplit[0];
 				time = dateSplit[1];
 				input = day + Config.defaultSdfSeparator + time;
+				
 			}else if (input.matches("\\d\\d\\d\\d\\.\\d\\d\\.\\d\\d")){
 				day = input;
+			
 			}else{
 				//???
 			}
 			
+		//user-time
+		}else if (input.equals("<" + Parameter.Defaults.user_time + ">")){
+			input = nluInput.userTimeLocal;
+			String[] dateSplit = input.split(Config.defaultSdfSeparatorRegex, 2);
+			day = dateSplit[0];
+			time = dateSplit[1];
+			dateType = DateType.pointInTime.name();
+		
+		//nothing or error?
 		}else{
-			//TODO: what does that mean? Empty input or raw, unconverted format? 
+			//TODO: what does that mean? Empty input or raw, unconverted format?
+			//End with build success or empty string?
+			return "";
 		}
 		
 		//check for unspecific date
@@ -364,15 +391,6 @@ public class DateAndTime implements ParameterHandler{
 			
 			buildSuccess = true;
 			return timeResultJSON.toJSONString();
-		}
-		
-		//check for <user_time>
-		if (input.equals("<user_time>")){
-			input = nluInput.userTimeLocal;
-			String[] dateSplit = input.split(Config.defaultSdfSeparatorRegex, 2);
-			day = dateSplit[0];
-			time = dateSplit[1];
-			dateType = DateType.pointInTime.name();
 		}
 		
 		//TODO: can this still happen? Yes! We need to replace it with extract->repeat build
@@ -407,14 +425,14 @@ public class DateAndTime implements ParameterHandler{
 		
 		//build default result
 		JSONObject timeResultJSON = new JSONObject();
-			JSON.add(timeResultJSON, InterviewData.TIME_TYPE, dateType);
-			if (day.isEmpty()){
-				JSON.add(timeResultJSON, InterviewData.DATE_INPUT, input);
-			}else{
-				JSON.add(timeResultJSON, InterviewData.DATE_DAY, day);
-			}
-			if (!time.isEmpty()) JSON.add(timeResultJSON, InterviewData.DATE_TIME, time);
-			JSON.add(timeResultJSON, InterviewData.TIME_DIFF, diff);
+		JSON.put(timeResultJSON, InterviewData.TIME_TYPE, dateType);
+		if (day.isEmpty()){
+			JSON.put(timeResultJSON, InterviewData.DATE_INPUT, input);
+		}else{
+			JSON.put(timeResultJSON, InterviewData.DATE_DAY, day);
+		}
+		if (!time.isEmpty()) JSON.put(timeResultJSON, InterviewData.DATE_TIME, time);
+		JSON.put(timeResultJSON, InterviewData.TIME_DIFF, diff);
 		
 		buildSuccess = true;
 		//System.out.println("BUILD DATE: " + timeResultJSON.toJSONString()); 		//DEBUG
@@ -433,7 +451,7 @@ public class DateAndTime implements ParameterHandler{
 
 	@Override
 	public boolean buildSuccess() {
-		return buildSuccess = true;
+		return buildSuccess;
 	}
 	
 	//--------------- HELPERS -----------------
@@ -521,8 +539,8 @@ public class DateAndTime implements ParameterHandler{
 			}
 			
 			//TIME
-			String clockTag = NluTools.stringFindFirst(dataTagOrg, "(\\d{1,2}:\\d\\d|\\d{1,2})" + CLOCK_TAGS_DE);
-			if (clockTag.isEmpty() && dataTagOrg.matches("^\\d{1,2}$")){
+			String clockTag = NluTools.stringFindLongest(dataTagOrg, "(\\d{1,2}:\\d\\d|\\d{1,2})" + CLOCK_TAGS_DE);
+			if (clockTag.isEmpty() && dataTagOrg.matches("^(\\d{1,2}:\\d\\d|\\d{1,2})$")){
 				//TODO: is that safe to assume? Probably depends on many correlated parameters
 				clockTag = dateTag;
 			}
@@ -564,8 +582,8 @@ public class DateAndTime implements ParameterHandler{
 			}
 			
 			//TIME
-			String clockTag = NluTools.stringFindFirst(dataTagOrg, "(\\d{1,2}:\\d\\d|\\d{1,2})" + CLOCK_TAGS_EN);
-			if (clockTag.isEmpty() && dataTagOrg.matches("^\\d{1,2}$")){
+			String clockTag = NluTools.stringFindLongest(dataTagOrg, "(\\d{1,2}:\\d\\d|\\d{1,2})" + CLOCK_TAGS_EN);
+			if (clockTag.isEmpty() && dataTagOrg.matches("^(\\d{1,2}:\\d\\d|\\d{1,2})$")){
 				//TODO: is that safe to assume? Probably depends on many correlated parameters
 				clockTag = dateTag;
 			}
@@ -694,14 +712,14 @@ public class DateAndTime implements ParameterHandler{
 			
 			//OTHER
 			}else{
-				if (NluTools.stringContains(timeTag, "pm|afternoon|evening|night|late") || NluTools.stringContains(clockTag, "pm")){
+				if (NluTools.stringContains(timeTag, "p(\\.|)m(\\.|)|afternoon|evening|night|late") || NluTools.stringContains(clockTag, "p(\\.|)m(\\.|)")){
 					isPM = true;
 				}
 			}
 		}else{
 			//ENGLISH
 			if (nluInput.language.equals(LANGUAGES.EN)){
-				if (NluTools.stringContains(clockTag, "pm")){
+				if (NluTools.stringContains(clockTag, "(\\d|\\s)(p(\\.|)m(\\.|))")){
 					isPM = true;
 				}
 			}

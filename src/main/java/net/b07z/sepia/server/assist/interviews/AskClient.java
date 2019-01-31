@@ -1,9 +1,9 @@
 package net.b07z.sepia.server.assist.interviews;
 
 import net.b07z.sepia.server.assist.answers.AnswerTools;
+import net.b07z.sepia.server.assist.answers.Answers;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.parameters.YesNo;
-import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.services.ServiceBuilder;
 import net.b07z.sepia.server.assist.services.ServiceResult;
 import net.b07z.sepia.server.core.assistant.ACTIONS;
@@ -44,7 +44,7 @@ public class AskClient {
 		api.makeThisAQuestion(missingInputParam); 
 		
 		//get answer/question to client
-		api.answer = Config.answers.getAnswer(nluResult, questionKey, wildcards);
+		api.answer = Answers.getAnswerString(nluResult, questionKey, wildcards);
 		api.answerClean = Converters.removeHTML(api.answer);
 		//remove vocal smileys
 		api.answer = AnswerTools.cleanHtmlAnswer(api.answer);
@@ -52,7 +52,7 @@ public class AskClient {
 		api.status = "success";
 		
 		//anything else?
-		api.context = nluResult.context;				//the context remains the previous one
+		api.context = nluResult.context;			//the context remains the previous one
 		api.cmdSummary = nluResult.cmdSummary;		//cmd_summary is very important here because it's needed to fuse answer and initial command later
 		
 		//if there is a question offer abort button
@@ -97,7 +97,7 @@ public class AskClient {
 		//System.out.println("Dialog stage/Last CMD rep.: " + NLU_result.input.dialog_stage + "/" + NLU_result.input.last_cmd_N);
 		
 		//get answer/question to client
-		api.answer = Config.answers.getAnswer(nluResult, "default_ask_incaccess_0a");
+		api.answer = Answers.getAnswerString(nluResult, "default_ask_incaccess_0a");
 		api.answerClean = Converters.removeHTML(api.answer);
 		
 		//TODO: IMPLEMENT AUTHORIZATION ACTION 

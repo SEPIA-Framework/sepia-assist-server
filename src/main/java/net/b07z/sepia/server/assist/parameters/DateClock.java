@@ -2,13 +2,13 @@ package net.b07z.sepia.server.assist.parameters;
 
 import org.json.simple.JSONObject;
 
+import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.tools.DateTimeConverters;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
-import net.b07z.sepia.server.core.tools.ClassBuilder;
 import net.b07z.sepia.server.core.tools.JSON;
 
 /**
@@ -25,12 +25,13 @@ public class DateClock implements ParameterHandler{
 	NluInput nluInput;
 	
 	ParameterHandler masterHandler;
+	
 	private void setMaster(NluInput nluInput){
-		masterHandler = (ParameterHandler) ClassBuilder.construct(ParameterConfig.getHandler(PARAMETERS.TIME));
+		masterHandler = new Parameter(PARAMETERS.TIME).getHandler();
 		masterHandler.setup(nluInput);
 	}
 	private void setMaster(NluResult nluResult){
-		masterHandler = (ParameterHandler) ClassBuilder.construct(ParameterConfig.getHandler(PARAMETERS.TIME));
+		masterHandler = new Parameter(PARAMETERS.TIME).getHandler();
 		masterHandler.setup(nluResult);
 	}
 	
@@ -60,7 +61,7 @@ public class DateClock implements ParameterHandler{
 		
 		//check for time and overwrite date with today
 		if (date.matches("<.*?>&&.*?&&.*")){
-			//replace date with today
+			//replace date with today - we keep this date so we can continue to use the master handler of DateAndTime
 			date = date.replaceFirst("&&.*?&&", ("&&" + DateTimeConverters.getToday("yyyy.MM.dd", nluInput) + "&&"));
 			return date;
 			
@@ -106,10 +107,11 @@ public class DateClock implements ParameterHandler{
 
 	@Override
 	public String build(String input) {
+		String dateJsonString = masterHandler.build(input);
 		if (!masterHandler.buildSuccess()){
 			return "";
 		}
-		String dateJsonString = masterHandler.build(input);
+		
 		if (dateJsonString == null || dateJsonString.isEmpty()){
 			return "";
 		}

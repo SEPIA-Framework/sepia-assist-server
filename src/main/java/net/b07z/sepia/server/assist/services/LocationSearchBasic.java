@@ -3,9 +3,8 @@ package net.b07z.sepia.server.assist.services;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import org.json.simple.JSONObject;
-
 import net.b07z.sepia.server.assist.answers.AnswerStatics;
+import net.b07z.sepia.server.assist.answers.Answers;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.assistant.LOCATION;
 import net.b07z.sepia.server.assist.data.Card;
@@ -138,7 +137,7 @@ public class LocationSearchBasic implements ServiceInterface{
 		}
 		
 		//get answer
-		api.answer = Config.answers.getAnswer(nluResult, "location_1a", end_to_say);
+		api.answer = Answers.getAnswerString(nluResult, "location_1a", end_to_say);
 		api.answerClean = Converters.removeHTML(api.answer);
 		
 		//make action: browser url call
@@ -182,25 +181,27 @@ public class LocationSearchBasic implements ServiceInterface{
 		
 		//google
 		Card googleCard = new Card(Card.TYPE_SINGLE);
-		JSONObject linkCard1 = googleCard.addElement(ElementType.link, 
+		//JSONObject linkCard1 = 
+		googleCard.addElement(ElementType.link, 
 				JSON.make("title", "Google Maps", "desc", description),
 				null, null, "", 
 				googleMapsURL, 
 				Config.urlWebImages + "/brands/google-maps.png", 
 				null, null);
-		JSON.put(linkCard1, "imageBackground", "transparent");	//use any CSS background option you wish
+		//JSON.put(linkCard1, "imageBackground", "transparent");	//use any CSS background option you wish
 		api.addCard(googleCard.getJSON());
 		
 		//apple
 		if (!appleMapsURL.isEmpty()){
 			Card appleCard = new Card(Card.TYPE_SINGLE);
-			JSONObject linkCard2 = appleCard.addElement(ElementType.link, 
+			//JSONObject linkCard2 = 
+			appleCard.addElement(ElementType.link, 
 					JSON.make("title", "Apple Maps", "desc", description),
 					null, null, "", 
 					appleMapsURL, 
 					Config.urlWebImages + "/brands/apple-maps.png", 
 					null, null);
-			JSON.put(linkCard2, "imageBackground", "transparent");	//use any CSS background option you wish
+			//JSON.put(linkCard2, "imageBackground", "transparent");	//use any CSS background option you wish
 			api.addCard(appleCard.getJSON());
 		}
 		

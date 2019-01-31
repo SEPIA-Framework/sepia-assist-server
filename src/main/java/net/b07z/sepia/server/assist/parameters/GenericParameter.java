@@ -2,41 +2,18 @@ package net.b07z.sepia.server.assist.parameters;
 
 import org.json.simple.JSONObject;
 
-import net.b07z.sepia.server.assist.interpreters.NluInput;
-import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
-import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.tools.JSON;
 
 /**
- * The generic parameters simply returns the input. Should be used for parameters that have no handler yet.
+ * The generic parameters simply returns the input. Should be used for parameters that have no handler yet
+ * or for those that can only be called by direct-commands (where you parse the data yourself).
  * 
  * @author Florian Quirin
  *
  */
-public class GenericParameter implements ParameterHandler{
+public class GenericParameter extends CustomParameter implements ParameterHandler{
 
-	User user;
-	NluInput nluInput;
-	String language;
-	boolean buildSuccess = false;
-	
-	//keep that in mind
-	String found = "";		//exact (not generalized) string found during extraction (or guess?)
-	
-	@Override
-	public void setup(NluInput nluInput) {
-		this.nluInput = nluInput;
-		this.user = nluInput.user;
-		this.language = nluInput.language;
-	}
-	@Override
-	public void setup(NluResult nluResult) {
-		this.nluInput = nluResult.input;
-		this.user = nluResult.input.user;
-		this.language = nluResult.language;
-	}
-	
 	@Override
 	public boolean isGeneric(){
 		return true;
@@ -47,26 +24,6 @@ public class GenericParameter implements ParameterHandler{
 		return input;
 	}
 	
-	@Override
-	public String guess(String input) {
-		return "";
-	}
-	
-	@Override
-	public String getFound() {
-		return found;
-	}
-
-	@Override
-	public String remove(String input, String found) {
-		return input;
-	}
-	
-	@Override
-	public String responseTweaker(String input){
-		return input;
-	}
-
 	@Override
 	public String build(String input) {
 		//build default result
@@ -88,10 +45,4 @@ public class GenericParameter implements ParameterHandler{
 			return false;
 		}
 	}
-
-	@Override
-	public boolean buildSuccess() {
-		return buildSuccess;
-	}
-
 }

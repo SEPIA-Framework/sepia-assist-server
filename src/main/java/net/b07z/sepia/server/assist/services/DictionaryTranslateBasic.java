@@ -3,10 +3,10 @@ package net.b07z.sepia.server.assist.services;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import net.b07z.sepia.server.assist.answers.Answers;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interviews.AskClient;
-import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.core.assistant.ACTIONS;
@@ -39,22 +39,22 @@ public class DictionaryTranslateBasic implements ServiceInterface{
 	}
 
 	//result
-	public ServiceResult getResult(NluResult NLU_result){
+	public ServiceResult getResult(NluResult nluResult){
 		//initialize result
-		ServiceBuilder api = new ServiceBuilder(NLU_result);
+		ServiceBuilder api = new ServiceBuilder(nluResult);
 		
 		//get parameters
-		String search = NLU_result.getParameter(PARAMETERS.SEARCH);
-		String target_lang = NLU_result.getParameter(PARAMETERS.LANGUAGE);
+		String search = nluResult.getParameter(PARAMETERS.SEARCH);
+		String target_lang = nluResult.getParameter(PARAMETERS.LANGUAGE);
 		Debugger.println("cmd: dict_translate, search " + search + ", target_lang=" + target_lang, 2);		//debug
 		
 		//check'em
 		if (search.isEmpty()){
-			return AskClient.question("dict_translate_ask_0a", "search", NLU_result);
+			return AskClient.question("dict_translate_ask_0a", "search", nluResult);
 		}
 		if (target_lang.isEmpty()){
 			//set default target language
-			if (NLU_result.language.matches("en")){
+			if (nluResult.language.matches("en")){
 				target_lang = "de";
 			}else{
 				target_lang = "en";
@@ -66,10 +66,10 @@ public class DictionaryTranslateBasic implements ServiceInterface{
 		//make answer - if more than one direct answer choose randomly
 		if (target_lang.matches(supported_languages)){
 			//supported language
-			api.answer = Config.answers.getAnswer(NLU_result, "dict_translate_1a", search, target_lang);
+			api.answer = Answers.getAnswerString(nluResult, "dict_translate_1a", search, target_lang);
 		}else{
 			//unsupported target language
-			api.answer = Config.answers.getAnswer(NLU_result, "dict_translate_1b", search, target_lang);
+			api.answer = Answers.getAnswerString(nluResult, "dict_translate_1b", search, target_lang);
 		}
 		api.answerClean = Converters.removeHTML(api.answer);
 		
@@ -118,7 +118,7 @@ public class DictionaryTranslateBasic implements ServiceInterface{
 		*/
 		
 		//build html
-		if (CLIENTS.hasWebView(NLU_result.input.clientInfo)){
+		if (CLIENTS.hasWebView(nluResult.input.clientInfo)){
 			api.htmlInfo = "<object type='text/html' style='width: 100%; height: 400%; overflow-y: hidden;' data='" + call_url + "'></object>";
 		}else{
 			api.htmlInfo = call_url;
