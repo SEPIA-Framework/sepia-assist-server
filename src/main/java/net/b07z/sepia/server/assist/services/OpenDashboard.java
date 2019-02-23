@@ -13,6 +13,8 @@ import net.b07z.sepia.server.core.tools.Debugger;
  * Default dashboard/menu handler. This is kind of a special "service" that can be used in other services as well to
  * trigger for example a client action that opens the addresses menu as a helper to show the user what he can do. 
  * 
+ * NOTE: to be replaced with client-controls
+ * 
  * @author Florian Quirin
  *
  */

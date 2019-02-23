@@ -102,7 +102,7 @@ public class MusicGenre implements ParameterHandler{
 		//TODO: this parameter need a little upgrade ... we should generalize the names better (see below normalizeGenreName)
 		
 		//German
-		if (language.matches("de")){
+		if (language.matches(LANGUAGES.DE)){
 			//split 'radio' if common
 			input = input.replaceFirst("(ein) (\\w+)(radio)", "$1 $2 $3")		//We keep the "ein" to distinguish "a rockradio" and "delta rockradio" (name)
 						.replaceFirst("(" + common + ")(musik)", "$1 $2");		//Note: this will mess with 'found' 

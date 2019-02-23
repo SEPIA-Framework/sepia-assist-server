@@ -131,7 +131,8 @@ public class Action implements ParameterHandler{
 			on = "(mach|schalte|dreh) .*\\b(an|ein)|"
 					+ "^\\w+\\b (an$|ein$)|"
 					+ "oeffne|oeffnen|aktiviere|aktivieren|starte|starten|start|lade|laden|"
-					+ "anschalten|einschalten|anmachen|an machen|aufmachen|auf machen|aufdrehen|auf drehen|spielen|spiele|spiel|abspielen";
+					+ "anschalten|einschalten|anmachen|an machen|aufmachen|auf machen|aufdrehen|auf drehen|spielen|spiele|spiel|abspielen|"
+					+ "ausfuehren|aufrufen";
 			off = "(mach|schalte|dreh) .*\\b(aus)|"
 					+ "^\\w+\\b (aus$)|"
 					+ "schliessen|schliesse|deaktivieren|deaktiviere|"
@@ -155,7 +156,7 @@ public class Action implements ParameterHandler{
 		}else{
 			on = "(make|switch|turn) .*\\b(on)|"
 					+ "^\\w+\\b (on$)|"
-					+ "open|activate|start|play|load";
+					+ "open|activate|start|play|load|run|execute|call";
 			off = "(make|switch|turn) .*\\b(off)|"
 					+ "^\\w+\\b (off$)|"
 					+ "close|deactivate|end|exit|quit|stop|shut\\b.*? down";

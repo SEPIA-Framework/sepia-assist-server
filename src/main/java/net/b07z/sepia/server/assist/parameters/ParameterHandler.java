@@ -3,6 +3,13 @@ package net.b07z.sepia.server.assist.parameters;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 
+/**
+ * Interface for parameter extraction, normalization and build. 
+ * Check {@link ClientFunction} for a (kind of) reference implementation. 
+ * 
+ * @author Florian Quirin
+ *
+ */
 public interface ParameterHandler {
 	
 	/**
@@ -39,7 +46,8 @@ public interface ParameterHandler {
 	
 	/**
 	 * Return the exact string (not any modified version) that has been found during extraction.<br>
-	 * Note: this is usually only available during the NLU interpretation phase (not anymore in the build-phase).
+	 * Note: this is usually only available during the NLU interpretation phase (not in the build-phase). If you need it in the build phase you
+	 * have to add it to the extracted result, e.g. like this: "&lt;en&gt;;;english"
 	 */
 	public String getFound();
 	

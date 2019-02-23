@@ -696,7 +696,7 @@ public class RegexParameterSearch {
 			location_input = location_input.replaceFirst("\\b(suche nach)\\b", "suche").trim();
 			location_input = location_input.replaceFirst("\\b(zu )(fahren|kommen|gelangen|laufen|biken|fliegen|buchen)\\b", "").trim();
 			location_input = location_input.replaceFirst("\\b(etwas|was) (zu essen)\\b", "restaurant").trim();
-			location_input = location_input.replaceFirst("\\b(zeigen$|suchen$|finden$|komme$|gelange$|buchen$)\\b", "").trim();
+			location_input = location_input.replaceFirst("\\b(zeigen$|suchen$|finden$|komme$|gelange$|buchen$|(sein |)wird$)\\b", "").trim();
 			location_input = location_input.replaceFirst("\\b(kommen|fahren|gelangen|gehen|laufen|biken|buchen) (kann)\\b", "").trim();
 			
 			//get travel time and remove
@@ -832,6 +832,7 @@ public class RegexParameterSearch {
 			//clean more - stupid verbs ^^ - TODO: remove verbs!
 			location_input = location_input.replaceFirst("\\b((look|looking|search|searching|watch out|watch)( for))\\b", "search").trim();
 			location_input = location_input.replaceFirst("\\b(i need to|i have to|to go|to drive|to walk|to find|to do|to bring|to (look|search)|to book|start to)\\b", "").trim();
+			location_input = location_input.replaceFirst("\\b((will |)(become|be)$)\\b", "").trim();
 			location_input = location_input.replaceFirst("\\b(something |)(to eat)\\b", "restaurant").trim();
 			
 			//get travel time and remove

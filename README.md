@@ -1,6 +1,10 @@
 # SEPIA Assist-Server
 Part of the [SEPIA Framework](https://sepia-framework.github.io/)  
 
+<p align="center">
+  <img src="https://sepia-framework.github.io/img/SEPIA_connected.png" alt="S.E.P.I.A. Framework" width=350/>
+</p>
+
 This is the core server of the SEPIA Framework and basically the "brain" of the assistant. It includes multiple modules and microservices exposed via the Assist-API, e.g.:
 * User-account management
 * Database integration (e.g. Elasticsearch)
