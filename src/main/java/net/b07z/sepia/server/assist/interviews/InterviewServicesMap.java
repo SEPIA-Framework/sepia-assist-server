@@ -9,6 +9,7 @@ import java.util.Set;
 
 import net.b07z.sepia.server.assist.services.Alarms;
 import net.b07z.sepia.server.assist.services.ChatPreprocessor;
+import net.b07z.sepia.server.assist.services.ClientControls;
 import net.b07z.sepia.server.assist.services.ControlPreprocessor;
 import net.b07z.sepia.server.assist.services.DictionaryTranslateBasic;
 import net.b07z.sepia.server.assist.services.DirectionsGoogleMaps;
@@ -219,10 +220,14 @@ public class InterviewServicesMap {
 		ArrayList<String> sentence_connect = new ArrayList<String>();
 			sentence_connect.add(SentenceConnect.class.getCanonicalName());
 			systemInterviewServicesMap.put(CMD.SENTENCE_CONNECT, sentence_connect);
-		//MESH NODE PLUGIN
+		//MESH NODE PLUGIN CONNECTOR
 		ArrayList<String> mesh_node_plugin = new ArrayList<String>();
 			mesh_node_plugin.add(MeshNodeConnector.class.getCanonicalName());
 			systemInterviewServicesMap.put(CMD.MESH_NODE_PLUGIN, mesh_node_plugin);
+		//CLIENT CONTROLS
+		ArrayList<String> client_controls = new ArrayList<String>();
+		client_controls.add(ClientControls.class.getCanonicalName());
+			systemInterviewServicesMap.put(CMD.CLIENT_CONTROLS, client_controls);
 		//PARROT (REPEAT USER)
 		ArrayList<String> parrot = new ArrayList<String>();
 			parrot.add(RepeatMe.class.getCanonicalName());

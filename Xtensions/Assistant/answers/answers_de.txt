@@ -22,6 +22,9 @@ ok_0c;;		rep=0|mood=5;;		Ok, ist erledigt.		;;char=neutral
 default_ask_parameter_0a;;		rep=0|mood=5;;		Hmm, die Anfrage ist scheinbar unvollständig, was ist der fehlende Parameter? ;;char=polite,neutral
 default_ask_parameter_0a;;		rep=1|mood=5;;		Und der nächste fehlende Parameter? ;;char=cool,rude,neutral
 default_ask_parameter_0a;;		rep=2|mood=5;;		Und noch einen Parameter bitte! ;;char=cool,rude
+default_ask_action_0a;;		rep=0|mood=5;;		Welche Aktion soll ich ausführen? ;;char=neutral
+default_ask_action_0a;;		rep=1|mood=5;;		Sorry, welche Aktion war das? ;;char=neutral
+default_ask_action_0a;;		rep=2|mood=5;;		Mir fehlt leider eine Aktion wie z.B. öffnen oder schließen, sag noch mal bitte!;;char=neutral
 default_miss_info_0a;;		rep=0|mood=5;;		Da scheinen mir jetzt leider noch die nötigen Zusatzinformationen zu fehlen. ;;char=polite,neutral
 default_miss_info_0b;;		rep=0|mood=5;;		Da scheinen mir jetzt leider die nötigen Informationen zu fehlen, aber du kannst sie deinem Account hinzufügen. ;;char=polite,neutral
 default_miss_user_location_0a;;		rep=0|mood=5;;		<user_name>, mir fehlen leider gerade die Informationen zu deinem Standort. ;;char=polite,neutral
@@ -43,6 +46,9 @@ yes_no_ask_0a;;		rep=1|mood=5;;		war das jetzt ein ja oder ein nein <user_name>?
 yes_no_ask_0a;;		rep=2|mood=5;;		also du hast jetzt folgende Optionen <user_name>, ja, nein oder abbrechen. ;;char=polite,neutral
 events_personal_0a;;	rep=0|mood=5;;		Das könnte dich interessieren: ;;char=neutral
 summary_0a;;	rep=0|mood=5;;		Hier ist deine Zusammenfassung <user_name>.;;char=neutral
+client_controls_ask_fun_0a;;		rep=0|mood=5;;		Welche Funktion soll ich ausführen? ;;char=neutral
+client_controls_ask_fun_0a;;		rep=1|mood=5;;		Sorry, wie heißt die Funktion? ;;char=neutral
+client_controls_ask_fun_0a;;		rep=2|mood=5;;		Mir fehlt leider der Name einer Funktion wie z.B. Einstellungen, sag noch mal bitte!;;char=neutral
 alarms_0a;;	rep=0|mood=5;;		Der nächste Alarm ist in <1>. ;;char=neutral
 alarms_0b;;	rep=0|mood=5;;		Es gibt scheinbar keinen aktiven <3> zur Zeit. ;;char=neutral
 alarms_0c;;	rep=0|mood=5;;		Dazu kann ich gerade nix finden irgendwie, versuch es bitte gleich noch mal. ;;char=neutral
