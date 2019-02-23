@@ -50,3 +50,4 @@ Welches Datum ist Heute;;		command=chat;;		reply=Heute ist der <local_date_ddMMy
 Welches Datum haben wir;;		command=chat;;		reply=Heute ist der <local_date_ddMMyyyy>
 Wie ist das Datum;;		command=chat;;		reply=Heute ist der <local_date_ddMMyyyy>
 Das Datum von Heute;;		command=chat;;		reply=Heute ist der <local_date_ddMMyyyy>
+Client Mesh-Node test;;		command=client_controls;;		client_fun=meshNode;;		data={"url":"http://localhost:20780", "plugin":"HelloPlugin"}

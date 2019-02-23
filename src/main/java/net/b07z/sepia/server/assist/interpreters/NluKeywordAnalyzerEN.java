@@ -79,14 +79,11 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 		
 		//----- SYSTEM SERVICES -----
 		
-		//TODO: We can simplify this class by moving all regular expressions to the getInfo method of the services
-		//and then use this:
-		/*
-		for (ServiceInterface service : ConfigServices.getAllSystemMasterServices()){
-			index = NluKeywordAnalyzer.abstractRegExAnalyzer(text, input, service,
-					possibleCMDs, possibleScore, possibleParameters, index);
-		}
-		*/
+		//TODO: We can simplify this class by moving ALL regular expressions to the getInfo method of the services
+		//For some services this is already done:
+		
+		index = NluKeywordAnalyzer.runSystemServices(input, possibleCMDs, possibleScore, possibleParameters, index);
+				
 		//... but sometimes we want to handle some exceptions and special conditions ... 
 		
 		//---------------------------

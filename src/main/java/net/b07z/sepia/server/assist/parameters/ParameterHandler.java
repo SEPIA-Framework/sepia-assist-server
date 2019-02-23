@@ -27,7 +27,8 @@ public interface ParameterHandler {
 	
 	/**
 	 * Is this parameter using a generic handler meaning a handler that integrates into an interview properly but cannot extract data,
-	 * so that it always returns VALUE=[normalized input] and INPUT_RAW=[original raw input]. 
+	 * so that it always returns VALUE=[normalized input] (or empty, depending on type: {@link GenericParameter} or {@link GenericEmptyParameter}) 
+	 * and INPUT_RAW=[original raw input]. 
 	 */
 	public default boolean isGeneric(){
 		return false;

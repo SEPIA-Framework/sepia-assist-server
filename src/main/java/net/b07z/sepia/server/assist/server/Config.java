@@ -253,7 +253,7 @@ public class Config {
     {
 		keywordAnalyzers.put(LANGUAGES.DE, NluKeywordAnalyzerDE.class.getCanonicalName());
 		keywordAnalyzers.put(LANGUAGES.EN, NluKeywordAnalyzerEN.class.getCanonicalName());
-		keywordAnalyzers.put("default", NluKeywordAnalyzer.class.getCanonicalName());		//KEEP THIS! needs to spit out "No_Result" CMD
+		keywordAnalyzers.put("default", NluKeywordAnalyzer.class.getCanonicalName());		//KEEP THIS! needs to spit out "No_Result" and slash CMDs
     }
 	
 	//Some NLU related configuration

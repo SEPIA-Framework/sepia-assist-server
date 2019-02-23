@@ -6,14 +6,14 @@ import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.core.tools.JSON;
 
 /**
- * The generic parameter simply returns the input. Should be used for parameters that have no handler yet
- * or for those that can only be called by direct-commands (where you parse the data yourself).<br>
+ * The generic-empty parameter simply returns and empty string as VALUE or a user defined string via direct command. 
+ * Should be used for parameters that have no handler yet, are optional and should only contain data if explicitly set via direct commands.<br>
  * Note: Generic parameters do not increase matching score in NLU process.
  * 
  * @author Florian Quirin
  *
  */
-public class GenericParameter extends CustomParameter implements ParameterHandler{
+public class GenericEmptyParameter extends CustomParameter implements ParameterHandler{
 
 	@Override
 	public boolean isGeneric(){
@@ -22,14 +22,13 @@ public class GenericParameter extends CustomParameter implements ParameterHandle
 
 	@Override
 	public String extract(String input) {
-		return input;
+		return "";
 	}
 	
 	@Override
 	public String build(String input) {
 		//build default result
 		JSONObject itemResultJSON = new JSONObject();
-			JSON.add(itemResultJSON, InterviewData.INPUT_RAW, nluInput.textRaw);
 			JSON.add(itemResultJSON, InterviewData.VALUE, input);
 			JSON.add(itemResultJSON, "isGeneric", true);
 		

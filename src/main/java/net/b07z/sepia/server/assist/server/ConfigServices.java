@@ -177,7 +177,6 @@ public class ConfigServices {
 		}
 		return services;
 	}
-	
 	/**
 	 * Get custom services of a user as a list.
 	 * @param user - User
@@ -193,6 +192,7 @@ public class ConfigServices {
 		}
 		return services;
 	}
+	
 	/**
 	 * Get connected services for a command. If the command is a system default command (is not of the format "[userId].[cmd_name]")
 	 * it returns the default {@link InterviewServicesMap} as list, else it looks for personal/custom/sdk commands in the 
@@ -203,7 +203,7 @@ public class ConfigServices {
 	public static List<ServiceInterface> getCustomOrSystemServices(NluInput nluInput, User user, String cmd){
 		List<ServiceInterface> services = null;
 		//SYSTEM
-		if (!cmd.contains(".")){		//if (!cmd.matches("(" + Config.user_id_prefix + "|gig)\\d\\d\\d\\d+\\..*")){
+		if (!cmd.contains(".")){		//if (!cmd.matches("(" + Config.user_id_prefix + "|uid)\\d\\d\\d\\d+\\..*")){
 			services = buildServices(cmd);
 		
 		}else{

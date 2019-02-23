@@ -5,9 +5,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
 
 import net.b07z.sepia.server.assist.data.Parameter;
+import net.b07z.sepia.server.assist.interviews.InterviewServicesMap;
 import net.b07z.sepia.server.assist.parameters.AbstractParameterSearch;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.ConfigServices;
@@ -15,6 +17,7 @@ import net.b07z.sepia.server.assist.services.ServiceInfo;
 import net.b07z.sepia.server.assist.services.ServiceInterface;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
+import net.b07z.sepia.server.core.tools.Is;
 
 /**
  * Simple (at least from the idea) yet effective keyword analyzer to interpret user input.<br>
@@ -28,6 +31,9 @@ import net.b07z.sepia.server.core.assistant.PARAMETERS;
 public class NluKeywordAnalyzer implements NluInterface {
 
 	private double certainty_lvl = 0.0d;		//how certain is ILA about a result (I mean SEPIA ^^)
+	
+	//Cache:
+	private static List<ServiceInterface> systemServicesWithRexX; 		//this will be filled on first interpretation call and used until deleted.
 	
 	/**
 	 * This is an abstract regular expression analyzer that can be used to evaluate a custom service that has a defined regular expression trigger.
@@ -55,6 +61,9 @@ public class NluKeywordAnalyzer implements NluInterface {
 		//check the trigger
 		if (NluTools.stringContains(text, regEx)){
 			
+			if (Is.nullOrEmpty(serviceInfo.intendedCommand)){
+				throw new RuntimeException("Service is missing command name!"); 	//make sure custom service is properly set up
+			}
 			possibleCMDs.add(serviceInfo.intendedCommand);
 			possibleScore.add(1 + serviceInfo.getCustomTriggerRegXscoreBoost());	index++;
 			
@@ -84,6 +93,45 @@ public class NluKeywordAnalyzer implements NluInterface {
 	}
 	
 	/**
+	 * Run keyword analyzer for system services that have defined custom regX triggers. Uses only master services (first service per cmd).<br>
+	 * Note: traditionally system service regExp are defined in the language specific keyword-analyzer methods but can be moved entirely to 
+	 * the services when this method is active. The order of execution is the order of commands in {@link InterviewServicesMap} (important if 
+	 * scores for services are equal).
+	 * @param input - NluInput with normalized .text
+	 * @param possibleCMDs - Empty or pre-filled list that gets updated
+	 * @param possibleScore - Empty or pre-filled list that gets updated
+	 * @param possibleParameters - Empty or pre-filled list that gets updated
+	 * @param index - integer indicating the current position in the possibleCMDs list
+	 * @return new index position in possibleCMDs, will be unchanged compared to input if no custom service regEx triggers
+	 */
+	public static int runSystemServices(NluInput input, List<String> possibleCMDs, 
+				List<Integer> possibleScore, List<Map<String, String>> possibleParameters, int index){
+		
+		String text = input.text;
+		
+		//Fill cache if necessary
+		if (systemServicesWithRexX == null){
+			systemServicesWithRexX = new CopyOnWriteArrayList<>();
+			//get all master services
+			List<ServiceInterface> systemServices = ConfigServices.getAllSystemMasterServices();
+			for (ServiceInterface service : systemServices){
+				//search the ones with regX triggers
+				ServiceInfo serviceInfo = service.getInfoFreshOrCache(input, service.getClass().getCanonicalName());
+				if (serviceInfo.hasCustomTriggerRegX()){
+					systemServicesWithRexX.add(service);
+				}
+			}
+		}
+		//Run
+		for (ServiceInterface service : systemServicesWithRexX){
+			//System.out.println("Custom regX for service: " + service.getClass().getSimpleName()); 		//DEBUG
+			index = abstractRegExAnalyzer(text, input, service,
+					possibleCMDs, possibleScore, possibleParameters, index);
+		}
+		
+		return index;
+	}
+	/**
 	 * Run keyword analyzer for custom SDK made services using user-ID and assistant-ID.
 	 * @param input - NluInput with normalized .text
 	 * @param possibleCMDs - Empty or pre-filled list that gets updated
@@ -100,20 +148,16 @@ public class NluKeywordAnalyzer implements NluInterface {
 			String text = input.text;
 			
 			//----- USER SDK SERVICES -----
-			
-			//Abstract analyzer (should come at the end because of lower priority?)
 			List<ServiceInterface> customServices = ConfigServices.getCustomServicesList(input, input.user);
 			for (ServiceInterface service : customServices){
-				index = NluKeywordAnalyzer.abstractRegExAnalyzer(text, input, service,
+				index = abstractRegExAnalyzer(text, input, service,
 						possibleCMDs, possibleScore, possibleParameters, index);
 			}
 			
 			//----- ASSISTANT SDK SERVICES -----
-			
-			//Abstract analyzer (should come at the end because of lower priority?)
 			List<ServiceInterface> assistantServices = ConfigServices.getCustomServicesList(input, Config.getAssistantUser());
 			for (ServiceInterface service : assistantServices){
-				index = NluKeywordAnalyzer.abstractRegExAnalyzer(text, input, service,
+				index = abstractRegExAnalyzer(text, input, service,
 						possibleCMDs, possibleScore, possibleParameters, index);
 			}
 		}
@@ -134,14 +178,14 @@ public class NluKeywordAnalyzer implements NluInterface {
 		mood = input.mood;
 		*/
 		
-		//normalize text, e.g.:
+		//Normalize text, e.g.:
 		// all lowerCase - remove all ',!? - handle ä ö ü ß ... trim
 		Normalizer normalizer = Config.inputNormalizers.get(language);
 		if (normalizer != null){
 			text = normalizer.normalizeText(text);
 		}
 		
-		//first rough check for main keywords
+		//Prepare results
 		List<String> possibleCMDs = new ArrayList<>();			//make a list of possible interpretations of the text
 		List<Map<String, String>> possibleParameters = new ArrayList<>();		//possible parameters
 		List<Integer> possibleScore = new ArrayList<>();		//make scores to decide which one is correct command
@@ -164,13 +208,16 @@ public class NluKeywordAnalyzer implements NluInterface {
 		}
 		*/
 		
-		//Abstract analyzer (should come at the end because of lower priority?)
-		List<ServiceInterface> services = ConfigServices.getCustomServicesList(input, input.user);
-		for (ServiceInterface service : services){
-		index = abstractRegExAnalyzer(text, input, service,
-				possibleCMDs, possibleScore, possibleParameters, index);
-		}
-						
+		//----- SYSTEM SERVICES -----
+		
+		index = runSystemServices(input, possibleCMDs, possibleScore, possibleParameters, index);
+				
+		//----- CUSTOM SERVICES -----
+		
+		index = runCustomSdkServices(input, possibleCMDs, possibleScore, possibleParameters, index);
+		
+		//---------------------------
+								
 		//Repeat me - overwrites all other commands! - TODO: is this still valid or captured before? If it is make a function
 		if (NluTools.stringContains(text, "(^saythis|" + Pattern.quote(Config.assistantName) + " saythis)")){
 			String this_text = input.textRaw.replaceFirst(".*?\\bsaythis|.*?\\bSaythis", "").trim();

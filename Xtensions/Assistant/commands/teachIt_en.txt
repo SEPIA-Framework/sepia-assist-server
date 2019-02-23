@@ -41,4 +41,5 @@ What's the date;;		command=chat;;		reply=Today is the <local_date_MMddyyyy>
 What date is today;;		command=chat;;		reply=Today is the <local_date_MMddyyyy>
 What is the date of today;;		command=chat;;		reply=Today is the <local_date_MMddyyyy>
 The date of today please;;		command=chat;;		reply=Today is the <local_date_MMddyyyy>
+Client Mesh-Node test;;		command=client_controls;;		client_fun=meshNode;;		data={"url":"http://localhost:20780", "plugin":"HelloPlugin"}
 

@@ -26,6 +26,7 @@ public class ClientFunction implements ParameterHandler {
 	
 	public static enum Type {
 		settings,
+		volume,
 		meshNode
 	}
 	
@@ -34,9 +35,11 @@ public class ClientFunction implements ParameterHandler {
 	public static HashMap<String, String> local_en = new HashMap<>();
 	static {
 		local_de.put("<settings>", "die Einstellungen");
+		local_de.put("<volume>", "die Lautstärke");
 		local_de.put("<meshNode>", "die Mesh-Node");
 		
 		local_en.put("<settings>", "the settings");
+		local_en.put("<volume>", "the volume");
 		local_en.put("<meshNode>", "the mesh-node");
 	}
 	/**
@@ -100,24 +103,33 @@ public class ClientFunction implements ParameterHandler {
 		}
 		*/
 		
-		String settings, meshNode;
+		String settings, volume, meshNode;
 		//German
 		if (language.matches(LANGUAGES.DE)){
 			settings = "einstellung(en|)|setting(s|)|menue|option(en|)";
+			volume = "lautstaerke|musik|radio|sound";
 			meshNode = "mesh(-| |)node";
 			
 		//English and other
 		}else{
 			settings = "setting(s|)|menu(e|)|option(s|)";
+			volume = "volume|music|radio|sound";
 			meshNode = "mesh(-| |)node";
 		}
 		
-		String extracted = NluTools.stringFindFirst(input, settings + "|" + meshNode);
+		String extracted = NluTools.stringFindFirst(input, 
+				settings + "|" + 
+				volume + "|" + 
+				meshNode
+		);
 		
 		if (!extracted.isEmpty()){
 			//SETTINGS
 			if (NluTools.stringContains(extracted, settings)){
 				clientFun = "<" + Type.settings + ">";
+			//VOLUME
+			}else if (NluTools.stringContains(extracted, volume)){
+				clientFun = "<" + Type.volume + ">";
 			//MESH-NODE
 			}else if (NluTools.stringContains(extracted, meshNode)){
 				clientFun = "<" + Type.meshNode + ">";

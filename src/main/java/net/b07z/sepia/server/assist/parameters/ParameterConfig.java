@@ -81,6 +81,7 @@ public class ParameterConfig {
 		handlerToParameter.put(PARAMETERS.CLIENT_FUN, ClientFunction.class.getCanonicalName());
 		//Generics / Exceptions / Specials
 		handlerToParameter.put(PARAMETERS.SENTENCES, Config.parentPackage + ".parameters.Sentences");
+		handlerToParameter.put(PARAMETERS.DATA, GenericEmptyParameter.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.REPLY, GenericParameter.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.REPLY_SUCCESS, GenericParameter.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.REPLY_FAIL, GenericParameter.class.getCanonicalName());
