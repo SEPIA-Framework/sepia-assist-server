@@ -122,7 +122,7 @@ public class RssFeedReader {
 	        			Debugger.println("RSS-FEED: '" + url + "' has REDIRECT to: " + errorRedirect, 1);
 	        		}
 	            	SyndFeedInput input = new SyndFeedInput();
-	    			SyndFeed feed = input.build(new XmlReader(stream));
+	    			SyndFeed feed = input.build(new XmlReader(stream, true, "UTF-8"));
 	    			//System.out.println("Title: " + feed.getTitle());					//DEBUG
 	    			
 	    			//image
