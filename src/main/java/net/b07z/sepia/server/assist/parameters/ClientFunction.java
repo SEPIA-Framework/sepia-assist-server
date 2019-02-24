@@ -180,6 +180,8 @@ public class ClientFunction implements ParameterHandler {
 			String[] array = input.split(";;");
 			ex = array[0];
 			found = array[1];
+		}else{
+			ex = input;
 		}
 		//is accepted result?
 		String inputLocal = getLocal(ex, language);
