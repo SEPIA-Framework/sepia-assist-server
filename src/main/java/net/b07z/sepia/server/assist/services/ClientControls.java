@@ -72,11 +72,13 @@ public class ClientControls implements ServiceInterface{
 		//Regular expression triggers:
 		info.setCustomTriggerRegX("^("
 				+ "(.* |)(einstellung(en|)|settings) oeffnen( .*|)|"
+				+ "(.* |)always(-| |)on( .*|)|"
 				+ "(.* |)(musik|sound|radio) (lauter|leiser)( .*|)|"
 				+ "(.* |)lautstaerke( .*|)"
 				+ ")$", DE);
 		info.setCustomTriggerRegX("^("
 				+ "( .*|)open setting(s|)( .*|)|"
+				+ "(.* |)always(-| |)on( .*|)|"
 				+ "( .*|)(music|sound|radio) (quieter|louder)( .*|)|"
 				+ "(.* |)volume( .*|)"
 				+ ")$", EN);
@@ -131,6 +133,7 @@ public class ClientControls implements ServiceInterface{
 		}
 		boolean isSettings = controlFun.equals(ClientFunction.Type.settings.name());
 		boolean isVolume = controlFun.equals(ClientFunction.Type.volume.name());
+		boolean isAlwaysOn = controlFun.equals(ClientFunction.Type.alwaysOn.name());
 		boolean isMeshNode = controlFun.equals(ClientFunction.Type.meshNode.name());
 		
 		Parameter dataP = nluResult.getOptionalParameter(PARAMETERS.DATA, "");
@@ -158,6 +161,10 @@ public class ClientControls implements ServiceInterface{
 			}else{
 				//TODO: implement, ask or fail?
 			}
+		}else if (isAlwaysOn){
+			//Always-On mode support
+			actionName = "toggle";	//we simply use a toggle command, no matter what action 
+			
 		}else if (isMeshNode){
 			//Mesh-Node support
 			actionName = data; 		//this call requires a custom data block
@@ -182,8 +189,8 @@ public class ClientControls implements ServiceInterface{
 			api.addAction(ACTIONS.BUTTON_CUSTOM_FUN);
 			api.putActionInfo("fun", "controlFun;;" + controlFun + ";;{\"action\":\"down\"}");
 			api.putActionInfo("title", controlFunLocal + " -");
-		}else if (isMeshNode){
-			//Mesh-Node action button
+		}else{
+			//e.g. Mesh-Node action button
 			api.addAction(ACTIONS.BUTTON_CUSTOM_FUN);
 			api.putActionInfo("fun", "controlFun;;" + controlFun + ";;" + a.toJSONString());
 			api.putActionInfo("title", "Action");
