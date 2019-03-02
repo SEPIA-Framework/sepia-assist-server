@@ -103,6 +103,7 @@ public class ClientControls implements ServiceInterface{
 		info.addSuccessAnswer("ok_0b")
 			.addFailAnswer("error_0a")
 			.addOkayAnswer("default_not_possible_0a");
+			//.addCustomAnswer("control_fail", "error_client_control_0a");
 		
 		return info;
 	}
@@ -193,7 +194,7 @@ public class ClientControls implements ServiceInterface{
 			//e.g. Mesh-Node action button
 			api.addAction(ACTIONS.BUTTON_CUSTOM_FUN);
 			api.putActionInfo("fun", "controlFun;;" + controlFun + ";;" + a.toJSONString());
-			api.putActionInfo("title", "Action");
+			api.putActionInfo("title", "Button");
 		}
 		
 		//Cards

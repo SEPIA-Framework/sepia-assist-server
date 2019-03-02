@@ -9,6 +9,7 @@ error_geo_location_personal_0a;;		rep=1|mood=5;;		Es kann sein, dass die Adresse
 error_geo_location_personal_0a;;		rep=2|mood=5;;		Es tut mir leid, da komme ich wohl gerade nicht weiter, kann diese Adresse einfach nicht nutzen.		;;char=neutral
 error_language_not_supported_0a;;	rep=0|mood=5;;		Es tut mir leid, aber dieser Service unterstützt die aktive Sprache nicht. 		;;char=neutral
 error_region_not_supported_0a;;		rep=0|mood=5;;		Es tut mir leid, aber dieser Service unterstützt die aktive Region nicht. 		;;char=neutral
+error_client_control_0a;;		rep=0|mood=5;;		<user_name>, die Steuerungsfunktion konnte nicht ausgeführt werden. Ich weiß leider nicht warum. 		;;char=neutral
 abort_0a;;		rep=0|mood=5;;		Ok, lass noch mal neu anfangen. ;;char=cool,neutral
 abort_0a;;		rep=0|mood=5;;		Ok, habs abgebrochen. ;;char=cool,neutral
 abort_0b;;		rep=0|mood=5;;		Ich glaube wir kommen gerade nicht weiter. Lass es uns später noch mal probieren. ;;char=neutral
