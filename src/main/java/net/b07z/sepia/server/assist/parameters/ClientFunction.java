@@ -28,7 +28,8 @@ public class ClientFunction implements ParameterHandler {
 		settings,
 		volume,
 		alwaysOn,
-		meshNode
+		meshNode,
+		clexi
 	}
 	
 	//-------data-------
@@ -39,11 +40,13 @@ public class ClientFunction implements ParameterHandler {
 		local_de.put("<volume>", "die Lautstärke");
 		local_de.put("<alwaysOn>", "der Always-On Modus");
 		local_de.put("<meshNode>", "die Mesh-Node");
+		local_de.put("<clexi>", "CLEXI");
 		
 		local_en.put("<settings>", "the settings");
 		local_en.put("<volume>", "the volume");
 		local_en.put("<alwaysOn>", "the Always-On mode");
 		local_en.put("<meshNode>", "the mesh-node");
+		local_en.put("<clexi>", "CLEXI");
 	}
 	/**
 	 * Translate generalized value.
@@ -106,13 +109,14 @@ public class ClientFunction implements ParameterHandler {
 		}
 		*/
 		
-		String settings, volume, alwaysOn, meshNode;
+		String settings, volume, alwaysOn, meshNode, clexi;
 		//German
 		if (language.matches(LANGUAGES.DE)){
 			settings = "einstellung(en|)|setting(s|)|menue|option(en|)";
 			volume = "lautstaerke|musik|radio|sound";
 			alwaysOn = "always(-| |)on";
 			meshNode = "mesh(-| |)node";
+			clexi = "clexi";
 			
 		//English and other
 		}else{
@@ -120,13 +124,15 @@ public class ClientFunction implements ParameterHandler {
 			volume = "volume|music|radio|sound";
 			alwaysOn = "always(-| |)on";
 			meshNode = "mesh(-| |)node";
+			clexi = "clexi";
 		}
 		
 		String extracted = NluTools.stringFindFirst(input, 
 				settings + "|" + 
 				volume + "|" + 
 				alwaysOn + "|" +
-				meshNode
+				meshNode + "|" +
+				clexi
 		);
 		
 		if (!extracted.isEmpty()){
@@ -142,6 +148,9 @@ public class ClientFunction implements ParameterHandler {
 			//MESH-NODE
 			}else if (NluTools.stringContains(extracted, meshNode)){
 				clientFun = "<" + Type.meshNode + ">";
+			//CLEXI
+			}else if (NluTools.stringContains(extracted, clexi)){
+				clientFun = "<" + Type.clexi + ">";
 			}else{
 				clientFun = "";
 			}

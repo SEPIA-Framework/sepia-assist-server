@@ -21,6 +21,7 @@ import net.b07z.sepia.server.core.assistant.ACTIONS;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.data.Language;
+import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 
@@ -96,14 +97,16 @@ public class ClientControls implements ServiceInterface{
 		
 		//optional
 		Parameter p3 = new Parameter(PARAMETERS.DATA);
+		Parameter p4 = new Parameter(PARAMETERS.NUMBER);
 		
-		info.addParameter(p1).addParameter(p2).addParameter(p3);
+		info.addParameter(p1).addParameter(p2).addParameter(p3).addParameter(p4);
 		
 		//Default answers
 		info.addSuccessAnswer("ok_0b")
 			.addFailAnswer("error_0a")
-			.addOkayAnswer("default_not_possible_0a");
-			//.addCustomAnswer("control_fail", "error_client_control_0a");
+			.addOkayAnswer("default_not_possible_0a")
+			.addCustomAnswer("volume_exceeded", "client_controls_volume_exceeded_0a")
+			.addCustomAnswer("volume_eleven", "client_controls_volume_eleven_0a");
 		
 		return info;
 	}
@@ -121,6 +124,7 @@ public class ClientControls implements ServiceInterface{
 		boolean isActionClose = (action.equals(Action.Type.remove.name()) || action.equals(Action.Type.off.name()));
 		boolean isActionIncrease = (action.equals(Action.Type.increase.name()) || action.equals(Action.Type.add.name()));
 		boolean isActionDecrease = (action.equals(Action.Type.decrease.name()) || action.equals(Action.Type.remove.name())); 	//note: remove is close and decrease here
+		boolean isActionEdit = (action.equals(Action.Type.set.name()) || action.equals(Action.Type.edit.name()));
 		
 		Parameter controlFunP = nluResult.getRequiredParameter(PARAMETERS.CLIENT_FUN);
 		String controlFun = controlFunP.getValueAsString().replaceAll("^<|>$", "").trim();
@@ -136,9 +140,13 @@ public class ClientControls implements ServiceInterface{
 		boolean isVolume = controlFun.equals(ClientFunction.Type.volume.name());
 		boolean isAlwaysOn = controlFun.equals(ClientFunction.Type.alwaysOn.name());
 		boolean isMeshNode = controlFun.equals(ClientFunction.Type.meshNode.name());
+		boolean isClexi = controlFun.equals(ClientFunction.Type.clexi.name());
 		
 		Parameter dataP = nluResult.getOptionalParameter(PARAMETERS.DATA, "");
 		String data = dataP.getValueAsString();
+		
+		Parameter numberP = nluResult.getOptionalParameter(PARAMETERS.NUMBER, "");
+		String num = numberP.getValueAsString();
 				
 		//This service basically cannot fail here ... only inside client
 		
@@ -155,7 +163,20 @@ public class ClientControls implements ServiceInterface{
 			}
 		}else if (isVolume){
 			//volume support
-			if (isActionIncrease){
+			if (!num.isEmpty() && (isActionEdit || isActionIncrease || isActionDecrease)){
+				long vol = Converters.obj2LongOrDefault(num, -1l);
+				if (vol > 11){
+					api.setCustomAnswer("client_controls_volume_exceeded_0a");
+				}else if (vol == 11){
+					api.setCustomAnswer("client_controls_volume_eleven_0a");
+				}
+				actionName = ("volume;;" + num); 		//we take the shortcut here =)
+			}else if (num.isEmpty() && isActionEdit){
+				//abort with generic question
+				api.setIncompleteAndAsk(PARAMETERS.NUMBER, "default_ask_parameter_0b");
+				ServiceResult result = api.buildResult();
+				return result;
+			}else if (isActionIncrease){
 				actionName = "up";
 			}else if (isActionDecrease){
 				actionName = "down";
@@ -166,8 +187,8 @@ public class ClientControls implements ServiceInterface{
 			//Always-On mode support
 			actionName = "toggle";	//we simply use a toggle command, no matter what action 
 			
-		}else if (isMeshNode){
-			//Mesh-Node support
+		}else if (isMeshNode || isClexi){
+			//Mesh-Node & CLEXI support
 			actionName = data; 		//this call requires a custom data block
 		}
 		JSONObject a = JSON.make("action", actionName);
