@@ -161,8 +161,7 @@ public class Gender implements ParameterHandler{
 		//build default result
 		JSONObject itemResultJSON = new JSONObject();
 			JSON.add(itemResultJSON, InterviewData.VALUE, input);
-			JSON.add(itemResultJSON, InterviewData.VALUE_LOCAL, inputLocal); 	//TODO: use for fashion here?
-			//TODO: add ACCOUNT here?
+			JSON.add(itemResultJSON, InterviewData.VALUE_LOCAL, inputLocal);
 		
 		buildSuccess = true;
 		return itemResultJSON.toJSONString();

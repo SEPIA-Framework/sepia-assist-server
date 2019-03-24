@@ -56,6 +56,7 @@ public class GenericService implements ServiceInterface{
 		info.setIntendedCommand(Sdk.getMyCommandName(this, CMD_NAME));
 		
 		//Direct-match trigger sentences in different languages:
+		//NOTE: This only works in SDK services (because it is written into user account on upload)
 		String DE = LANGUAGES.DE;
 		info.addCustomTriggerSentence("Hallo Welt!", DE)
 			.addCustomTriggerSentence("Hello world!", DE)

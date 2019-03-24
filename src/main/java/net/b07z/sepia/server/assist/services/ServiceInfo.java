@@ -249,6 +249,12 @@ public class ServiceInfo {
 		return customTriggerRegEx.get(language);
 	}
 	/**
+	 * Does this service have regX for any language?
+	 */
+	public boolean hasCustomTriggerRegX(){
+		return !customTriggerRegEx.isEmpty();
+	}
+	/**
 	 * Add a custom trigger sentence to the collection. If the service registers itself as a custom services this will be used.
 	 * @param sentence - a sample sentence
 	 */

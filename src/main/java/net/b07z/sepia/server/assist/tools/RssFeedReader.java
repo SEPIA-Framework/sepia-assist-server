@@ -1,16 +1,12 @@
 package net.b07z.sepia.server.assist.tools;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -22,6 +18,8 @@ import com.rometools.rome.io.XmlReader;
 
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.workers.Workers;
+import net.b07z.sepia.server.core.tools.Connectors;
+import net.b07z.sepia.server.core.tools.Connectors.HttpClientResult;
 import net.b07z.sepia.server.core.tools.DateTime;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.JSON;
@@ -103,147 +101,157 @@ public class RssFeedReader {
 		}
 		
 		String statusLine = "";
-		String errorRedirect = "";
         JSONObject feedResult = new JSONObject();
         JSONArray feedEntries = new JSONArray();
         List<JSONObject> feedEntriesOlder = new ArrayList<>();
         
         try {
-	        try (CloseableHttpClient client = HttpClients.createMinimal()) {
+	        /*try (CloseableHttpClient client = HttpClients.createMinimal()) {
 	        	HttpUriRequest request = new HttpGet(url);
 	        	try (CloseableHttpResponse response = client.execute(request);
 	        							InputStream stream = response.getEntity().getContent()) {
 	
-	        		//FEED STUFF
-	        		statusLine = response.getStatusLine().toString();
-	        		if (response.getStatusLine().getStatusCode() == 301){
-	        			errorRedirect = response.getFirstHeader("Location").getValue();
-	        			statusLine += (", NEW URI: " + errorRedirect);
-	        			Debugger.println("RSS-FEED: '" + url + "' has REDIRECT to: " + errorRedirect, 1);
-	        		}
-	            	SyndFeedInput input = new SyndFeedInput();
-	    			SyndFeed feed = input.build(new XmlReader(stream));
-	    			//System.out.println("Title: " + feed.getTitle());					//DEBUG
-	    			
-	    			//image
-	    			String imgURL = "";
-	    			/*
-	    			try{
-	    				imgURL = feed.getImage().getUrl();
-	    				//check if its valid
-	    				if (imgURL.endsWith(".ico")){
-	    					imgURL = "";
-	    				}
-	    			}catch (Exception e){
-	    				//leave empty
-	    			}
-	    			*/
-	    		
-	    			JSON.add(feedResult, "image", imgURL);
-	    			JSON.add(feedResult, "feedName", feed.getTitle());
-	    			JSON.add(feedResult, "nameClean", feedName);
-	    			
-	    			List<SyndEntry> entries = feed.getEntries();
-	    			//System.out.println("Entries: " + entries.size());					//DEBUG
-	    			int i = 1;
-	    			for (SyndEntry se : entries){
-	    				if (i > maxEntries){
-	    					break;
-	    				}
-	    				JSONObject jo = new JSONObject();
-	    				String title = se.getTitle();
-	    				if (title.contains("[Anzeige]")){
-	    					continue;
-	    				}
-	    				title = title.replaceAll("\\r\\n|\\r|\\n|\\t", " ").replaceAll("\u00A0|\u200B", " ")
-	    						.replaceAll("\\s+", " ").trim(); 
-	    				String link = se.getLink();
-	    				link = link.replaceAll("\\r\\n|\\r|\\n|\\t", " ").replaceAll("\\s+", " ").trim();
-	    				//some more tweaks:
-	    				link = link.replaceAll("www\\.bild\\.de", "m.bild.de");
-	    				
-	    				JSON.add(jo, "title", title);
-	    				JSON.add(jo, "link", link);
-	    				Date d = se.getPublishedDate();
-	    				long age = -1;
-	    				if (d != null){
-	    					age = System.currentTimeMillis() - d.getTime();
-	    				}
-	    				JSON.add(jo, "pubDate", (d != null)? DateTime.getGMT(d, Config.defaultSdf) : "");
-	    				SyndContent descCont = se.getDescription();
-	    				String desc = (descCont != null)? descCont.getValue() : "";
-	    				if (desc.isEmpty()){
-	    					try{
-	    						desc = se.getContents().get(0).getValue();
-	    					}catch (Exception e){
-	    						desc = "";
-	    					}
-	    				}
-	    				//clean up
-	    				desc = desc.replaceAll("<img.*?>", "")
-	    						.replaceAll("\\r\\n|\\r|\\n|\\t", " ").replaceAll("\u00A0|\u200B", " ")
-	    						.replaceAll(Pattern.quote("<!--more-->") + ".*", "")
-	    						.replaceAll("<video.*?</video>", "")
-	    						.replaceAll("<audio.*?</audio>", "")
-	    						.replaceAll("<iframe.*?</iframe>", "")
-	    						.replaceAll("<object.*?</object>", "")
-	    						//.replaceAll("<a href=.*?>", "").replaceAll("</a>", "")
-	    						.replaceAll("\\s+", " ").trim();
-	    				//max. 2000 characters
-	    				if (desc.length() > 2000){
-	    					desc = desc.replaceAll("<.*?>", " ").replaceAll("\\s+", " "); 	//<- most aggressive html clean-up
-	    					desc = desc.substring(0, Math.min(2000, desc.length()));
-	    				}
-	    				JSON.add(jo, "description", desc);
-	    				
-	    				//filter by date and add
-	    				if (age >= 0 && age < oldNewsAgeMs) {
-	    					JSON.add(feedEntries, jo);
-	    					i++;
-	    				}else{
-	    					JSON.put(jo, "age", age);
-	    					feedEntriesOlder.add(jo);
-	    				}
-	    				//System.out.println("jo: " + jo.toJSONString());					//DEBUG
-	    			}
-	    			
-	    			//check if we have enough "new" news. If not fill with older
-	    			if (feedEntries.size() < maxEntries){
-	    				//sort old list
-	    				feedEntriesOlder.sort((jo1, jo2) -> {
-	    					long a1 = (long) jo1.get("age");
-	    					long a2 = (long) jo2.get("age");
-	    					// -1 - less than, 1 - greater than, 0 - equal
-	    			        return a1 < a2 ? -1 : (a1 > a2) ? 1 : 0;
-	    				});
-	    				//add newest first
-	    				i = feedEntries.size();
-		    			for (Object e : feedEntriesOlder){
-		    				if (i > maxEntries){
-		    					break;
-		    				}
-		    				JSONObject je = (JSONObject) e;
-		    				je.remove("age");
-		    				//System.out.println(je.get("title") + " - " + je.get("age"));
-		    				JSON.add(feedEntries, je);
-		    				i++;
-		    			}
-	    			}
-	    			
-	    			JSON.add(feedResult, "data", feedEntries);
-	    			
-	    			//cache
-	    			if (cacheIt){
-	    				//feedCache.put(feedName, feedResult);
-	    				//feedCacheTS.put(feedName, System.currentTimeMillis());
-	    				JSON.add(feedCache, feedName, feedResult);
-	    				JSON.add(feedCacheTS, feedName, System.currentTimeMillis());
-	    				if (directRefresh){
-	    					Debugger.println("RssFeedReader.getFeed() - feed refreshed: " + feedName, 3);
-	    				}
-	    			}
-	        	}
-	        }
+		    		//FEED STUFF
+		    		statusLine = response.getStatusLine().toString();
+		    		if (response.getStatusLine().getStatusCode() == 301){
+		    			errorRedirect = response.getFirstHeader("Location").getValue();
+		    			statusLine += (", NEW URI: " + errorRedirect);
+		    			Debugger.println("RSS-FEED: '" + url + "' has REDIRECT to: " + errorRedirect, 1);
+		    		}
+		    		*/
+        	//Get content as String then create a stream (its safer as the previous method)
+        	HttpClientResult httpRes = Connectors.apacheHttpGET(url, null);
+        	statusLine = httpRes.statusLine;
+        	String content = httpRes.content;
+        	if (content == null || content.isEmpty()){
+        		throw new RuntimeException("Feed content not found.");
+        	}
+			//System.out.println(content.substring(0, 50));
+			InputStream stream = new ByteArrayInputStream(content.getBytes());
+			
+        	SyndFeedInput input = new SyndFeedInput();
+			SyndFeed feed = input.build(new XmlReader(stream, true, "UTF-8"));
+			//System.out.println("Title: " + feed.getTitle());					//DEBUG
+			
+			//image
+			String imgURL = "";
+			/*
+			try{
+				imgURL = feed.getImage().getUrl();
+				//check if its valid
+				if (imgURL.endsWith(".ico")){
+					imgURL = "";
+				}
+			}catch (Exception e){
+				//leave empty
+			}
+			*/
+		
+			JSON.add(feedResult, "image", imgURL);
+			JSON.add(feedResult, "feedName", feed.getTitle());
+			JSON.add(feedResult, "nameClean", feedName);
+			
+			List<SyndEntry> entries = feed.getEntries();
+			//System.out.println("Entries: " + entries.size());					//DEBUG
+			int i = 1;
+			for (SyndEntry se : entries){
+				if (i > maxEntries){
+					break;
+				}
+				JSONObject jo = new JSONObject();
+				String title = se.getTitle();
+				if (title.contains("[Anzeige]")){
+					continue;
+				}
+				title = title.replaceAll("\\r\\n|\\r|\\n|\\t", " ").replaceAll("\u00A0|\u200B", " ")
+						.replaceAll("\\s+", " ").trim(); 
+				String link = se.getLink();
+				link = link.replaceAll("\\r\\n|\\r|\\n|\\t", " ").replaceAll("\\s+", " ").trim();
+				//some more tweaks:
+				link = link.replaceAll("www\\.bild\\.de", "m.bild.de");
+				
+				JSON.add(jo, "title", title);
+				JSON.add(jo, "link", link);
+				Date d = se.getPublishedDate();
+				long age = -1;
+				if (d != null){
+					age = System.currentTimeMillis() - d.getTime();
+				}
+				JSON.add(jo, "pubDate", (d != null)? DateTime.getGMT(d, Config.defaultSdf) : "");
+				SyndContent descCont = se.getDescription();
+				String desc = (descCont != null)? descCont.getValue() : "";
+				if (desc.isEmpty()){
+					try{
+						desc = se.getContents().get(0).getValue();
+					}catch (Exception e){
+						desc = "";
+					}
+				}
+				//clean up
+				desc = desc.replaceAll("<img.*?>", "")
+						.replaceAll("\\r\\n|\\r|\\n|\\t", " ").replaceAll("\u00A0|\u200B", " ")
+						.replaceAll(Pattern.quote("<!--more-->") + ".*", "")
+						.replaceAll("<video.*?</video>", "")
+						.replaceAll("<audio.*?</audio>", "")
+						.replaceAll("<iframe.*?</iframe>", "")
+						.replaceAll("<object.*?</object>", "")
+						//.replaceAll("<a href=.*?>", "").replaceAll("</a>", "")
+						.replaceAll("\\s+", " ").trim();
+				//max. 2000 characters
+				if (desc.length() > 2000){
+					desc = desc.replaceAll("<.*?>", " ").replaceAll("\\s+", " "); 	//<- most aggressive html clean-up
+					desc = desc.substring(0, Math.min(2000, desc.length()));
+				}
+				JSON.add(jo, "description", desc);
+				
+				//filter by date and add
+				if (age >= 0 && age < oldNewsAgeMs) {
+					JSON.add(feedEntries, jo);
+					i++;
+				}else{
+					JSON.put(jo, "age", age);
+					feedEntriesOlder.add(jo);
+				}
+				//System.out.println("jo: " + jo.toJSONString());					//DEBUG
+			}
+			
+			//check if we have enough "new" news. If not fill with older
+			if (feedEntries.size() < maxEntries){
+				//sort old list
+				feedEntriesOlder.sort((jo1, jo2) -> {
+					long a1 = (long) jo1.get("age");
+					long a2 = (long) jo2.get("age");
+					// -1 - less than, 1 - greater than, 0 - equal
+			        return a1 < a2 ? -1 : (a1 > a2) ? 1 : 0;
+				});
+				//add newest first
+				i = feedEntries.size();
+    			for (Object e : feedEntriesOlder){
+    				if (i > maxEntries){
+    					break;
+    				}
+    				JSONObject je = (JSONObject) e;
+    				je.remove("age");
+    				//System.out.println(je.get("title") + " - " + je.get("age"));
+    				JSON.add(feedEntries, je);
+    				i++;
+    			}
+			}
+			
+			JSON.add(feedResult, "data", feedEntries);
+			
+			//cache
+			if (cacheIt){
+				//feedCache.put(feedName, feedResult);
+				//feedCacheTS.put(feedName, System.currentTimeMillis());
+				JSON.add(feedCache, feedName, feedResult);
+				JSON.add(feedCacheTS, feedName, System.currentTimeMillis());
+				if (directRefresh){
+					Debugger.println("RssFeedReader.getFeed() - feed refreshed: " + feedName, 3);
+				}
+			}
+	        	/*}
+	        }*/
         } catch (Exception e) {
 			Debugger.println("RssFeedReader.getFeed() - failed at feed: " + feedName + ", URL: " + url 
 					+ ", status: " + statusLine + ", msg: " + e.getMessage(), 1);

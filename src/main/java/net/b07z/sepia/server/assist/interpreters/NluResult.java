@@ -90,7 +90,7 @@ public class NluResult {
 	 * Set input in case you are loading CMD_summaries or NLPs that don't set it.<br>
 	 * Be careful! It will overwrite some parameters, so in case the NLP modifies them use this before you apply the modified ones.
 	 * As context might be set already in the default constructor it is checked before (for "" or "default").
-	 * @param input - NLU_Input sent to server by client-interface
+	 * @param input - NluInput sent to server by client-interface
 	 */
 	public void setInput(NluInput input){
 		language = input.language;
@@ -100,8 +100,8 @@ public class NluResult {
 		this.input = input;
 	}
 	/**
-	 * Sets the best result and "activates" the NLU_Result. Typically this is only called by the constructor, but in case
-	 * you use an alternative constructor like NLU_Result(NLU_Input input) you have to set this afterwards.<br>
+	 * Sets the best result and "activates" the NluResult. Typically this is only called by the constructor, but in case
+	 * you use an alternative constructor like NluResult(NluInput input) you have to set this afterwards.<br>
 	 * Use this in combination with set_input to load a "cmd_summary" for example.
 	 * 
 	 * @param possibleCMDs - an ArrayList of Strings containing all possible commands identified by the NL-Processor

@@ -52,7 +52,7 @@ import net.b07z.sepia.server.core.tools.FilesAndStreams;
  */
 public class Config {
 	public static final String SERVERNAME = "SEPIA-Assist-API"; 		//public server name
-	public static final String apiVersion = "v2.2.0";					//API version
+	public static final String apiVersion = "v2.2.1";					//API version
 	public static String privacyPolicyLink = "";						//Link to privacy policy
 	
 	//helper for dynamic class creation (e.g. from strings in config-file) - TODO: reduce dependencies further 
@@ -253,7 +253,7 @@ public class Config {
     {
 		keywordAnalyzers.put(LANGUAGES.DE, NluKeywordAnalyzerDE.class.getCanonicalName());
 		keywordAnalyzers.put(LANGUAGES.EN, NluKeywordAnalyzerEN.class.getCanonicalName());
-		keywordAnalyzers.put("default", NluKeywordAnalyzer.class.getCanonicalName());		//KEEP THIS! needs to spit out "No_Result" CMD
+		keywordAnalyzers.put("default", NluKeywordAnalyzer.class.getCanonicalName());		//KEEP THIS! needs to spit out "No_Result" and slash CMDs
     }
 	
 	//Some NLU related configuration

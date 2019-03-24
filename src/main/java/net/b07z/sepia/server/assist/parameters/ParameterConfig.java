@@ -72,14 +72,16 @@ public class ParameterConfig {
 		handlerToParameter.put(PARAMETERS.FOOD_CLASS, Config.parentPackage + ".parameters.FoodClass");
 		handlerToParameter.put(PARAMETERS.RADIO_STATION, Config.parentPackage + ".parameters.RadioStation");
 		handlerToParameter.put(PARAMETERS.MUSIC_GENRE, Config.parentPackage + ".parameters.MusicGenre");
-		handlerToParameter.put(PARAMETERS.SMART_DEVICE, net.b07z.sepia.server.assist.parameters.SmartDevice.class.getCanonicalName());
-		handlerToParameter.put(PARAMETERS.SMART_DEVICE_VALUE, net.b07z.sepia.server.assist.parameters.SmartDeviceValue.class.getCanonicalName());
-		handlerToParameter.put(PARAMETERS.ROOM, net.b07z.sepia.server.assist.parameters.Room.class.getCanonicalName());
+		handlerToParameter.put(PARAMETERS.SMART_DEVICE, SmartDevice.class.getCanonicalName());
+		handlerToParameter.put(PARAMETERS.SMART_DEVICE_VALUE, SmartDeviceValue.class.getCanonicalName());
+		handlerToParameter.put(PARAMETERS.ROOM, Room.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.WEBSEARCH_REQUEST, Config.parentPackage + ".parameters.WebSearchRequest");
 		handlerToParameter.put(PARAMETERS.WEBSEARCH_ENGINE, Config.parentPackage + ".parameters.WebSearchEngine");
 		handlerToParameter.put(PARAMETERS.SEARCH_SECTION, Config.parentPackage + ".parameters.SearchSection");
+		handlerToParameter.put(PARAMETERS.CLIENT_FUN, ClientFunction.class.getCanonicalName());
 		//Generics / Exceptions / Specials
 		handlerToParameter.put(PARAMETERS.SENTENCES, Config.parentPackage + ".parameters.Sentences");
+		handlerToParameter.put(PARAMETERS.DATA, GenericEmptyParameter.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.REPLY, GenericParameter.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.REPLY_SUCCESS, GenericParameter.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.REPLY_FAIL, GenericParameter.class.getCanonicalName());

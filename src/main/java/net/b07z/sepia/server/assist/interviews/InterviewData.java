@@ -18,6 +18,7 @@ public class InterviewData {
 	public static final String VALUE_REDUCED = "value_reduced";	//value of the parameter that has been reduced more aggressively. Sometimes that might be too much.
 	public static final String VALUE_LOCAL = "value_local";		//value in the input language e.g. shoes (en) -> Schuhe (de)
 	public static final String GENERALIZED = "generalized";		//general or abstract value like a language code for languages or simply a basic form of a word (went -> go)
+	public static final String FOUND = "found";					//value found during extraction (before generalized)
 	public static final String ACCOUNT = "account";				//value given in user account
 	public static final String UNSPECIFIC = "unspecific";		//NOTE: general version of TIME_UNSPECIFIC. A value that is related to the parameter but cannot be well determined like "the next days"
 	public static final String CACHE_ENTRY = "cache_entry";		//if the parameter can cache results this is the cache entry

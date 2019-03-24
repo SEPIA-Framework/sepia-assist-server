@@ -12,6 +12,7 @@ no;;		command=chat;;		reply=ok||no problem||fine||alright
 no, of cause not!;;		command=chat;;		reply=ok||no problem||fine||alright
 no I don't;;		command=chat;;		reply=ok||no problem||fine||alright
 not now;;		command=chat;;		reply=ok||no problem||fine||alright||maybe later
+nothing;;		command=chat;;		reply=ok||no problem||fine||alright||maybe later
 definitely not;;		command=chat;;		reply=ok||no problem||fine||alright
 I know;;		command=chat;;		reply=alright||alrighty||sweet||I knew you'd say that :-)
 Up and at them!;;		command=chat;;		reply=Up and atom! :-)

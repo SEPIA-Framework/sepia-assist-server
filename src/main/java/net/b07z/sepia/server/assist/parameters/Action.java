@@ -131,16 +131,17 @@ public class Action implements ParameterHandler{
 			on = "(mach|schalte|dreh) .*\\b(an|ein)|"
 					+ "^\\w+\\b (an$|ein$)|"
 					+ "oeffne|oeffnen|aktiviere|aktivieren|starte|starten|start|lade|laden|"
-					+ "anschalten|einschalten|anmachen|an machen|aufmachen|auf machen|aufdrehen|auf drehen|spielen|spiele|spiel|abspielen";
+					+ "anschalten|einschalten|anmachen|an machen|aufmachen|auf machen|aufdrehen|auf drehen|spielen|spiele|spiel|abspielen|"
+					+ "ausfuehren|aufrufen";
 			off = "(mach|schalte|dreh) .*\\b(aus)|"
 					+ "^\\w+\\b (aus$)|"
 					+ "schliessen|schliesse|deaktivieren|deaktiviere|"
 					+ "beenden|beende|ausschalten|aus schalten|ausmachen|aus machen|ausdrehen|aus drehen|stoppen|stoppe|stop|exit";
 			pause = "pausieren|pause|anhalten|halte .*\\b(an)";
 			increase = "(mach|dreh) .*\\b(auf|hoch)|"
-					+ "(?<!(wie ))hoch|rauf|hoeher|groesser|erhoehen|aufdrehen|erhoehe|verstaerken|verstaerke|heller|(?<!(ist ))schneller|(?<!(ist ))staerker|waermer|warm|lauter|laut";
+					+ "(?<!(wie ))hoch|rauf|hoeher|groesser|erhoehen|aufdrehen|erhoehe|verstaerk(en|e)|heller|(?<!(ist ))schneller|(?<!(ist ))staerker|waermer|warm|lauter|laut";
 			decrease = "(mach|dreh) .*\\b(runter|aus)|"
-					+ "runterdrehen|runter|kleiner|niedriger|erniedrigen|erniedrige|abschwaechen|schwaecher|schwaeche|dunkler|dimmen|dimme|(?<!(wie ))langsam|langsamer|kaelter|(?<!(wie ))kalt|leiser|leise";
+					+ "runterdrehen|runter|kleiner|niedriger|erniedrigen|erniedrige|abschwaechen|schwaech(er|en|e)|senk(en|e|)|dunkler|dimmen|dimme|(?<!(wie ))langsam|langsamer|kaelter|(?<!(wie ))kalt|leiser|leise";
 			set = "setzen|setze|stelle|stellen|auswaehlen|waehlen|waehle|"
 					+ "erinnere|weck(e|)";
 			toggle = "umschalten|schalten|schalte";
@@ -155,7 +156,7 @@ public class Action implements ParameterHandler{
 		}else{
 			on = "(make|switch|turn) .*\\b(on)|"
 					+ "^\\w+\\b (on$)|"
-					+ "open|activate|start|play|load";
+					+ "open|activate|start|play|load|run|execute|call";
 			off = "(make|switch|turn) .*\\b(off)|"
 					+ "^\\w+\\b (off$)|"
 					+ "close|deactivate|end|exit|quit|stop|shut\\b.*? down";

@@ -184,13 +184,13 @@ public class RadioStation implements ParameterHandler{
 			}else if (!radio.isEmpty()){
 				//step1
 				if (!action1.isEmpty()){
-					station = NluTools.stringFindFirst(input, radio + "\\s(.*?\\s.*?|.*?)\\s" + action1);
+					station = NluTools.stringFindFirst(input, radio + "\\s(.+?\\s.+?|.+?)\\s" + action1);
 					station = station.replaceFirst(".*?\\b" + radio + "\\s", "").trim();
 					station = station.replaceFirst("\\s" + action1 + "\\b.*", "").trim();
 				}
 				//step2
 				if (station.trim().isEmpty() && !action1.isEmpty()){
-					station = NluTools.stringFindFirst(input, "\\b(.*?\\s.*?|.*?)\\s" + radio + "\\s" + action1);
+					station = NluTools.stringFindFirst(input, "\\b(.+?\\s.+?|.+?)\\s" + radio + "\\s" + action1);
 					station = station.replaceFirst("\\s" + radio + "\\b.*", "").trim();
 				}
 				//step3
@@ -215,7 +215,7 @@ public class RadioStation implements ParameterHandler{
 					}
 					String possibleStation = NluTools.stringRemoveFirst(reducedInput, radio);
 					if (!action1.isEmpty()){
-						possibleStation = possibleStation.replaceFirst("\\s" + action1 + "\\b.*", "").trim();
+						possibleStation = possibleStation.replaceFirst("(^|\\s)" + action1 + "\\b.*", "").trim();
 					}
 					if (!action2.isEmpty()){
 						possibleStation = possibleStation.replaceFirst(".*?\\b" + action2 + "(\\s|$)", "").trim();
@@ -229,7 +229,7 @@ public class RadioStation implements ParameterHandler{
 				String possibleStation = NluTools.stringFindFirst(input, "\\w*(radio|station)(\\.| |)(fm|\\d+)")
 						.replaceFirst("^(radio|station)$", "");
 				if (!action1.isEmpty()){
-					possibleStation = possibleStation.replaceFirst("\\s" + action1 + "\\b.*", "").trim();
+					possibleStation = possibleStation.replaceFirst("(^|\\s)" + action1 + "\\b.*", "").trim();
 				}
 				if (!action2.isEmpty()){
 					possibleStation = possibleStation.replaceFirst(".*?\\b" + action2 + "(\\s|$)", "").trim();
@@ -255,7 +255,7 @@ public class RadioStation implements ParameterHandler{
 		}else if (language.matches(LANGUAGES.EN)){
 			String radio = NluTools.stringFindFirst(input, "(radio|music)( |-|)(channel|station|stream)|"
 														+ "channel|sender|\\w*radio(?! fm)|\\w*station(?! fm)");
-			String action1 = NluTools.stringFindFirst(input, "on$");
+			String action1 = NluTools.stringFindFirst(input, "on$|start$|play$|activate$");
 			String action2 = NluTools.stringFindFirst(input, "open|start|play|activate|tune in to|turn on|switch on");
 			
 			String artist = NluTools.stringFindFirst(input, "(music|song(s|)) (of|by|from) .*");
@@ -266,13 +266,13 @@ public class RadioStation implements ParameterHandler{
 			}else if (!radio.isEmpty()){
 				//step1
 				if (!action1.isEmpty()){
-					station = NluTools.stringFindFirst(input, radio + "\\s(.*?\\s.*?|.*?)\\s" + action1);
+					station = NluTools.stringFindFirst(input, radio + "\\s(.+?\\s.*?|.+?)\\s" + action1);
 					station = station.replaceFirst(".*?\\b" + radio + "\\s", "").trim();
 					station = station.replaceFirst("\\s" + action1 + "\\b.*", "").trim();
 				}
 				//step2
 				if (station.trim().isEmpty() && !action1.isEmpty()){
-					station = NluTools.stringFindFirst(input, "\\b(.*?\\s.*?|.*?)\\s" + radio + "\\s" + action1);
+					station = NluTools.stringFindFirst(input, "\\b(.+?\\s.+?|.+?)\\s" + radio + "\\s" + action1);
 					station = station.replaceFirst("\\s" + radio + "\\b.*", "").trim();
 				}
 				//step3
@@ -297,7 +297,7 @@ public class RadioStation implements ParameterHandler{
 					}
 					String possibleStation = NluTools.stringRemoveFirst(reducedInput, radio);
 					if (!action1.isEmpty()){
-						possibleStation = possibleStation.replaceFirst("\\s" + action1 + "\\b.*", "").trim();
+						possibleStation = possibleStation.replaceFirst("(^|\\s)" + action1 + "\\b.*", "").trim();
 					}
 					if (!action2.isEmpty()){
 						possibleStation = possibleStation.replaceFirst(".*?\\b" + action2 + "(\\s|$)", "").trim();
@@ -311,7 +311,7 @@ public class RadioStation implements ParameterHandler{
 				String possibleStation = NluTools.stringFindFirst(input, "\\w*(radio|station)(\\.| |)(fm|\\d+)")
 						.replaceFirst("^(radio|station)$", "");;
 				if (!action1.isEmpty()){
-					possibleStation = possibleStation.replaceFirst("\\s" + action1 + "\\b.*", "").trim();
+					possibleStation = possibleStation.replaceFirst("(^|\\s)" + action1 + "\\b.*", "").trim();
 				}
 				if (!action2.isEmpty()){
 					possibleStation = possibleStation.replaceFirst(".*?\\b" + action2 + "(\\s|$)", "").trim();
