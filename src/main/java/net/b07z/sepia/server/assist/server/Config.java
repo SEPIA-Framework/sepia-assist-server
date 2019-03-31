@@ -88,6 +88,7 @@ public class Config {
 	
 	//General and assistant settings
 	public static String assistantName = "Sepia";				//**Name - this might become user-specific once ...
+	public static boolean assistantAllowFollowUps = true;		//**allow the assistant to send follow-up messages to requests (plz don't spam the user!)
 	public static String defaultClientInfo = ConfigDefaults.defaultClientInfo;	//in case the client does not submit the info use this.
 	
 	public static String userIdPrefix = "uid";					//**prefix used when generating for example user ids or checking them
@@ -455,6 +456,10 @@ public class Config {
 			assistantId = settings.getProperty("assistant_id");
 			assistantEmail = settings.getProperty("assistant_email");
 			assistantPwd = settings.getProperty("assistant_pwd");
+			String assistantAllowFollowUpsString = settings.getProperty("assistant_allow_follow_ups");
+			if (assistantAllowFollowUpsString != null && !assistantAllowFollowUpsString.isEmpty()){
+				assistantAllowFollowUps = Boolean.valueOf(assistantAllowFollowUpsString);
+			}
 			//credentials
 			userIdPrefix = settings.getProperty("user_id_prefix");
 			guidOffset =  Long.valueOf(settings.getProperty("guid_offset"));
@@ -530,6 +535,7 @@ public class Config {
 		config.setProperty("assistant_id", assistantId);
 		config.setProperty("assistant_email", assistantEmail);
 		config.setProperty("assistant_pwd", "");
+		config.setProperty("assistant_allow_follow_ups", String.valueOf(assistantAllowFollowUps));
 		//credentials
 		config.setProperty("user_id_prefix", userIdPrefix);
 		config.setProperty("guid_offset", String.valueOf(guidOffset));

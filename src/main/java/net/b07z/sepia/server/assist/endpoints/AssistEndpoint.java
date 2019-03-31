@@ -56,6 +56,9 @@ public class AssistEndpoint {
 		input_miss,
 		dialog_stage,
 		user_location,
+		connection,			//http or ws (WebSocket), defaults to http, check also: NluInput.isDuplexConnection()
+		msg_id,				//duplex connections might want to track the msg id
+		duplex_data, 		//more duplex data in JSON format
 		demomode
 	}
 
@@ -265,6 +268,9 @@ public class AssistEndpoint {
 		String time_str = params.getString(InputParameters.time.name()); 				//system time - time stamp
 		String time_local = params.getString(InputParameters.time_local.name());		//local time date
 		String client_info = params.getString(InputParameters.client.name());
+		String connection = params.getString(InputParameters.connection.name());		//http or ws
+		String msg_id = params.getString(InputParameters.msg_id.name());				//msg ID
+		String duplex_data = params.getString(InputParameters.duplex_data.name());		//duplex data
 		long time = -1;
 		//-answer params:
 		String last_cmd = params.getString(InputParameters.last_cmd.name());
@@ -283,6 +289,9 @@ public class AssistEndpoint {
 		if (language!=null)			input.language = language;
 		if (context!=null)			input.context = context;
 		if (client_info!=null)		input.clientInfo = client_info;
+		if (connection!=null)		input.connection = connection;
+		if (msg_id!=null)			input.msgId = msg_id;
+		if (duplex_data!=null)		input.duplexData = duplex_data;
 		if (env!=null)				input.environment = env; 		else 	input.environment = "all"; //input.client_info.replaceFirst("_v\\d.*", "").trim();
 		if (user_location!=null)	input.userLocation = user_location;
 		if (time_local!=null)		input.userTimeLocal = time_local;

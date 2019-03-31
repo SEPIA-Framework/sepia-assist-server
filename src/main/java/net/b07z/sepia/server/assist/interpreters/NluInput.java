@@ -48,6 +48,9 @@ public class NluInput {
 	public String userTimeLocal = "";		//time_local:		system date and time at locally at user location, default format 2016.12.31_22:44:11
 	public User user;						//user:				holds all info about the user, can reload from account
 	//... more to come
+	public String msgId = null;				//msg_id:			an ID to identify request, especially helpful in duplex scenarios
+	public String duplexData = null;		//duplex_data:		data helpful to trace back a duplex call and answer or follow-up. Format is JSON, parse when required
+	public String connection = "http";		//connection:		http request or WebSocket connection - has influence on delayed replies
 	public boolean demoMode = false;		//demomode:			true/false if you want to use the demomode
 	
 	//Stuff to cache during all processes from NLU to service result:
@@ -218,6 +221,11 @@ public class NluInput {
 	}
 	
 	//-------helper methods--------
+	
+	//connection type
+	public boolean isDuplexConnection(){
+		return (connection.equals("ws")); 		//more types can be added here when available
+	}
 	
 	//question/answer handling
 	/**
