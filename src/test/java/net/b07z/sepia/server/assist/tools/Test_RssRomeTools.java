@@ -2,6 +2,8 @@ package net.b07z.sepia.server.assist.tools;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -12,6 +14,7 @@ import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
 
 import net.b07z.sepia.server.core.tools.Connectors;
+import net.b07z.sepia.server.core.tools.Connectors.HttpClientResult;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 
@@ -49,7 +52,9 @@ public class Test_RssRomeTools {
 		        		}
 		            	SyndFeedInput input = new SyndFeedInput();
 		    			SyndFeed feed = input.build(new XmlReader(stream, true, "UTF-8"));
-		    			System.out.println("Title: " + feed.getTitle());					//DEBUG
+		    			System.out.println("Feed name: " + feed.getTitle());							//DEBUG
+		    			System.out.println("First title: " + feed.getEntries().get(0).getTitle());		//DEBUG
+		    			System.out.println("First desc.: " + feed.getEntries().get(0).getContents().get(0).getValue());		//DEBUG		
 		    			System.out.println("Took: " + Debugger.toc(tic));					//DEBUG
 		        	}
 		        }
@@ -63,14 +68,21 @@ public class Test_RssRomeTools {
 			tic = Debugger.tic();
 			try {
        			//FEED STUFF
-				String content = Connectors.apacheHttpGET(url, null).content;
-				if (Is.notNullOrEmpty(content)){
-					System.out.println(content.substring(0, 50));
-					InputStream newStream = new ByteArrayInputStream(content.getBytes());
-					
+				HttpClientResult httpClientRes = Connectors.apacheHttpGET(url, null);
+				//System.out.println(httpClientRes.content);
+				if (Is.notNullOrEmpty(httpClientRes.content)){
+					System.out.println(httpClientRes.content.substring(0, 50));
+					InputStream newStream;
+					if (httpClientRes.encoding != null){
+						newStream = new ByteArrayInputStream(httpClientRes.content.getBytes(httpClientRes.encoding));
+					}else{
+						newStream = new ByteArrayInputStream(httpClientRes.content.getBytes(StandardCharsets.UTF_8));
+					}
 					SyndFeedInput input = new SyndFeedInput();
 	    			SyndFeed feed = input.build(new XmlReader(newStream, true, "UTF-8"));
-	    			System.out.println("Title: " + feed.getTitle());					//DEBUG
+	    			System.out.println("Feed name: " + feed.getTitle());							//DEBUG
+	    			System.out.println("First title: " + feed.getEntries().get(0).getTitle());		//DEBUG
+	    			System.out.println("First desc.: " + feed.getEntries().get(0).getContents().get(0).getValue());		//DEBUG
 				}
     			System.out.println("Took: " + Debugger.toc(tic));					//DEBUG
 	

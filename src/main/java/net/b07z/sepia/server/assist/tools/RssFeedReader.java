@@ -2,6 +2,7 @@ package net.b07z.sepia.server.assist.tools;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -122,12 +123,16 @@ public class RssFeedReader {
         	//Get content as String then create a stream (its safer as the previous method)
         	HttpClientResult httpRes = Connectors.apacheHttpGET(url, null);
         	statusLine = httpRes.statusLine;
-        	String content = httpRes.content;
-        	if (content == null || content.isEmpty()){
+        	if (httpRes.content == null || httpRes.content.isEmpty()){
         		throw new RuntimeException("Feed content not found.");
         	}
 			//System.out.println(content.substring(0, 50));
-			InputStream stream = new ByteArrayInputStream(content.getBytes());
+			InputStream stream;
+			if (httpRes.encoding != null){
+				stream = new ByteArrayInputStream(httpRes.content.getBytes(httpRes.encoding));
+			}else{
+				stream = new ByteArrayInputStream(httpRes.content.getBytes(StandardCharsets.UTF_8));
+			}
 			
         	SyndFeedInput input = new SyndFeedInput();
 			SyndFeed feed = input.build(new XmlReader(stream, true, "UTF-8"));
