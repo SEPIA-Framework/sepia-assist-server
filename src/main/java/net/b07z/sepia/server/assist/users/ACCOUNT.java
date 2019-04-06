@@ -56,6 +56,8 @@ public class ACCOUNT {
 	public static final String USER_GENDER = INFOS + ".gender";						//gender - not (yet?) in basics
 	//infos - bot
 	public static final String BOT_CHARACTER = INFOS + ".bot_char";					//preset assistant character
+	//infos - app settings
+	public static final String APP_SETTINGS = INFOS + ".app_settings";				//settings for user clients, sorted by device ID
 	
 	//special tokens
 	public static final String ACCESS_LVL_TOKEN = "incAccLvl";			//token (in tokens) generated to increase access level
@@ -81,7 +83,7 @@ public class ACCOUNT {
 	
 	//------Collections to handle write access-------
 	
-	//allow flexible access for things like contacts and favorites
+	//allow flexible access for things like email, name, address, info (language, settings, etc.)
 	public static boolean allowFlexAccess(String key){
 		//TODO: Rework this?
 		String flexKey = NluTools.stringFindFirst(key,
