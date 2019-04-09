@@ -113,13 +113,13 @@ public class EventsManager {
 		
 		//random messages to entertain the user
 		if (localTimeIsKnown){
-			addScheduledMessage(actionBuilder, EventDialogs.Type.randomMotivationMorning.name(), ((10l - hod) * 60l - (30l - moh)) * 60l * 1000l,
+			addScheduledEntertainMessage(actionBuilder, EventDialogs.Type.randomMotivationMorning.name(), ((10l - hod) * 60l - (30l - moh)) * 60l * 1000l,
 					EventDialogs.getMessage(EventDialogs.Type.randomMotivationMorning, input.language));
-			addScheduledMessage(actionBuilder, EventDialogs.Type.haveLunch.name(), ((13l - hod) * 60l - moh) * 60l * 1000l,
+			addScheduledEntertainMessage(actionBuilder, EventDialogs.Type.haveLunch.name(), ((13l - hod) * 60l - moh) * 60l * 1000l,
 					EventDialogs.getMessage(EventDialogs.Type.haveLunch, input.language));
-			addScheduledMessage(actionBuilder, EventDialogs.Type.makeCoffebreak.name(), ((16l - hod) * 60l - moh) * 60l * 1000l,
+			addScheduledEntertainMessage(actionBuilder, EventDialogs.Type.makeCoffebreak.name(), ((16l - hod) * 60l - moh) * 60l * 1000l,
 					EventDialogs.getMessage(EventDialogs.Type.makeCoffebreak, input.language));
-			addScheduledMessage(actionBuilder, EventDialogs.Type.beActive.name(), ((18l - hod) * 60l - moh) * 60l * 1000l,
+			addScheduledEntertainMessage(actionBuilder, EventDialogs.Type.beActive.name(), ((18l - hod) * 60l - moh) * 60l * 1000l,
 					EventDialogs.getMessage(EventDialogs.Type.beActive, input.language));
 		}
 		
@@ -277,11 +277,22 @@ public class EventsManager {
 		)); 
 	}
 	/**
-	 * Add a scheduled message
+	 * Action: add a scheduled message to entertain the user.
 	 */
-	private static void addScheduledMessage(ServiceBuilder actionBuilder, String eventId, long triggerDelayMS, String message){
+	public static void addScheduledEntertainMessage(ServiceBuilder actionBuilder, String eventId, long triggerDelayMS, String message){
 		actionBuilder.addAction(ACTIONS.SCHEDULE_MSG);
 		actionBuilder.putActionInfo("info", "entertainWhileIdle");		//TODO: one could distinguish messages that are only triggered when the app is not in foreground vs. important notes etc ...
+		actionBuilder.putActionInfo("eventId", eventId);
+		actionBuilder.putActionInfo("triggerIn", triggerDelayMS);
+		actionBuilder.putActionInfo("text", message);
+		//actionBuilder.actionInfo_put_info("options", "inputHidden");
+	}
+	/**
+	 * Action: add a scheduled message to pro-actively approach the user.
+	 */
+	public static void addScheduledProActiveMessage(ServiceBuilder actionBuilder, String eventId, long triggerDelayMS, String message){
+		actionBuilder.addAction(ACTIONS.SCHEDULE_MSG);
+		actionBuilder.putActionInfo("info", "proActiveNote");		//TODO: one could distinguish messages that are only triggered when the app is not in foreground vs. important notes etc ...
 		actionBuilder.putActionInfo("eventId", eventId);
 		actionBuilder.putActionInfo("triggerIn", triggerDelayMS);
 		actionBuilder.putActionInfo("text", message);
