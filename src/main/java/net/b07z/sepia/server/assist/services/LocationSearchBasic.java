@@ -183,7 +183,11 @@ public class LocationSearchBasic implements ServiceInterface{
 		Card googleCard = new Card(Card.TYPE_SINGLE);
 		//JSONObject linkCard1 = 
 		googleCard.addElement(ElementType.link, 
-				JSON.make("title", "Google Maps", "desc", description),
+				JSON.make(
+					"title", "Google Maps", 
+					"desc", description,
+					"type", "maps"
+				),
 				null, null, "", 
 				googleMapsURL, 
 				Config.urlWebImages + "/brands/google-maps.png", 
@@ -196,7 +200,11 @@ public class LocationSearchBasic implements ServiceInterface{
 			Card appleCard = new Card(Card.TYPE_SINGLE);
 			//JSONObject linkCard2 = 
 			appleCard.addElement(ElementType.link, 
-					JSON.make("title", "Apple Maps", "desc", description),
+					JSON.make(
+						"title", "Apple Maps", 
+						"desc", description,
+						"type", "maps"
+					),
 					null, null, "", 
 					appleMapsURL, 
 					Config.urlWebImages + "/brands/apple-maps.png", 

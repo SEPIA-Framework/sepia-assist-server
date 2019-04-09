@@ -138,7 +138,11 @@ public class WebsearchBasic implements ServiceInterface{
 		Card card = new Card(Card.TYPE_SINGLE);
 		/*JSONObject linkCard = */
 		card.addElement(ElementType.link, 
-				JSON.make("title", title1 + ":", "desc", "<i>\"" + search + "\"</i>"),
+				JSON.make(
+					"title", title1 + ":", 
+					"desc", "<i>\"" + search + "\"</i>",
+					"type", "websearch"
+				),
 				null, null, "", 
 				search_url, 
 				engineIconUrl, 
@@ -157,7 +161,11 @@ public class WebsearchBasic implements ServiceInterface{
 		Card card2 = new Card(Card.TYPE_SINGLE);
 		/*JSONObject linkCard2 = */
 		card2.addElement(ElementType.link, 
-				JSON.make("title", title2 + ":", "desc", "<i>\"" + search + "\"</i>"),
+				JSON.make(
+					"title", title2 + ":", 
+					"desc", "<i>\"" + search + "\"</i>",
+					"type", "websearch"
+				),
 				null, null, "", 
 				search_url_rnd, 
 				engineIconUrlRnd, 

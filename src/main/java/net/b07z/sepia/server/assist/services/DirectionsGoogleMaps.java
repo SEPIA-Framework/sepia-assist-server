@@ -439,7 +439,11 @@ public class DirectionsGoogleMaps implements ServiceInterface{
 		Card googleCard = new Card(Card.TYPE_SINGLE);
 		//JSONObject linkCard1 = 
 		googleCard.addElement(ElementType.link, 
-				JSON.make("title", "Google Maps", "desc", description),
+				JSON.make(
+					"title", "Google Maps", 
+					"desc", description,
+					"type", "maps"
+				),
 				null, null, "", 
 				googleMapsURL, 
 				Config.urlWebImages + "/brands/google-maps.png", 
@@ -452,7 +456,11 @@ public class DirectionsGoogleMaps implements ServiceInterface{
 			Card appleCard = new Card(Card.TYPE_SINGLE);
 			//JSONObject linkCard2 = 
 			appleCard.addElement(ElementType.link, 
-					JSON.make("title", "Apple Maps", "desc", description),
+					JSON.make(
+						"title", "Apple Maps", 
+						"desc", description,
+						"type", "maps"
+					),
 					null, null, "", 
 					appleMapsURL, 
 					Config.urlWebImages + "/brands/apple-maps.png", 
@@ -556,7 +564,11 @@ public class DirectionsGoogleMaps implements ServiceInterface{
 			String locStreet = JSON.getStringOrDefault(locJSON, InterviewData.LOCATION_STREET, "");
 			String locAddr = JSON.getStringOrDefault(locJSON, InterviewData.LOCATION_ADDRESS_TEXT, "");
 			String locName = JSON.getStringOrDefault(locJSON, InterviewData.LOCATION_NAME, "");
-			String locImage = JSON.getStringOrDefault(locJSON, InterviewData.LOCATION_IMAGE, Config.urlWebImages + "cards/location_img_default.png");
+			String locImage = JSON.getStringOrDefault(locJSON, InterviewData.LOCATION_IMAGE, "");
+			boolean isDefaultImage = locImage.isEmpty();
+			if (isDefaultImage){
+				locImage = Config.urlWebImages + "cards/location_img_default.png";
+			}
 			String mapUrl = "";
 			try{
 				mapUrl = makeGoogleMapsURL(start, loc, wp, googleTravelType, googleViews);
@@ -571,7 +583,11 @@ public class DirectionsGoogleMaps implements ServiceInterface{
 			Card card = new Card(Card.TYPE_SINGLE);
 			//JSONObject linkCard = 
 			card.addElement(ElementType.link, 
-					JSON.make("title", "", "desc", (locName.isEmpty()? "" : ("<b>" + locName + "</b><br>")) + desc.trim()),		//we dont use title because names are so loooong most of the time :(
+					JSON.make(
+						"title", "",	//we dont use title because names are so loooong most of the time :( 
+						"desc", (locName.isEmpty()? "" : ("<b>" + locName + "</b><br>")) + desc.trim(),
+						"type", ((isDefaultImage)? "locationDefault" : "locationCustom")
+					),
 					null, null, "", 
 					mapUrl, 
 					locImage, 

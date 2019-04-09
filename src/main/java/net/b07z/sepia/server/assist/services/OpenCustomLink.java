@@ -53,7 +53,8 @@ public class OpenCustomLink {
 		if (description.isEmpty()) description = ActionBuilder.getDefaultButtonText(api.language);
 		
 		String iconUrl = nluResult.getParameter("icon_url");				//icon URL to be used for link-card
-		if (iconUrl.isEmpty())	iconUrl = Config.urlWebImages + "/cards/link.png";
+		boolean isCustomIcon = !iconUrl.isEmpty(); 
+		if (!isCustomIcon)	iconUrl = Config.urlWebImages + "/cards/link.png";
 		
 		//handle parameters/answers/questions
 		//p
@@ -139,7 +140,7 @@ public class OpenCustomLink {
 			callURL = "";
 			//e.printStackTrace();
 		}
-		api.addAction(ACTIONS.OPEN_URL);
+		api.addAction(ACTIONS.OPEN_IN_APP_BROWSER);
 		api.putActionInfo("url", callURL);
 		/*
 		api.actionInfo_add_action(ACTIONS.BUTTON_URL);
@@ -149,13 +150,20 @@ public class OpenCustomLink {
 		
 		//card
 		Card card = new Card(Card.TYPE_SINGLE);
+		String linkType = (isCustomIcon)? "custom" : "default";
 		JSONObject linkCard = card.addElement(ElementType.link, 
-				JSON.make("title", title, "desc", description),
+				JSON.make(
+					"title", title, 
+					"desc", description,
+					"type", linkType
+				),
 				null, null, "", 
 				callURL, 
 				iconUrl, 
 				null, null);
-		JSON.put(linkCard, "imageBackground", "transparent");	//use any CSS background option you wish
+		if (isCustomIcon){
+			JSON.put(linkCard, "imageBackground", "transparent");	//use any CSS background option you wish
+		}
 		api.addCard(card.getJSON());
 		
 		api.hasAction = true;
