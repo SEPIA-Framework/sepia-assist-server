@@ -61,7 +61,7 @@ public class DB {
 	public static final String USERS = "users";				//essential user data like account
 	public static final String TICKETS = "tickets";			//tickets with unique IDs that can be a short info like reg. token or some event 
 	public static final String STORAGE = "storage";			//unsorted data for later processing
-	public static final String KNOWLEDGE = "knowledge";		//processed and sorted data for queries
+	public static final String KNOWLEDGE = "knowledge";		//processed and sorted data for queries - TODO: unused?
 	public static final String USERDATA = "userdata";		//all kinds of user data entries like cmd-mapping, lists, alarms, ... - Type: services, alarms, lists, ..., ID: userID
 	public static final String COMMANDS = "commands";		//system and personal commands - Type: Command.COMMANDS_TYPE
 	public static final String ANSWERS = Answer.ANSWERS_INDEX; 		//system and personal answers - Type: Answer.ANSWERS_TYPE;

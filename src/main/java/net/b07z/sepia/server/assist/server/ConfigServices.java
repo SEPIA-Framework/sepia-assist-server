@@ -21,6 +21,7 @@ import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.assist.users.UserDataInterface;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.data.CmdMap;
+import net.b07z.sepia.server.core.database.DatabaseInterface;
 import net.b07z.sepia.server.core.java.MaxSizeMap;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
 import net.b07z.sepia.server.core.tools.Debugger;
@@ -146,7 +147,8 @@ public class ConfigServices {
 		//Framework stuff:
 		blackList.add(Config.class.getPackage().getName()); 		//server.*
 		blackList.add(AuthEndpoint.class.getPackage().getName());	//endpoints.*
-		blackList.add(DB.class.getPackage().getName());				//database.*
+		blackList.add(DB.class.getPackage().getName());					//database.*
+		blackList.add(DatabaseInterface.class.getPackage().getName());	//database.* 	from core-tools
 		blackList.add(Interview.class.getPackage().getName()); 		//interviews.*
 		blackList.add(SendEmail.class.getPackage().getName()); 		//email.*
 		//TODO: complete blacklist
