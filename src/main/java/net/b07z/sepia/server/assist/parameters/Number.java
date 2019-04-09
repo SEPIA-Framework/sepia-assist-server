@@ -9,6 +9,7 @@ import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interpreters.NluTools;
+import net.b07z.sepia.server.assist.interpreters.RegexParameterSearch;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
@@ -150,8 +151,9 @@ public class Number implements ParameterHandler{
 	/**
 	 * Static version of extract method to be used in other variations of the number parameter.
 	 */
-	public static String extract(String input, NluInput nluInput){
+	public static String extract(String inputOrg, NluInput nluInput){
 		
+		String input = RegexParameterSearch.replace_text_number(inputOrg, nluInput.language);
 		String number = NluTools.stringFindFirst(input, "(\\W|)" + PLAIN_NBR_REGEXP + "(\\w|\\W|)"); 	
 						//the \\W at start is for $5 and the \\w at the end is for street numbers e.g. 3b
 		
@@ -233,13 +235,14 @@ public class Number implements ParameterHandler{
 	}
 
 	@Override
-	public String remove(String input, String found) {
+	public String remove(String inputOrg, String found) {
+		String input = RegexParameterSearch.replace_text_number(inputOrg, language);
 		return NluTools.stringRemoveFirst(input, found);
 	}
 	
 	@Override
 	public String responseTweaker(String input){
-		return input;
+		return RegexParameterSearch.replace_text_number(input, language);
 	}
 
 	@Override

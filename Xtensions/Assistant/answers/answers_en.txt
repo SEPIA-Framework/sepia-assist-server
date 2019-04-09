@@ -25,7 +25,7 @@ ok_0c;;		rep=0|mood=5;;		Ok, it's done.		;;char=neutral
 default_ask_parameter_0a;;		rep=0|mood=5;;		Hmm the request seems incomplete, what is the missing parameter? ;;char=neutral
 default_ask_parameter_0a;;		rep=1|mood=5;;		And the next missing parameter? ;;char=neutral
 default_ask_parameter_0a;;		rep=2|mood=5;;		And another missing parameter? ;;char=neutral
-default_ask_parameter_0b;;		rep=0|mood=5;;		Hmm the request seems incomplete, what is the missing parameter? ;;char=neutral
+default_ask_parameter_0b;;		rep=0|mood=5;;		Hmm the request seems incomplete, what is the value of the missing parameter? ;;char=neutral
 default_ask_parameter_0b;;		rep=1|mood=5;;		No that did not work, try again please. ;;char=neutral
 default_ask_parameter_0b;;		rep=2|mood=5;;		No, still not working, try once more please. ;;char=neutral
 default_ask_action_0a;;		rep=0|mood=5;;		Which action should I perform? ;;char=neutral

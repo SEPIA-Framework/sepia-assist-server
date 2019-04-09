@@ -25,7 +25,7 @@ ok_0c;;		rep=0|mood=5;;		Ok, ist erledigt.		;;char=neutral
 default_ask_parameter_0a;;		rep=0|mood=5;;		Hmm, die Anfrage ist scheinbar unvollständig, was ist der fehlende Parameter? ;;char=polite,neutral
 default_ask_parameter_0a;;		rep=1|mood=5;;		Und der nächste fehlende Parameter? ;;char=cool,rude,neutral
 default_ask_parameter_0a;;		rep=2|mood=5;;		Und noch einen Parameter bitte! ;;char=cool,rude
-default_ask_parameter_0b;;		rep=0|mood=5;;		Hmm, die Anfrage ist scheinbar unvollständig, was ist der fehlende Parameter? ;;char=neutral
+default_ask_parameter_0b;;		rep=0|mood=5;;		Hmm, die Anfrage ist scheinbar unvollständig, wie lautet der Wert des fehlende Parameters? ;;char=neutral
 default_ask_parameter_0b;;		rep=1|mood=5;;		Ne, hat nicht funktioniert, versuch noch mal bitte. ;;char=cool
 default_ask_parameter_0b;;		rep=2|mood=5;;		Nein, auch das hat nicht geklappt. Einmal noch bitte. ;;char=neutral
 default_ask_action_0a;;		rep=0|mood=5;;		Welche Aktion soll ich ausführen? ;;char=neutral
