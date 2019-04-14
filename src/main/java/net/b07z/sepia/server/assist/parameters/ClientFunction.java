@@ -29,7 +29,8 @@ public class ClientFunction implements ParameterHandler {
 		volume,
 		alwaysOn,
 		meshNode,
-		clexi
+		clexi,
+		platformFunction 	//this is handled by PlatformControls service (we use it just for the action)
 	}
 	
 	//-------data-------

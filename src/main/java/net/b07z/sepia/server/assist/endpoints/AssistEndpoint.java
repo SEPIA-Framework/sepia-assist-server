@@ -46,6 +46,7 @@ public class AssistEndpoint {
 		context,
 		mood,
 		env,
+		device_id,
 		//TODO: add something like "is_home_network" ?
 		time,
 		time_local,
@@ -265,6 +266,7 @@ public class AssistEndpoint {
 		String mood_str = params.getString(InputParameters.mood.name());
 		int mood = -1;
 		String env = params.getString(InputParameters.env.name());
+		String deviceId = params.getString(InputParameters.device_id.name());
 		String time_str = params.getString(InputParameters.time.name()); 				//system time - time stamp
 		String time_local = params.getString(InputParameters.time_local.name());		//local time date
 		String client_info = params.getString(InputParameters.client.name());
@@ -293,6 +295,7 @@ public class AssistEndpoint {
 		if (msg_id!=null)			input.msgId = msg_id;
 		if (duplex_data!=null)		input.duplexData = duplex_data;
 		if (env!=null)				input.environment = env; 		else 	input.environment = "all"; //input.client_info.replaceFirst("_v\\d.*", "").trim();
+		if (deviceId!=null)			input.deviceId = deviceId;
 		if (user_location!=null)	input.userLocation = user_location;
 		if (time_local!=null)		input.userTimeLocal = time_local;
 		//

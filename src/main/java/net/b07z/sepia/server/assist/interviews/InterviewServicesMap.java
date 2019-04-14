@@ -21,6 +21,7 @@ import net.b07z.sepia.server.assist.services.LocationSearchBasic;
 import net.b07z.sepia.server.assist.services.MeshNodeConnector;
 import net.b07z.sepia.server.assist.services.MusicRadioMixed;
 import net.b07z.sepia.server.assist.services.NewsRssFeeds;
+import net.b07z.sepia.server.assist.services.PlatformControls;
 import net.b07z.sepia.server.assist.services.SentenceConnect;
 import net.b07z.sepia.server.assist.services.ServiceInfo;
 import net.b07z.sepia.server.assist.services.ServiceInterface;
@@ -228,6 +229,10 @@ public class InterviewServicesMap {
 		ArrayList<String> client_controls = new ArrayList<String>();
 		client_controls.add(ClientControls.class.getCanonicalName());
 			systemInterviewServicesMap.put(CMD.CLIENT_CONTROLS, client_controls);
+		//PLATFORM CONTROLS (of CLIENT)
+		ArrayList<String> platform_controls = new ArrayList<String>();
+		platform_controls.add(PlatformControls.class.getCanonicalName());
+			systemInterviewServicesMap.put(CMD.PLATFORM_CONTROLS, platform_controls);
 		//PARROT (REPEAT USER)
 		ArrayList<String> parrot = new ArrayList<String>();
 			parrot.add(RepeatMe.class.getCanonicalName());

@@ -162,6 +162,22 @@ public class ClientControls implements ServiceInterface{
 				//TODO: implement, ask or fail?
 			}
 		}else if (isVolume){
+			//check data for volume
+			if (num.isEmpty() && !Is.nullOrEmpty(data)){
+				if (data.startsWith("{")){
+					//JSON with number
+					Object numO = JSON.parseString(data).get("number");
+					if (numO != null){
+						long numL = Converters.obj2LongOrDefault(numO, -1l);
+						if (numL > -1){
+							num = String.valueOf(numL);
+						}
+					}
+				}else if (data.matches("\\d+")){
+					//number as string
+					num = data;
+				}
+			}
 			//volume support
 			if (!num.isEmpty() && (isActionEdit || isActionIncrease || isActionDecrease)){
 				long vol = Converters.obj2LongOrDefault(num, -1l);

@@ -48,6 +48,7 @@ public class NluInput {
 	public String userTimeLocal = "";		//time_local:		system date and time at locally at user location, default format 2016.12.31_22:44:11
 	public User user;						//user:				holds all info about the user, can reload from account
 	//... more to come
+	public String deviceId = "";			//device_id:		an ID defined by the user to identify a certain device
 	public String msgId = null;				//msg_id:			an ID to identify request, especially helpful in duplex scenarios
 	public String duplexData = null;		//duplex_data:		data helpful to trace back a duplex call and answer or follow-up. Format is JSON, parse when required
 	public String connection = "http";		//connection:		http request or WebSocket connection - has influence on delayed replies
