@@ -1481,7 +1481,7 @@ public class RegexParameterSearch {
 	}
 	/**
 	 * Replace all month names in a string with their corresponding numbers (January=01.).
-	 * If the month is followed or preceded by a day like "first of January" or "January the first" it is converted to "01.01."
+	 * If the month is followed or preceded by a day like "first of February" or "February the first" it is converted to "01.02."
 	 * @param input - string to search
 	 * @param language - language code
 	 * @return string with names replaced by numbers 
@@ -1544,6 +1544,10 @@ public class RegexParameterSearch {
 			input = input.replaceAll("\\b(\\d+)th(\\.)", "$1.");
 			//...continue?
 		}
+		
+		//check for a year at the end
+		input = input.replaceAll("\\b(\\d{1,2}\\.)(\\d{1,2}\\.)\\s(\\d{4})\\b", "$1$2$3");
+		
 		return input;
 	}
 	
