@@ -1,8 +1,10 @@
 package net.b07z.sepia.server.assist.tools;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -47,18 +49,31 @@ public class RssFeedReader {
 		feedCacheTS = new JSONObject();
 	}
 	
-	public JSONObject getCache(){
-		return feedCache;
-	}
-	public boolean loadBackup(){
+	/**
+	 * Load the backup and return the last-modified timestamp of it or -1 if there was none.
+	 * @return timestamp or -1
+	 */
+	public long loadBackup(){
+		//check file
+		File file = new File(Workers.rssFeedsData_BackupFile);
+		if (!file.exists()){
+			Debugger.println("RssFeedReader - no backup file found! This is ok if you start for the first time or cleaned the backup.", 1);
+			return -1l;
+		}
 		JSONObject backup = JSON.readJsonFromFile(Workers.rssFeedsData_BackupFile);
 		if (backup != null && !backup.isEmpty()){
+			long lastMod = file.lastModified();
 			this.feedCache = backup;
-			Debugger.println("RssFeedReader - backup restored with " + feedCache.size() + " feeds.", 3);
-			return true;
+			Debugger.println("RssFeedReader - backup restored with " + feedCache.size() + " feeds. Last modified: " + (new SimpleDateFormat(Config.defaultSdf)).format(lastMod), 3);
+			return lastMod;
 		}else{
-			return false;
+			Debugger.println("RssFeedReader - backup was corrupted! Please check or remove the file at: " + Workers.rssFeedsData_BackupFile, 1);
+			return -1l;
 		}
+	}
+	
+	public JSONObject getCache(){
+		return feedCache;
 	}
 	public JSONObject getCacheTimestamps(){
 		return feedCacheTS;

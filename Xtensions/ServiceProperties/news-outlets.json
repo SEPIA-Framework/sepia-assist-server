@@ -1,6 +1,6 @@
 {
 	"outlets":[
-		{ "name": "SPIEGEL ONLINE", "url": "http://www.spiegel.de/schlagzeilen/tops/index.rss", "name_html": "<span style='color:#950000;'><b>SPIEGEL</b> ONLINE</span>" },
+		{ "name": "SPIEGEL ONLINE", "url": "https://www.spiegel.de/schlagzeilen/tops/index.rss", "name_html": "<span style='color:#950000;'><b>SPIEGEL</b> ONLINE</span>" },
 		{ "name": "bento", "url": "https://www.bento.de/rss/nachrichten/", "name_html": "<span style='color:#000;'><b>bento</b></span>" },
 		{ "name": "Tagesschau", "url": "http://www.tagesschau.de/xml/rss2", "name_html": "<span style='color:#0065BE; font-family:serif'><b>tagesschau</b>.de</span>" },
 		{ "name": "Süddeutsche", "url": "http://rss.sueddeutsche.de/rss/Topthemen", "name_html": "<span style='color:#000; font-family:serif'><b>Süddeutsche Zeitung</b></span>" },
@@ -27,7 +27,7 @@
 		{ "name": "Filmstarts.de - aktuell", "url": "http://rss.filmstarts.de/fs/kinos/aktuelle?format=xml", "name_html": "<b><span style='color:#3d59ba;'>Filmstarts.de</span><span style='color:#000000;'> - aktuell</span></b>" },
 		{ "name": "Filmstarts.de - bald", "url": "http://rss.filmstarts.de/fs/kinos/bald?format=xml", "name_html": "<b><span style='color:#3d59ba;'>Filmstarts.de</span><span style='color:#000000;'> - bald</span></b>" },
 		{ "name": "Filmstarts.de - Serien", "url": "http://rss.filmstarts.de/fs/news/serien?format=xml", "name_html": "<b><span style='color:#3d59ba;'>Filmstarts.de</span><span style='color:#000000;'> - Serien</span></b>" },
-		{ "name": "SPIEGEL Kino", "url": "http://www.spiegel.de/kultur/kino/index.rss", "name_html": "<span style='color:#950000;'><b>SPIEGEL</b> Kino</span>" },
+		{ "name": "SPIEGEL Kino", "url": "https://www.spiegel.de/kultur/kino/index.rss", "name_html": "<span style='color:#950000;'><b>SPIEGEL</b> Kino</span>" },
 		{ "name": "Kino.de - Film-News", "url": "https://www.kino.de/rss/movienews", "name_html": "<b><span style='color:#039cfd;'>Kino.de</span><span style='color:#000000;'> - Film-News</span></b>" },
 		{ "name": "deutsche startups", "url": "https://www.deutsche-startups.de/feed/", "name_html": "<b><span style='color:#3b65b1;'>deutsche startups</span></b>" }
 	],

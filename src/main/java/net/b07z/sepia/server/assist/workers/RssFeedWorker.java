@@ -38,6 +38,7 @@ public class RssFeedWorker implements WorkerInterface {
 	Set<String> refreshFeeds;
 	long customWaitInterval = 2275;			//custom wait time until the worker checks for an abort request and status changes
 	public static long customRefreshInterval = (3*60*60*1000);	//every 3h
+	public static long oldBackupStartDelay = (15*60*1000);		//wait 15min if the backup was old
 	
 	//even more specific for service
 	int maxHeadlinesPerFeed = 8;
@@ -126,10 +127,16 @@ public class RssFeedWorker implements WorkerInterface {
 	@Override
 	public void start(){
 		//load backup
-		if (Config.rssReader.loadBackup()){
+		long lastModified = Config.rssReader.loadBackup();
+		if (lastModified > 0){
 			workerStatus = 0;
-			//start with refresh delay
-			start(customRefreshInterval);
+			if ((lastModified + customRefreshInterval) < System.currentTimeMillis()){
+				//too old, start soon
+				start(oldBackupStartDelay);
+			}else{
+				//start with normal refresh delay
+				start(customRefreshInterval);
+			}
 		}else{
 			workerStatus = 0;
 			//start with normal delay
