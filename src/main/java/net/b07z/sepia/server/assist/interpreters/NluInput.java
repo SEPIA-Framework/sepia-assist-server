@@ -45,7 +45,7 @@ public class NluInput {
 	//personal info
 	public String userLocation = "";		//user_location:	address, longitude, latitude coordinates of user
 	public long userTime = -1;				//time:				system time at request sent
-	public String userTimeLocal = "";		//time_local:		system date and time at locally at user location, default format 2016.12.31_22:44:11
+	public String userTimeLocal = "";		//time_local:		system date and time at user location, default format 2016.12.31_22:44:11
 	public User user;						//user:				holds all info about the user, can reload from account
 	//... more to come
 	public String deviceId = "";			//device_id:		an ID defined by the user to identify a certain device
@@ -102,11 +102,11 @@ public class NluInput {
 	
 	/**
 	 * Set user local time.
-	 * @param timeString - Date in default format (Config.defaultSdf): "yyyy.MM.hh_HH:mm:ss"
+	 * @param timeString - Date in default format (Config.defaultSdf): "yyyy.MM.dd_HH:mm:ss"
 	 */
-	public void setTime(String timeString){
+	public void setTimeGMT(String timeString){
 		this.userTimeLocal = timeString;
-		this.userTime = DateTimeConverters.getUnixTimeOfDate(userTimeLocal, Config.defaultSdf);
+		this.userTime = DateTimeConverters.getUnixTimeOfDateGMT(userTimeLocal, Config.defaultSdf);
 	}
 	
 	//handle (session) STORAGEs:

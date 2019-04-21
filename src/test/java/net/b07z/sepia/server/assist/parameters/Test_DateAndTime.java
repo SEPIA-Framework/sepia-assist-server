@@ -10,22 +10,25 @@ import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.ConfigTestServer;
 import net.b07z.sepia.server.assist.tools.DateTimeConverters;
 import net.b07z.sepia.server.assist.users.User;
+import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.JSON;
 
 public class Test_DateAndTime {
 
 	public static void main(String[] args) {
+		long tic = Debugger.tic();
 		
 		//fake input
 		NluInput input = ConfigTestServer.getFakeInput("test", "de");
 		input.userTimeLocal = "2018.01.14_10:00:00";
-		input.userTime = DateTimeConverters.getUnixTimeOfDate(input.userTimeLocal, "yyyy.MM.hh_HH:mm:ss"); 
+		input.userTime = DateTimeConverters.getUnixTimeOfDateAtZone(input.userTimeLocal, "yyyy.MM.dd_HH:mm:ss", "GMT"); 
 		User user = ConfigTestServer.getTestUser(ConfigTestServer.email_id1, input, false, true);
 		input.userLocation = JSON.make("country", "Germany", "city", "Essen", "street", "Somestreet 1", "latitude", 51.6, "longitude", 7.1).toString();
 		input.user = user;
 		
 		//time
-		System.out.println("chosen UNIX time (s): " + Math.round(input.userTime/1000));
+		System.out.println("chosen UNIX time (ms): " + input.userTime);
+		System.out.println("chosen UNIX time (s): " + input.userTime/1000l);
 		System.out.println("now: " + DateTimeConverters.getSpeakableDateSpecial(input.userTimeLocal, 5l, Config.defaultSdf, input) 
 									+ ", " + input.userTimeLocal + "\n");
 		
@@ -73,11 +76,13 @@ public class Test_DateAndTime {
 		testTimeString("set an alarm for tomorrow 6pm", 	"[2018.01.15, 18:00:00]", input);
 		testTimeString("set an alarm for tomorrow 6 p.m.", 	"[2018.01.15, 18:00:00]", input);
 		testTimeString("set an alarm for 8 a.m.", 			"[2018.01.14, 08:00:00]", input);
+		testTimeString("set an alarm for 1518697800000", 			"[2018.02.15, 12:30:00]", input);
 				
 		input.language = "de";
 		System.out.println("\n----- de -----");
 		testTimeString("alarm stellen fuer morgen abend 8:30uhr", 		"[2018.01.15, 20:30:00]", input);
 		testTimeString("alarm stellen fuer mittwoch 8:30 uhr abends", 	"[2018.01.17, 20:30:00]", input);
+		testTimeString("alarm stellen fuer mittwoch morgen 8:30 uhr", 	"[2018.01.17, 08:30:00]", input);
 		testTimeString("alarm stellen fuer 8:30 uhr abends am donnerstag", 	"[2018.01.18, 20:30:00]", input);
 		testTimeString("alarm stellen fuer 8:30 uhr abends in 2 tagen", 	"[2018.01.16, 20:30:00]", input);
 		testTimeString("alarm stellen fuer 8:30 in 3 tagen",				"[2018.01.17, 08:30:00]", input);
@@ -102,6 +107,10 @@ public class Test_DateAndTime {
 		testTimeString("erinnere mich in einer woche um 13 uhr an reifen", 		"[2018.01.21, 13:00:00]", input);
 		testTimeString("erinnere mich samstag um 10 Uhr an das fest", 			"[2018.01.20, 10:00:00]", input);
 		testTimeString("erinnere mich naechste woche samstag um 13 uhr an zeug", 	"[2018.01.20, 13:00:00]", input);
+		testTimeString("alarm stellen fuer 1518697800000", 				"[2018.02.15, 12:30:00]", input);
+		testTimeString("alarm stellen fuer 1555882260000", 				"[2019.04.21, 21:31:00]", input);
+		
+		System.out.println("Took: " + Debugger.toc(tic) + "ms");
 	}
 
 	public static boolean testTimeString(String text, String shouldBe, NluInput input){

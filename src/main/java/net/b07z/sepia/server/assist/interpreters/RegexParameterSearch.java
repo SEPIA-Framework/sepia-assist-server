@@ -1091,6 +1091,14 @@ public class RegexParameterSearch {
 		String date_tag ="";
 		String time_tag ="";
 		
+		//Check UNIX time first (we are more tolerant than required here ^^)
+		String unixTimeString = NluTools.stringFindFirst(text, "\\b\\d{12,14}\\b");
+		if (!unixTimeString.isEmpty()){
+			pv.put("date_tag", unixTimeString);
+			pv.put("time_tag", "");
+			return pv;
+		}
+		
 		//Common
 		text = replace_all_months_by_numbers(text, language);
 		

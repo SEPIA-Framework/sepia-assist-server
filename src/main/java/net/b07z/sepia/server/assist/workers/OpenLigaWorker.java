@@ -450,9 +450,9 @@ public class OpenLigaWorker implements WorkerInterface {
 				for (Object o : apiResult){
 					JSONObject matchInput = (JSONObject) o;
 					JSONObject matchOut = new JSONObject();
-					String date = (String) matchInput.get("MatchDateTime"); 	//2016-12-02T20:30:00
+					String date = (String) matchInput.get("MatchDateTime"); 	//2016-12-02T20:30:00 - TODO: this HAS TO BE GMT! Is it?
 					JSON.add(matchOut, "kickoff", date);
-					long dateUNIX = DateTimeConverters.getUnixTimeOfDate(date.replaceFirst("T", "_"), "yyyy-MM-dd_HH:mm:ss");
+					long dateUNIX = DateTimeConverters.getUnixTimeOfDateGMT(date.replaceFirst("T", "_"), "yyyy-MM-dd_HH:mm:ss");
 					if ((dateUNIX > System.currentTimeMillis()) || (System.currentTimeMillis() - dateUNIX) < (1000*60*30*5)){
 						if (dateUNIX < activeOrNextMatchUnixTime){
 							activeOrNextMatchUnixTime = dateUNIX;
@@ -549,9 +549,9 @@ public class OpenLigaWorker implements WorkerInterface {
 				for (Object o : apiResult){
 					JSONObject matchInput = (JSONObject) o;
 					JSONObject matchOut = new JSONObject();
-					String date = (String) matchInput.get("MatchDateTime"); 	//2016-12-02T20:30:00
+					String date = (String) matchInput.get("MatchDateTime"); 	//2016-12-02T20:30:00 - TODO: this HAS TO BE GMT! Is it?
 					JSON.add(matchOut, "kickoff", date);
-					long dateUNIX = DateTimeConverters.getUnixTimeOfDate(date.replaceFirst("T", "_"), "yyyy-MM-dd_HH:mm:ss");
+					long dateUNIX = DateTimeConverters.getUnixTimeOfDateGMT(date.replaceFirst("T", "_"), "yyyy-MM-dd_HH:mm:ss");
 					if (dateUNIX > System.currentTimeMillis()){
 						nextMatchUnixTime = Math.min(nextMatchUnixTime, dateUNIX);
 					}
