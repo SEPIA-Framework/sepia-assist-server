@@ -27,13 +27,13 @@ import net.b07z.sepia.server.core.tools.Debugger;
 public class RegexParameterSearch {
 	
 	/**
-	 * Check if input contains a special slash command like "saythis".
+	 * Check if input contains a special slash command like "saythis" and "linkshare" or a URL with "http(s)://.
 	 * @param input - user input
 	 * @return true/false
 	 */
 	public static boolean contains_slashCMD(String input){
-		//TODO: improve all slash commands!
-		if (input.toLowerCase().matches("(" + Pattern.quote(Config.assistantName.toLowerCase()) + " |^)(saythis)\\b.*")){
+		//TODO: improve all slash commands and introduce some static variables for them!
+		if (input.toLowerCase().matches("(" + Pattern.quote(Config.assistantName.toLowerCase()) + " |^|^\\\\)(saythis|linkshare|http(s|)://)\\b.*")){
 			return true;
 		}else{
 			return false;

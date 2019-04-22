@@ -13,6 +13,7 @@ import net.b07z.sepia.server.assist.interviews.InterviewServicesMap;
 import net.b07z.sepia.server.assist.parameters.AbstractParameterSearch;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.ConfigServices;
+import net.b07z.sepia.server.assist.services.OpenCustomLink;
 import net.b07z.sepia.server.assist.services.ServiceInfo;
 import net.b07z.sepia.server.assist.services.ServiceInterface;
 import net.b07z.sepia.server.core.assistant.CMD;
@@ -218,19 +219,45 @@ public class NluKeywordAnalyzer implements NluInterface {
 		
 		//---------------------------
 								
-		//Repeat me - overwrites all other commands! - TODO: is this still valid or captured before? If it is make a function
-		if (NluTools.stringContains(text, "(^saythis|" + Pattern.quote(Config.assistantName) + " saythis)")){
-			String this_text = input.textRaw.replaceFirst(".*?\\bsaythis|.*?\\bSaythis", "").trim();
-			
+		//SLASH Commands and specials - will overwrite all other commands! - TODO: we should put all slash-command searches in one extra place
+		
+		//Repeat me
+		if (NluTools.stringContains(text, "(^saythis|^\\\\saythis|" + Pattern.quote(Config.assistantName) + " saythis)")){
+			String thisText = input.textRaw.replaceFirst(".*?\\bsaythis|.*?\\bSaythis", "").trim();
 			//make it THE command
 			possibleCMDs.add(CMD.REPEAT_ME);
 			possibleScore.add(1);	index++;
 			possibleScore.set(index, 1000); 	//definitely this!
-			
 			Map<String, String> pv = new HashMap<String, String>();
-				pv.put(PARAMETERS.REPEAT_THIS, this_text);
+				pv.put(PARAMETERS.REPEAT_THIS, thisText);
 			possibleParameters.add(pv);
-		}	
+		
+		//Link share
+		}else if (NluTools.stringContains(text, "(^linkshare|^\\\\linkshare|" + Pattern.quote(Config.assistantName) + " linkshare)")){
+			String link = input.textRaw.replaceFirst(".*?\\blinkshare|.*?\\bLinkshare", "").trim().replaceFirst("\\s.*", "");
+			String title = link.substring(0, Math.min(link.length(), 22));
+			if (link.length() > 21) title += "...";
+			possibleCMDs.add(CMD.OPEN_LINK);
+			possibleScore.add(1);	index++;
+			possibleScore.set(index, 1000); 	//definitely this!
+			Map<String, String> pv = new HashMap<String, String>();
+				pv.put(PARAMETERS.URL, link);
+				pv.put(OpenCustomLink.TITLE, title);
+			possibleParameters.add(pv);
+		
+		//Link open
+		}else if (NluTools.stringContains(text, "^http(s|)://.*")){
+			String link = input.textRaw.trim().replaceFirst("\\s.*", "");
+			String title = link.substring(0, Math.min(link.length(), 22));
+			if (link.length() > 21) title += "...";
+			possibleCMDs.add(CMD.OPEN_LINK);
+			possibleScore.add(1);	index++;
+			possibleScore.set(index, 1000); 	//definitely this!
+			Map<String, String> pv = new HashMap<String, String>();
+				pv.put(PARAMETERS.URL, link);
+				pv.put(OpenCustomLink.TITLE, title);
+			possibleParameters.add(pv);
+		}
 		
 		//--set certainty_lvl--
 		int bestScoreIndex = 0;

@@ -2,6 +2,7 @@ package net.b07z.sepia.server.assist.parameters;
 
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 import org.json.simple.JSONObject;
 
@@ -346,6 +347,11 @@ public class DateAndTime implements ParameterHandler{
 		String dateType = DateType.unknown.name();
 		String day = "";
 		String time = "";
+		
+		//extract again/first
+		if (input.startsWith("<unix>")){
+			input = extract(input.replaceFirst(Pattern.quote("<unix>"), ""));
+		}
 
 		//extracted time-date
 		if (input.startsWith("<") && input.contains("&&")){
