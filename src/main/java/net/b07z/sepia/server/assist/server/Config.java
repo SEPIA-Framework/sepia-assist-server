@@ -265,7 +265,7 @@ public class Config {
 	public static void setup_nlu_steps(){
 		//direct command
 		nluInterpretationSteps.add((input, cachedResults) -> InterpretationStep.getDirectCommand(input));
-		//spoken response
+		//response to previous input
 		nluInterpretationSteps.add((input, cachedResults) -> InterpretationStep.getResponse(input));
 		//slash command
 		nluInterpretationSteps.add((input, cachedResults) -> InterpretationStep.getSlashCommand(input));

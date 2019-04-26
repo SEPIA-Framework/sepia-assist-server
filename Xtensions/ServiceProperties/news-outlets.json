@@ -2,7 +2,7 @@
 	"outlets":[
 		{ "name": "SPIEGEL ONLINE", "url": "https://www.spiegel.de/schlagzeilen/tops/index.rss", "name_html": "<span style='color:#950000;'><b>SPIEGEL</b> ONLINE</span>" },
 		{ "name": "bento", "url": "https://www.bento.de/rss/nachrichten/", "name_html": "<span style='color:#000;'><b>bento</b></span>" },
-		{ "name": "Tagesschau", "url": "http://www.tagesschau.de/xml/rss2", "name_html": "<span style='color:#0065BE; font-family:serif'><b>tagesschau</b>.de</span>" },
+		{ "name": "Tagesschau", "url": "http://www.tagesschau.de/xml/rss2", "name_html": "<span style='color:#0065BE; font-family:serif;'><b>tagesschau</b>.de</span>" },
 		{ "name": "Süddeutsche", "url": "http://rss.sueddeutsche.de/rss/Topthemen", "name_html": "<span style='color:#000; font-family:serif'><b>Süddeutsche Zeitung</b></span>" },
 		{ "name": "FAZ", "url": "https://www.faz.net/rss/aktuell/", "name_html": "<span style='color:#000; font-family:serif'><b>Frankfurter Allgemeine</b></span>" },
 		{ "name": "Bild", "url": "https://www.bild.de/rssfeeds/vw-home/vw-home-16725562,sort=1,view=rss2.bild.xml", "name_html": "<b><span style='color:#D91918;'>Bild</span><span style='color:#000;'>.de</span></b>" },
@@ -17,6 +17,8 @@
 		{ "name": "11FREUNDE", "url": "https://www.11freunde.de/feed", "name_html": "<span style='color:#000;'>11<b>FREUNDE</b></span>" },
 		{ "name": "golem.de", "url": "http://rss.golem.de/rss.php?feed=RSS2.0", "name_html": "<b><span style='color:#000;'>golem.</span><span style='color:#6EC5CD;'>d</span><span style='color:#9AC54B;'>e</span></b>" },
 		{ "name": "heise online", "url": "https://www.heise.de/rss/heise-top-atom.xml", "name_html": "<b><span style='color:#999898;'>heise online</span></b>" },
+		{ "name": "heise Developer", "url": "https://www.heise.de/developer/rss/news-atom.xml", "name_html": "<b><span style='color:#999898;'>heise </span><span style='color:#6d1124;'>Developer</span></b>" },
+		{ "name": "heise Make", "url": "https://www.heise.de/make/rss/hardware-hacks-atom.xml", "name_html": "<b><span style='color:#999898;'>heise </span><span style='color:#e2001a;'>Make</span></b>" },
 		{ "name": "PCGames", "url": "http://www.pcgames.de/feed.cfm?menu_alias=home", "name_html": "<b><span style='color:#1F83B5;'>PC</span><span style='color:#FBDB21;'>Games</span></b>" },
 		{ "name": "GameStar", "url": "http://www.pcgames.de/feed.cfm?menu_alias=home", "name_html": "<span style='color:#003372;'><b>GameStar</b></span>" },
 		{ "name": "t3n", "url": "https://t3n.de/rss.xml", "name_html": "<b><span style='color:#000;'>t</span><span style='color:#FF0000;'>3</span><span style='color:#000000;'>n</span></b>" },
@@ -29,7 +31,8 @@
 		{ "name": "Filmstarts.de - Serien", "url": "http://rss.filmstarts.de/fs/news/serien?format=xml", "name_html": "<b><span style='color:#3d59ba;'>Filmstarts.de</span><span style='color:#000000;'> - Serien</span></b>" },
 		{ "name": "SPIEGEL Kino", "url": "https://www.spiegel.de/kultur/kino/index.rss", "name_html": "<span style='color:#950000;'><b>SPIEGEL</b> Kino</span>" },
 		{ "name": "Kino.de - Film-News", "url": "https://www.kino.de/rss/movienews", "name_html": "<b><span style='color:#039cfd;'>Kino.de</span><span style='color:#000000;'> - Film-News</span></b>" },
-		{ "name": "deutsche startups", "url": "https://www.deutsche-startups.de/feed/", "name_html": "<b><span style='color:#3b65b1;'>deutsche startups</span></b>" }
+		{ "name": "deutsche startups", "url": "https://www.deutsche-startups.de/feed/", "name_html": "<b><span style='color:#3b65b1;'>deutsche startups</span></b>" },
+		{ "name": "wissenschaft.de", "url": "https://www.wissenschaft.de/feed-wissenschaft", "name_html": "<span style='color:#004e9e;'><b>wissenschaft.de</b>.de</span>" }
 	],
 	"deprecated":[
 		{ "name": "RevierSport", "url": "https://abo.reviersport.de/?news-rss-ama", "name_html": "<span style='color:#000;'>RevierSport</span>" },
@@ -40,8 +43,8 @@
 			{"section": "main", "group": ["SPIEGEL ONLINE", "Süddeutsche", "FAZ", "Bild", "Tagesschau", "golem.de", "Gruenderszene", "jetzt.de", "bento"]},
 			{"section": "economy", "group": ["SPIEGEL ONLINE", "Süddeutsche", "FAZ", "Tagesschau", "Gruenderszene"]},
 			{"section": "politics", "group": ["SPIEGEL ONLINE", "Süddeutsche", "FAZ", "Bild", "Tagesschau"]},
-			{"section": "science", "group": ["Wired.de", "t3n", "golem.de", "heise online"]},
-			{"section": "tech", "group": ["golem.de", "t3n", "heise online", "PCGames", "Wired.de"]},
+			{"section": "science", "group": ["wissenschaft.de", "t3n", "golem.de", "heise online"]},
+			{"section": "tech", "group": ["golem.de", "t3n", "heise online", "heise Developer", "heise Make", "PCGames"]},
 			{"section": "sports", "group": ["Sport1", "Sportschau", "Kicker"]},
 			{"section": "soccer", "group": ["Sportschau - Fussball", "Kicker", "Sport1", "11FREUNDE"]},
 			{"section": "games", "group": ["PCGames", "GameStar"]},

@@ -2,10 +2,13 @@ package net.b07z.sepia.server.assist.data;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.tools.StringCompare;
+import net.b07z.sepia.server.core.tools.StringTools;
 
 /**
  * This class holds the results of a sentence comparison.
@@ -16,13 +19,40 @@ import net.b07z.sepia.server.assist.tools.StringCompare;
 public class SentenceMatch {
 	
 	/**
-	 * Create matcher with two sentences. Consider normalizing the sentences before.
+	 * Create matcher with two sentences. Consider normalizing the sentences before.<br>
+	 * Implemented special character sequences:<br>
+	 * !(...) - e.g.: "this is !(not) correct" - the sequence MUST match in both sentences or getCertainty() will be 0.
 	 * @param inputSentence - sentence to be checked, e.g. input of the user
 	 * @param testSentence - sentence to check against, e.g. tagged database sentence
 	 */
 	public SentenceMatch(String inputSentence, String testSentence){
+		if (inputSentence.contains("!(") || testSentence.contains("!(")){
+			this.wordsThatMustMatch = StringTools.findAllRexEx(inputSentence, "!\\(.*?\\)");
+			this.wordsThatMustMatch.addAll(StringTools.findAllRexEx(testSentence, "!\\(.*?\\)"));
+			if (this.wordsThatMustMatch.size() > 0){
+				for (int i=0; i<this.wordsThatMustMatch.size(); i++){
+					this.wordsThatMustMatch.set(i, this.wordsThatMustMatch.get(i).replaceAll("!\\((.*?)\\)", "$1"));
+				}
+			}
+			this.inputSentence = inputSentence.replaceAll("!\\((.*?)\\)", "$1");
+			this.testSentence = testSentence.replaceAll("!\\((.*?)\\)", "$1");
+		}else{
+			this.inputSentence = inputSentence;
+			this.testSentence = testSentence;
+		}
+	}
+	/**
+	 * Create matcher with two sentences. Consider normalizing the sentences before.<br>
+	 * Implemented special character sequences:<br>
+	 * !(...) - e.g.: "this is !(not) correct" - the sequence MUST match in both sentences
+	 * @param inputSentence - sentence to be checked, e.g. input of the user. Must be free of special char. sequences!
+	 * @param testSentence - sentence to check against, e.g. tagged database sentence. Must be free of special char. sequences!
+	 * @param mustMatchTheseWords - words that MUST be in both sentences or getCertainty() will be 0
+	 */
+	public SentenceMatch(String inputSentence, String testSentence, List<String> mustMatchTheseWords){
 		this.inputSentence = inputSentence;
 		this.testSentence = testSentence;
+		this.wordsThatMustMatch = mustMatchTheseWords;
 	}
 	
 	//booleans
@@ -34,6 +64,7 @@ public class SentenceMatch {
 	public int matchedWords_N = 0;					//how many words match? (note: how many words of input are in test)
 	public int differentWords_N = 0;				//how many words are different? (note: sum of different words)
 	public int taggedWords_N = 0;					//how many words are tags?
+	public boolean matchedRequiredWords = true;		//if there are 'wordsThatMustMatch' this indicates if they were all there
 	public double matchedWords_P = 0.0d;			//how many percent of the words match (note: max number of words of both sentences is used)
 	public int editDistance = Integer.MAX_VALUE;	//how many characters need to be changed to match the string
 	public int wordDistance = Integer.MAX_VALUE;	//how many words need to be changed to match
@@ -42,9 +73,10 @@ public class SentenceMatch {
 	public String inputSentence = "";				//sentence to test and get statistics for
 	//public String inputSentenceNorm = "";			//normalized sentence to test and get statistics for
 	public String testSentence = "";				//sentence to test against
-	public ArrayList<String> inputWords;			//list with words of input sentence
-	public ArrayList<String> testWords;				//list with words of test sentence
-	public HashMap<String, String> matchedTags;		//if the test sentence has tags they are stored here with the findings
+	public List<String> inputWords;				//list with words of input sentence
+	public List<String> testWords;				//list with words of test sentence
+	public List<String> wordsThatMustMatch;		//list with words that have to be in both sentences
+	public Map<String, String> matchedTags;		//if the test sentence has tags they are stored here with the findings
 	
 	//checks
 	private boolean checkedBoW = false;
@@ -217,9 +249,27 @@ public class SentenceMatch {
 	}
 	
 	/**
-	 * Calculate certainty by using bag-of-words AND wordDistance. Defaults to 0.0d if none of the test have been made.
+	 * Check if there are words or sequences of words that need to appear in both sentences, find them and set 'matchedRequiredWords' accordingly.
+	 */
+	public SentenceMatch getRequiredMatches(){
+		if (this.wordsThatMustMatch != null && this.wordsThatMustMatch.size() > 0){
+			for (int i=0; i<this.wordsThatMustMatch.size(); i++){
+				String seq = this.wordsThatMustMatch.get(i);
+				if (!(this.inputSentence.contains(seq) && this.testSentence.contains(seq))){
+					this.matchedRequiredWords = false;
+				}
+			}
+		}
+		return this;
+	}
+	
+	/**
+	 * Calculate certainty by using bag-of-words AND wordDistance. Defaults to 0.0d if none of the test have been made or 'matchedRequiredWords' is false.
 	 */
 	public double getCertainty(){
+		if (!matchedRequiredWords){
+			return 0.0d;
+		}
 		double scoreBoW = 0.0d;
 		double scoreWD = 0.0d;
 		if (checkedBoW){
