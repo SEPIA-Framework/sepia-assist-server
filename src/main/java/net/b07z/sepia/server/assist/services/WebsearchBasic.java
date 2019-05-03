@@ -3,7 +3,9 @@ package net.b07z.sepia.server.assist.services;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.json.simple.JSONObject;
 
@@ -15,7 +17,6 @@ import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.parameters.SearchSection;
-import net.b07z.sepia.server.assist.parameters.WebSearchEngine;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
@@ -31,6 +32,15 @@ import net.b07z.sepia.server.core.tools.JSON;
  *
  */
 public class WebsearchBasic implements ServiceInterface{
+	
+	//Search engines
+	public static ArrayList<String> engines = new ArrayList<>();
+	static{
+		engines.add("google");
+		engines.add("bing");
+		engines.add("duck duck go");
+		engines.add("yahoo");
+	}
 	
 	//--- data ---
 	public static String getButtonText(String engine, String language){
@@ -232,6 +242,16 @@ public class WebsearchBasic implements ServiceInterface{
 			}else if (section.equals("recipes")){
 				search_url = "https://duckduckgo.com/?kae=d&ia=recipes&q=";	search = searchReduced;
 			}
+		}else if (engine.contains("youtube")){
+			engine = "YouTube";
+			search_url = "https://www.youtube.com/results?search_query=";
+			if (section.equals("pictures")){
+				search_url = "https://www.google.com/search?q=";	search = searchReduced;
+			}else if (section.equals("videos")){
+				search_url = "https://www.youtube.com/results?search_query=";	search = searchReduced;
+			}else if (section.equals("recipes")){
+				search_url = "https://www.youtube.com/results?search_query=";	search = searchReduced;
+			}
 		}else{
 			engine = "Google";
 			search_url = "https://www.google.com/search?q=";		//<- default is google
@@ -263,10 +283,12 @@ public class WebsearchBasic implements ServiceInterface{
 	 * @param section - optimize for this section (not yet working)
 	 */
 	public static String getPseudoRandomEngine(String except, String section){
-		ArrayList<String> engines = WebSearchEngine.list;
-		engines.remove(except);
+		List<String> enginesToChoose = engines.stream().filter(s -> {
+			return !s.equals(except);
+		}).collect(Collectors.toList());
+		//enginesToChoose.remove(except);
 		Random rand = new Random();
-	    String randomEngine = engines.get(rand.nextInt(engines.size()));
+	    String randomEngine = enginesToChoose.get(rand.nextInt(enginesToChoose.size()));
 	    //TODO: optimize for section
 	    return randomEngine;
 	}

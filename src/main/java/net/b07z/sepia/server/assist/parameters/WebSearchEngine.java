@@ -1,6 +1,5 @@
 package net.b07z.sepia.server.assist.parameters;
 
-import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 import org.json.simple.JSONObject;
@@ -22,14 +21,7 @@ public class WebSearchEngine implements ParameterHandler{
 	public static final String BING = "Bing";
 	public static final String DUCK_DUCK_GO = "DuckDuckGo"; */
 	
-	public static final String names = "(google|bing|duck duck go|duck duck|duckduckgo|yahoo)";
-	public static ArrayList<String> list = new ArrayList<>();
-	static{
-		list.add("google");
-		list.add("bing");
-		list.add("duck duck go");
-		list.add("yahoo");
-	}
+	public static final String names = "(google|bing|duck duck go|duck duck|duckduckgo|yahoo|youtube)";
 	//--------------
 
 	User user;
