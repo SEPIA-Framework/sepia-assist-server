@@ -412,34 +412,26 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 		}
 		
 		//music
-		if (NluTools.stringContains(text, "music|play .*|song|songs") 
-							&& !possibleCMDs.contains(CMD.KNOWLEDGEBASE)){
-			String this_text = text;
+		if (NluTools.stringContains(text, "music|play .*|(start|open) .*\\b(title|of|by)|song(s|)|"
+				+ "album|record|spotify|deezer|soundcloud|youtube") 
+										&& !possibleCMDs.contains(CMD.KNOWLEDGEBASE)){
+			//String this_text = text;
 			possibleCMDs.add(CMD.MUSIC);
 			possibleScore.add(1);	index++;
 			
-			search_music_parameters(this_text, language);
+			//it is so obvious, score again
+			//possibleScore.set(index, possibleScore.get(index)+1);
 			
-			//genre
-			String genre = music_parameters.get("music_genre");
-			if (!genre.isEmpty()){
-				possibleScore.set(index, possibleScore.get(index)+1);
-			}
-			//artist
-			String artist = music_parameters.get("music_artist");
-			if (!artist.isEmpty()){
-				possibleScore.set(index, possibleScore.get(index)+1);
-			}
-			String title = music_parameters.get("music_search");
-			//a "startable" is to vague to trigger a score increase ...
-			//if (!title.matches("")){
-			//	possibleScore.set(index, possibleScore.get(index)+1);
-			//}
-			
-			HashMap<String, String> pv = new HashMap<String, String>();
-				pv.put(PARAMETERS.SONG, title);
-				pv.put(PARAMETERS.MUSIC_GENRE, genre);
-				pv.put(PARAMETERS.MUSIC_ARTIST, artist);
+			HashMap<String, String> pv = new HashMap<String, String>(); 		//TODO: pass this down to avoid additional checking
+			AbstractParameterSearch aps = new AbstractParameterSearch()
+					.setParameters(
+							PARAMETERS.MUSIC_SERVICE, PARAMETERS.MUSIC_GENRE, PARAMETERS.MUSIC_ALBUM, 
+							PARAMETERS.MUSIC_ARTIST, PARAMETERS.SONG, 
+							PARAMETERS.PLAYLIST_NAME
+					)
+					.setup(input, pv);
+			aps.getParameters();
+			possibleScore.set(index, possibleScore.get(index) + aps.getScore());
 			possibleParameters.add(pv);
 		}
 		

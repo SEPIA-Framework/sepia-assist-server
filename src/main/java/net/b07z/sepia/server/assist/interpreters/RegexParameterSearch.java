@@ -2098,19 +2098,19 @@ public class RegexParameterSearch {
 	public static String get_creator(String input, String language){
 		String creator = "";
 		//German
-		if (language.matches("de")){
-			if (!input.matches(".*\\b(von|vom)\\b.*(nach|bis)\\b.*")){
+		if (language.matches(LANGUAGES.DE)){
+			if (!input.matches(".*\\b(von|vom) .+ (nach|bis)\\b.*")){
 				creator = NluTools.stringFindFirst(input, "(von|vom) .*");
-				creator = creator.replaceAll("^(von|vom)", "");
-				creator = creator.replaceAll("^(der|die|das|dem|den|einer|eine|einem)", "");
+				creator = creator.replaceAll("^(von|vom) ", "");
+				creator = creator.replaceAll("^(der|die|das|dem|den|einer|eine|einem) ", "");
 			}
 			
 		//English and other
 		}else{
-			if (!input.matches(".*\\b(from|of|by)\\b.*(to|till|until)\\b.*")){
+			if (!input.matches(".*\\b(from|of|by) .+ (to|till|until)\\b.*")){
 				creator = NluTools.stringFindFirst(input, "(from|of|by) .*");
-				creator = creator.replaceAll("^(from|of|by)", "");
-				creator = creator.replaceAll("^(the|a|an)", "");
+				creator = creator.replaceAll("^(from|of|by) ", "");
+				creator = creator.replaceAll("^(the|a|an) ", "");
 			}
 		}
 		return creator.trim();

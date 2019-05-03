@@ -42,7 +42,6 @@ public class ParameterConfig {
 	public static void setup(){
 		//NOTE: If you ever rename any of the handlers this breaks! (use the test method!)
 		handlerToParameter.put(PARAMETERS.YES_NO, YesNo.class.getCanonicalName());
-		handlerToParameter.put(PARAMETERS.CONFIRMATION, Confirm.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.NUMBER, net.b07z.sepia.server.assist.parameters.Number.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.ACTION, Action.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.PLACE, Place.class.getCanonicalName());
@@ -71,6 +70,11 @@ public class ParameterConfig {
 		handlerToParameter.put(PARAMETERS.FOOD_CLASS, FoodClass.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.RADIO_STATION, RadioStation.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.MUSIC_GENRE, MusicGenre.class.getCanonicalName());
+		handlerToParameter.put(PARAMETERS.MUSIC_ARTIST, MusicArtist.class.getCanonicalName());
+		handlerToParameter.put(PARAMETERS.MUSIC_SERVICE, MusicService.class.getCanonicalName());
+		handlerToParameter.put(PARAMETERS.MUSIC_ALBUM, MusicAlbum.class.getCanonicalName());
+		handlerToParameter.put(PARAMETERS.SONG, Song.class.getCanonicalName());
+		handlerToParameter.put(PARAMETERS.PLAYLIST_NAME, PlaylistName.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.SMART_DEVICE, SmartDevice.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.SMART_DEVICE_VALUE, SmartDeviceValue.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.ROOM, Room.class.getCanonicalName());
@@ -85,6 +89,8 @@ public class ParameterConfig {
 		handlerToParameter.put(PARAMETERS.WINDOWS_FUN, GenericEmptyParameter.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.DEVICE_FUN, GenericEmptyParameter.class.getCanonicalName());
 		//Generics / Exceptions / Specials
+		handlerToParameter.put(PARAMETERS.CONFIRMATION, Confirm.class.getCanonicalName());
+		handlerToParameter.put(PARAMETERS.SELECTION, GenericParameter.class.getCanonicalName()); 	//TODO: give own, special handler
 		handlerToParameter.put(PARAMETERS.SENTENCES, Sentences.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.DATA, GenericEmptyParameter.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.REPLY, GenericParameter.class.getCanonicalName());

@@ -30,7 +30,8 @@ public class ClientFunction implements ParameterHandler {
 		alwaysOn,
 		meshNode,
 		clexi,
-		platformFunction 	//this is handled by PlatformControls service (we use it just for the action)
+		platformFunction, 	//this is handled by PlatformControls service (we use it just for the action)
+		searchForMusic		//this is handled by MusicSearch service (we use it just for the action)
 	}
 	
 	//-------data-------

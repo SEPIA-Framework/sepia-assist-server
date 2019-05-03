@@ -55,6 +55,7 @@ public class NormalizerLight implements Normalizer {
 			phrase = phrase.replaceAll(" ", "( |, )");
 		}
 		//System.out.println(phrase); 		//debug
+		//TODO: can be optimized with Pattern matcher I guess ...
 		if (rawText.matches("(?i).*?(^|\\b|\\s)(" + phrase + ")($|\\b|\\s).*")){
 			return rawText.replaceFirst("(?i).*?(^|\\b|\\s)(" + phrase + ")($|\\b|\\s).*", "$2");
 		}else{

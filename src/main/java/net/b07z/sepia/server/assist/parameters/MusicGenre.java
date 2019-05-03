@@ -15,6 +15,12 @@ import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.JSON;
 
+/**
+ * Parameter handler to search for a music genre like rock.
+ * 
+ * @author Florian Quirin
+ *
+ */
 public class MusicGenre implements ParameterHandler{
 	
 	//-------data-------

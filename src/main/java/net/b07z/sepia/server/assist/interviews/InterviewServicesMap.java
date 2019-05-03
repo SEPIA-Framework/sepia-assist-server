@@ -20,6 +20,7 @@ import net.b07z.sepia.server.assist.services.Lists;
 import net.b07z.sepia.server.assist.services.LocationSearchBasic;
 import net.b07z.sepia.server.assist.services.MeshNodeConnector;
 import net.b07z.sepia.server.assist.services.MusicRadioMixed;
+import net.b07z.sepia.server.assist.services.MusicSearch;
 import net.b07z.sepia.server.assist.services.NewsRssFeeds;
 import net.b07z.sepia.server.assist.services.PlatformControls;
 import net.b07z.sepia.server.assist.services.SentenceConnect;
@@ -159,6 +160,10 @@ public class InterviewServicesMap {
 		ArrayList<String> radio = new ArrayList<String>();
 			radio.add(MusicRadioMixed.class.getCanonicalName());
 			systemInterviewServicesMap.put(CMD.MUSIC_RADIO, radio);
+		//MUSIC SEARCH
+		ArrayList<String> music = new ArrayList<String>();
+			music.add(MusicSearch.class.getCanonicalName());
+			systemInterviewServicesMap.put(CMD.MUSIC, music);
 		//LISTS
 		ArrayList<String> list = new ArrayList<String>();
 			list.add(Lists.class.getCanonicalName());
