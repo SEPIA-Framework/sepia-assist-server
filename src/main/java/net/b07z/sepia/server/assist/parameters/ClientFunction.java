@@ -30,6 +30,7 @@ public class ClientFunction implements ParameterHandler {
 		alwaysOn,
 		meshNode,
 		clexi,
+		media,
 		platformFunction, 	//this is handled by PlatformControls service (we use it just for the action)
 		searchForMusic		//this is handled by MusicSearch service (we use it just for the action)
 	}
@@ -43,12 +44,14 @@ public class ClientFunction implements ParameterHandler {
 		local_de.put("<alwaysOn>", "der Always-On Modus");
 		local_de.put("<meshNode>", "die Mesh-Node");
 		local_de.put("<clexi>", "CLEXI");
+		local_de.put("<media>", "die Medienwiedergabe");
 		
 		local_en.put("<settings>", "the settings");
 		local_en.put("<volume>", "the volume");
 		local_en.put("<alwaysOn>", "the Always-On mode");
 		local_en.put("<meshNode>", "the mesh-node");
 		local_en.put("<clexi>", "CLEXI");
+		local_en.put("<media>", "the media player");
 	}
 	/**
 	 * Translate generalized value.
@@ -111,11 +114,12 @@ public class ClientFunction implements ParameterHandler {
 		}
 		*/
 		
-		String settings, volume, alwaysOn, meshNode, clexi;
+		String settings, volume, alwaysOn, meshNode, clexi, media;
 		//German
 		if (language.matches(LANGUAGES.DE)){
 			settings = "einstellung(en|)|setting(s|)|menue|option(en|)";
-			volume = "lautstaerke|musik|radio|sound";
+			media = "medienwiedergabe|medi(a|en) player|(musik|song|lied) (anhalten|stoppen|stop|beenden|schliessen)";
+			volume = "lautstaerke|musik|radio|sound"; 		//NOTE: musik is used here as well, make sure media is checked first
 			alwaysOn = "always(-| |)on";
 			meshNode = "mesh(-| |)node";
 			clexi = "clexi";
@@ -123,14 +127,16 @@ public class ClientFunction implements ParameterHandler {
 		//English and other
 		}else{
 			settings = "setting(s|)|menu(e|)|option(s|)";
-			volume = "volume|music|radio|sound";
+			media = "media player|(media|music|song) (stop|close|end)";
+			volume = "volume|music|radio|sound"; 			//NOTE: music is used here as well, make sure media is checked first
 			alwaysOn = "always(-| |)on";
 			meshNode = "mesh(-| |)node";
 			clexi = "clexi";
 		}
 		
 		String extracted = NluTools.stringFindFirst(input, 
-				settings + "|" + 
+				settings + "|" +
+				media + "|" +
 				volume + "|" + 
 				alwaysOn + "|" +
 				meshNode + "|" +
@@ -141,6 +147,9 @@ public class ClientFunction implements ParameterHandler {
 			//SETTINGS
 			if (NluTools.stringContains(extracted, settings)){
 				clientFun = "<" + Type.settings + ">";
+			//MEDIA - NOTE: use before VOLUME!
+			}else if (NluTools.stringContains(extracted, media)){
+				clientFun = "<" + Type.media + ">";
 			//VOLUME
 			}else if (NluTools.stringContains(extracted, volume)){
 				clientFun = "<" + Type.volume + ">";

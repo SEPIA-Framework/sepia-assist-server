@@ -75,13 +75,17 @@ public class ClientControls implements ServiceInterface{
 				+ "(.* |)(einstellung(en|)|settings) oeffnen( .*|)|"
 				+ "(.* |)always(-| |)on( .*|)|"
 				+ "(.* |)(musik|sound|radio) (lauter|leiser)( .*|)|"
-				+ "(.* |)lautstaerke( .*|)"
+				+ "(.* |)lautstaerke( .*|)|"
+				+ "(.* |)(medi(a|en) player|medienwiedergabe)( .*|)|"
+				+ "(.* |)(musik|song|lied|medien|media) (anhalten|stoppen|stop|beenden|schliessen)( .*|)"
 				+ ")$", DE);
 		info.setCustomTriggerRegX("^("
 				+ "( .*|)open setting(s|)( .*|)|"
 				+ "(.* |)always(-| |)on( .*|)|"
 				+ "( .*|)(music|sound|radio) (quieter|louder)( .*|)|"
-				+ "(.* |)volume( .*|)"
+				+ "(.* |)volume( .*|)|"
+				+ "(.* |)(media player)( .*|)|"
+				+ "(.* |)(media|music|song) (stop|close|end)( .*|)"
 				+ ")$", EN);
 		info.setCustomTriggerRegXscoreBoost(2);		//boost service a bit to increase priority over similar ones
 		
@@ -141,6 +145,7 @@ public class ClientControls implements ServiceInterface{
 		boolean isAlwaysOn = controlFun.equals(ClientFunction.Type.alwaysOn.name());
 		boolean isMeshNode = controlFun.equals(ClientFunction.Type.meshNode.name());
 		boolean isClexi = controlFun.equals(ClientFunction.Type.clexi.name());
+		boolean isMedia = controlFun.equals(ClientFunction.Type.media.name());
 		
 		Parameter dataP = nluResult.getOptionalParameter(PARAMETERS.DATA, "");
 		String data = dataP.getValueAsString();
@@ -158,6 +163,13 @@ public class ClientControls implements ServiceInterface{
 				actionName = "open";
 			}else if (isActionClose){
 				actionName = "close";
+			}else{
+				//TODO: implement, ask or fail?
+			}
+		}else if (isMedia){
+			//media support - TODO: limited to stop currently 
+			if (isActionClose){
+				actionName = "stop";
 			}else{
 				//TODO: implement, ask or fail?
 			}

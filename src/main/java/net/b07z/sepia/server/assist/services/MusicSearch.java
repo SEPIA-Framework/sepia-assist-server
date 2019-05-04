@@ -17,6 +17,7 @@ import net.b07z.sepia.server.core.assistant.ACTIONS;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.data.Language;
+import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 
@@ -67,10 +68,13 @@ public class MusicSearch implements ServiceInterface{
 		info.addParameter(p1).addParameter(p2).addParameter(p3).addParameter(p4).addParameter(p5).addParameter(p6);
 		
 		//Default answers
-		info.addSuccessAnswer("ok_0b")
+		info.addSuccessAnswer("music_1c")
 			.addFailAnswer("error_0a")
 			.addOkayAnswer("default_not_possible_0a")
-			.addCustomAnswer("what_music", "music_ask_0a")
+			.addCustomAnswer("music_type", "music_ask_0b")
+			.addCustomAnswer("what_song", "music_ask_1a")
+			.addCustomAnswer("what_artist", "music_ask_1b")
+			.addCustomAnswer("what_playlist", "music_ask_1c")
 			;
 		
 		return info;
@@ -105,10 +109,34 @@ public class MusicSearch implements ServiceInterface{
 				|| Is.notNullOrEmpty(album) || Is.notNullOrEmpty(playlistName) || Is.notNullOrEmpty(genre);
 		
 		if (!hasMinimalInfo){
-			//api.confirmActionOrParameter("", ""); 		//TODO: experiment with PARAMETERS.CONFIRMATION and PARAMETERS.SELECTION (don't forget response handler)
-			api.setIncompleteAndAsk(PARAMETERS.SELECTION, "music_ask_0a");
-			ServiceResult result = api.buildResult();
-			return result;
+			String customTypeSelectionParameter = "music_type";
+			JSONObject typeSelection = api.getSelectedOptionOf(customTypeSelectionParameter);
+			if (Is.notNullOrEmpty(typeSelection)){
+				//System.out.println(typeSelection.toJSONString()); 		//DEBUG
+				int selection = JSON.getIntegerOrDefault(typeSelection, "selection", 0);
+				if (selection == 1){
+					api.setIncompleteAndAsk(PARAMETERS.SONG, "music_ask_1a");
+				}else if (selection == 2){
+					api.setIncompleteAndAsk(PARAMETERS.MUSIC_ARTIST, "music_ask_1b");
+				}else if (selection == 3){
+					api.setIncompleteAndAsk(PARAMETERS.PLAYLIST_NAME, "music_ask_1c");
+				}else{
+					//This should never happen
+					Debugger.println("MusicSearch had invalid selection result for 'music_type'", 1);
+					api.setStatusFail();
+				}
+				ServiceResult result = api.buildResult();
+				return result;
+			}else{
+				api.askUserToSelectOption(customTypeSelectionParameter, JSON.make(
+						"1", "song|lied", 
+						"2", "artist|kuenstler", 
+						"3", "playlist"
+				), "music_ask_0b");
+				ServiceResult result = api.buildResult();
+				//System.out.println(result.getResultJSON().toString()); 	//DEBUG
+				return result;
+			}
 		}
 		
 		//This service basically cannot fail here ... only inside client
