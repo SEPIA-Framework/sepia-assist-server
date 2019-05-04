@@ -3,17 +3,21 @@ package net.b07z.sepia.server.assist.interpreters;
 import java.util.HashMap;
 import java.util.List;
 
+import org.json.simple.JSONObject;
+
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.parameters.Confirm;
 import net.b07z.sepia.server.assist.parameters.DateAndTime;
 import net.b07z.sepia.server.assist.parameters.ParameterConfig;
 import net.b07z.sepia.server.assist.parameters.ParameterHandler;
+import net.b07z.sepia.server.assist.parameters.Select;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.ConfigServices;
 import net.b07z.sepia.server.assist.services.ServiceInfo;
 import net.b07z.sepia.server.assist.services.ServiceInterface;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
+import net.b07z.sepia.server.core.tools.Is;
 
 /**
  * This interpreter handles responses to questions the server (assistant) asked the client (user).
@@ -99,7 +103,10 @@ public class ResponseHandler implements NluInterface{
 			
 			//check for special (dynamic) parameters (can also be custom)
 			}else if (missing_input.startsWith(Confirm.PREFIX)){
-				result = confirmResponse(result, response, missing_input, language, cmd, input);
+				result = confirmResponse(result, response, missing_input, input);
+			
+			}else if (missing_input.startsWith(Select.PREFIX)){
+				result = selectionResponse(result, response, missing_input, input);
 				
 			//SDK or custom handler?
 			}else if (Parameter.isCustom(missing_input)){
@@ -161,7 +168,9 @@ public class ResponseHandler implements NluInterface{
 				//nluResult.remove_final(p.getName());
 				nluResult.setParameter(p.getName(), value);
 				//TODO: use the remove method?
-				if (command.equals(CMD.FASHION)){ 				//TODO: this should not be here ... find a more consistent, logical location ...
+				
+				//TODO: this should not be here ... find a more consistent, logical location ...
+				if (command.equals(CMD.FASHION)){
 					if (p.getName().equals(PARAMETERS.COLOR)){
 						tweaked = handler.remove(tweaked, handler.getFound());
 					}else if (p.getName().equals(PARAMETERS.FASHION_SIZE)){
@@ -196,13 +205,23 @@ public class ResponseHandler implements NluInterface{
 	}
 	
 	//check for special (dynamic) parameters
-	public static NluResult confirmResponse(NluResult nluResult, String response, String parameter, String language, String command, NluInput input){
+	public static NluResult confirmResponse(NluResult nluResult, String response, String parameter, NluInput input){
 		//Confirmation request
 		ParameterHandler handler = new Parameter(PARAMETERS.CONFIRMATION).getHandler();
 		handler.setup(input);
 		String value = handler.extract(response);
 		nluResult.setParameter(parameter, value);
-		
+		return nluResult;
+	}
+	public static NluResult selectionResponse(NluResult nluResult, String response, String parameter, NluInput input){
+		//Confirmation request
+		ParameterHandler handler = new Parameter(PARAMETERS.SELECTION).getHandler();
+		handler.setup(input);
+		String value = handler.extract(response);
+		JSONObject result = Select.matchSelection(value, parameter, nluResult);
+		if (Is.notNullOrEmpty(result)){
+			nluResult.setParameter(parameter, result.toJSONString());
+		}
 		return nluResult;
 	}
 	

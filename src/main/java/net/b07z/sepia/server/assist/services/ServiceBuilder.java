@@ -15,6 +15,7 @@ import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.messages.Clients;
 import net.b07z.sepia.server.assist.parameters.Confirm;
+import net.b07z.sepia.server.assist.parameters.Select;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.core.assistant.CMD;
@@ -226,6 +227,38 @@ public class ServiceBuilder {
 				return 1;
 			}else{
 				return -1;
+			}
+		}
+	}
+	
+	/**
+	 * Define the name of a parameter and options the user can select from. The name can be anything and will be stored in the NluResult. 
+	 * In detail this method creates a new options parameter and matching dynamic select-parameter, sets it to incomplete and asks the user for it with the 'question' given.<br>
+	 * Format of selectOptions: {"1": "red", "2": "green", "3": "blue|yellow", "4": ...} - Allowed are words and regular expressions.
+	 */
+	public void askUserToSelectOption(String customSelectparameterName, JSONObject selectOptions, String question){
+		String dynamicSelectParameter = Select.PREFIX + customSelectparameterName;
+		String dynamicSelectOptions = Select.OPTIONS_PREFIX + customSelectparameterName;
+		nluResult.addDynamicParameter(dynamicSelectParameter);
+		nluResult.setParameter(dynamicSelectOptions, selectOptions.toJSONString());
+		setIncompleteAndAsk(dynamicSelectParameter, question);
+	}
+	/**
+	 * Get result of custom select request to user or null. Format: {"value": "green", "selection": 2, "input": "..."}
+	 */
+	public JSONObject getSelectedOptionOf(String customSelectparameterName){
+		Parameter selectP = nluResult.getOptionalParameter(Select.PREFIX + customSelectparameterName, "");
+		if (selectP.isDataEmpty()){
+			return null;
+		}else{
+			JSONObject json = selectP.getData();
+			if (!json.containsKey("selection") || JSON.getIntegerOrDefault(json, "selection", 0) == 0){
+				return null;
+			}else{
+				//clean up options
+				nluResult.setParameter(Select.OPTIONS_PREFIX + customSelectparameterName, "");
+				//return
+				return json;
 			}
 		}
 	}

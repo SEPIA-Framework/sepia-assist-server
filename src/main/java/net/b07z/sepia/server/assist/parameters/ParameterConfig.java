@@ -90,7 +90,7 @@ public class ParameterConfig {
 		handlerToParameter.put(PARAMETERS.DEVICE_FUN, GenericEmptyParameter.class.getCanonicalName());
 		//Generics / Exceptions / Specials
 		handlerToParameter.put(PARAMETERS.CONFIRMATION, Confirm.class.getCanonicalName());
-		handlerToParameter.put(PARAMETERS.SELECTION, GenericParameter.class.getCanonicalName()); 	//TODO: give own, special handler
+		handlerToParameter.put(PARAMETERS.SELECTION, Select.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.SENTENCES, Sentences.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.DATA, GenericEmptyParameter.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.REPLY, GenericParameter.class.getCanonicalName());

@@ -295,7 +295,8 @@ public class NluResult {
 		}
 	}
 	/**
-	 * Add a dynamic parameter.
+	 * Add a dynamic parameter. 
+	 * A dynamic parameter is created on-the-fly inside a service but will be included in interview build scripts.
 	 */
 	public void addDynamicParameter(String parameter){
 		Set<String> dynamics = new HashSet<>();

@@ -164,8 +164,15 @@ music_0c;;		rep=0|mood=5;;		Im Moment kann ich <1> leider nicht abspielen, sorry
 music_0d;;		rep=0|mood=5;;		Im Moment kann ich <1> von <2> leider nicht abspielen, sorry. Hast du schon eine Radio Suche probiert? ;;char=cool,polite,neutral
 music_ask_0a;;	rep=0|mood=5;;		Welche Musik soll ich für dich suchen? ;;char=neutral
 music_ask_0a;;	rep=0|mood=5;;		Wie heißt der Titel, Künstler oder das Genre das ich suchen soll? ;;char=polite,neutral
+music_ask_0b;;	rep=0|mood=5;;		Möchtest du einen Song, einen Künstler oder eine Playlist hören? ;;char=neutral
+music_ask_0b;;	rep=1|mood=5;;		Sorry sagtest du Song, Künstler oder Playlist? ;;char=neutral
+music_ask_0b;;	rep=2|mood=5;;		Sorry <user_name>, habs immer noch nicht verstanden. Du kannst wählen zwischen Song, Künstler oder Playlist. Was soll es sein? ;;char=neutral
+music_ask_1a;;	rep=0|mood=5;;		Wie heißt der Song, den ich suchen soll? ;;char=neutral
+music_ask_1b;;	rep=0|mood=5;;		Wie heißt der Künstler, den ich suchen soll? ;;char=neutral
+music_ask_1c;;	rep=0|mood=5;;		Wie heißt die Playlist, die ich suchen soll? ;;char=neutral
 music_1a;;		rep=0|mood=5;;		Sekunde, ich lade <1> von <2>. ;;char=polite,neutral
 music_1b;;		rep=0|mood=5;;		Alles klar, ich starte dann mal <1>. ;;char=cool,polite,neutral
+music_1c;;		rep=0|mood=5;;		Eine Sekunde, Musik wird gesucht. ;;char=cool,polite,neutral
 music_radio_0a;;		rep=0|mood=5;;		<user_name>, ich kann gerade leider kein Radio finden. Weiß auch nicht wieso. ;;char=cool,rude
 music_radio_0b;;		rep=0|mood=5;;		<user_name>, zu diesem Suchbegriff habe ich leider kein Radio gefunden. ;;char=polite,neutral
 music_radio_ask_0a;;	rep=0|mood=5;;		Welchen Radiosender, welches Genre oder welche Band soll ich für dich suchen? ;;char=cool,polite,neutral 

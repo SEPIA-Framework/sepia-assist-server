@@ -152,8 +152,15 @@ music_0c;;		rep=0|mood=5;;		Right now I can't play <1>, sorry. Did you try a rad
 music_0d;;		rep=0|mood=5;;		Right now I can't play <1> by <2>, sorry. Did you try a radio search? ;;char=polite,neutral
 music_ask_0a;;	rep=0|mood=5;;		What kind of song or music do you want me to search? ;;char=neutral
 music_ask_0a;;	rep=0|mood=5;;		What is the name of the song, the artist or genre I should look for? ;;char=neutral
+music_ask_0b;;	rep=0|mood=5;;		Do you want to hear a song an artist or a playlist? ;;char=neutral
+music_ask_0b;;	rep=1|mood=5;;		Sorry did you say song, artist or playlist? ;;char=neutral
+music_ask_0b;;	rep=2|mood=5;;		Sorry <user_name>, still didn't get that. You can choose between song, artist or playlist. What should it be? ;;char=neutral
+music_ask_1a;;	rep=0|mood=5;;		What is the name of the song? ;;char=neutral
+music_ask_1b;;	rep=0|mood=5;;		What is the name of the artist? ;;char=neutral
+music_ask_1c;;	rep=0|mood=5;;		What is the name of the playlist? ;;char=neutral
 music_1a;;		rep=0|mood=5;;		One moment, I'm loading <1> by <2>. ;;char=neutral
 music_1b;;		rep=0|mood=5;;		Ok, I'll start <1>. ;;char=neutral
+music_1c;;		rep=0|mood=5;;		One second, searching music. ;;char=cool,polite,neutral
 music_radio_0a;;		rep=0|mood=5;;		<user_name>, I can't find any radio station. Seems there is some problem. ;;char=neutral
 music_radio_0b;;		rep=0|mood=5;;		<user_name>, I haven't found any radio station for this. ;;char=neutral
 music_radio_ask_0a;;	rep=0|mood=5;;		What's the name of the radio station, genre or band you want to hear? ;;char=neutral
