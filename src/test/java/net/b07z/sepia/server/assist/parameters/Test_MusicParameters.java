@@ -50,6 +50,8 @@ public class Test_MusicParameters {
 		testMusicParameters("Starte Around the World von Daft Punk vom Album Homework",		"[, , Daft Punk, Around the World, , Homework]", lang);
 		testMusicParameters("Spiele etwas vom Album Homework",					"[, , , , , Homework]", lang);
 		testMusicParameters("Suche auf YouTube nach Metallica",					"[<youtube>, , Metallica, , , ]", lang);
+		testMusicParameters("starte Rockmusik mit VLC player",					"[<vlc_media_player>, rock, , , , ]", lang);
+		testMusicParameters("starte Rockmusik via Spotify link",				"[<spotify_link>, rock, , , , ]", lang);
 		
 		lang = "en";
 		System.out.println("\n----- en -----");
@@ -76,6 +78,8 @@ public class Test_MusicParameters {
 		testMusicParameters("play Around the World by Daft Punk from the album Homework",		"[, , Daft Punk, Around the World, , Homework]", lang);
 		testMusicParameters("play something from the record Homework",			"[, , , , , Homework]", lang);
 		testMusicParameters("Search YouTube for Metallica",						"[<youtube>, , Metallica, , , ]", lang);
+		testMusicParameters("start Rock music using VLC player",				"[<vlc_media_player>, Rock, , , , ]", lang);
+		testMusicParameters("start Rock music via Spotify link",				"[<spotify_link>, Rock, , , , ]", lang);
 				
 		System.out.println("-----------");
 				

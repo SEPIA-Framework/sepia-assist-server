@@ -90,12 +90,12 @@ public class MusicArtist implements ParameterHandler {
 		//Phase2:
 		if (creator.isEmpty()){
 			if (this.language.matches(LANGUAGES.DE)){
-				creator = NluTools.stringFindFirst(optimizedInput, ".*? (songs|lieder|musik)");
-				creator = creator.replaceAll(" (songs|lieder|musik)$", "");
+				creator = NluTools.stringFindFirst(optimizedInput, ".*? (songs|lieder|titel|musik)");
+				creator = creator.replaceAll(" (songs|lieder|musik|titel)$", "");
 				creator = creator.replaceAll(".*\\b(spiel(e|)|oeffne|start(e|))\\b", "");
 			}else{
-				creator = NluTools.stringFindFirst(optimizedInput, ".*? (songs|music)");
-				creator = creator.replaceAll(" (songs|music)$", "");
+				creator = NluTools.stringFindFirst(optimizedInput, ".*? (songs|titles|tracks|music)");
+				creator = creator.replaceAll(" (songs|music|titles|tracks)$", "");
 				creator = creator.replaceAll(".*\\b(play|open|start)\\b", "");
 			}
 			if (!creator.trim().isEmpty()){

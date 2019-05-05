@@ -76,7 +76,7 @@ public class ClientControls implements ServiceInterface{
 				+ "(.* |)always(-| |)on( .*|)|"
 				+ "(.* |)(musik|sound|radio) (lauter|leiser)( .*|)|"
 				+ "(.* |)lautstaerke( .*|)|"
-				+ "(.* |)(medi(a|en) player|medienwiedergabe)( .*|)|"
+				+ "(.* |)(medi(a|en)(-| |)player|medienwiedergabe)( .*|)|"
 				+ "(.* |)(musik|song|lied|medien|media) (anhalten|stoppen|stop|beenden|schliessen)( .*|)"
 				+ ")$", DE);
 		info.setCustomTriggerRegX("^("
@@ -84,7 +84,7 @@ public class ClientControls implements ServiceInterface{
 				+ "(.* |)always(-| |)on( .*|)|"
 				+ "( .*|)(music|sound|radio) (quieter|louder)( .*|)|"
 				+ "(.* |)volume( .*|)|"
-				+ "(.* |)(media player)( .*|)|"
+				+ "(.* |)(media(-| |)player)( .*|)|"
 				+ "(.* |)(media|music|song) (stop|close|end)( .*|)"
 				+ ")$", EN);
 		info.setCustomTriggerRegXscoreBoost(2);		//boost service a bit to increase priority over similar ones

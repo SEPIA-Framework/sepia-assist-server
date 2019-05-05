@@ -26,22 +26,28 @@ public class MusicService implements ParameterHandler{
 	
 	public static enum Service {
 		spotify,
+		spotify_link,
 		apple_music,
+		apple_music_link,
 		amazon_music,
 		deezer,
 		soundcloud,
-		youtube
+		youtube,
+		vlc_media_player
 	}
 	
 	//-------data-------
 	public static Map<String, String> musicServices = new HashMap<>();
 	static {
 		musicServices.put("<spotify>", "Spotify");
+		musicServices.put("<spotify_link>", "Spotify");
 		musicServices.put("<apple_music>", "Apple Music");
+		musicServices.put("<apple_music_link>", "Apple Music");
 		musicServices.put("<amazon_music>", "Amazon Music");
 		musicServices.put("<deezer>", "Deezer");
 		musicServices.put("<soundcloud>", "SoundCloud");
 		musicServices.put("<youtube>", "YouTube");
+		musicServices.put("<vlc_media_player>", "VLC Media Player");
 	}
 	/**
 	 * Translate generalized value.
@@ -99,20 +105,46 @@ public class MusicService implements ParameterHandler{
 		String deezer = "deezer";
 		String soundCloud = "sound( |-|)cloud";
 		String youTube = "you( |-|)tube";
+		String vlc = "vlc( media|)( player|)";
 		
-		service = NluTools.stringFindFirst(input, 
-				spotify + "|" +
-				appleMusic + "|" +
-				amazonMusic + "|" +
-				deezer + "|" +
-				soundCloud + "|" +
-				youTube
-		);
+		if (language.equals(LANGUAGES.DE)){
+			//GERMAN
+			service = NluTools.stringFindFirst(input, 
+				"(mittels |mit |ueber |via |auf |durchsuche )(dem |der |die |)(" + 
+					spotify + "|" +
+					appleMusic + "|" +
+					amazonMusic + "|" +
+					deezer + "|" +
+					soundCloud + "|" +
+					youTube + "|" +
+					vlc +
+				")( link|)"
+			);
+		}else{
+			//OTHER LANGUAGES
+			service = NluTools.stringFindFirst(input, 
+				"(with |via |using |on |over |search )(the |)(" + 
+					spotify + "|" +
+					appleMusic + "|" +
+					amazonMusic + "|" +
+					deezer + "|" +
+					soundCloud + "|" +
+					youTube + "|" +
+					vlc +
+				")( link|)"
+			);
+		}
 		
 		this.found = service; 
 		
 		if (!service.isEmpty()){
-			if (NluTools.stringContains(service, spotify)){
+			if (NluTools.stringContains(service, "link")){
+				if (NluTools.stringContains(service, spotify)){
+					service = "<" + Service.spotify_link.name() + ">";
+				}else if (NluTools.stringContains(service, appleMusic)){
+					service = "<" + Service.apple_music_link.name() + ">";
+				}
+			}else if (NluTools.stringContains(service, spotify)){
 				service = "<" + Service.spotify.name() + ">";
 			}else if (NluTools.stringContains(service, appleMusic)){
 				service = "<" + Service.apple_music.name() + ">";
@@ -124,6 +156,8 @@ public class MusicService implements ParameterHandler{
 				service = "<" + Service.soundcloud.name() + ">";
 			}else if (NluTools.stringContains(service, youTube)){
 				service = "<" + Service.youtube.name() + ">";
+			}else if (NluTools.stringContains(service, vlc)){
+				service = "<" + Service.vlc_media_player.name() + ">";
 			}
 		}
 		

@@ -412,8 +412,8 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 		}
 		
 		//music
-		if (NluTools.stringContains(text, "music|play .*|(start|open) .*\\b(title|of|by)|song(s|)|"
-				+ "album|record|spotify|deezer|soundcloud|youtube") 
+		if (NluTools.stringContains(text, "music|play .*|(start|open|show) .*\\b(title(s|)|track(s|)|of|by)|song(s|)|"
+				+ "album|record|spotify|deezer|soundcloud|youtube|vlc") 
 										&& !possibleCMDs.contains(CMD.KNOWLEDGEBASE)){
 			//String this_text = text;
 			possibleCMDs.add(CMD.MUSIC);

@@ -84,9 +84,9 @@ public class Song implements ParameterHandler {
 				song = song.replaceAll(".*? (songs|lieder|musik( titel|)|titel)$", "").trim();
 			}else{
 				song = song.replaceAll("^(the |a |any |some )", "").trim();
-				song = song.replaceAll("^(song(s|)|music|title|something|anything)", "").trim();
+				song = song.replaceAll("^(song(s|)|music|title(s|)|track(s|)|something|anything)", "").trim();
 				song = song.replaceAll("^((with (the |)|)(title|name)|named|)", "").trim();
-				song = song.replaceAll(".*? (songs|music)$", "").trim();
+				song = song.replaceAll(".*? (songs|music|titles)$", "").trim();
 			}
 		}
 		this.found = song;

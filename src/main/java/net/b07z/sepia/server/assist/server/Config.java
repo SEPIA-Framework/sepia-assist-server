@@ -301,6 +301,8 @@ public class Config {
 	public static String google_maps_key = "";
 	public static String graphhopper_key = "";
 	public static String forecast_io_key = "";
+	public static String spotify_client_id = "";
+	public static String spotify_client_secret = "";
 	public static String dirble_key = "";
 	public static String acapela_vaas_app = "";
 	public static String acapela_vaas_key = "";
@@ -472,6 +474,8 @@ public class Config {
 			google_maps_key = settings.getProperty("google_maps_key");
 			graphhopper_key = settings.getProperty("graphhopper_key");
 			forecast_io_key = settings.getProperty("forecast_io_key");
+			spotify_client_id = settings.getProperty("spotify_client_id");
+			spotify_client_secret = settings.getProperty("spotify_client_secret");
 			dirble_key = settings.getProperty("dirble_key");
 			acapela_vaas_app = settings.getProperty("acapela_vaas_app");
 			acapela_vaas_key = settings.getProperty("acapela_vaas_key");

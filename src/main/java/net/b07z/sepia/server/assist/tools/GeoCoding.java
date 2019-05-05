@@ -142,7 +142,10 @@ public class GeoCoding {
 			String url = "https://graphhopper.com/api/1/geocode?q=" + URLEncoder.encode(address, "UTF-8") + "&locale=" + language + add_params;
 			//System.out.println("gh-url: " + url); 	//debug
 			
+			long tic = System.currentTimeMillis();
 			JSONObject response = Connectors.httpGET(url.trim());
+			Statistics.addExternalApiHit("Graphhopper Geocoder");
+			Statistics.addExternalApiTime("Graphhopper Geocoder", tic);
 			JSONArray hits = (JSONArray) response.get("hits");
 			if (!hits.isEmpty()){
 				JSONObject points = (JSONObject) ((JSONObject) hits.get(0)).get("point");
@@ -186,6 +189,10 @@ public class GeoCoding {
 			return null;
 		}
 		// TODO implement
+		/*
+		Statistics.addExternalApiHit("Graphhopper GetAddress");
+		Statistics.addExternalApiTime("Graphhopper GetAddress", tic);
+		 */
 		HashMap<String, Object> result = new HashMap<String, Object>();
 		//copy from input
 		result.put(LOCATION.LAT, latitude);		
