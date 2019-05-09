@@ -45,6 +45,11 @@ public class Test_SpotifyApi {
 		
 		JSONObject s5 = sapi.searchBestItem("", "", "", "Party", "");
 		System.out.println(s5.toJSONString());
+		
+		Debugger.sleep(1000);
+		
+		JSONObject s6 = sapi.searchBestItem("Foxy Lady", "Jimi Hendrix", "", "", "");	//note the typo in foxy (not foxey)
+		System.out.println(s6.toJSONString());
 	}
 
 }

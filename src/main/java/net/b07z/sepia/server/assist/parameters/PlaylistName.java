@@ -64,8 +64,8 @@ public class PlaylistName implements ParameterHandler {
 			}else{
 				playlistName = NluTools.stringFindFirst(input, ".* playlist");
 				if (!playlistName.isEmpty()){
-					playlistName = playlistName.replaceAll(".*?\\b(meine|die)\\b", "");
-					playlistName = playlistName.replaceAll(".*?\\b(starte|oeffne|spiel(e|))\\b", "");
+					playlistName = playlistName.replaceFirst(".*?\\b(starte|oeffne|spiel(e|)|such(e|)|finde|zeig(e|))\\b", "").trim();
+					playlistName = playlistName.replaceFirst("^(meine|die|eine)\\b", "");
 				}
 			}
 			playlistName = playlistName.replaceAll("\\b(playlist)\\b", "").trim();
@@ -77,8 +77,8 @@ public class PlaylistName implements ParameterHandler {
 			}else{
 				playlistName = NluTools.stringFindFirst(input, ".* playlist");
 				if (!playlistName.isEmpty()){
-					playlistName = playlistName.replaceAll(".*?\\b(my|the)\\b", "");
-					playlistName = playlistName.replaceAll(".*?\\b(start|open|play)\\b", "");
+					playlistName = playlistName.replaceFirst(".*?\\b(start|open|play|search|find|show)\\b", "").trim();
+					playlistName = playlistName.replaceFirst("^(my|the|a)\\b", "");
 				}
 			}
 			playlistName = playlistName.replaceAll("\\b(playlist)\\b", "").trim();

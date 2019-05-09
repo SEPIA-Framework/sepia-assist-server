@@ -66,24 +66,24 @@ public class MusicAlbum implements ParameterHandler {
 		if (this.language.matches(LANGUAGES.DE)){
 			albumTitle = NluTools.stringFindFirst(optimizedInput, "(von (dem|der) |vom )(album|platte) .*");
 			if (!albumTitle.isEmpty()){
-				albumTitle = albumTitle.replaceAll("(von dem |vom )(album|platte) ", "");
-				albumTitle = albumTitle.replaceAll(" (den |das |)(song|lied|titel) .*", "").trim();
+				albumTitle = albumTitle.replaceFirst("(von dem |vom )(album|platte) ", "");
+				albumTitle = albumTitle.replaceFirst(" (den |das |)(song|lied|titel) .*", "").trim();
 			}else{
 				albumTitle = NluTools.stringFindFirst(optimizedInput, "(album|platte) .*");
-				albumTitle = albumTitle.replaceAll("^(album|platte) ", "").trim();
-				albumTitle = albumTitle.replaceAll(" (von) .*?$", "").trim();
+				albumTitle = albumTitle.replaceFirst("^(album|platte) ", "").trim();
+				albumTitle = albumTitle.replaceFirst(" (von) .*?$", "").trim();
 			}
 			
 		//Other languages
 		}else{
 			albumTitle = NluTools.stringFindFirst(optimizedInput, "(from (the |))(album|record) .*");
 			if (!albumTitle.isEmpty()){
-				albumTitle = albumTitle.replaceAll("(from (the |))(album|record) ", "");
-				albumTitle = albumTitle.replaceAll(" (the |)(song|title) .*", "").trim();
+				albumTitle = albumTitle.replaceFirst("(from (the |))(album|record) ", "");
+				albumTitle = albumTitle.replaceFirst(" (the |)(song|title) .*", "").trim();
 			}else{
 				albumTitle = NluTools.stringFindFirst(optimizedInput, "(album|record) .*");
-				albumTitle = albumTitle.replaceAll("^(album|record) ", "").trim();
-				albumTitle = albumTitle.replaceAll(" (from|by|of) .*?$", "").trim();
+				albumTitle = albumTitle.replaceFirst("^(album|record) ", "").trim();
+				albumTitle = albumTitle.replaceFirst(" (from|by|of) .*?$", "").trim();
 			}
 		}
 		this.found = albumTitle;

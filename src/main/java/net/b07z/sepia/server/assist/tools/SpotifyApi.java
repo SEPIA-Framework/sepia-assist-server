@@ -28,6 +28,8 @@ public class SpotifyApi {
 	public String token = "";
 	public String tokenType = "";
 	public long tokenValidUntil = 0;
+	public long lastRefreshTry = 0;
+	public static final long FAILED_AUTH_TIMEOUT = 1000*60*15;
 	
 	public static final String spotifyAuthUrl = "https://accounts.spotify.com/api/token";
 	public static final String spotifySearchUrl = "https://api.spotify.com/v1/search";
@@ -65,6 +67,7 @@ public class SpotifyApi {
 			
 			//Call
 			long tic = System.currentTimeMillis();
+			this.lastRefreshTry = tic;
 			JSONObject res = Connectors.httpPOST(spotifyAuthUrl, data, headers);
 			Statistics.addExternalApiHit("SpotifyApi getTokenViaClientCredentials");
 			Statistics.addExternalApiTime("SpotifyApi getTokenViaClientCredentials", tic);
@@ -100,14 +103,21 @@ public class SpotifyApi {
 	 * @return
 	 */
 	public JSONObject searchBestItem(String track, String artist, String album, String playlist, String genre){
-		if (Is.nullOrEmpty(this.token)){
-			return JSON.make("error", "not authorized", "status", 401);
+		if (Is.nullOrEmpty(this.token) && (System.currentTimeMillis() - this.lastRefreshTry) < FAILED_AUTH_TIMEOUT ){
+			return JSON.make(
+					"error", "not authorized", 
+					"status", 401
+			);
 		}
 		if ((this.tokenValidUntil - System.currentTimeMillis()) <= 0){
 			//Try to get new token
 			int refreshCode = getTokenViaClientCredentials();
 			if (refreshCode > 0){
-				return JSON.make("error", "failed to refresh token", "status", 401, "code", refreshCode);
+				return JSON.make(
+						"error", "failed to refresh token", 
+						"status", 401, 
+						"code", refreshCode
+				);
 			}
 		}
 		//Build request
@@ -176,7 +186,20 @@ public class SpotifyApi {
 				}else if (type.equals(TYPE_TRACK)){
 					items = JSON.getJArray(res, new String[]{"tracks", "items"});
 				}
-				if (Is.notNullOrEmpty(items)){
+				if (Is.nullOrEmpty(items)){
+					if (Is.notNullOrEmpty(res) && res.containsKey("error")){
+						JSONObject error = JSON.getJObject(res, "error");
+						JSON.put(error, "type", "error");
+						return error;
+					}else{
+						return JSON.make(
+								"message", "no item found for query",
+								"query", q,
+								"type", "no_match",
+								"status", 200
+						);
+					}
+				}else{
 					JSONObject firstItem = JSON.getJObject(items, 0);
 					if (firstItem != null){
 						String resType = JSON.getString(firstItem, "type");
@@ -202,8 +225,7 @@ public class SpotifyApi {
 									"type", TYPE_ARTIST, 
 									"name", JSON.getString(firstItem, "name"),
 									"uri", JSON.getString(firstItem, "uri"),
-									"genres", JSON.getJArray(firstItem, "genres"),
-									"album", JSON.getObject(firstItem, new String[]{"album", "name"})
+									"genres", JSON.getJArray(firstItem, "genres")
 							);
 						}else if (resType.equals(TYPE_TRACK)){
 							JSONArray artists = JSON.getJArray(firstItem, "artists");
@@ -219,7 +241,6 @@ public class SpotifyApi {
 					}
 				}
 			}
-			
 			return res;
 			
 		}catch (Exception e){

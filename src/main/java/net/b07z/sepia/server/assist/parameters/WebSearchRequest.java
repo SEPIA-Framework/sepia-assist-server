@@ -43,21 +43,21 @@ public class WebSearchRequest implements ParameterHandler{
 		String engine = WebSearchEngine.names;
 		if (language.equals(LANGUAGES.DE)){
 			if (NluTools.stringContains(input, "^" + engine)){
-				search = input.replaceFirst("^" + engine + "( suche|)", "").trim();
+				search = input.replaceFirst("^" + engine + "( suche|)\\b", "").trim();
 				
-			}else if (NluTools.stringContains(input, "(suche|finde|zeig|schau) .* (mit|per|via|auf|ueber|mittels|bei) " + engine + "$")){
-				search = input.replaceFirst(".*?\\b(suche|finde|zeig|schau)", "").trim();
+			}else if (NluTools.stringContains(input, "(suche|finde|zeig|schau|suchen nach) .* (mit|per|via|auf|ueber|mittels|bei) " + engine + "$")){
+				search = input.replaceFirst(".*?\\b(suche|finde|zeig|schau|suchen nach)\\b", "").trim();
 				search = search.replaceFirst("(mit|per|via|auf|ueber|mittels|bei) " + engine + "$", "").trim();
 			}else{
-				search = input.replaceFirst(".*?\\b(websuche|web suche|(durchsuche|suche|schau|finde|zeig)( mir|)( mal| bitte|)( bitte| mal|))", "").trim();
-				search = search.replaceFirst("^(mit|per|via|auf|ueber|mittels|bei) " + engine + "|^(im|das) (web|internet)", "").trim();
-				search = search.replaceFirst("^(mit|per|via|auf|ueber|mittels|bei) " + engine + "|^(im|das) (web|internet)", "").trim();
+				search = input.replaceFirst(".*?\\b(websuche|web suche|(durchsuche|suche|suchen nach|schau|finde|zeig)( mir|)( mal| bitte|)( bitte| mal|))\\b", "").trim();
+				search = search.replaceFirst("^(mit|per|via|auf|ueber|mittels|bei) " + engine + "\\b|^(im|das) (web|internet)\\b", "").trim();
+				search = search.replaceFirst("^(mit|per|via|auf|ueber|mittels|bei) " + engine + "\\b|^(im|das) (web|internet)\\b", "").trim();
 			}
 			//clean up
 			search = search.replaceFirst("^(mir)", "").trim();
 			search = search.replaceFirst("^(mal bitte|bitte mal|mal|bitte)", "").trim();
 			search = search.replaceFirst("^bei youtube( nach|)", "videos").trim();
-			search = search.replaceFirst("^(nach)", "").trim();
+			search = search.replaceFirst("^(nach|.*\\b(suchen( (im|das) (web|internet) | )nach))\\b", "").trim();
 			//some adaptations
 			/*
 			search = search.replaceFirst("^(bild(ern|er|)|rezept(en|e|)|video(s|)|movie(s|)|film(en|e|)|aktie(n|)|buecher(n|)|buch) (von|vom|ueber|mit|)|"

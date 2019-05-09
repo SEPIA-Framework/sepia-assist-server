@@ -1,23 +1,32 @@
 package net.b07z.sepia.server.assist.services;
 
+import java.net.URLEncoder;
 import java.util.TreeSet;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import net.b07z.sepia.server.assist.assistant.CmdBuilder;
+import net.b07z.sepia.server.assist.data.Card;
+import net.b07z.sepia.server.assist.data.Card.ElementType;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
+import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.parameters.ClientFunction;
+import net.b07z.sepia.server.assist.parameters.MusicService;
+import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.services.ServiceBuilder;
 import net.b07z.sepia.server.assist.services.ServiceInfo;
 import net.b07z.sepia.server.assist.services.ServiceInterface;
 import net.b07z.sepia.server.assist.services.ServiceResult;
+import net.b07z.sepia.server.assist.tools.SpotifyApi;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.core.assistant.ACTIONS;
 import net.b07z.sepia.server.core.assistant.CLIENTS;
+import net.b07z.sepia.server.core.assistant.CLIENTS.Platform;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
-import net.b07z.sepia.server.core.assistant.CLIENTS.Platform;
 import net.b07z.sepia.server.core.data.Language;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
@@ -77,6 +86,7 @@ public class MusicSearch implements ServiceInterface{
 			.addCustomAnswer("what_song", "music_ask_1a")
 			.addCustomAnswer("what_artist", "music_ask_1b")
 			.addCustomAnswer("what_playlist", "music_ask_1c")
+			.addCustomAnswer("no_music_match", "music_0b")
 			;
 		
 		return info;
@@ -91,6 +101,9 @@ public class MusicSearch implements ServiceInterface{
 		//get parameters
 		Parameter serviceP = nluResult.getOptionalParameter(PARAMETERS.MUSIC_SERVICE, "");
 		String service = serviceP.getValueAsString().replaceAll("^<|>$", "").trim();
+		String serviceLocal = (String) serviceP.getDataFieldOrDefault(InterviewData.VALUE_LOCAL);
+		
+		boolean isSpotifyService = service.equals(MusicService.Service.spotify.name()) || service.equals(MusicService.Service.spotify_link.name());
 		
 		Parameter genreP = nluResult.getOptionalParameter(PARAMETERS.MUSIC_GENRE, "");
 		String genre = genreP.getValueAsString();
@@ -141,30 +154,9 @@ public class MusicSearch implements ServiceInterface{
 			}
 		}
 		
-		//This service basically cannot fail here ... only inside client
-		
-		//If we have only a song we should declare the 'search' field and not rely on song-name
-		boolean hasOnlySong = Is.notNullOrEmpty(song) && 
-				Is.nullOrEmpty(artist) && Is.nullOrEmpty(album) && Is.nullOrEmpty(playlistName) && Is.nullOrEmpty(genre);
-		String search = (hasOnlySong)? song : "";
-		
-		String controlFun = ClientFunction.Type.searchForMusic.name();
-		JSONObject controlData = JSON.make(
-				"artist", artist,
-				"song", song,
-				"album", album,
-				"playlist", playlistName,
-				"service", service
-		);
-		JSON.put(controlData, "genre", genre);
-		JSON.put(controlData, "search", search);
-		
-		api.addAction(ACTIONS.CLIENT_CONTROL_FUN);
-		api.putActionInfo("fun", controlFun);
-		api.putActionInfo("controlData", controlData);
-		
 		//Check platform
 		Platform platform = CLIENTS.getPlatform(nluResult.input.clientInfo);
+		/*
 		if (platform.equals(Platform.browser)){
 			
 		}else if (platform.equals(Platform.android)){
@@ -174,28 +166,200 @@ public class MusicSearch implements ServiceInterface{
 		}else if (platform.equals(Platform.windows)){
 			
 		}
+		*/
+		
+		//Basically this service cannot fail here ... only inside client ... but we'll also try to get some more data:
+		
+		String foundTrack = "";
+		String foundArtist = "";
+		String foundAlbum = "";
+		String foundPlaylist = "";
+		String foundUri = "";
+		String foundType = "";
+		String cardTitle = "";
+		String cardSubtitle = "";
+		String cardIconUrl = Config.urlWebImages + "cards/music_default.png";
+		String cardBrand = "default"; 
+		
+		//Use YouTube for now
+		if (service.equals(MusicService.Service.youtube.name()) || (service.isEmpty() && Config.spotifyApi == null)){
+			//Icon
+			cardIconUrl = Config.urlWebImages + "brands/youtube-logo.png";
+			cardBrand = "YouTube";
+			cardSubtitle = "YouTube Search";
+			//Search
+			String q = "";
+			try{
+				if (Is.notNullOrEmpty(playlistName)){
+					q = URLEncoder.encode(playlistName + " playlist", "UTF-8");
+					cardTitle = "Playlist: " + playlistName;
+				
+				}else if (Is.notNullOrEmpty(song) && Is.notNullOrEmpty(album)){
+					q = URLEncoder.encode(song + ", " + album + " album", "UTF-8");
+					cardTitle = "Song: " + song + ", Album: " + album;
+				
+				}else if (Is.notNullOrEmpty(song) && Is.notNullOrEmpty(artist)){
+					q = URLEncoder.encode(song + ", " + artist, "UTF-8");
+					cardTitle = "Song: " + song + ", Artist: " + artist;
+				
+				}else if (Is.notNullOrEmpty(album)){
+					if (Is.notNullOrEmpty(artist)){
+						q = URLEncoder.encode(artist + ", " + album + " album", "UTF-8");
+						cardTitle = "Artist: " + artist + ", Album: " + album;
+					}else{
+						q = URLEncoder.encode(album + " album", "UTF-8");
+						cardTitle = "Album: " + album;
+					}
+					
+				}else if (Is.notNullOrEmpty(artist)){
+					q = URLEncoder.encode(artist + " playlist", "UTF-8");
+					cardTitle = "Playlist: " + artist;
+					
+				}else if (Is.notNullOrEmpty(genre)){
+					q = URLEncoder.encode(genre + " playlist", "UTF-8");
+					cardTitle = "Playlist: " + genre;
+				
+				}else if (Is.notNullOrEmpty(song)){
+					q = URLEncoder.encode(song, "UTF-8");
+					cardTitle = "Q: " + song;
+				}
+			}catch (Exception e){
+				//ignore
+			}
+			if (!q.isEmpty()){
+				foundUri = "https://www.youtube.com/results?search_query=" + q;
+			}
+
+		//Spotify API (currently used when service is Spotify or platform can only handle URIs)
+		}else if (isSpotifyService || (service.isEmpty() && Config.spotifyApi != null)){
+			//we need the API (in early version it was possible to call it without registration)
+			if (Config.spotifyApi != null){
+				//Icon
+				cardIconUrl = Config.urlWebImages + "brands/spotify-logo.png";
+				cardBrand = "Spotify";
+				//Search
+				JSONObject spotifyBestItem = Config.spotifyApi.searchBestItem(song, artist, album, playlistName, genre);
+				foundUri = JSON.getString(spotifyBestItem, "uri");
+				foundType = JSON.getString(spotifyBestItem, "type");
+				//get URI and build Card data
+				if (Is.notNullOrEmpty(foundUri)){
+					//get info by type
+					if (foundType.equals(SpotifyApi.TYPE_TRACK)){
+						foundTrack = JSON.getString(spotifyBestItem, "name");
+						foundArtist = JSON.getString(spotifyBestItem, "primary_artist");
+						foundAlbum =  JSON.getString(spotifyBestItem, "album");
+						cardTitle = "Song: " + foundTrack;
+						cardSubtitle = (foundAlbum.isEmpty())? foundArtist : (foundArtist + ", " + foundAlbum);
+						//add play tag to URI
+						foundUri = foundUri + ":play";
+						
+					}else if (foundType.equals(SpotifyApi.TYPE_ALBUM)){
+						foundArtist = JSON.getString(spotifyBestItem, "primary_artist");
+						foundAlbum =  JSON.getString(spotifyBestItem, "name");
+						cardTitle = "Album: " + foundAlbum;
+						cardSubtitle = foundArtist;
+						//add play tag to URI
+						foundUri = foundUri + ":play";
+						
+					}else if (foundType.equals(SpotifyApi.TYPE_ARTIST)){
+						foundArtist = JSON.getString(spotifyBestItem, "name");
+						JSONArray genres = JSON.getJArray(spotifyBestItem, "genres");
+						String genresString = "";
+						if (Is.notNullOrEmpty(genres)){
+							for (int i=0; i<Math.min(genres.size(),3); i++){
+								genresString += (genres.get(i).toString() + ", ");
+							}
+							genresString = genresString.replaceFirst(", $", "").trim();
+						}
+						cardTitle = "Artist: " + foundArtist;
+						cardSubtitle = (Is.notNullOrEmpty(genresString))? genresString : "";
+						//add play tag to URI
+						foundUri = foundUri + ":play";
+						
+					}else if (foundType.equals(SpotifyApi.TYPE_PLAYLIST)){
+						foundPlaylist = JSON.getString(spotifyBestItem, "name");
+						String owner = JSON.getString(spotifyBestItem, "owner_display_name");
+						long tracks = JSON.getLongOrDefault(spotifyBestItem, "total_tracks", 0);
+						cardTitle = "Playlist: " + foundPlaylist;
+						if (!owner.isEmpty() && tracks > 0){
+							cardSubtitle = "By: " + owner + ", Tracks: " + tracks;
+						}else if (owner.isEmpty() && tracks > 0){
+							cardSubtitle = "Tracks: " + tracks;
+						}else if (!owner.isEmpty()){
+							cardSubtitle = "By: " + owner;
+						}
+						//add play tag to URI
+						//foundUri = foundUri + ":play";		//not supported? breaks link?
+					}
+				}
+			}
+		}
+		
+		//If we have only a song we should declare the 'search' field and not rely on song-name
+		boolean hasOnlySong = Is.notNullOrEmpty(song) && 
+				Is.nullOrEmpty(artist) && Is.nullOrEmpty(album) && Is.nullOrEmpty(playlistName) && Is.nullOrEmpty(genre);
+		String search = (hasOnlySong)? song : "";
+		
+		String controlFun = ClientFunction.Type.searchForMusic.name();
+		JSONObject controlData = JSON.make(
+				/*
+				"artist", artist,
+				"song", song,
+				"album", album,
+				"playlist", playlistName,
+				*/
+				"artist", (foundArtist.isEmpty())? artist : foundArtist,
+				"song", (foundTrack.isEmpty())? song : foundTrack,
+				"album", (foundAlbum.isEmpty())? album : foundAlbum,
+				"playlist", (foundPlaylist.isEmpty())? playlistName : foundPlaylist,
+				"service", service
+		);
+		JSON.put(controlData, "genre", genre);
+		JSON.put(controlData, "search", search);
+		if (Is.notNullOrEmpty(foundUri)){
+			JSON.put(controlData, "uri", foundUri);
+		}
+		
+		api.addAction(ACTIONS.CLIENT_CONTROL_FUN);
+		api.putActionInfo("fun", controlFun);
+		api.putActionInfo("controlData", controlData);
 		
 		//some buttons - we use the custom function button but the client needs to parse the string itself!
-		if (Is.nullOrEmpty(service)){
-			//simple action button
-			api.addAction(ACTIONS.BUTTON_CUSTOM_FUN);
-			api.putActionInfo("fun", "controlFun;;" + controlFun + ";;" + controlData.toJSONString());
-			api.putActionInfo("title", "Button");
-
-		}else{
-			//Link service?
-			//Cards
-			/* Cards should be generated by client ...
+		
+		//simple action button
+		api.addAction(ACTIONS.BUTTON_CUSTOM_FUN);
+		api.putActionInfo("fun", "controlFun;;" + controlFun + ";;" + controlData.toJSONString());
+		api.putActionInfo("title", Is.notNullOrEmpty(serviceLocal)? serviceLocal : "Button");
+		
+		//Cards (or web-search?)
+		if (Is.notNullOrEmpty(foundUri)){
 			Card card = new Card(Card.TYPE_SINGLE);
+			//JSONObject linkCard = 
 			card.addElement(ElementType.link, 
-					JSON.make("title", "S.E.P.I.A." + ":", "desc", "Client Controls"),
+					JSON.make(
+							"title", cardTitle, 
+							"desc", cardSubtitle,
+							"type", "musicSearch",
+							"brand", cardBrand
+					),
 					null, null, "", 
-					"https://sepia-framework.github.io/", 
-					"https://sepia-framework.github.io/img/icon.png", 
+					foundUri, 
+					cardIconUrl, 
 					null, null);
-			//JSON.put(linkCard, "imageBackground", "transparent");	//use any CSS background option you wish
+			//JSON.put(linkCard, "imageBackground", "#f0f0f0");	//use any CSS background option you wish
 			api.addCard(card.getJSON());
-			*/
+		}else{
+			//web-search action
+			api.addAction(ACTIONS.BUTTON_CMD);
+			api.putActionInfo("title", "Web Search");
+			api.putActionInfo("info", "direct_cmd");
+			api.putActionInfo("cmd", CmdBuilder.getWebSearch(nluResult.input.textRaw));
+			api.putActionInfo("options", JSON.make(ACTIONS.SKIP_TTS, true));
+			
+			//can we still search via Android Intent?
+			if (!platform.equals(Platform.android)){
+				api.setCustomAnswer("music_0b");
+			}
 		}
 
 		//all good

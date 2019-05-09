@@ -78,15 +78,15 @@ public class Song implements ParameterHandler {
 		}
 		if (!song.isEmpty()){
 			if (language.equals(LANGUAGES.DE)){
-				song = song.replaceAll("^(ein(en|ige|) |den |das |etwas )", "").trim();
-				song = song.replaceAll("^(song(s|)|lied(er|)|musik|titel|(irgend|)etwas|was|egal was)", "").trim();
-				song = song.replaceAll("^((mit (dem |)|)(titel|namen)|namens)", "").trim();
-				song = song.replaceAll(".*? (songs|lieder|musik( titel|)|titel)$", "").trim();
+				song = song.replaceFirst("^(ein(en|ige|) |den |das |etwas )", "").trim();
+				song = song.replaceFirst("^(song(s|)|lied(er|)|musik|titel|(irgend|)etwas|was|egal was)\\b", "").trim();
+				song = song.replaceFirst("^((mit (dem |)|)(titel|namen)|namens)\\b", "").trim();
+				song = song.replaceFirst(".*? (songs|lieder|musik( titel|)|titel)$", "").trim();
 			}else{
-				song = song.replaceAll("^(the |a |any |some )", "").trim();
-				song = song.replaceAll("^(song(s|)|music|title(s|)|track(s|)|something|anything)", "").trim();
-				song = song.replaceAll("^((with (the |)|)(title|name)|named|)", "").trim();
-				song = song.replaceAll(".*? (songs|music|titles)$", "").trim();
+				song = song.replaceFirst("^(the |a |any |some )", "").trim();
+				song = song.replaceFirst("^(song(s|)|music|title(s|)|track(s|)|something|anything)\\b", "").trim();
+				song = song.replaceFirst("^((with (the |)|)(title|name)|named|)\\b", "").trim();
+				song = song.replaceFirst(".*? (songs|music|titles)$", "").trim();
 			}
 		}
 		this.found = song;

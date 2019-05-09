@@ -30,6 +30,7 @@ import net.b07z.sepia.server.assist.interpreters.NormalizerLightEN;
 import net.b07z.sepia.server.assist.interpreters.NormalizerLightTR;
 import net.b07z.sepia.server.assist.services.ServiceAccessManager;
 import net.b07z.sepia.server.assist.tools.RssFeedReader;
+import net.b07z.sepia.server.assist.tools.SpotifyApi;
 import net.b07z.sepia.server.assist.tts.TtsAcapelaWeb;
 import net.b07z.sepia.server.assist.users.AccountDynamoDB;
 import net.b07z.sepia.server.assist.users.AccountElasticsearch;
@@ -43,6 +44,7 @@ import net.b07z.sepia.server.core.server.ConfigDefaults;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.FilesAndStreams;
+import net.b07z.sepia.server.core.tools.Is;
 
 /**
  * Server configuration class.
@@ -262,7 +264,7 @@ public class Config {
 	/**
 	 * Prepare interpretation chain by adding the default modules in the proper order to 'nluInterpretationSteps' list.
 	 */
-	public static void setup_nlu_steps(){
+	public static void setupNluSteps(){
 		//direct command
 		nluInterpretationSteps.add((input, cachedResults) -> InterpretationStep.getDirectCommand(input));
 		//response to previous input
@@ -371,8 +373,21 @@ public class Config {
 	
 	//------other tools------
 
-	//RSS feed reader
-	public static RssFeedReader rssReader = new RssFeedReader();
+	//RSS feed reader, Spotify API, etc. ...
+	public static RssFeedReader rssReader;
+	public static SpotifyApi spotifyApi;
+	
+	/**
+	 * Setup tools like RssFeedReader or SpotifyApi.
+	 */
+	public static void setupTools(){
+		//RSS
+		rssReader = new RssFeedReader();
+		//Spotify
+		if (Is.notNullOrEmpty(spotify_client_id) && Is.notNullOrEmpty(spotify_client_secret)){
+			spotifyApi = new SpotifyApi(spotify_client_id, spotify_client_secret);
+		}
+	}
 	
 	//----------helpers----------
 	

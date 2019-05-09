@@ -52,6 +52,7 @@ public class Test_MusicParameters {
 		testMusicParameters("Suche auf YouTube nach Metallica",					"[<youtube>, , Metallica, , , ]", lang);
 		testMusicParameters("starte Rockmusik mit VLC player",					"[<vlc_media_player>, rock, , , , ]", lang);
 		testMusicParameters("starte Rockmusik via Spotify link",				"[<spotify_link>, rock, , , , ]", lang);
+		testMusicParameters("Öffne eine Rock Playlist bitte",					"[, Rock, , , Rock, ]", lang);
 		
 		lang = "en";
 		System.out.println("\n----- en -----");
@@ -80,6 +81,7 @@ public class Test_MusicParameters {
 		testMusicParameters("Search YouTube for Metallica",						"[<youtube>, , Metallica, , , ]", lang);
 		testMusicParameters("start Rock music using VLC player",				"[<vlc_media_player>, Rock, , , , ]", lang);
 		testMusicParameters("start Rock music via Spotify link",				"[<spotify_link>, Rock, , , , ]", lang);
+		testMusicParameters("Search a rock playlist please",					"[, rock, , , rock, ]", lang);
 				
 		System.out.println("-----------");
 				

@@ -87,7 +87,7 @@ public class Wikipedia implements ServiceInterface{
 				api.hasInfo = false;	api.hasCard = false;	
 				
 				api.addAction(ACTIONS.BUTTON_CMD);
-				api.putActionInfo("title", "Websearch");
+				api.putActionInfo("title", "Web Search");
 				api.putActionInfo("info", "direct_cmd");
 				api.putActionInfo("cmd", CmdBuilder.getWebSearch(search));
 				api.putActionInfo("options", JSON.make(ACTIONS.SKIP_TTS, true));
@@ -409,7 +409,7 @@ public class Wikipedia implements ServiceInterface{
 					api.hasInfo = false;	api.hasCard = false;	
 					
 					api.addAction(ACTIONS.BUTTON_CMD);
-					api.putActionInfo("title", "Websearch");
+					api.putActionInfo("title", "Web Search");
 					api.putActionInfo("info", "direct_cmd");
 					api.putActionInfo("cmd", CmdBuilder.getWebSearch(search));
 					api.putActionInfo("options", JSON.make(ACTIONS.SKIP_TTS, true));
