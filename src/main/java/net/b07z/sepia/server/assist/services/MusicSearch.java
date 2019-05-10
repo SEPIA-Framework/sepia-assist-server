@@ -293,6 +293,9 @@ public class MusicSearch implements ServiceInterface{
 					}
 				}
 			}
+		
+		}else if (platform.equals(Platform.android)){
+			//TODO: any other options? (can we even reach this code?)
 		}
 		
 		//If we have only a song we should declare the 'search' field and not rely on song-name
@@ -320,13 +323,12 @@ public class MusicSearch implements ServiceInterface{
 			JSON.put(controlData, "uri", foundUri);
 		}
 		
+		//client control action
 		api.addAction(ACTIONS.CLIENT_CONTROL_FUN);
 		api.putActionInfo("fun", controlFun);
 		api.putActionInfo("controlData", controlData);
-		
-		//some buttons - we use the custom function button but the client needs to parse the string itself!
-		
-		//simple action button
+				
+		//... and action button
 		api.addAction(ACTIONS.BUTTON_CUSTOM_FUN);
 		api.putActionInfo("fun", "controlFun;;" + controlFun + ";;" + controlData.toJSONString());
 		api.putActionInfo("title", Is.notNullOrEmpty(serviceLocal)? serviceLocal : "Button");
@@ -356,10 +358,12 @@ public class MusicSearch implements ServiceInterface{
 			api.putActionInfo("cmd", CmdBuilder.getWebSearch(nluResult.input.textRaw));
 			api.putActionInfo("options", JSON.make(ACTIONS.SKIP_TTS, true));
 			
-			//can we still search via Android Intent?
+			/* -- we leave this to the client --
 			if (!platform.equals(Platform.android)){
+				//we have no other option to search for music (like e.g. Android Intent)
 				api.setCustomAnswer("music_0b");
 			}
+			*/
 		}
 
 		//all good

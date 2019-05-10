@@ -35,7 +35,8 @@ import net.b07z.sepia.server.core.tools.JSON;
 public class PlatformControls implements ServiceInterface{
 	
 	public static enum FunctionTypes {
-		androidIntent,
+		androidActivity,
+		androidBroadcast,
 		iosIntent,
 		windowsIntent,
 		browserIntent,

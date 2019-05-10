@@ -21,35 +21,40 @@ public class Test_SpotifyApi {
 		System.out.println("Token type: " + sapi.tokenType);
 		System.out.println("Token expires in (ms): " + (sapi.tokenValidUntil - System.currentTimeMillis()));
 		
-		Debugger.sleep(1000);
+		Debugger.sleep(500);
 		
 		JSONObject s1 = sapi.searchBestItem("Paradise City", "Guns n Roses", "", "", "");
 		System.out.println(s1.toJSONString());
 		
-		Debugger.sleep(1000);
+		Debugger.sleep(500);
 		
 		JSONObject s2 = sapi.searchBestItem("", "Guns n Roses", "Appetite For Destruction", "", "");
 		System.out.println(s2.toJSONString());
 		
-		Debugger.sleep(1000);
+		Debugger.sleep(500);
 		
 		JSONObject s3 = sapi.searchBestItem("", "Guns n Roses", "", "", "");
 		System.out.println(s3.toJSONString());
 		
-		Debugger.sleep(1000);
+		Debugger.sleep(500);
 		
 		JSONObject s4 = sapi.searchBestItem("", "", "", "", "Rock");
 		System.out.println(s4.toJSONString());
 		
-		Debugger.sleep(1000);
+		Debugger.sleep(500);
 		
 		JSONObject s5 = sapi.searchBestItem("", "", "", "Party", "");
 		System.out.println(s5.toJSONString());
 		
-		Debugger.sleep(1000);
+		Debugger.sleep(500);
 		
 		JSONObject s6 = sapi.searchBestItem("Foxy Lady", "Jimi Hendrix", "", "", "");	//note the typo in foxy (not foxey)
 		System.out.println(s6.toJSONString());
+		
+		Debugger.sleep(500);
+		
+		JSONObject s7 = sapi.searchBestItem("Immer wieder", "Selig", "", "", "");
+		System.out.println(s7.toJSONString());
 	}
 
 }
