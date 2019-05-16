@@ -64,6 +64,10 @@ public class MusicArtist implements ParameterHandler {
 		if (prMusicAlbum != null){
 			optimizedInput = ParameterResult.cleanInputOfFoundParameter(nluInput, PARAMETERS.MUSIC_ALBUM, prMusicAlbum, optimizedInput);
 		}
+		ParameterResult prMusicPlaylist = ParameterResult.getResult(nluInput, PARAMETERS.PLAYLIST_NAME, optimizedInput);
+		if (prMusicPlaylist != null){
+			optimizedInput = ParameterResult.cleanInputOfFoundParameter(nluInput, PARAMETERS.PLAYLIST_NAME, prMusicPlaylist, optimizedInput);
+		}
 		
 		String creator = "";
 		//German
@@ -93,10 +97,14 @@ public class MusicArtist implements ParameterHandler {
 				creator = NluTools.stringFindFirst(optimizedInput, ".*? (songs|lieder|titel|musik)");
 				creator = creator.replaceFirst(" (songs|lieder|musik|titel)$", "");
 				creator = creator.replaceFirst(".*\\b(spiel(e|)|oeffne|start(e|))\\b", "");
+				//clean actions
+				creator = creator.trim().replaceFirst("^(stoppe(n|)|stop|naechste(\\w|)|vorherige(\\w|)|anhalten|schliessen|cancel|abbrechen|zurueck|vor)$", "");
 			}else{
 				creator = NluTools.stringFindFirst(optimizedInput, ".*? (songs|titles|tracks|music)");
 				creator = creator.replaceFirst(" (songs|music|titles|tracks)$", "");
 				creator = creator.replaceFirst(".*\\b(play|open|start)\\b", "");
+				//clean actions
+				creator = creator.trim().replaceFirst("^(stop|next|previous|clear|cancel|abort|close|end|back|forward)$", "");
 			}
 			if (!creator.trim().isEmpty()){
 				//clean genre parameter

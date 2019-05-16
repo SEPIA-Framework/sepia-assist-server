@@ -71,7 +71,7 @@ public class ClientFunction implements ParameterHandler {
 			localName = local_en.get(valueWithBrackets);
 		}
 		if (localName == null){
-			Debugger.println("Action.java - getLocal() has no '" + language + "' version for '" + value + "'", 3);
+			Debugger.println("ClientFunction.java - getLocal() has no '" + language + "' version for '" + value + "'", 3);
 			return "";
 		}
 		return localName;
@@ -118,8 +118,8 @@ public class ClientFunction implements ParameterHandler {
 		//German
 		if (language.matches(LANGUAGES.DE)){
 			settings = "einstellung(en|)|setting(s|)|menue|option(en|)";
-			media = "medienwiedergabe|medi(a|en) player|(musik|song|lied) (anhalten|stoppen|stop|beenden|schliessen)";
-			volume = "lautstaerke|musik|radio|sound"; 		//NOTE: musik is used here as well, make sure media is checked first
+			volume = "lautstaerke|(musik|radio|sound) (lauter|leiser|rauf(\\w+|)|runter(\\w+|)|aufdrehen)";
+			media = "medienwiedergabe|medi(a|en)|player|musik|song|lied";	//NOTE: music is used here as well, make sure media is checked first
 			alwaysOn = "always(-| |)on";
 			meshNode = "mesh(-| |)node";
 			clexi = "clexi";
@@ -127,8 +127,8 @@ public class ClientFunction implements ParameterHandler {
 		//English and other
 		}else{
 			settings = "setting(s|)|menu(e|)|option(s|)";
-			media = "media player|(media|music|song) (stop|close|end)";
-			volume = "volume|music|radio|sound"; 			//NOTE: music is used here as well, make sure media is checked first
+			volume = "volume|(music|radio|sound|player) (louder|quieter|up|down)|turn (up|down)";
+			media = "media|player|music|song|track";	//NOTE: music is used here as well, make sure volume is checked first
 			alwaysOn = "always(-| |)on";
 			meshNode = "mesh(-| |)node";
 			clexi = "clexi";
@@ -147,12 +147,12 @@ public class ClientFunction implements ParameterHandler {
 			//SETTINGS
 			if (NluTools.stringContains(extracted, settings)){
 				clientFun = "<" + Type.settings + ">";
-			//MEDIA - NOTE: use before VOLUME!
-			}else if (NluTools.stringContains(extracted, media)){
-				clientFun = "<" + Type.media + ">";
-			//VOLUME
+			//VOLUME - NOTE: use before MEDIA!
 			}else if (NluTools.stringContains(extracted, volume)){
 				clientFun = "<" + Type.volume + ">";
+			//MEDIA
+			}else if (NluTools.stringContains(extracted, media)){
+				clientFun = "<" + Type.media + ">";
 			//ALWAYS-ON
 			}else if (NluTools.stringContains(extracted, alwaysOn)){
 				clientFun = "<" + Type.alwaysOn + ">";

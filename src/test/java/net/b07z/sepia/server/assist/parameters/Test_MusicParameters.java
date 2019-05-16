@@ -1,5 +1,8 @@
 package net.b07z.sepia.server.assist.parameters;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.Normalizer;
 import net.b07z.sepia.server.assist.parameters.Test_Parameters.TestResult;
@@ -17,12 +20,15 @@ public class Test_MusicParameters {
 			PARAMETERS.PLAYLIST_NAME, PARAMETERS.MUSIC_ALBUM
 	};
 	
+	private static Map<String, String> errors;
+	
 	public static void main(String[] args) {
 		long tic = Debugger.tic();
 		
 		Start.setupServicesAndParameters();
 
 		//warm up
+		errors = new HashMap<>();
 		System.out.println("-----SENTENCE TESTING------");
 		
 		String lang = "de";
@@ -53,6 +59,15 @@ public class Test_MusicParameters {
 		testMusicParameters("starte Rockmusik mit VLC player",					"[<vlc_media_player>, rock, , , , ]", lang);
 		testMusicParameters("starte Rockmusik via Spotify link",				"[<spotify_link>, rock, , , , ]", lang);
 		testMusicParameters("Öffne eine Rock Playlist bitte",					"[, Rock, , , Rock, ]", lang);
+		testMusicParameters("Starte ein Lied von der Rock Playliste",			"[, Rock, , , Rock, ]", lang);
+		testMusicParameters("Musik anhalten",				"[, , , , , ]", lang);
+		testMusicParameters("Song stoppen",					"[, , , , , ]", lang);
+		testMusicParameters("Musik anhalten",				"[, , , , , ]", lang);
+		testMusicParameters("stoppe Musik",					"[, , , , , ]", lang);
+		testMusicParameters("spiele den nächsten Song",						"[, , , , , ]", lang);
+		testMusicParameters("stoppe den nächsten Song",						"[, , , , , ]", lang);
+		testMusicParameters("spiele den nächsten Song auf der Playlist",	"[, , , , , ]", lang);
+		testMusicParameters("spiele etwas von der Chill Playlist",			"[, , , , Chill, ]", lang);
 		
 		lang = "en";
 		System.out.println("\n----- en -----");
@@ -82,8 +97,25 @@ public class Test_MusicParameters {
 		testMusicParameters("start Rock music using VLC player",				"[<vlc_media_player>, Rock, , , , ]", lang);
 		testMusicParameters("start Rock music via Spotify link",				"[<spotify_link>, Rock, , , , ]", lang);
 		testMusicParameters("Search a rock playlist please",					"[, rock, , , rock, ]", lang);
+		testMusicParameters("Play a song from the rock playlist please",		"[, rock, , , rock, ]", lang);
+		testMusicParameters("Music stop",					"[, , , , , ]", lang);
+		testMusicParameters("stop song",					"[, , , , , ]", lang);
+		testMusicParameters("stop music",					"[, , , , , ]", lang);
+		testMusicParameters("play the next song",				"[, , , , , ]", lang);
+		testMusicParameters("stop the next song",				"[, , , , , ]", lang);
+		testMusicParameters("play next song on the playlist",	"[, , , , , ]", lang);
+		testMusicParameters("play something from the Chill playlist",	"[, , , , Chill, ]", lang);
 				
 		System.out.println("-----------");
+		
+		//Errors
+		System.out.println("Collected errors: ");
+		System.err.println("");
+		for (Map.Entry<String, String> e : errors.entrySet()){
+			System.err.println(e.getKey());
+			System.err.println(e.getValue());
+			System.err.println("");
+		}
 				
 		System.out.println("Took: " + Debugger.toc(tic) + "ms");
 	}
@@ -121,6 +153,7 @@ public class Test_MusicParameters {
 		}else{
 			try{ Thread.sleep(20); }catch(Exception e){}
 			System.err.println("Found: " + res + " - should be: " + shouldBe);
+			errors.put(text, res + " - " + shouldBe);
 			try{ Thread.sleep(20); }catch(Exception e){}
 			return false;
 		}

@@ -77,15 +77,21 @@ public class ClientControls implements ServiceInterface{
 				+ "(.* |)(musik|sound|radio) (lauter|leiser)( .*|)|"
 				+ "(.* |)lautstaerke( .*|)|"
 				+ "(.* |)(medi(a|en)(-| |)player|medienwiedergabe)( .*|)|"
-				+ "(.* |)(musik|song|lied|medien|media) (anhalten|stoppen|stop|beenden|schliessen)( .*|)"
+				+ "(.* |)(naechste(\\w|)|vorherige(\\w|)) (musik|song|lied|medien|media|titel)( .*|)|"
+				+ "(naechste(\\w|)|vorherige(\\w|)|vor|zurueck|stop(pen|p|)|play|abspielen|lauter|leiser)|"
+				+ "(.* |)(musik|song|lied|medien|media|titel|player) (anhalten|stoppen|stop(p|)|beenden|schliessen)( .*|)|"
+				+ "(.* |)(stoppe|stop(p|)|schliesse)( .* | )(musik|song|lied|medien|media|titel|player|sound)( .*|)"
 				+ ")$", DE);
 		info.setCustomTriggerRegX("^("
-				+ "( .*|)open setting(s|)( .*|)|"
+				+ "(.* |)open setting(s|)( .*|)|"
 				+ "(.* |)always(-| |)on( .*|)|"
-				+ "( .*|)(music|sound|radio) (quieter|louder)( .*|)|"
-				+ "(.* |)volume( .*|)|"
+				+ "(.* |)(music|sound|radio) (quieter|louder)( .*|)|"
+				+ "(.* |)(volume|turn (up|down))( .*|)|"
 				+ "(.* |)(media(-| |)player)( .*|)|"
-				+ "(.* |)(media|music|song) (stop|close|end)( .*|)"
+				+ "(.* |)(next|previous) (media|music|song|track|title)( .*|)|"
+				+ "(next|previous|back|forward|stop|play|louder|quieter)|"
+				+ "(.* |)(media|music|song|track|title|player|sound) (stop|close|end)( .*|)|"
+				+ "(.* |)(stop|close|end)( .* | )(media|music|song|track|title|player|sound)( .*|)"
 				+ ")$", EN);
 		info.setCustomTriggerRegXscoreBoost(2);		//boost service a bit to increase priority over similar ones
 		
@@ -102,8 +108,9 @@ public class ClientControls implements ServiceInterface{
 		//optional
 		Parameter p3 = new Parameter(PARAMETERS.DATA);
 		Parameter p4 = new Parameter(PARAMETERS.NUMBER);
+		Parameter p5 = new Parameter(PARAMETERS.MEDIA_CONTROLS);
 		
-		info.addParameter(p1).addParameter(p2).addParameter(p3).addParameter(p4);
+		info.addParameter(p1).addParameter(p2).addParameter(p3).addParameter(p4).addParameter(p5);
 		
 		//Default answers
 		info.addSuccessAnswer("ok_0b")

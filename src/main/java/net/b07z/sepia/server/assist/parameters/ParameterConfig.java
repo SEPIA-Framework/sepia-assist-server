@@ -75,6 +75,7 @@ public class ParameterConfig {
 		handlerToParameter.put(PARAMETERS.MUSIC_ALBUM, MusicAlbum.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.SONG, Song.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.PLAYLIST_NAME, PlaylistName.class.getCanonicalName());
+		handlerToParameter.put(PARAMETERS.MEDIA_CONTROLS, MediaControls.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.SMART_DEVICE, SmartDevice.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.SMART_DEVICE_VALUE, SmartDeviceValue.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.ROOM, Room.class.getCanonicalName());

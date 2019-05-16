@@ -79,11 +79,13 @@ public class Song implements ParameterHandler {
 		if (!song.isEmpty()){
 			if (language.equals(LANGUAGES.DE)){
 				song = song.replaceFirst("^(ein(en|ige|) |den |das |etwas )", "").trim();
+				song = song.replaceFirst("^(naechste(\\w|)|vorherige(\\w|))", "").trim();
 				song = song.replaceFirst("^(song(s|)|lied(er|)|musik|titel|(irgend|)etwas|was|egal was)\\b", "").trim();
 				song = song.replaceFirst("^((mit (dem |)|)(titel|namen)|namens)\\b", "").trim();
 				song = song.replaceFirst(".*? (songs|lieder|musik( titel|)|titel)$", "").trim();
 			}else{
 				song = song.replaceFirst("^(the |a |any |some )", "").trim();
+				song = song.replaceFirst("^(next|previous)", "").trim();
 				song = song.replaceFirst("^(song(s|)|music|title(s|)|track(s|)|something|anything)\\b", "").trim();
 				song = song.replaceFirst("^((with (the |)|)(title|name)|named|)\\b", "").trim();
 				song = song.replaceFirst(".*? (songs|music|titles)$", "").trim();

@@ -58,17 +58,20 @@ public class PlaylistName implements ParameterHandler {
 		String playlistName;
 		if (language.equals(LANGUAGES.DE)){
 			//GERMAN
-			playlistName = NluTools.stringFindFirst(input, "playlist ((mit |)namen|namens|genannt) .*");
+			playlistName = NluTools.stringFindFirst(input, "playlist(e|) ((mit |)namen|namens|genannt) .*");
 			if (!playlistName.isEmpty()){
 				playlistName = playlistName.replaceAll(".*?\\b((mit |)namen|namens|genannt)\\b", "");
 			}else{
-				playlistName = NluTools.stringFindFirst(input, ".* playlist");
+				playlistName = NluTools.stringFindFirst(input, ".* playlist(e|)");
 				if (!playlistName.isEmpty()){
+					playlistName = playlistName.replaceFirst(".*?\\b((von|auf) (der |meiner |einer |))(?<name>.*)( playlist(e|))\\b", "${name}").trim();
 					playlistName = playlistName.replaceFirst(".*?\\b(starte|oeffne|spiel(e|)|such(e|)|finde|zeig(e|))\\b", "").trim();
-					playlistName = playlistName.replaceFirst("^(meine|die|eine)\\b", "");
+					playlistName = playlistName.replaceFirst("^(von |auf |)(der|meine(r|)|die|eine(r|))\\b", "");
 				}
 			}
-			playlistName = playlistName.replaceAll("\\b(playlist)\\b", "").trim();
+			playlistName = playlistName.replaceAll("\\b(playlist(e|))\\b", "").trim();
+			//clean actions
+			playlistName = playlistName.trim().replaceFirst("^(stoppe(n|)|stop|naechste(\\w|)|vorherige(\\w|)|cancel|abbrechen|zurueck|vor)$", "");
 		}else{
 			//ENGLISH
 			playlistName = NluTools.stringFindFirst(input, "playlist (called|named|(with (the |)|)name) .*");
@@ -77,11 +80,14 @@ public class PlaylistName implements ParameterHandler {
 			}else{
 				playlistName = NluTools.stringFindFirst(input, ".* playlist");
 				if (!playlistName.isEmpty()){
+					playlistName = playlistName.replaceFirst(".*?\\b((from|of|on) (the |my |a |))(?<name>.*)( playlist)\\b", "${name}").trim();
 					playlistName = playlistName.replaceFirst(".*?\\b(start|open|play|search|find|show)\\b", "").trim();
-					playlistName = playlistName.replaceFirst("^(my|the|a)\\b", "");
+					playlistName = playlistName.replaceFirst("^(on |from |of |)(my|the|a)\\b", "");
 				}
 			}
 			playlistName = playlistName.replaceAll("\\b(playlist)\\b", "").trim();
+			//clean actions
+			playlistName = playlistName.trim().replaceFirst("^(stop|next|previous|clear|cancel|abort|back|forward)$", "");
 		}
 		this.found = playlistName;
 		
@@ -110,7 +116,12 @@ public class PlaylistName implements ParameterHandler {
 
 	@Override
 	public String remove(String input, String found) {
-		return NluTools.stringRemoveFirst(input, Pattern.quote(found));
+		if (language.equals(LANGUAGES.DE)){
+			found = "(von |auf |)(der |)" + Pattern.quote(found) + "(| playlist(e|))";
+		}else{
+			found = "(of |from |on |)(the |)" + Pattern.quote(found) + "(| playlist)";
+		}
+		return NluTools.stringRemoveFirst(input, found);
 	}
 	
 	@Override
