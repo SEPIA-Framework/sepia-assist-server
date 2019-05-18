@@ -119,7 +119,8 @@ public class ClientFunction implements ParameterHandler {
 		if (language.matches(LANGUAGES.DE)){
 			settings = "einstellung(en|)|setting(s|)|menue|option(en|)";
 			volume = "lautstaerke|(musik|radio|sound) (lauter|leiser|rauf(\\w+|)|runter(\\w+|)|aufdrehen)";
-			media = "medienwiedergabe|medi(a|en)|player|musik|song|lied";	//NOTE: music is used here as well, make sure media is checked first
+			media = "medi(a|en)|player|musik|song|lied|titel|(medien|)wiedergabe|"		//NOTE: music is used here as well, make sure media is checked first
+					+ "^(naechste(\\w|)|vorherige(\\w|)|vor|zurueck|stop(pen|p|)|play|abspielen|lauter|leiser|fortsetzen|weiter)$";
 			alwaysOn = "always(-| |)on";
 			meshNode = "mesh(-| |)node";
 			clexi = "clexi";
@@ -128,7 +129,8 @@ public class ClientFunction implements ParameterHandler {
 		}else{
 			settings = "setting(s|)|menu(e|)|option(s|)";
 			volume = "volume|(music|radio|sound|player) (louder|quieter|up|down)|turn (up|down)";
-			media = "media|player|music|song|track";	//NOTE: music is used here as well, make sure volume is checked first
+			media = "media|player|music|song|track|title|playback|"						//NOTE: music is used here as well, make sure volume is checked first
+					+ "^(next|previous|back|forward|stop|play|louder|quieter|resume)$";
 			alwaysOn = "always(-| |)on";
 			meshNode = "mesh(-| |)node";
 			clexi = "clexi";

@@ -7,6 +7,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.assistant.CmdBuilder;
+import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.data.Card;
 import net.b07z.sepia.server.assist.data.Card.ElementType;
 import net.b07z.sepia.server.assist.data.Parameter;
@@ -19,6 +20,7 @@ import net.b07z.sepia.server.assist.services.ServiceBuilder;
 import net.b07z.sepia.server.assist.services.ServiceInfo;
 import net.b07z.sepia.server.assist.services.ServiceInterface;
 import net.b07z.sepia.server.assist.services.ServiceResult;
+import net.b07z.sepia.server.assist.tools.ITunesApi;
 import net.b07z.sepia.server.assist.tools.SpotifyApi;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
@@ -87,6 +89,7 @@ public class MusicSearch implements ServiceInterface{
 			.addCustomAnswer("what_artist", "music_ask_1b")
 			.addCustomAnswer("what_playlist", "music_ask_1c")
 			.addCustomAnswer("no_music_match", "music_0b")
+			.addCustomAnswer("missing_api_key", "default_no_access_0a")
 			;
 		
 		return info;
@@ -102,8 +105,6 @@ public class MusicSearch implements ServiceInterface{
 		Parameter serviceP = nluResult.getOptionalParameter(PARAMETERS.MUSIC_SERVICE, "");
 		String service = serviceP.getValueAsString().replaceAll("^<|>$", "").trim();
 		String serviceLocal = (String) serviceP.getDataFieldOrDefault(InterviewData.VALUE_LOCAL);
-		
-		boolean isSpotifyService = service.equals(MusicService.Service.spotify.name()) || service.equals(MusicService.Service.spotify_link.name());
 		
 		Parameter genreP = nluResult.getOptionalParameter(PARAMETERS.MUSIC_GENRE, "");
 		String genre = genreP.getValueAsString();
@@ -158,15 +159,23 @@ public class MusicSearch implements ServiceInterface{
 		Platform platform = CLIENTS.getPlatform(nluResult.input.clientInfo);
 		/*
 		if (platform.equals(Platform.browser)){
-			
 		}else if (platform.equals(Platform.android)){
-			
 		}else if (platform.equals(Platform.ios)){
-			
 		}else if (platform.equals(Platform.windows)){
-			
 		}
 		*/
+		
+		//Default music app in client
+		if (service.isEmpty()){
+			Object defaultClientService = nluResult.input.getCustomDataObject("defaultMusicApp");
+			if (defaultClientService != null){
+				service = (String) defaultClientService;
+			}
+			//System.out.println("defaultMusicApp: " + service);		//DEBUG
+		}
+		boolean isSpotifyService = service.equals(MusicService.Service.spotify.name()) || service.equals(MusicService.Service.spotify_link.name());
+		boolean isAppleMusic = service.equals(MusicService.Service.apple_music.name()) || service.equals(MusicService.Service.apple_music_link.name());
+		boolean requiresUri = service.contains("_link");
 		
 		//Basically this service cannot fail here ... only inside client ... but we'll also try to get some more data:
 		
@@ -181,8 +190,8 @@ public class MusicSearch implements ServiceInterface{
 		String cardIconUrl = Config.urlWebImages + "cards/music_default.png";
 		String cardBrand = "default"; 
 		
-		//Use YouTube for now
-		if (service.equals(MusicService.Service.youtube.name()) || (service.isEmpty() && Config.spotifyApi == null)){
+		//Use YouTube for URI
+		if (service.equals(MusicService.Service.youtube.name()) || service.isEmpty()){
 			//Icon
 			cardIconUrl = Config.urlWebImages + "brands/youtube-logo.png";
 			cardBrand = "YouTube";
@@ -230,8 +239,8 @@ public class MusicSearch implements ServiceInterface{
 				foundUri = "https://www.youtube.com/results?search_query=" + q;
 			}
 
-		//Spotify API (currently used when service is Spotify or platform can only handle URIs)
-		}else if (isSpotifyService || (service.isEmpty() && Config.spotifyApi != null)){
+		//Spotify API
+		}else if (isSpotifyService){
 			//we need the API (in early version it was possible to call it without registration)
 			if (Config.spotifyApi != null){
 				//Icon
@@ -292,8 +301,77 @@ public class MusicSearch implements ServiceInterface{
 						//foundUri = foundUri + ":play";		//not supported? breaks link?
 					}
 				}
+			}else{
+				//We need an URI via API call but got none?
+				if (requiresUri){
+					//add some info here about missing key
+					api.setCustomAnswer("default_no_access_0a");
+					
+					//add button that links to help
+					api.addAction(ACTIONS.BUTTON_IN_APP_BROWSER);
+					api.putActionInfo("url", "https://github.com/SEPIA-Framework/sepia-docs/wiki/API-keys");
+					api.putActionInfo("title", "Info: API-Keys");
+					
+					//all clear?
+					api.setStatusOkay();
+					
+					//finally build the API_Result
+					ServiceResult result = api.buildResult();
+					return result;
+				}
 			}
 		
+		//Apple Music
+		}else if(isAppleMusic){
+			//Icon
+			cardIconUrl = Config.urlWebImages + "brands/apple-music-logo.png";
+			cardBrand = "Apple Music";
+			//Search (we use the open iTunes API instead of Apple Music API (because it is too hard to get an Apple Music key)
+			ITunesApi iTunesApi = new ITunesApi((nluResult.language.equals(LANGUAGES.DE))? "DE" : "US");		//TODO: add more country codes if we need them ...
+			JSONObject iTunesBestItem = iTunesApi.searchBestMusicItem(song, artist, album, playlistName, genre);
+			foundUri = JSON.getString(iTunesBestItem, "uri");
+			foundType = JSON.getString(iTunesBestItem, "type");
+			//get URI and build Card data 		- 		TODO: this code is mostly identical to spotify card ... we can combine it ...
+			if (Is.notNullOrEmpty(foundUri)){
+				//get info by type
+				if (foundType.equals(ITunesApi.TYPE_TRACK)){
+					foundTrack = JSON.getString(iTunesBestItem, "name");
+					foundArtist = JSON.getString(iTunesBestItem, "primary_artist");
+					foundAlbum =  JSON.getString(iTunesBestItem, "album");
+					cardTitle = "Song: " + foundTrack;
+					cardSubtitle = (foundAlbum.isEmpty())? foundArtist : (foundArtist + ", " + foundAlbum);
+					//add play tag to URI
+					foundUri = foundUri + "&mt=1&app=music";
+					
+				}else if (foundType.equals(ITunesApi.TYPE_ALBUM)){
+					foundArtist = JSON.getString(iTunesBestItem, "primary_artist");
+					foundAlbum =  JSON.getString(iTunesBestItem, "name");
+					cardTitle = "Album: " + foundAlbum;
+					cardSubtitle = foundArtist;
+					//add play tag to URI	
+					foundUri = foundUri + "&mt=1&app=music";
+					
+				}else if (foundType.equals(ITunesApi.TYPE_ARTIST)){
+					foundArtist = JSON.getString(iTunesBestItem, "name");
+					JSONArray genres = JSON.getJArray(iTunesBestItem, "genres");
+					String genresString = "";
+					if (Is.notNullOrEmpty(genres)){
+						for (int i=0; i<Math.min(genres.size(),3); i++){
+							genresString += (genres.get(i).toString() + ", ");
+						}
+						genresString = genresString.replaceFirst(", $", "").trim();
+					}
+					cardTitle = "Artist: " + foundArtist;
+					cardSubtitle = (Is.notNullOrEmpty(genresString))? genresString : "";
+					//add play tag to URI
+					foundUri = foundUri + "&mt=1&app=music";
+					
+				}else if (foundType.equals(ITunesApi.TYPE_PLAYLIST)){
+					//no support yet
+				}
+			}
+		
+		//Something else?
 		}else if (platform.equals(Platform.android)){
 			//TODO: any other options? (can we even reach this code?)
 		}

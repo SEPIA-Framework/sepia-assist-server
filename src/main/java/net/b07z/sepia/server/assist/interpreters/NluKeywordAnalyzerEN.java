@@ -165,44 +165,8 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 			possibleParameters.add(pv);
 		}
 		
-		//fashion shopping
-		if (NluTools.stringContains(text, "(buy|fashion|shopping)") || 
-				((NluTools.stringContains(text, FashionItem.fashionItems_en) || NluTools.stringContains(text, FashionBrand.fashionBrandsSearch)) 
-					&& !NluTools.stringContains(text, "(i have |there are |my )"))
-			){
-			possibleCMDs.add(CMD.FASHION);
-			possibleScore.add(1);	index++;
-			Map<String, String> pv = new HashMap<String, String>(); 		//TODO: pass this down to avoid additional checking
-			FashionShopping fs = new FashionShopping().setup(input, pv);
-			fs.getParameters();
-			possibleScore.set(index, possibleScore.get(index) + fs.getScore());
-			possibleParameters.add(pv);
-		}
-		
-		//food
-		if (NluTools.stringContains(text, "^food$|"
-				+ "(food|foodstuff|meal|breakfast|lunch|dinner|groceries|nourishments) .*\\b(order|buy|deliver|eat)|"
-				+ "(" + Language.languageClasses_en + "|" + FoodClass.foodClasses_en + ") .*\\b(order|buy|deliver|eat)|"
-				+ "(order|buy|deliver|eat|what) .*\\b(food|foodstuff|meal|breakfast|lunch|dinner|groceries|nourishments|eat)|"
-				+ "(order|buy|deliver|eat) .*\\b(" + Language.languageClasses_en + "|" + FoodClass.foodClasses_en + ")|"
-				+ "hunger|hungry|appetite|delivery|"
-				+ "(from) .*\\b(\\w*restaurant(s|))") 
-				||	NluTools.stringContains(text, FoodItem.foodItems_en)
-			){
-			possibleCMDs.add(CMD.FOOD);
-			possibleScore.add(1);	index++;
-			
-			Map<String, String> pv = new HashMap<String, String>(); 		//TODO: pass this down to avoid additional checking
-			AbstractParameterSearch aps = new AbstractParameterSearch()
-					.setParameters(PARAMETERS.FOOD_ITEM, PARAMETERS.FOOD_CLASS)
-					.setup(input, pv);
-			aps.getParameters();
-			possibleScore.set(index, possibleScore.get(index) + aps.getScore());
-			possibleParameters.add(pv);
-		}
-		
 		//wikipedia/knowledgebase
-		if (NluTools.stringContains(text, "wiki|wikipedia|information|informations|"
+		if (NluTools.stringContains(text, "wiki|wikipedia|information|informations|knowledge base|"
 							+ "who (is|are|was|were) .*|"
 							+ "meaning of .*|what (is|was|are|were) .*|"
 							+ "when (is|was|are|were) .*|"
@@ -211,6 +175,12 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 			String this_text = text;
 			possibleCMDs.add(CMD.KNOWLEDGEBASE);
 			possibleScore.add(1);	index++;
+			
+			//score a bit extra if we start with certain words
+			if (NluTools.stringContains(this_text, "^((search |)(the |)(wikipedia|knowledge base))")){
+				possibleScore.set(index, possibleScore.get(index)+1);
+			}
+			
 			//kb search term
 			String kb_search="";
 			if (NluTools.stringContains(this_text, "how (high|large) (is|are|was|were)|how old (is|are|was|were)|how many .* (are|has|were|had|live|lived) ")){
@@ -291,6 +261,42 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 			AbstractParameterSearch aps = new AbstractParameterSearch()
 					.setParameters(PARAMETERS.TIME, PARAMETERS.TRAVEL_TYPE, PARAMETERS.TRAVEL_REQUEST_INFO, 
 							PARAMETERS.LOCATION_END, PARAMETERS.LOCATION_WAYPOINT, PARAMETERS.LOCATION_START)
+					.setup(input, pv);
+			aps.getParameters();
+			possibleScore.set(index, possibleScore.get(index) + aps.getScore());
+			possibleParameters.add(pv);
+		}
+		
+		//fashion shopping
+		if (NluTools.stringContains(text, "(buy|fashion|shopping)") || 
+				((NluTools.stringContains(text, FashionItem.fashionItems_en) || NluTools.stringContains(text, FashionBrand.fashionBrandsSearch)) 
+					&& !NluTools.stringContains(text, "(i have |there are |my )"))
+			){
+			possibleCMDs.add(CMD.FASHION);
+			possibleScore.add(1);	index++;
+			Map<String, String> pv = new HashMap<String, String>(); 		//TODO: pass this down to avoid additional checking
+			FashionShopping fs = new FashionShopping().setup(input, pv);
+			fs.getParameters();
+			possibleScore.set(index, possibleScore.get(index) + fs.getScore());
+			possibleParameters.add(pv);
+		}
+		
+		//food
+		if (NluTools.stringContains(text, "^food$|"
+				+ "(food|foodstuff|meal|breakfast|lunch|dinner|groceries|nourishments) .*\\b(order|buy|deliver|eat)|"
+				+ "(" + Language.languageClasses_en + "|" + FoodClass.foodClasses_en + ") .*\\b(order|buy|deliver|eat)|"
+				+ "(order|buy|deliver|eat|what) .*\\b(food|foodstuff|meal|breakfast|lunch|dinner|groceries|nourishments|eat)|"
+				+ "(order|buy|deliver|eat) .*\\b(" + Language.languageClasses_en + "|" + FoodClass.foodClasses_en + ")|"
+				+ "hunger|hungry|appetite|delivery|"
+				+ "(from) .*\\b(\\w*restaurant(s|))") 
+				||	NluTools.stringContains(text, FoodItem.foodItems_en)
+			){
+			possibleCMDs.add(CMD.FOOD);
+			possibleScore.add(1);	index++;
+			
+			Map<String, String> pv = new HashMap<String, String>(); 		//TODO: pass this down to avoid additional checking
+			AbstractParameterSearch aps = new AbstractParameterSearch()
+					.setParameters(PARAMETERS.FOOD_ITEM, PARAMETERS.FOOD_CLASS)
 					.setup(input, pv);
 			aps.getParameters();
 			possibleScore.set(index, possibleScore.get(index) + aps.getScore());

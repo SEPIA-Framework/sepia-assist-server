@@ -238,8 +238,8 @@ public class WeatherDarkSky implements ServiceInterface{
 			
 			//add button that links to help
 			api.addAction(ACTIONS.BUTTON_IN_APP_BROWSER);
-			api.putActionInfo("url", "https://github.com/SEPIA-Framework/sepia-docs/wiki/Installation#api-keys");
-			api.putActionInfo("title", "Help: API-Keys");
+			api.putActionInfo("url", "https://github.com/SEPIA-Framework/sepia-docs/wiki/API-keys");
+			api.putActionInfo("title", "Info: API-Keys");
 			
 			//all clear?
 			api.setStatusOkay();

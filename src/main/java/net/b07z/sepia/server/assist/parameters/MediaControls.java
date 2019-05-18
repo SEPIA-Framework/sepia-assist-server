@@ -32,6 +32,8 @@ public class MediaControls implements ParameterHandler {
 		close,
 		next,
 		previous,
+		resume,
+		repeat,
 		volume_up,
 		volume_down,
 		volume_set
@@ -47,6 +49,8 @@ public class MediaControls implements ParameterHandler {
 		local_de.put("<close>", "schließen");
 		local_de.put("<next>", "weiter");
 		local_de.put("<previous>", "zurück");
+		local_de.put("<resume>", "fortsetzen");
+		local_de.put("<repeat>", "wiederholen");
 		local_de.put("<volume_up>", "lauter");
 		local_de.put("<volume_down>", "leiser");
 		local_de.put("<volume_set>", "Lautstärke auf ");
@@ -57,6 +61,8 @@ public class MediaControls implements ParameterHandler {
 		local_en.put("<close>", "close");
 		local_en.put("<next>", "next");
 		local_en.put("<previous>", "back");
+		local_en.put("<resume>", "resume");
+		local_en.put("<repeat>", "repeat");
 		local_en.put("<volume_up>", "volume up");
 		local_en.put("<volume_down>", "volume down");
 		local_en.put("<volume_set>", "volume to ");
@@ -119,7 +125,7 @@ public class MediaControls implements ParameterHandler {
 			return mediaControl;
 		}
 		
-		String play, pause, stop, close, next, previous, vol_up, vol_down, vol_set;
+		String play, pause, stop, close, next, previous, resume, repeat, vol_up, vol_down, vol_set;
 		//German
 		if (language.matches(LANGUAGES.DE)){
 			play = "(spiele(n|)|abspielen|starten|oeffne(n|)|play)(?!.*\\b(naechste(\\w|)|vorherige(\\w|)))";
@@ -128,6 +134,8 @@ public class MediaControls implements ParameterHandler {
 			close = "schliesse(n|)";
 			next = "naechste(\\w|)|vorwaerts|vor|next";
 			previous = "zurueck|vorherige(\\w|)";
+			resume = "weiter|fortsetzen";
+			repeat = "wiederholen";
 			vol_set = "lautstaerke (\\w+ |)auf( |$)";
 			vol_up = "lauter|lautstaerke( .* | )(erhoehen|rauf|hoch|plus|groesser)|(vergroessern|erhoehen|rauf mit|hoch mit|(hoeher|groesser) machen)( der | )(lautstaerke)";
 			vol_down = "leiser|lautstaerke( .* | )(erniedrigen|runter|niedriger|minus|kleiner)|(verkleinern|erniedrigen|runter mit|(niedriger|kleiner) machen)( der | )(lautstaerke)";
@@ -140,6 +148,8 @@ public class MediaControls implements ParameterHandler {
 			close = "close";
 			next = "next|forward";
 			previous = "back|previous";
+			resume = "continue|resume";
+			repeat = "repeat";
 			vol_set = "(set |)(the |)volume( \\w+ | )to( |$)";
 			vol_up = "louder|(turn |)(the |)volume( .* | )(up|increase|plus)|(increase|(turn |)up)( the | )volume";
 			vol_down = "quieter|(turn |)(the |)volume( .* | )(down|decrease|minus)|(decrease|(turn |)down)( the | )volume";
@@ -151,6 +161,8 @@ public class MediaControls implements ParameterHandler {
 				close + "|" +
 				next + "|" +
 				previous + "|" +
+				resume + "|" +
+				repeat + "|" +
 				vol_set + "|" +		//before up, down!
 				vol_up + "|" +
 				vol_down + "|" +
@@ -173,6 +185,12 @@ public class MediaControls implements ParameterHandler {
 			//PREVIOUS
 			}else if (NluTools.stringContains(extracted, previous)){
 				mediaControl = "<" + Type.previous + ">";
+			//RESUME
+			}else if (NluTools.stringContains(extracted, resume)){
+				mediaControl = "<" + Type.resume + ">";
+			//REPEAT
+			}else if (NluTools.stringContains(extracted, repeat)){
+				mediaControl = "<" + Type.repeat + ">";
 			//VOLUME SET - NOTE: do this before vol_up, vol_down, because user could say "increase volume to 11"
 			}else if (NluTools.stringContains(extracted, vol_set)){
 				mediaControl = "<" + Type.volume_set + ">";

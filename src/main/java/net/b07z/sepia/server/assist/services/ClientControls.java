@@ -11,6 +11,7 @@ import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.parameters.Action;
 import net.b07z.sepia.server.assist.parameters.ClientFunction;
+import net.b07z.sepia.server.assist.parameters.MediaControls;
 import net.b07z.sepia.server.assist.services.ServiceBuilder;
 import net.b07z.sepia.server.assist.services.ServiceInfo;
 import net.b07z.sepia.server.assist.services.ServiceInterface;
@@ -76,11 +77,11 @@ public class ClientControls implements ServiceInterface{
 				+ "(.* |)always(-| |)on( .*|)|"
 				+ "(.* |)(musik|sound|radio) (lauter|leiser)( .*|)|"
 				+ "(.* |)lautstaerke( .*|)|"
-				+ "(.* |)(medi(a|en)(-| |)player|medienwiedergabe)( .*|)|"
+				+ "(.* |)medi(a|en)(-| |)(player|wiedergabe)( .*|)|"
 				+ "(.* |)(naechste(\\w|)|vorherige(\\w|)) (musik|song|lied|medien|media|titel)( .*|)|"
-				+ "(naechste(\\w|)|vorherige(\\w|)|vor|zurueck|stop(pen|p|)|play|abspielen|lauter|leiser)|"
-				+ "(.* |)(musik|song|lied|medien|media|titel|player) (anhalten|stoppen|stop(p|)|beenden|schliessen)( .*|)|"
-				+ "(.* |)(stoppe|stop(p|)|schliesse)( .* | )(musik|song|lied|medien|media|titel|player|sound)( .*|)"
+				+ "(naechste(\\w|)|vorherige(\\w|)|vor|zurueck|stop(pen|p|)|play|abspielen|lauter|leiser|fortsetzen|weiter)|"
+				+ "(.* |)(musik|song|lied|medien|media|titel|player|wiedergabe) (anhalten|stoppen|stop(p|)|beenden|schliessen|fortsetzen|weiter|wiederholen)( .*|)|"
+				+ "(.* |)(stoppe|stop(p|)|schliesse)( .* | )(musik|song|lied|medien|media|titel|player|sound|wiedergabe)( .*|)"
 				+ ")$", DE);
 		info.setCustomTriggerRegX("^("
 				+ "(.* |)open setting(s|)( .*|)|"
@@ -89,28 +90,29 @@ public class ClientControls implements ServiceInterface{
 				+ "(.* |)(volume|turn (up|down))( .*|)|"
 				+ "(.* |)(media(-| |)player)( .*|)|"
 				+ "(.* |)(next|previous) (media|music|song|track|title)( .*|)|"
-				+ "(next|previous|back|forward|stop|play|louder|quieter)|"
-				+ "(.* |)(media|music|song|track|title|player|sound) (stop|close|end)( .*|)|"
-				+ "(.* |)(stop|close|end)( .* | )(media|music|song|track|title|player|sound)( .*|)"
+				+ "(next|previous|back|forward|stop|play|louder|quieter|resume)|"
+				+ "(.* |)(media|music|song|track|title|player|sound|playback) (stop|close|end)( .*|)|"
+				+ "(.* |)(stop|close|end|resume|continue|repeat)( .* | )(media|music|song|track|title|player|sound|playback)( .*|)"
 				+ ")$", EN);
 		info.setCustomTriggerRegXscoreBoost(2);		//boost service a bit to increase priority over similar ones
 		
 		//Parameters:
 		
 		//required
-		Parameter p1 = new Parameter(PARAMETERS.ACTION)
-				.setRequired(true)
-				.setQuestion("default_ask_action_0a");
-		Parameter p2 = new Parameter(PARAMETERS.CLIENT_FUN)
+		Parameter p1 = new Parameter(PARAMETERS.CLIENT_FUN)
 				.setRequired(true)
 				.setQuestion("client_controls_ask_fun_0a");
 		
 		//optional
-		Parameter p3 = new Parameter(PARAMETERS.DATA);
-		Parameter p4 = new Parameter(PARAMETERS.NUMBER);
-		Parameter p5 = new Parameter(PARAMETERS.MEDIA_CONTROLS);
-		
+		Parameter p2 = new Parameter(PARAMETERS.ACTION)//.setRequired(true)
+				.setQuestion("default_ask_action_0a");
+		Parameter p3 = new Parameter(PARAMETERS.MEDIA_CONTROLS);
+		Parameter p4 = new Parameter(PARAMETERS.DATA);
+		Parameter p5 = new Parameter(PARAMETERS.NUMBER);
 		info.addParameter(p1).addParameter(p2).addParameter(p3).addParameter(p4).addParameter(p5);
+		
+		//either action or media_control must be given
+		info.getAtLeastOneOf("", p1, p5);
 		
 		//Default answers
 		info.addSuccessAnswer("ok_0b")
@@ -131,6 +133,8 @@ public class ClientControls implements ServiceInterface{
 		//get parameters
 		Parameter actionP = nluResult.getRequiredParameter(PARAMETERS.ACTION);
 		String action = actionP.getValueAsString().replaceAll("^<|>$", "").trim();
+		Parameter mediaControlsP = nluResult.getOptionalParameter(PARAMETERS.MEDIA_CONTROLS, "");
+		String mediaControls = mediaControlsP.getValueAsString().replaceAll("^<|>$", "").trim();
 		boolean isActionOpen = (action.equals(Action.Type.show.name()) || action.equals(Action.Type.on.name()));
 		boolean isActionClose = (action.equals(Action.Type.remove.name()) || action.equals(Action.Type.off.name()));
 		boolean isActionIncrease = (action.equals(Action.Type.increase.name()) || action.equals(Action.Type.add.name()));
@@ -148,11 +152,11 @@ public class ClientControls implements ServiceInterface{
 			}catch(Exception e){}
 		}
 		boolean isSettings = controlFun.equals(ClientFunction.Type.settings.name());
-		boolean isVolume = controlFun.equals(ClientFunction.Type.volume.name());
 		boolean isAlwaysOn = controlFun.equals(ClientFunction.Type.alwaysOn.name());
 		boolean isMeshNode = controlFun.equals(ClientFunction.Type.meshNode.name());
 		boolean isClexi = controlFun.equals(ClientFunction.Type.clexi.name());
-		boolean isMedia = controlFun.equals(ClientFunction.Type.media.name());
+		boolean isMedia = controlFun.equals(ClientFunction.Type.media.name()); 		//NOTE: media and volume can exist simultaneously
+		boolean isVolume = controlFun.equals(ClientFunction.Type.volume.name()) || mediaControls.startsWith("volume_");
 		
 		Parameter dataP = nluResult.getOptionalParameter(PARAMETERS.DATA, "");
 		String data = dataP.getValueAsString();
@@ -173,10 +177,26 @@ public class ClientControls implements ServiceInterface{
 			}else{
 				//TODO: implement, ask or fail?
 			}
-		}else if (isMedia){
-			//media support - TODO: limited to stop currently 
-			if (isActionClose){
+		}else if (isMedia && !isVolume){
+			//media support 
+			if (mediaControls.equals(MediaControls.Type.close.name())){
+				actionName = "close";
+			}else if (mediaControls.equals(MediaControls.Type.stop.name())){
 				actionName = "stop";
+			}else if (mediaControls.equals(MediaControls.Type.pause.name())){
+				actionName = "pause";
+			}else if (mediaControls.equals(MediaControls.Type.play.name())){
+				actionName = "play";
+			}else if (mediaControls.equals(MediaControls.Type.next.name())){
+				actionName = "next";
+			}else if (mediaControls.equals(MediaControls.Type.previous.name())){
+				actionName = "previous";
+			}else if (mediaControls.equals(MediaControls.Type.resume.name())){
+				actionName = "resume";
+			/*}else if (isActionOpen){
+				
+			}else if (isActionClose){*/
+				
 			}else{
 				//TODO: implement, ask or fail?
 			}
@@ -198,7 +218,7 @@ public class ClientControls implements ServiceInterface{
 				}
 			}
 			//volume support
-			if (!num.isEmpty() && (isActionEdit || isActionIncrease || isActionDecrease)){
+			if (!num.isEmpty() && (isActionEdit || isActionIncrease || isActionDecrease || mediaControls.startsWith("volume_"))){
 				long vol = Converters.obj2LongOrDefault(num, -1l);
 				if (vol > 11){
 					api.setCustomAnswer("client_controls_volume_exceeded_0a");
@@ -206,14 +226,14 @@ public class ClientControls implements ServiceInterface{
 					api.setCustomAnswer("client_controls_volume_eleven_0a");
 				}
 				actionName = ("volume;;" + num); 		//we take the shortcut here =)
-			}else if (num.isEmpty() && isActionEdit){
+			}else if (num.isEmpty() && (mediaControls.equals(MediaControls.Type.volume_set.name()) || isActionEdit)){
 				//abort with generic question
 				api.setIncompleteAndAsk(PARAMETERS.NUMBER, "default_ask_parameter_0b");
 				ServiceResult result = api.buildResult();
 				return result;
-			}else if (isActionIncrease){
+			}else if (isActionIncrease || mediaControls.equals(MediaControls.Type.volume_up.name())){
 				actionName = "up";
-			}else if (isActionDecrease){
+			}else if (isActionDecrease || mediaControls.equals(MediaControls.Type.volume_down.name())){
 				actionName = "down";
 			}else{
 				//TODO: implement, ask or fail?

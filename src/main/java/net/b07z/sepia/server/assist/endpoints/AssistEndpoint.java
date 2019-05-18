@@ -60,6 +60,7 @@ public class AssistEndpoint {
 		connection,			//http or ws (WebSocket), defaults to http, check also: NluInput.isDuplexConnection()
 		msg_id,				//duplex connections might want to track the msg id
 		duplex_data, 		//more duplex data in JSON format
+		custom_data,		//custom data defined by a client as required
 		demomode
 	}
 
@@ -273,6 +274,7 @@ public class AssistEndpoint {
 		String connection = params.getString(InputParameters.connection.name());		//http or ws
 		String msg_id = params.getString(InputParameters.msg_id.name());				//msg ID
 		String duplex_data = params.getString(InputParameters.duplex_data.name());		//duplex data
+		String custom_data = params.getString(InputParameters.custom_data.name());		//custom data string
 		long time = -1;
 		//-answer params:
 		String last_cmd = params.getString(InputParameters.last_cmd.name());
@@ -294,6 +296,7 @@ public class AssistEndpoint {
 		if (connection!=null)		input.connection = connection;
 		if (msg_id!=null)			input.msgId = msg_id;
 		if (duplex_data!=null)		input.duplexData = duplex_data;
+		if (custom_data!=null)		input.customData = custom_data;
 		if (env!=null)				input.environment = env; 		else 	input.environment = "all"; //input.client_info.replaceFirst("_v\\d.*", "").trim();
 		if (deviceId!=null)			input.deviceId = deviceId;
 		if (user_location!=null)	input.userLocation = user_location;

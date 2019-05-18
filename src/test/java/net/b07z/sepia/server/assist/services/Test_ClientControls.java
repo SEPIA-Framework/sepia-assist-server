@@ -51,11 +51,32 @@ public class Test_ClientControls {
 		tests.put("Set the volume to 11", 		JSON.make("c", CC, "p", JSON.make(PARAMETERS.MEDIA_CONTROLS, "<volume_set>.*")));
 		tests.put("Set the volume to eleven", 	JSON.make("c", CC));
 		tests.put("Play the next song", 		JSON.make("c", CC, "p", JSON.make(PARAMETERS.MEDIA_CONTROLS, "<next>.*")));
-		tests.put("Next", 						JSON.make("c", CC));
-		tests.put("Back", 						JSON.make("c", CC));
+		tests.put("Next", 						JSON.make("c", CC, "p", JSON.make(PARAMETERS.CLIENT_FUN, "<media>.*")));
+		tests.put("Back", 						JSON.make("c", CC, "p", JSON.make(PARAMETERS.CLIENT_FUN, "<media>.*")));
 		tests.put("Stop music", 				JSON.make("c", CC, "p", JSON.make(PARAMETERS.MEDIA_CONTROLS, "<stop>.*")));
 		tests.put("Play music", 						JSON.make("c", M));
 		tests.put("Play stop and go by Fake Artist", 	JSON.make("c", M));
+		tests.put("What is Lahmacun", 				JSON.make("c", CMD.KNOWLEDGEBASE));
+		tests.put("What is the best way to work", 	JSON.make("c", CMD.DIRECTIONS));
+		
+		for (Map.Entry<String, JSONObject> t : tests.entrySet()){
+			String shouldBeCmd = JSON.getString(t.getValue(), "c");
+			JSONObject parameterRegExpMatches = JSON.getJObject(t.getValue(), "p");
+			testSentenceViaKeywordAnalyzer(doAnswer, t.getKey(), language, shouldBeCmd, parameterRegExpMatches);
+		}
+		
+		language = LANGUAGES.DE;
+		tests = new HashMap<>();
+		tests.put("Setze die Lautstärke auf 11", 	JSON.make("c", CC, "p", JSON.make(PARAMETERS.MEDIA_CONTROLS, "<volume_set>.*")));
+		tests.put("Lautstärke auf elf", 			JSON.make("c", CC));
+		tests.put("Starte den nächsten Song", 		JSON.make("c", CC, "p", JSON.make(PARAMETERS.MEDIA_CONTROLS, "<next>.*")));
+		tests.put("Weiter", 						JSON.make("c", CC, "p", JSON.make(PARAMETERS.CLIENT_FUN, "<media>.*")));
+		tests.put("Zurück", 						JSON.make("c", CC, "p", JSON.make(PARAMETERS.CLIENT_FUN, "<media>.*")));
+		tests.put("Musik anhalten", 				JSON.make("c", CC, "p", JSON.make(PARAMETERS.MEDIA_CONTROLS, "<pause>.*")));
+		tests.put("Musik spielen", 								JSON.make("c", M));
+		tests.put("Spiele Stop und Weiter von Fake Künstler", 	JSON.make("c", M));
+		tests.put("Was ist Lahmacun", 							JSON.make("c", CMD.KNOWLEDGEBASE));
+		tests.put("Was ist der beste Weg zur Arbeit", 	JSON.make("c", CMD.DIRECTIONS));
 		
 		for (Map.Entry<String, JSONObject> t : tests.entrySet()){
 			String shouldBeCmd = JSON.getString(t.getValue(), "c");

@@ -45,6 +45,7 @@ default_open_link_0a;;		rep=0|mood=5;;		Mist, da gibts scheinbar ein Problem mit
 default_open_link_1a;;		rep=0|mood=5;;		Ok, ich öffne den Link für dich. ;;char=neutral
 default_open_link_1a;;		rep=0|mood=5;;		Eine Sekunde, ich öffne den Link. ;;char=neutral
 default_under_construction_0a;;		rep=0|mood=5;;		Daran wird noch gearbeitet, sorry.  ;;char=neutral
+default_under_construction_0b;;		rep=0|mood=5;;		Oh, hab mich vertan, sorry! Daran wird noch gearbeitet.  ;;char=neutral
 default_abort_no_change_0a;;		rep=0|mood=5;;		Ok, dann lasse ich mal alles so.  ;;char=neutral
 default_not_possible_0a;;			rep=0|mood=5;;		Sorry aber das ist nicht möglich, glaube ich.  ;;char=neutral
 yes_no_ask_0a;;		rep=0|mood=5;;		ja oder nein <user_name>? ;;char=cool,rude,neutral
