@@ -74,7 +74,10 @@ public class MusicArtist implements ParameterHandler {
 		if (this.language.matches(LANGUAGES.DE)){
 			if (!optimizedInput.matches(".*\\b(von|vom) .+ (nach|bis)\\b.*") 
 					|| NluTools.stringContains(optimizedInput, "spiel(en|e|)|start(en|e|)|oeffne(n|)")){
-				creator = NluTools.stringFindFirst(optimizedInput, "(von|vom) .*");
+				//one or two matches (e.g. castles made of sand by Jimi Hendrix)
+				String m1 = NluTools.stringFindFirst(optimizedInput, "(von|vom) .*");
+				String m2 = (!m1.isEmpty())? NluTools.stringFindFirst(m1.replaceFirst("\\w+ ", ""), "(von|vom) .*") : "";
+				creator = (!m2.isEmpty())? m2 : m1;
 				creator = creator.replaceFirst("^(von|vom) ", "");
 				creator = creator.replaceFirst("^(der|die|das|dem|den|einer|eine|einem)\\b", "").trim();
 				creator = creator.replaceFirst("^(artist|musiker|kuenstler)\\b", "").trim();
@@ -85,7 +88,9 @@ public class MusicArtist implements ParameterHandler {
 		}else{
 			if (!optimizedInput.matches(".*\\b(from|of|by) .+ (to|till|until)\\b.*")
 					|| NluTools.stringContains(optimizedInput, "play|start|open")){
-				creator = NluTools.stringFindFirst(optimizedInput, "(from|of|by) .*");
+				String m1 = NluTools.stringFindFirst(optimizedInput, "(from|of|by) .*");
+				String m2 = (!m1.isEmpty())? NluTools.stringFindFirst(m1.replaceFirst("\\w+ ", ""), "(from|of|by) .*") : "";
+				creator = (!m2.isEmpty())? m2 : m1;
 				creator = creator.replaceFirst("^(from|of|by) ", "");
 				creator = creator.replaceFirst("^(the|a|an)\\b", "").trim();
 				creator = creator.replaceFirst("^(artist|musician)\\b", "").trim();

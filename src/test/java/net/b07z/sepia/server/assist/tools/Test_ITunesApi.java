@@ -18,7 +18,7 @@ public class Test_ITunesApi {
 		System.out.println(s.toJSONString());
 		
 		Debugger.sleep(500);
-		
+		/*
 		s = api.searchBestMusicItem("Paradise City", "Guns n Roses", "Greatest Hits", "", "");
 		System.out.println(s.toJSONString());
 
@@ -55,6 +55,12 @@ public class Test_ITunesApi {
 		Debugger.sleep(500);
 		
 		s = api.searchBestMusicItem("Wichtig", "Selig", "", "", "");
+		System.out.println(s.toJSONString());
+		
+		Debugger.sleep(500);
+		*/
+		
+		s = api.searchBestMusicItem("Castles made", "Jimi Hendrix", "", "", "");
 		System.out.println(s.toJSONString());
 	}
 

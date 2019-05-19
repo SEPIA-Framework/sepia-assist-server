@@ -105,6 +105,7 @@ public class Test_MusicParameters {
 		testMusicParameters("stop the next song",				"[, , , , , ]", lang);
 		testMusicParameters("play next song on the playlist",	"[, , , , , ]", lang);
 		testMusicParameters("play something from the Chill playlist",	"[, , , , Chill, ]", lang);
+		testMusicParameters("play castles made of sand by Jimi Hendrix on Apple Music",	"[<apple_music>, , Jimi Hendrix, castles made of sand, , ]", lang);
 				
 		System.out.println("-----------");
 		

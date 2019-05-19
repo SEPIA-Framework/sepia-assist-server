@@ -231,11 +231,13 @@ public class ITunesApi {
 						//ARTIST
 						}else if (entity.equals(ENTITY_ARTIST) && (kind.equals("artist") || wrapperType.equals("artist"))){
 							//We have to trust the first result
+							JSONArray genres = new JSONArray();
+							JSON.add(genres, primaryGenreName);
 							return JSON.make(
 									"type", TYPE_ARTIST, 
 									"name", artistName,
 									"uri", JSON.getString(item, "artistLinkUrl"),
-									"genres", primaryGenreName
+									"genres", genres
 							);
 						}
 					}
@@ -279,7 +281,11 @@ public class ITunesApi {
 		if (Is.nullOrEmpty(found)){
 			return 0.0d;
 		}else{
-			double score = 1.0d - (StringCompare.editDistance(search.toLowerCase(), found.toLowerCase()) / (double) Math.min(search.length(), found.length()));
+			found = found.replaceAll("(,|\\.|'|´|`|&|!|\\?)", " ").replaceAll("\\s+", " ").trim().toLowerCase();
+			search = search.toLowerCase();
+			double score = 1.0d - (StringCompare.editDistance(search, found) / (double) Math.min(search.length(), found.length()));
+			if (score < 0.0d) score = 0.0d;
+			if (found.contains(search)) score += (search.split(" ").length / (double) found.split(" ").length);
 			//System.out.println("Score: " + score); 		//DEBUG
 			return score;
 		}

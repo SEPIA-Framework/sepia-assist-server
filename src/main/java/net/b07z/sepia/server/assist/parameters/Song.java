@@ -70,8 +70,9 @@ public class Song implements ParameterHandler {
 			optimizedInput = ParameterResult.cleanInputOfFoundParameter(nluInput, PARAMETERS.MUSIC_ALBUM, prMusicAlbum, optimizedInput);
 		}
 		
-		
 		String song = RegexParameterSearch.get_startable(optimizedInput, this.language);
+		//TODO: this will fail for 'play castles made of sand by Jimi Hendrix'
+		
 		//some filters
 		if (song.contains("playlist")){
 			song = "";
