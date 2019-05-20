@@ -113,14 +113,47 @@ public class EventsManager {
 		
 		//random messages to entertain the user
 		if (localTimeIsKnown){
-			addScheduledEntertainMessage(actionBuilder, EventDialogs.Type.randomMotivationMorning.name(), ((10l - hod) * 60l - (30l - moh)) * 60l * 1000l,
-					EventDialogs.getMessage(EventDialogs.Type.randomMotivationMorning, input.language));
-			addScheduledEntertainMessage(actionBuilder, EventDialogs.Type.haveLunch.name(), ((13l - hod) * 60l - moh) * 60l * 1000l,
-					EventDialogs.getMessage(EventDialogs.Type.haveLunch, input.language));
-			addScheduledEntertainMessage(actionBuilder, EventDialogs.Type.makeCoffebreak.name(), ((16l - hod) * 60l - moh) * 60l * 1000l,
-					EventDialogs.getMessage(EventDialogs.Type.makeCoffebreak, input.language));
-			addScheduledEntertainMessage(actionBuilder, EventDialogs.Type.beActive.name(), ((18l - hod) * 60l - moh) * 60l * 1000l,
-					EventDialogs.getMessage(EventDialogs.Type.beActive, input.language));
+			//check if the client sent a list of recently triggered events
+			Object recentPaeObj = input.getCustomDataObject("recentPAE");
+			JSONObject recentPAE = null;
+			if (recentPaeObj != null){
+				try{
+					recentPAE = (JSONObject) recentPaeObj;
+					//System.out.println("recentPAE: " + recentPAE.toJSONString());		//DEBUG
+				}catch (Exception e){
+					Debugger.println("EventsManager - failed to parse 'recentPAE': " + e.getMessage(), 1);
+					Debugger.printStackTrace(e, 3);
+					recentPAE = null;
+				}
+			}
+			//Schedule new ones:
+			long oldEnough = 1000l * 60l * 60l * 12l;	//12h
+			//
+			//randomMotivationMorning
+			if (recentPAE == null || JSON.getLongOrDefault(recentPAE, EventDialogs.Type.randomMotivationMorning.name(), oldEnough) >= oldEnough){
+				addScheduledEntertainMessage(actionBuilder, EventDialogs.Type.randomMotivationMorning.name(), ((10l - hod) * 60l - (30l - moh)) * 60l * 1000l,
+						EventDialogs.getMessage(EventDialogs.Type.randomMotivationMorning, input.language));
+			}
+			//haveLunch
+			if (recentPAE == null || JSON.getLongOrDefault(recentPAE, EventDialogs.Type.haveLunch.name(), oldEnough) >= oldEnough){
+				addScheduledEntertainMessage(actionBuilder, EventDialogs.Type.haveLunch.name(), ((13l - hod) * 60l - moh) * 60l * 1000l,
+						EventDialogs.getMessage(EventDialogs.Type.haveLunch, input.language));
+			}
+			//makeCoffebreak
+			if (recentPAE == null || JSON.getLongOrDefault(recentPAE, EventDialogs.Type.makeCoffebreak.name(), oldEnough) >= oldEnough){
+				addScheduledEntertainMessage(actionBuilder, EventDialogs.Type.makeCoffebreak.name(), ((16l - hod) * 60l - moh) * 60l * 1000l,
+						EventDialogs.getMessage(EventDialogs.Type.makeCoffebreak, input.language));
+			}
+			//beActive
+			if (recentPAE == null || JSON.getLongOrDefault(recentPAE, EventDialogs.Type.beActive.name(), oldEnough) >= oldEnough){
+				addScheduledEntertainMessage(actionBuilder, EventDialogs.Type.beActive.name(), ((18l - hod) * 60l - moh) * 60l * 1000l,
+						EventDialogs.getMessage(EventDialogs.Type.beActive, input.language));
+			}
+			//customTestEvent
+			/*if (recentPAE == null || JSON.getLongOrDefault(recentPAE, "customTestEvent", 60000) >= 60000){
+				System.out.println("sent recentPAE customTestEvent");		//DEBUG
+				addScheduledEntertainMessage(actionBuilder, "customTestEvent", 20000l, "Hello, this is a test message");
+			}*/
 		}
 		
 		//news buttons
@@ -284,6 +317,7 @@ public class EventsManager {
 		actionBuilder.putActionInfo("info", "entertainWhileIdle");		//TODO: one could distinguish messages that are only triggered when the app is not in foreground vs. important notes etc ...
 		actionBuilder.putActionInfo("eventId", eventId);
 		actionBuilder.putActionInfo("triggerIn", triggerDelayMS);
+		actionBuilder.putActionInfo("created", System.currentTimeMillis());
 		actionBuilder.putActionInfo("text", message);
 		//actionBuilder.actionInfo_put_info("options", "inputHidden");
 	}
@@ -295,6 +329,7 @@ public class EventsManager {
 		actionBuilder.putActionInfo("info", "proActiveNote");		//TODO: one could distinguish messages that are only triggered when the app is not in foreground vs. important notes etc ...
 		actionBuilder.putActionInfo("eventId", eventId);
 		actionBuilder.putActionInfo("triggerIn", triggerDelayMS);
+		actionBuilder.putActionInfo("created", System.currentTimeMillis());
 		actionBuilder.putActionInfo("text", message);
 		//actionBuilder.actionInfo_put_info("options", "inputHidden");
 	}
