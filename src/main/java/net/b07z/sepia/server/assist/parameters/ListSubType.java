@@ -71,7 +71,7 @@ public class ListSubType implements ParameterHandler{
 		//German
 		if (language.equals(LANGUAGES.DE)){
 			//old: (\\w+ |)(to do |\\w+(-| |)(\\w+-|))
-			genericListWithPrefix = "(\\w+ und |)(\\w+ |)((to do )|(\\w+-\\w+(-| ))|(\\w+(-| |)))(list(en|e|)|zettel|note(s|)|notiz(en|))(?! (\\w+ |)(auf|von|zu(r|)))";
+			genericListWithPrefix = "(\\w+ (und|oder) |)+(\\w+ |)((to do )|(\\w+-\\w+(-| ))|(\\w+(-| |)))(list(en|e|)|zettel|note(s|)|notiz(en|))(?! (\\w+ |)(auf|von|zu(r|)))";
 			extractedRawTerm = NluTools.stringFindFirst(input, genericListWithPrefix);
 			extractedRawTerm = extractedRawTerm.replaceFirst("\\b(auf |von |zu(r|) )\\b", "").trim();
 			extractedRawTerm = extractedRawTerm.replaceFirst(".*\\b(meine(n|r|m|)|die|der|den|eine|einer|einen|einem|mir)\\b", "").trim();
@@ -81,7 +81,7 @@ public class ListSubType implements ParameterHandler{
 			
 		//English and other
 		}else{
-			genericListWithPrefix = "(\\w+ and |)(\\w+ |)((to do )|(\\w+-\\w+(-| ))|(\\w+(-| )))(list(s|)|note(s|))(?! (\\w+ |)(onto|on|to|at|from))";
+			genericListWithPrefix = "(\\w+ (and|or) |)+(\\w+ |)((to do )|(\\w+-\\w+(-| ))|(\\w+(-| )))(list(s|)|note(s|))(?! (\\w+ |)(onto|on|to|at|from))";
 			extractedRawTerm = NluTools.stringFindFirst(input, genericListWithPrefix);
 			extractedRawTerm = extractedRawTerm.replaceFirst("\\b(on |onto |to |at |from )\\b", "").trim();
 			extractedRawTerm = extractedRawTerm.replaceFirst(".*\\b(my|a|the)\\b", "").trim();

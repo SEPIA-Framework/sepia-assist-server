@@ -223,11 +223,11 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 		//web search
 		if (NluTools.stringContains(text, "(websuche|websearch|web suche|"
 						+ "(durchsuche|suche|schau|finde|zeig)( mir|)( mal| bitte|)( bitte| mal|)( im| das) (web|internet))|"
-						+ "^google|^bing|^yahoo|^duck duck|^duck duck go|"
+						+ "^google|^bing|^yahoo|^duck duck|^duck duck go|^youtube|"
 						+ "^(bild(ern|er|)|rezept(en|e|)|video(s|)|movie(s|)|film(en|e|)|\\w*(-|)aktie(n|)|aktien(wert|kurs)|buecher(n|)|buch)|"
 						+ "(wie|wo) (ist|steht|stehen) (der|die) (aktienkurs|aktienwert|aktie(n|)|kurs|wert) (von|vom|der)|(wie|wo) (steht|stehen) .*aktie(n|)|"
 						+ "(durchsuche|suche|schau|finde|zeig)( | .* )(im (web|internet))|"
-						+ "(durchsuche|suche|schau|finde|zeig)( | .* )(mit|per|via|auf|ueber|mittels|bei) (google|bing|duck duck go|duck duck|yahoo)|"
+						+ "(durchsuche|suche|schau|finde|zeig)( | .* )(mit|per|via|auf|ueber|mittels|bei) (google|bing|duck duck go|duck duck|yahoo|youtube)|"
 						+ "(durchsuche|suche|schau|finde|zeig)( | .* )(bilder(n|)|rezepte(n|)|video(s|)|youtube|movies|filme(n|)|buecher(n|)|(-|)aktie(n|)|aktien(wert|kurs))")
 					//|| NLU_Tools.stringContains(text, "suche(n|)|finde(n|)|zeig(en|)")
 					//|| (NLU_Tools.stringContains(text, "suche(n|)|finde(n|)|zeig(en|)") 

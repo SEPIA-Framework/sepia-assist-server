@@ -14,14 +14,18 @@ import net.b07z.sepia.server.core.tools.JSON;
 
 public class WebSearchEngine implements ParameterHandler{
 	
+	//Common
+	public static final String GOOGLE = "google";
+	public static final String BING = "bing";
+	public static final String YAHOO = "yahoo";
+	public static final String DUCK_DUCK_GO = "duck duck go";
+	//Specialized
+	public static final String YOUTUBE = "youtube";
+	
 	//-----data-----
-	/* may cause confusion
-	public static final String GOOGLE = "Google";
-	public static final String YAHOO = "Yahoo";
-	public static final String BING = "Bing";
-	public static final String DUCK_DUCK_GO = "DuckDuckGo"; */
 	
 	public static final String names = "(google|bing|duck duck go|duck duck|duckduckgo|yahoo|youtube)";
+	
 	//--------------
 
 	User user;

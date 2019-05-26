@@ -143,20 +143,18 @@ public class ClientControls implements ServiceInterface{
 		
 		Parameter controlFunP = nluResult.getRequiredParameter(PARAMETERS.CLIENT_FUN);
 		String controlFun = controlFunP.getValueAsString().replaceAll("^<|>$", "").trim();
-		String controlFunLocal = (String) controlFunP.getDataFieldOrDefault(InterviewData.VALUE_LOCAL);
-		if (Is.nullOrEmpty(controlFunLocal)){
-			controlFunLocal = "Control";
-		}else{
-			try{
-				controlFunLocal = NluTools.capitalizeAll(controlFunLocal.split("\\s")[1]);
-			}catch(Exception e){}
-		}
+		
 		boolean isSettings = controlFun.equals(ClientFunction.Type.settings.name());
 		boolean isAlwaysOn = controlFun.equals(ClientFunction.Type.alwaysOn.name());
 		boolean isMeshNode = controlFun.equals(ClientFunction.Type.meshNode.name());
 		boolean isClexi = controlFun.equals(ClientFunction.Type.clexi.name());
 		boolean isMedia = controlFun.equals(ClientFunction.Type.media.name()); 		//NOTE: media and volume can exist simultaneously
 		boolean isVolume = controlFun.equals(ClientFunction.Type.volume.name()) || mediaControls.startsWith("volume_");
+		
+		if (isVolume){
+			controlFun = ClientFunction.Type.volume.name();
+		}
+		String controlFunLocal = ClientFunction.getLocalButtonName(controlFun, nluResult.language);
 		
 		Parameter dataP = nluResult.getOptionalParameter(PARAMETERS.DATA, "");
 		String data = dataP.getValueAsString();

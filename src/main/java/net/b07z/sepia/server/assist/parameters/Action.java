@@ -136,7 +136,7 @@ public class Action implements ParameterHandler{
 			off = "(mach|schalte|dreh) .*\\b(aus)|"
 					+ "^\\w+\\b (aus$)|"
 					+ "schliessen|schliesse|deaktivieren|deaktiviere|"
-					+ "beenden|beende|ausschalten|aus schalten|ausmachen|aus machen|ausdrehen|aus drehen|stoppen|stoppe|stop|exit";
+					+ "beenden|beende|ausschalten|aus schalten|ausmachen|aus machen|ausdrehen|aus drehen|stop(pen|pe|p|)|exit";
 			pause = "pausieren|pause|anhalten|halte .*\\b(an)";
 			increase = "(mach|dreh) .*\\b(auf|hoch)|"
 					+ "(?<!(wie ))hoch|rauf|hoeher|groesser|erhoehen|aufdrehen|erhoehe|verstaerk(en|e)|heller|(?<!(ist ))schneller|(?<!(ist ))staerker|waermer|warm|lauter|laut";

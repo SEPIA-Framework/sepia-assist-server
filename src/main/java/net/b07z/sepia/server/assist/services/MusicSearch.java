@@ -42,6 +42,11 @@ import net.b07z.sepia.server.core.tools.JSON;
  */
 public class MusicSearch implements ServiceInterface{
 	
+	public static final String CARD_TYPE = "musicSearch";
+	public static final String CARD_BRAND_YOUTUBE = "YouTube";
+	public static final String CARD_BRAND_SPOTIFY = "Spotify";
+	public static final String CARD_BRAND_APPLE_MUSIC = "Apple Music";
+	
 	//Define some sentences for testing:
 	
 	@Override
@@ -173,9 +178,20 @@ public class MusicSearch implements ServiceInterface{
 			}
 			//System.out.println("defaultMusicApp: " + service);		//DEBUG
 		}
-		boolean isSpotifyService = service.equals(MusicService.Service.spotify.name()) || service.equals(MusicService.Service.spotify_link.name());
-		boolean isAppleMusic = service.equals(MusicService.Service.apple_music.name()) || service.equals(MusicService.Service.apple_music_link.name());
-		boolean requiresUri = service.contains("_link");
+		boolean isSpotifyService = service.startsWith(MusicService.Service.spotify.name());
+		boolean isAppleMusic = service.startsWith(MusicService.Service.apple_music.name());
+		boolean isYouTube = service.startsWith(MusicService.Service.youtube.name());
+		boolean requiresUri = service.contains("_link") || service.contains("_embedded");
+		String rootService = service.replace("_link", "").replace("_embedded", "").trim();
+		
+		//check if embedding is desired and possible
+		boolean requestEmbedded = false;
+		if (isYouTube || service.contains("_embedded")){		//NOTE: YouTube embedding is usually a common feature in the client used for search as well
+			Object embeddingsObj = nluResult.input.getCustomDataObject("embeddedPlayers");
+			if (embeddingsObj != null){
+				requestEmbedded = ((JSONArray) embeddingsObj).contains(rootService);
+			}
+		}
 		
 		//Basically this service cannot fail here ... only inside client ... but we'll also try to get some more data:
 		
@@ -194,7 +210,7 @@ public class MusicSearch implements ServiceInterface{
 		if (service.equals(MusicService.Service.youtube.name()) || service.isEmpty()){
 			//Icon
 			cardIconUrl = Config.urlWebImages + "brands/youtube-logo.png";
-			cardBrand = "YouTube";
+			cardBrand = CARD_BRAND_YOUTUBE;
 			cardSubtitle = "YouTube Search";
 			//Search
 			String q = "";
@@ -245,7 +261,7 @@ public class MusicSearch implements ServiceInterface{
 			if (Config.spotifyApi != null){
 				//Icon
 				cardIconUrl = Config.urlWebImages + "brands/spotify-logo.png";
-				cardBrand = "Spotify";
+				cardBrand = CARD_BRAND_SPOTIFY;
 				//Search
 				JSONObject spotifyBestItem = Config.spotifyApi.searchBestItem(song, artist, album, playlistName, genre);
 				foundUri = JSON.getString(spotifyBestItem, "uri");
@@ -325,7 +341,7 @@ public class MusicSearch implements ServiceInterface{
 		}else if(isAppleMusic){
 			//Icon
 			cardIconUrl = Config.urlWebImages + "brands/apple-music-logo.png";
-			cardBrand = "Apple Music";
+			cardBrand = CARD_BRAND_APPLE_MUSIC;
 			//Search (we use the open iTunes API instead of Apple Music API (because it is too hard to get an Apple Music key)
 			ITunesApi iTunesApi = new ITunesApi((nluResult.language.equals(LANGUAGES.DE))? "DE" : "US");		//TODO: add more country codes if we need them ...
 			JSONObject iTunesBestItem = iTunesApi.searchBestMusicItem(song, artist, album, playlistName, genre);
@@ -401,27 +417,35 @@ public class MusicSearch implements ServiceInterface{
 			JSON.put(controlData, "uri", foundUri);
 		}
 		
-		//client control action
-		api.addAction(ACTIONS.CLIENT_CONTROL_FUN);
-		api.putActionInfo("fun", controlFun);
-		api.putActionInfo("controlData", controlData);
-				
-		//... and action button
-		api.addAction(ACTIONS.BUTTON_CUSTOM_FUN);
-		api.putActionInfo("fun", "controlFun;;" + controlFun + ";;" + controlData.toJSONString());
-		api.putActionInfo("title", Is.notNullOrEmpty(serviceLocal)? serviceLocal : "Button");
+		//Actions (only if its not a card embedding)
+		if (!requestEmbedded){
+			//client control action
+			api.addAction(ACTIONS.CLIENT_CONTROL_FUN);
+			api.putActionInfo("fun", controlFun);
+			api.putActionInfo("controlData", controlData);
+					
+			//... and action button
+			api.addAction(ACTIONS.BUTTON_CUSTOM_FUN);
+			api.putActionInfo("fun", "controlFun;;" + controlFun + ";;" + controlData.toJSONString());
+			api.putActionInfo("title", Is.notNullOrEmpty(serviceLocal)? serviceLocal : "Button");
+		}
 		
 		//Cards (or web-search?)
 		if (Is.notNullOrEmpty(foundUri)){
 			Card card = new Card(Card.TYPE_SINGLE);
+			JSONObject cardData = JSON.make(
+				"title", cardTitle, 
+				"desc", cardSubtitle,
+				"type", CARD_TYPE,
+				"brand", cardBrand
+			); 
+			if (requestEmbedded){
+				JSON.put(cardData, "embedded", true);
+				JSON.put(cardData, "autoplay", true);
+			}
 			//JSONObject linkCard = 
 			card.addElement(ElementType.link, 
-					JSON.make(
-							"title", cardTitle, 
-							"desc", cardSubtitle,
-							"type", "musicSearch",
-							"brand", cardBrand
-					),
+					cardData,
 					null, null, "", 
 					foundUri, 
 					cardIconUrl, 

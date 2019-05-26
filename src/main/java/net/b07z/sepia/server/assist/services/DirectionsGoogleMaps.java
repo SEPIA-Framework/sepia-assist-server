@@ -397,13 +397,12 @@ public class DirectionsGoogleMaps implements ServiceInterface{
 			api.setCustomAnswer(wpAnswer);
 		}
 		
-		//make action: browser url call
-		/*
-		if (!isInfoAnswer){
-			api.actionInfo_add_action(ACTIONS.OPEN_URL);
-			api.actionInfo_put_info("url", googleMapsURL); 		//<- first one is Google maps
+		//make action: browser URL call
+		if (!isInfoAnswer && !hasOptions){
+			api.addAction(ACTIONS.OPEN_IN_APP_BROWSER);
+			api.putActionInfo("url", (appleMapsURL.isEmpty())? googleMapsURL : appleMapsURL);
 		}
-		*/
+		
 		/*
 		//google button
 		api.actionInfo_add_action(ACTIONS.BUTTON_URL);

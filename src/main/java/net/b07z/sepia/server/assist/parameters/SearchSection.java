@@ -16,11 +16,15 @@ import net.b07z.sepia.server.core.tools.JSON;
 public class SearchSection implements ParameterHandler{
 
 	//-----data-----
+	
+	//TODO: section names should become an enumerator (e.g. used in WebsearchBasic)
+	
 	public static HashMap<String, String> sections_de = new HashMap<>();
 	public static HashMap<String, String> sections_en = new HashMap<>();
 	static {
 		sections_de.put("<pictures>", "Bilder");
 		sections_de.put("<recipes>", "Rezepte");
+		sections_de.put("<music>", "Musik");
 		sections_de.put("<videos>", "Videos");
 		sections_de.put("<movies>", "Filme");
 		sections_de.put("<shares>", "Aktien");
@@ -28,6 +32,7 @@ public class SearchSection implements ParameterHandler{
 				
 		sections_en.put("<pictures>", "pictures");
 		sections_en.put("<recipes>", "recipes");
+		sections_en.put("<music>", "music");
 		sections_en.put("<videos>", "videos");
 		sections_en.put("<movies>", "movies");
 		sections_en.put("<shares>", "shares");
@@ -83,11 +88,25 @@ public class SearchSection implements ParameterHandler{
 		String type = "";
 		//German
 		if (language.matches(LANGUAGES.DE)){
-			type = NluTools.stringFindFirst(input, "(-|)(bild(ern|er|)|rezept(en|e|)|video(s|)|movie(s|)|film(en|e|)|aktie(n|)|aktien(kurs|wert)|buecher(n|)|buch)");
+			type = NluTools.stringFindFirst(input, "(-|)"
+					+ "(bild(ern|er|)|"
+					+ "rezept(en|e|)|"
+					+ "video(s|)|"
+					+ "movie(s|)|film(en|e|)|"
+					+ "musik|lied(ern|er|)|song(s|)|"
+					+ "aktie(n|)|aktien(kurs|wert)|"
+					+ "buecher(n|)|buch)");
 			
 		//English and other
 		}else{
-			type = NluTools.stringFindFirst(input, "(-|)(picture(s|)|recipe(s|)|video(s|)|movie(s|)|film(s|)|share(s|)|stock(s|)|book(s|))");			
+			type = NluTools.stringFindFirst(input, "(-|)"
+					+ "(picture(s|)|"
+					+ "recipe(s|)|"
+					+ "video(s|)|"
+					+ "movie(s|)|film(s|)|"
+					+ "music|song(s|)|"
+					+ "share(s|)|stock(s|)|"
+					+ "book(s|))");			
 		}
 		//System.out.println("searchType: " + type); 		//debug
 		return type.replaceFirst("-", "");
@@ -105,6 +124,8 @@ public class SearchSection implements ParameterHandler{
 			return "<videos>";
 		}else if (NluTools.stringContains(valueFound, "movie(s|)|film(s|)|film(en|e|)")){
 			return "<movies>";
+		}else if (NluTools.stringContains(valueFound, "music|song(s|)|musik|lied(ern|er|)")){
+			return "<music>";
 		}else if (NluTools.stringContains(valueFound, "aktie(n|)|aktien(kurs|wert)|share(s|)|stock(s|)")){
 			return "<shares>";
 		}else if (NluTools.stringContains(valueFound, "buecher(n|)|buch|book(s|)")){

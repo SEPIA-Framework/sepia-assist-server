@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
@@ -16,7 +17,9 @@ import net.b07z.sepia.server.assist.data.Card.ElementType;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
+import net.b07z.sepia.server.assist.parameters.MusicService;
 import net.b07z.sepia.server.assist.parameters.SearchSection;
+import net.b07z.sepia.server.assist.parameters.WebSearchEngine;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
@@ -33,13 +36,17 @@ import net.b07z.sepia.server.core.tools.JSON;
  */
 public class WebsearchBasic implements ServiceInterface{
 	
-	//Search engines
-	public static ArrayList<String> engines = new ArrayList<>();
+	public static final String CARD_TYPE = "websearch";
+	public static final String CARD_TYPE_SPECIAL_VIDEO = "videoSearch";
+	
+	//Search engines for random-selection
+	private static ArrayList<String> commonEngines = new ArrayList<>();
 	static{
-		engines.add("google");
-		engines.add("bing");
-		engines.add("duck duck go");
-		engines.add("yahoo");
+		commonEngines.add(WebSearchEngine.GOOGLE);
+		commonEngines.add(WebSearchEngine.BING);
+		commonEngines.add(WebSearchEngine.DUCK_DUCK_GO);
+		commonEngines.add(WebSearchEngine.YAHOO);
+		//NOTE: add only "real" web-search engines here (not specialized things like YouTube)
 	}
 	
 	//--- data ---
@@ -133,10 +140,6 @@ public class WebsearchBasic implements ServiceInterface{
 		String engineIconUrl = getRes[2];
 		String engineIconUrlRnd = getResRnd[2];
 		
-		//make action: in app browser url call and button
-		api.addAction(ACTIONS.OPEN_IN_APP_BROWSER);
-		api.putActionInfo("url", search_url);
-		
 		String title1 = getButtonText(engineName, api.language);
 		//Button 1 
 		/*
@@ -145,20 +148,41 @@ public class WebsearchBasic implements ServiceInterface{
 		api.actionInfo_put_info("title", title1);
 		*/
 		//Card 1
+		boolean addUrlAction = true;	//this is usually enabled, but if engine is YouTube and embedding is possible we should skip this
 		Card card = new Card(Card.TYPE_SINGLE);
+		JSONObject cardData = JSON.make(
+			"title", title1 + ":", 
+			"desc", "<i>\"" + search + "\"</i>",
+			"type", CARD_TYPE
+		); 
+		if (engine.contains(WebSearchEngine.YOUTUBE)){
+			JSON.put(cardData, "type", CARD_TYPE_SPECIAL_VIDEO);			//overwrite
+			JSON.put(cardData, "brand", MusicSearch.CARD_BRAND_YOUTUBE);
+			JSON.put(cardData, "autoplay", false);
+			//check if embedding is possible
+			Object embeddingsObj = nluResult.input.getCustomDataObject("embeddedPlayers");
+			if (embeddingsObj != null){
+				if (((JSONArray) embeddingsObj).contains(MusicService.Service.youtube.name())){
+					addUrlAction = false;
+					JSON.put(cardData, "embedded", true);
+				}
+			}
+		}
 		/*JSONObject linkCard = */
 		card.addElement(ElementType.link, 
-				JSON.make(
-					"title", title1 + ":", 
-					"desc", "<i>\"" + search + "\"</i>",
-					"type", "websearch"
-				),
+				cardData,
 				null, null, "", 
 				search_url, 
 				engineIconUrl, 
 				null, null);
 		//JSON.put(linkCard, "imageBackground", "transparent");	//use any CSS background option you wish
 		api.addCard(card.getJSON());
+		
+		//Action
+		if (addUrlAction){
+			api.addAction(ACTIONS.OPEN_IN_APP_BROWSER);
+			api.putActionInfo("url", search_url);
+		}
 		
 		String title2 = getButtonText(engineNameRnd, api.language);
 		//Button 2
@@ -174,7 +198,7 @@ public class WebsearchBasic implements ServiceInterface{
 				JSON.make(
 					"title", title2 + ":", 
 					"desc", "<i>\"" + search + "\"</i>",
-					"type", "websearch"
+					"type", CARD_TYPE
 				),
 				null, null, "", 
 				search_url_rnd, 
@@ -212,7 +236,9 @@ public class WebsearchBasic implements ServiceInterface{
 		String iconUrl = Config.urlWebImages + "cards/search.png";
 		engine = engine.toLowerCase();
 		
-		if (engine.contains("yahoo")){
+		//TODO: section names should become an enumerator in SearchSection parameter
+		
+		if (engine.contains(WebSearchEngine.YAHOO)){
 			engine = "Yahoo";
 			search_url = "https://search.yahoo.com/search?p=";
 			if (section.equals("pictures")){
@@ -224,7 +250,7 @@ public class WebsearchBasic implements ServiceInterface{
 			}else if (section.equals("shares")){
 				search_url = "https://finance.search.yahoo.com/search;?p=";			search = searchReduced;
 			}
-		}else if (engine.contains("bing")){
+		}else if (engine.contains(WebSearchEngine.BING)){
 			engine = "Bing";
 			search_url = "https://www.bing.com/search?q=";
 			if (section.equals("pictures")){
@@ -232,7 +258,7 @@ public class WebsearchBasic implements ServiceInterface{
 			}else if (section.equals("videos")){
 				search_url = "https://www.bing.com/videos/search?q=";		search = searchReduced;
 			}
-		}else if (engine.contains("duck duck go")){
+		}else if (engine.contains(WebSearchEngine.DUCK_DUCK_GO)){
 			engine = "DuckDuckGo";
 			search_url = "https://duckduckgo.com/?kae=d&q=";
 			if (section.equals("pictures")){
@@ -242,15 +268,12 @@ public class WebsearchBasic implements ServiceInterface{
 			}else if (section.equals("recipes")){
 				search_url = "https://duckduckgo.com/?kae=d&ia=recipes&q=";	search = searchReduced;
 			}
-		}else if (engine.contains("youtube")){
+		}else if (engine.contains(WebSearchEngine.YOUTUBE)){
 			engine = "YouTube";
+			iconUrl = Config.urlWebImages + "brands/youtube-logo.png";
 			search_url = "https://www.youtube.com/results?search_query=";
-			if (section.equals("pictures")){
-				search_url = "https://www.google.com/search?q=";	search = searchReduced;
-			}else if (section.equals("videos")){
-				search_url = "https://www.youtube.com/results?search_query=";	search = searchReduced;
-			}else if (section.equals("recipes")){
-				search_url = "https://www.youtube.com/results?search_query=";	search = searchReduced;
+			if (section.equals("videos") || section.equals("music")){
+				search = searchReduced;
 			}
 		}else{
 			engine = "Google";
@@ -283,7 +306,7 @@ public class WebsearchBasic implements ServiceInterface{
 	 * @param section - optimize for this section (not yet working)
 	 */
 	public static String getPseudoRandomEngine(String except, String section){
-		List<String> enginesToChoose = engines.stream().filter(s -> {
+		List<String> enginesToChoose = commonEngines.stream().filter(s -> {
 			return !s.equals(except);
 		}).collect(Collectors.toList());
 		//enginesToChoose.remove(except);

@@ -38,6 +38,8 @@ public class ClientFunction implements ParameterHandler {
 	//-------data-------
 	public static HashMap<String, String> local_de = new HashMap<>();
 	public static HashMap<String, String> local_en = new HashMap<>();
+	public static HashMap<String, String> buttons_de = new HashMap<>();
+	public static HashMap<String, String> buttons_en = new HashMap<>();
 	static {
 		local_de.put("<settings>", "die Einstellungen");
 		local_de.put("<volume>", "die Lautstärke");
@@ -45,6 +47,13 @@ public class ClientFunction implements ParameterHandler {
 		local_de.put("<meshNode>", "die Mesh-Node");
 		local_de.put("<clexi>", "CLEXI");
 		local_de.put("<media>", "die Medienwiedergabe");
+		//Button names
+		buttons_de.put("<default>", "Funktion");
+		buttons_de.put("<volume>", "Lautstärke");
+		buttons_de.put("<alwaysOn>", "Always-On Modus");
+		buttons_de.put("<meshNode>", "Mesh-Node");
+		buttons_de.put("<clexi>", "CLEXI");
+		buttons_de.put("<media>", "Medienwiedergabe");
 		
 		local_en.put("<settings>", "the settings");
 		local_en.put("<volume>", "the volume");
@@ -52,6 +61,14 @@ public class ClientFunction implements ParameterHandler {
 		local_en.put("<meshNode>", "the mesh-node");
 		local_en.put("<clexi>", "CLEXI");
 		local_en.put("<media>", "the media player");
+		//Button names
+		buttons_en.put("<default>", "Function");
+		buttons_en.put("<settings>", "Settings");
+		buttons_en.put("<volume>", "Volume");
+		buttons_en.put("<alwaysOn>", "Always-On Mode");
+		buttons_en.put("<meshNode>", "Mesh-Node");
+		buttons_en.put("<clexi>", "CLEXI");
+		buttons_en.put("<media>", "Media Player");
 	}
 	/**
 	 * Translate generalized value.
@@ -72,6 +89,31 @@ public class ClientFunction implements ParameterHandler {
 		}
 		if (localName == null){
 			Debugger.println("ClientFunction.java - getLocal() has no '" + language + "' version for '" + value + "'", 3);
+			return "";
+		}
+		return localName;
+	}
+	/**
+	 * Get localized name of the function for e.g. button names.
+	 * If generalized value is unknown returns empty string, if it is null returns a default name.
+	 * @param value - generalized value 
+	 * @param language - ISO language code
+	 */
+	public static String getLocalButtonName(String value, String language){
+		String localName = "";
+		String valueWithBrackets = value;
+		if (Is.nullOrEmpty(value)){
+			valueWithBrackets = "<default>"; 
+		}else if (!value.startsWith("<")){
+			valueWithBrackets = "<" + value + ">";
+		}
+		if (language.equals(LANGUAGES.DE)){
+			localName = buttons_de.get(valueWithBrackets);
+		}else if (language.equals(LANGUAGES.EN)){
+			localName = buttons_en.get(valueWithBrackets);
+		}
+		if (localName == null){
+			Debugger.println("ClientFunction.java - getLocalButtonName() has no '" + language + "' version for '" + value + "'", 3);
 			return "";
 		}
 		return localName;

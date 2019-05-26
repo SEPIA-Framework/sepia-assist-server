@@ -217,11 +217,11 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 		//web search
 		//TODO: optimize exceptions
 		if (NluTools.stringContains(text, "websearch|web search|search the web|"
-						+ "^google|^bing|^yahoo|^duck duck|^duck duck go|"
+						+ "^google|^bing|^yahoo|^duck duck|^duck duck go|^youtube|"
 						+ "^(picture(s|)|recipe(s|)|video(s|)|movie(s|)|film(s|)|share(s|)|stock(s|)|book(s|))|"
 						+ "what is the (stock|share) (value|price)|"
 						+ "(search|find|show|look|searching|looking)( | .* )((on |)the (web|internet))|"
-						+ "(search|find|show|look|searching|looking)( | .* )(with|on|via|per|over|by) (google|bing|duck duck go|duck duck|yahoo)|"
+						+ "(search|find|show|look|searching|looking)( | .* )(with|on|via|per|over|by) (google|bing|duck duck go|duck duck|yahoo|youtube)|"
 						+ "(search|find|show|look|searching|looking)( | .* )(picture(s|)|recipe(s|)|video(s|)|youtube|book(s|)|share(s|)|stock(s|))")
 					//|| NLU_Tools.stringContains(text, "search|find|show|look for|searching for|looking for") 
 					//|| (NLU_Tools.stringContains(text, "search|find|show") 

@@ -45,6 +45,9 @@ public class WebSearchRequest implements ParameterHandler{
 			if (NluTools.stringContains(input, "^" + engine)){
 				search = input.replaceFirst("^" + engine + "( suche|)\\b", "").trim();
 				
+			}else if (NluTools.stringContains(input, "((durch|)suche)( mit(tels|)| auf| ueber| bei| via| per| )" + engine + "( nach| fuer| auf)")){
+				search = input.replaceFirst(".*? (nach|fuer|auf)\\b", "").trim();
+				
 			}else if (NluTools.stringContains(input, "(suche|finde|zeig|schau|suchen nach) .* (mit|per|via|auf|ueber|mittels|bei) " + engine + "$")){
 				search = input.replaceFirst(".*?\\b(suche|finde|zeig|schau|suchen nach)\\b", "").trim();
 				search = search.replaceFirst("(mit|per|via|auf|ueber|mittels|bei) " + engine + "$", "").trim();
@@ -56,7 +59,6 @@ public class WebSearchRequest implements ParameterHandler{
 			//clean up
 			search = search.replaceFirst("^(mir)", "").trim();
 			search = search.replaceFirst("^(mal bitte|bitte mal|mal|bitte)", "").trim();
-			search = search.replaceFirst("^bei youtube( nach|)", "videos").trim();
 			search = search.replaceFirst("^(nach|.*\\b(suchen( (im|das) (web|internet) | )nach))\\b", "").trim();
 			//some adaptations
 			/*
@@ -69,6 +71,9 @@ public class WebSearchRequest implements ParameterHandler{
 			if (NluTools.stringContains(input, "^" + engine)){
 				search = input.replaceFirst("^" + engine + "( search|)", "").trim();
 				
+			}else if (NluTools.stringContains(input, "(search)( with| on| over| by| via| per| )" + engine + "( for| after)")){
+				search = input.replaceFirst(".*? (for|after)\\b", "").trim();
+				
 			}else if (NluTools.stringContains(input, "(search|find|show|look|searching|looking) .* (with|on|via|per|over|by) " + engine + "$")){
 				search = input.replaceFirst(".*?\\b(search|find|show|look|searching|looking)", "").trim();
 				search = search.replaceFirst("(with|on|via|per|over|by) " + engine + "$", "").trim();
@@ -79,7 +84,6 @@ public class WebSearchRequest implements ParameterHandler{
 			}
 			//clean up
 			search = search.replaceFirst("^(me)", "").trim();
-			search = search.replaceFirst("^(with|on|via|per|over|by) youtube( for|)", "videos").trim();
 			search = search.replaceFirst("^(for)", "").trim();
 			//some adaptations
 			/*
@@ -132,13 +136,29 @@ public class WebSearchRequest implements ParameterHandler{
 			if (input.matches("(?i)^(wie|wo) .* die .*aktie(n|)$")){
 				reduced = input.replaceFirst("(?i).* die (.*?)(-| |)aktie(n|)", "$1");
 			}else{
-				reduced = input.replaceFirst("(?i)^(bild(ern|er|)|rezept(en|e|)|video(s|)|movie(s|)|film(en|e|)|aktie(n|)|aktien(kurs|wert)|buecher(n|)|buch) (von|vom|ueber|mit|fuer|)|"
-					+ "(?i) (bild(ern|er|)|rezept(en|e|)|video(s|)|movie(s|)|film(en|e|)|(-|)aktie(n|)|buecher(n|)|buch)$|"
+				reduced = input.replaceFirst("(?i)^(bild(ern|er|)|rezept(en|e|)|"
+							+ "video(s|)|movie(s|)|film(en|e|)|"
+							+ "lied(ern|er|)|musik|song(s|)|"
+							+ "aktie(n|)|aktien(kurs|wert)|buecher(n|)|buch)"
+							+ " (von|vom|ueber|mit|fuer|)|"
+					+ "(?i) (bild(ern|er|)|rezept(en|e|)|"
+							+ "video(s|)|movie(s|)|film(en|e|)|"
+							+ "lied(ern|er|)|musik|song(s|)|"
+							+ "(-|)aktie(n|)|buecher(n|)|buch)"
+							+ "$|"
 					+ "(?i)^((wie|wo) (ist|steht|stehen) (der|die) (aktienkurs|aktienwert|aktie(n|)|kurs|wert) (von|vom|der|))", "").trim();
 			}
 		}else if (language.equals(LANGUAGES.EN)){
-			reduced = input.replaceFirst("(?i)^(picture(s|)|recipe(s|)|video(s|)|movie(s|)|film(s|)|share(s|)|stock(s|)|book(s|)) (of|with|by|for|)|"
-					+ "(?i) (picture(s|)|recipe(s|)|video(s|)|movie(s|)|film(s|)|share(s|)|stock(s|)|book(s|))$|"
+				reduced = input.replaceFirst("(?i)^(picture(s|)|recipe(s|)|"
+							+ "video(s|)|movie(s|)|film(s|)|"
+							+ "song(s|)|music|"
+							+ "share(s|)|stock(s|)|book(s|))"
+							+ " (of|with|by|for|)|"
+					+ "(?i) (picture(s|)|recipe(s|)|"
+							+ "video(s|)|movie(s|)|film(s|)|"
+							+ "song(s|)|music|"
+							+ "share(s|)|stock(s|)|book(s|))"
+							+ "$|"
 					+ "(?i)^(what is the (stock|share) (value|price) (of|))", "").trim();
 		}
 		//build default result

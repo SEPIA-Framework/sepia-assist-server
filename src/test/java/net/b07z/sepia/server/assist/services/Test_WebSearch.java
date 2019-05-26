@@ -13,7 +13,7 @@ import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.JSON;
 
-public class Test_ClientControls {
+public class Test_WebSearch {
 	
 	private static List<String> errors;
 	
@@ -32,23 +32,19 @@ public class Test_ClientControls {
 		Map<String, JSONObject> tests;
 		
 		boolean doAnswer = false;	//just interpret (if you want to test a keywordAnalyzer defined INSIDE service) 
-		String CC = CMD.CLIENT_CONTROLS;
-		String M = CMD.MUSIC;
+		String WS = CMD.WEB_SEARCH;
+		String MS = CMD.MUSIC;
 		String language;
 		
 		language = LANGUAGES.EN;
 		tests = new HashMap<>();
-		tests.put("Set the volume to 11", 		JSON.make("c", CC, "p", JSON.make(PARAMETERS.MEDIA_CONTROLS, "<volume_set>.*")));
-		tests.put("Set the volume to eleven", 	JSON.make("c", CC));
-		tests.put("Play the next song", 		JSON.make("c", CC, "p", JSON.make(PARAMETERS.MEDIA_CONTROLS, "<next>.*")));
-		tests.put("Next", 						JSON.make("c", CC, "p", JSON.make(PARAMETERS.CLIENT_FUN, "<media>.*")));
-		tests.put("Back", 						JSON.make("c", CC, "p", JSON.make(PARAMETERS.CLIENT_FUN, "<media>.*")));
-		tests.put("Stop music", 				JSON.make("c", CC, "p", JSON.make(PARAMETERS.MEDIA_CONTROLS, "<stop>.*")));
-		tests.put("Play music", 						JSON.make("c", M));
-		tests.put("Play stop and go by Fake Artist", 	JSON.make("c", M));
-		tests.put("What is Lahmacun", 				JSON.make("c", CMD.KNOWLEDGEBASE));
-		tests.put("What is the best way to work", 	JSON.make("c", CMD.DIRECTIONS));
-		
+		tests.put("Search the web for X", 			JSON.make("c", WS, "p", JSON.make(PARAMETERS.WEBSEARCH_REQUEST, "X")));
+		tests.put("Search YouTube for X", 			JSON.make("c", WS, "p", JSON.make(PARAMETERS.WEBSEARCH_REQUEST, "X")));
+		tests.put("Search Google for X", 			JSON.make("c", WS, "p", JSON.make(PARAMETERS.WEBSEARCH_REQUEST, "X")));
+		tests.put("Search music of X on YouTube", 	JSON.make("c", WS, "p", JSON.make(PARAMETERS.WEBSEARCH_REQUEST, "X")));
+		tests.put("play music of X on YouTube", 	JSON.make("c", MS, "p", JSON.make(PARAMETERS.MUSIC_ARTIST, "X")));
+		tests.put("Search music of X on Spotify", 	JSON.make("c", MS, "p", JSON.make(PARAMETERS.MUSIC_ARTIST, "X")));
+				
 		for (Map.Entry<String, JSONObject> t : tests.entrySet()){
 			String shouldBeCmd = JSON.getString(t.getValue(), "c");
 			JSONObject parameterRegExpMatches = JSON.getJObject(t.getValue(), "p");
@@ -57,16 +53,12 @@ public class Test_ClientControls {
 		
 		language = LANGUAGES.DE;
 		tests = new HashMap<>();
-		tests.put("Setze die Lautstärke auf 11", 	JSON.make("c", CC, "p", JSON.make(PARAMETERS.MEDIA_CONTROLS, "<volume_set>.*")));
-		tests.put("Lautstärke auf elf", 			JSON.make("c", CC));
-		tests.put("Starte den nächsten Song", 		JSON.make("c", CC, "p", JSON.make(PARAMETERS.MEDIA_CONTROLS, "<next>.*")));
-		tests.put("Weiter", 						JSON.make("c", CC, "p", JSON.make(PARAMETERS.CLIENT_FUN, "<media>.*")));
-		tests.put("Zurück", 						JSON.make("c", CC, "p", JSON.make(PARAMETERS.CLIENT_FUN, "<media>.*")));
-		tests.put("Musik anhalten", 				JSON.make("c", CC, "p", JSON.make(PARAMETERS.MEDIA_CONTROLS, "<pause>.*")));
-		tests.put("Musik spielen", 								JSON.make("c", M));
-		tests.put("Spiele Stop und Weiter von Fake Künstler", 	JSON.make("c", M));
-		tests.put("Was ist Lahmacun", 							JSON.make("c", CMD.KNOWLEDGEBASE));
-		tests.put("Was ist der beste Weg zur Arbeit", 	JSON.make("c", CMD.DIRECTIONS));
+		tests.put("Suche im Web nach X", 			JSON.make("c", WS, "p", JSON.make(PARAMETERS.WEBSEARCH_REQUEST, "X")));
+		tests.put("Suche auf YouTube nach X", 		JSON.make("c", WS, "p", JSON.make(PARAMETERS.WEBSEARCH_REQUEST, "X")));
+		tests.put("Suche auf Google nach X", 		JSON.make("c", WS, "p", JSON.make(PARAMETERS.WEBSEARCH_REQUEST, "X")));
+		tests.put("Suche Musik von X auf YouTube", 	JSON.make("c", WS, "p", JSON.make(PARAMETERS.WEBSEARCH_REQUEST, "X")));
+		tests.put("Spiele Musik von X auf YouTube", 	JSON.make("c", MS, "p", JSON.make(PARAMETERS.MUSIC_ARTIST, "X")));
+		tests.put("Suche Musik von X auf Spotify", 		JSON.make("c", MS, "p", JSON.make(PARAMETERS.MUSIC_ARTIST, "X")));
 		
 		for (Map.Entry<String, JSONObject> t : tests.entrySet()){
 			String shouldBeCmd = JSON.getString(t.getValue(), "c");

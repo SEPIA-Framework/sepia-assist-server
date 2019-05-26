@@ -30,6 +30,9 @@ public class Test_ListItem {
 		texts.add("Setze Milch, Brot, Müsli und Wasser und Pudding auf die Shoppingliste");
 		texts.add("Setze Milch, Brot,Müsli und Wasser auf die Shoppingliste");
 		texts.add("Setze 3,1415 auf meine Pi Liste");
+		texts.add("Zeig mir die Bugs, Features und Release Liste.");
+		texts.add("Zeig mir die Bugs und Features und Release Liste.");
+		texts.add("Zeig mir die Bugs oder Features Liste.");
 
 		printTestResults(texts, parametersToTest, language);
 		
@@ -43,6 +46,9 @@ public class Test_ListItem {
 		texts.add("Water on shoppinglist");
 		texts.add("Put milk, water, bread and juice on my supermarket list");
 		texts.add("Put 3,1415 on my Pi list");
+		texts.add("Show me the Bugs, Features and Release List.");
+		texts.add("Show me the Bugs and Features and Release List.");
+		texts.add("Show me the Bugs or Features List.");
 
 		printTestResults(texts, parametersToTest, language);
 	}

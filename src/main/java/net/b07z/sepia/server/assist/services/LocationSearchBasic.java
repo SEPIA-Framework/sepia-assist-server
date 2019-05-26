@@ -17,6 +17,7 @@ import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.ConfigServices;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
+import net.b07z.sepia.server.core.assistant.ACTIONS;
 import net.b07z.sepia.server.core.assistant.CLIENTS;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Converters;
@@ -157,9 +158,10 @@ public class LocationSearchBasic implements ServiceInterface{
 			Debugger.println("Location_Mapsearch - failed to encode URL with: " + end, 1);
 			//e.printStackTrace();
 		}
+		//make action to open URL
+		api.addAction(ACTIONS.OPEN_IN_APP_BROWSER);
+		api.putActionInfo("url", (appleMapsURL.isEmpty())? googleMapsURL : appleMapsURL);
 		/*
-		api.actionInfo_add_action(ACTIONS.OPEN_URL);
-		api.actionInfo_put_info("url", googleMapsURL);
 		
 		//google button
 		api.actionInfo_add_action(ACTIONS.BUTTON_URL);

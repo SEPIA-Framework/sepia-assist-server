@@ -27,12 +27,15 @@ public class MusicService implements ParameterHandler{
 	public static enum Service {
 		spotify,
 		spotify_link,
+		spotify_embedded,
 		apple_music,
 		apple_music_link,
+		apple_music_embedded,
 		amazon_music,
 		deezer,
 		soundcloud,
 		youtube,
+		youtube_embedded,
 		vlc_media_player
 	}
 	
@@ -41,12 +44,15 @@ public class MusicService implements ParameterHandler{
 	static {
 		musicServices.put("<spotify>", "Spotify");
 		musicServices.put("<spotify_link>", "Spotify");
+		musicServices.put("<spotify_embedded>", "Spotify");
 		musicServices.put("<apple_music>", "Apple Music");
 		musicServices.put("<apple_music_link>", "Apple Music");
+		musicServices.put("<apple_music_embedded>", "Apple Music");
 		musicServices.put("<amazon_music>", "Amazon Music");
 		musicServices.put("<deezer>", "Deezer");
 		musicServices.put("<soundcloud>", "SoundCloud");
 		musicServices.put("<youtube>", "YouTube");
+		musicServices.put("<youtube_embedded>", "YouTube");
 		musicServices.put("<vlc_media_player>", "VLC Media Player");
 	}
 	/**
@@ -118,7 +124,7 @@ public class MusicService implements ParameterHandler{
 					soundCloud + "|" +
 					youTube + "|" +
 					vlc +
-				")( link|)"
+				")( link| embedded|)"
 			);
 		}else{
 			//OTHER LANGUAGES
@@ -131,7 +137,7 @@ public class MusicService implements ParameterHandler{
 					soundCloud + "|" +
 					youTube + "|" +
 					vlc +
-				")( link|)"
+				")( link| embedded|)"
 			);
 		}
 		
@@ -143,6 +149,14 @@ public class MusicService implements ParameterHandler{
 					service = "<" + Service.spotify_link.name() + ">";
 				}else if (NluTools.stringContains(service, appleMusic)){
 					service = "<" + Service.apple_music_link.name() + ">";
+				}
+			}else if (NluTools.stringContains(service, "(embedded)$")){
+				if (NluTools.stringContains(service, spotify)){
+					service = "<" + Service.spotify_embedded.name() + ">";
+				}else if (NluTools.stringContains(service, appleMusic)){
+					service = "<" + Service.apple_music_embedded.name() + ">";
+				}else if (NluTools.stringContains(service, youTube)){
+					service = "<" + Service.youtube_embedded.name() + ">";
 				}
 			}else if (NluTools.stringContains(service, spotify)){
 				service = "<" + Service.spotify.name() + ">";
