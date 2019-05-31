@@ -31,7 +31,7 @@ public class Test_Alarms {
 		
 		//set some values explicitly
 		input.user.userName = new Name("Mister", "Tester", "Testy");
-		input.setTime("2019.01.14_13:00:00");
+		input.setTimeGMT("2019.01.14_13:00:00");
 		
 		//Prevent database access for tests
 		Alarms.testMode = true;

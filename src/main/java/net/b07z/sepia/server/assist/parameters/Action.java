@@ -136,14 +136,15 @@ public class Action implements ParameterHandler{
 			off = "(mach|schalte|dreh) .*\\b(aus)|"
 					+ "^\\w+\\b (aus$)|"
 					+ "schliessen|schliesse|deaktivieren|deaktiviere|"
-					+ "beenden|beende|ausschalten|aus schalten|ausmachen|aus machen|ausdrehen|aus drehen|stoppen|stoppe|stop|exit";
+					+ "beenden|beende|(aus|ab)schalten|aus schalten|ausmachen|aus machen|ausdrehen|aus drehen|stop(pen|pe|p|)|exit";
 			pause = "pausieren|pause|anhalten|halte .*\\b(an)";
 			increase = "(mach|dreh) .*\\b(auf|hoch)|"
 					+ "(?<!(wie ))hoch|rauf|hoeher|groesser|erhoehen|aufdrehen|erhoehe|verstaerk(en|e)|heller|(?<!(ist ))schneller|(?<!(ist ))staerker|waermer|warm|lauter|laut";
 			decrease = "(mach|dreh) .*\\b(runter|aus)|"
 					+ "runterdrehen|runter|kleiner|niedriger|erniedrigen|erniedrige|abschwaechen|schwaech(er|en|e)|senk(en|e|)|dunkler|dimmen|dimme|(?<!(wie ))langsam|langsamer|kaelter|(?<!(wie ))kalt|leiser|leise";
 			set = "setzen|setze|stelle|stellen|auswaehlen|waehlen|waehle|"
-					+ "erinnere|weck(e|)";
+					+ "erinnere|weck(e|)|"
+					+ "^lautstaerke auf ";
 			toggle = "umschalten|schalten|schalte";
 			show = "anzeigen|zeig|zeigen|check|checken|was sagt|wieviel|status";
 			add = "fuege .*\\bhinzu|hinzufuegen|ergaenze|ergaenzen|eintragen|trage .*\\bein|"
@@ -168,7 +169,8 @@ public class Action implements ParameterHandler{
 					+ "^\\w+\\b (down$)|"
 					+ "downwards|smaller|lower|decrease|reduce|weaker|darker|dim|slow|(?<!(is ))slower|colder|cold|quieter|quiet";
 			set = "set|put|select|choose|"
-					+ "remind (\\w+) to|wake";
+					+ "remind (\\w+) to|wake|"
+					+ "^volume to ";
 			toggle = "toggle|switch";
 			show = "show|shows|display|check|what does .* say|how much|status";
 			add = "add|enter|"
@@ -251,7 +253,7 @@ public class Action implements ParameterHandler{
 		}
 		if (language.matches(LANGUAGES.DE)){
 			input = input.replaceFirst("\\b(mach|schalte|dreh|nimm|fuege|trage)\\b", "");
-			input = input.replaceFirst("\\b(an|ein|aus|auf|zu|von|hoch|runter|hinzu)$", "").trim();
+			input = input.replaceFirst("\\b(an|ein|aus|ab|auf|zu|von|hoch|runter|hinzu)$", "").trim();
 		}else{
 			input = input.replaceFirst("\\b(make|switch|turn|shut|take|put|add|enter)( on| off| up| down| to|)\\b", "");
 			input = input.replaceFirst("\\b(on|off|up|down)$", "").trim();

@@ -241,7 +241,16 @@ public class Lists implements ServiceInterface{
 		HashMap<String, Object> filters = new HashMap<>();
 		
 		//list title
-		if (!title.isEmpty()) filters.put("title", title);
+		if (!title.isEmpty()){
+			//we trust the database to find multiple lists that fit to the search term (because it uses a OR b OR c for an 'a b c' list)
+			//so we can remove and, or, ... from search term ...
+			if (nluResult.language.equals(LANGUAGES.DE)){
+				title = title.replaceAll("\\b(und|oder)\\b", " ").replaceAll("\\s+", " ");
+			}else if (nluResult.language.equals(LANGUAGES.EN)){
+				title = title.replaceAll("\\b(and|or)\\b", " ").replaceAll("\\s+", " ");
+			}
+			filters.put("title", title);
+		}
 		
 		//results size and pagination
 		filters.put("resultsFrom", 0);					//start at first result

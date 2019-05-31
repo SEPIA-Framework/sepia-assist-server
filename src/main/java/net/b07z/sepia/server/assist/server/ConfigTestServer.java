@@ -10,6 +10,7 @@ import net.b07z.sepia.server.assist.users.Authenticator;
 import net.b07z.sepia.server.assist.users.ID;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.tools.DateTime;
+import net.b07z.sepia.server.core.tools.Is;
 import spark.Request;
 
 /**
@@ -99,6 +100,13 @@ public class ConfigTestServer {
 		User user = getTestUser(ConfigTestServer.email_id1, input, false, false);
 		input.user = user;
 		return input;
+	}
+	public static String getFakeUserId(String email){
+		if (Is.notNullOrEmpty(email)){
+			return testAccountIDs.get(email);
+		}else{
+			return testAccountIDs.get(ConfigTestServer.email_id1);
+		}
 	}
 	
 	/**

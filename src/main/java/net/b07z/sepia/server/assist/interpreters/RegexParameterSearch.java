@@ -27,13 +27,13 @@ import net.b07z.sepia.server.core.tools.Debugger;
 public class RegexParameterSearch {
 	
 	/**
-	 * Check if input contains a special slash command like "saythis".
+	 * Check if input contains a special slash command like "saythis" and "linkshare" or a URL with "http(s)://.
 	 * @param input - user input
 	 * @return true/false
 	 */
 	public static boolean contains_slashCMD(String input){
-		//TODO: improve all slash commands!
-		if (input.toLowerCase().matches("(" + Pattern.quote(Config.assistantName.toLowerCase()) + " |^)(saythis)\\b.*")){
+		//TODO: improve all slash commands and introduce some static variables for them!
+		if (input.toLowerCase().matches("(" + Pattern.quote(Config.assistantName.toLowerCase()) + " |^|^\\\\)(saythis|linkshare|http(s|)://)\\b.*")){
 			return true;
 		}else{
 			return false;
@@ -117,13 +117,13 @@ public class RegexParameterSearch {
 	 * @param language - language code
 	 * @return original input with replaced number if there was any
 	 */
-	public static String replace_text_number(String input, String followedBy, String language){
+	public static String replace_text_number_followed_by(String input, String followedBy, String language){
 		followedBy = "(" + followedBy + ")";
 		//German
 		if (language.matches("de")){
 			input = input
 				.replaceAll("\\b(null) " + followedBy, "0 $2")
-				.replaceAll("\\b(einer|eine|einem) " + followedBy, "1 $2")
+				.replaceAll("\\b(einer|eine|einem|eins|ein) " + followedBy, "1 $2")
 				.replaceAll("\\b(zwei) " + followedBy, "2 $2")
 				.replaceAll("\\b(drei) " + followedBy, "3 $2")
 				.replaceAll("\\b(vier) " + followedBy, "4 $2")
@@ -158,7 +158,8 @@ public class RegexParameterSearch {
 		
 		//English - and missing language support ...
 		}else{
-			input = input.replaceAll("\\b(null) " + followedBy, "0 $2")
+			input = input
+				.replaceAll("\\b(null) " + followedBy, "0 $2")
 				.replaceAll("\\b(zero) " + followedBy, "0 $2")
 				.replaceAll("\\b(one) " + followedBy, "1 $2")
 				.replaceAll("\\b(two) " + followedBy, "2 $2")
@@ -184,7 +185,63 @@ public class RegexParameterSearch {
 				.replaceAll("\\b(twenty(-| )three) " + followedBy, "23 $2")
 				.replaceAll("\\b(twenty(-| )four) " + followedBy, "24 $2")
 				.replaceAll("\\b(twenty) " + followedBy, "20 $2")
-				.replaceAll("\\b(thirty) " + followedBy, "20 $2")
+				.replaceAll("\\b(thirty) " + followedBy, "30 $2")
+				;
+			return input;
+		}
+	}
+	/**
+	 * Replace a textual number like "one" by real number. Works with numbers from "null/zero" to "fifteen".
+	 * @param input - text input
+	 * @param language - language code
+	 * @return original input with replaced number if there was any
+	 */
+	public static String replace_text_number(String input, String language){
+		//German
+		if (language.matches("de")){
+			input = input
+				.replaceAll("\\b(null)\\b", "0")
+				.replaceAll("\\b(eins)\\b", "1")
+				.replaceAll("\\b(zwei)\\b", "2")
+				.replaceAll("\\b(drei)\\b", "3")
+				.replaceAll("\\b(vier)\\b", "4")
+				.replaceAll("\\b(fuenf)\\b", "5")
+				.replaceAll("\\b(sechs)\\b", "6")
+				.replaceAll("\\b(sieben)\\b", "7")
+				.replaceAll("\\b(acht)\\b", "8")
+				.replaceAll("\\b(neun)\\b", "9")
+				.replaceAll("\\b(zehn)\\b", "10")
+				.replaceAll("\\b(elf)\\b", "11")
+				.replaceAll("\\b(zwoelf)\\b", "12")
+				.replaceAll("\\b(dreizehn)\\b", "13")
+				.replaceAll("\\b(vierzehn)\\b", "14")
+				.replaceAll("\\b(fuenfzehn)\\b", "15")
+				.replaceAll("\\b(zwanzig)\\b", "20")
+				.replaceAll("\\b(dreissig)\\b", "30")
+				;
+			return input;
+		
+		//English - and missing language support ...
+		}else{
+			input = input
+				.replaceAll("\\b(null|zero)\\b", "0")
+				.replaceAll("\\b(one)\\b", "1")
+				.replaceAll("\\b(two)\\b", "2")
+				.replaceAll("\\b(three)\\b", "3")
+				.replaceAll("\\b(four)\\b", "4")
+				.replaceAll("\\b(five)\\b", "5")
+				.replaceAll("\\b(six)\\b", "6")
+				.replaceAll("\\b(seven)\\b", "7")
+				.replaceAll("\\b(eight)\\b", "8")
+				.replaceAll("\\b(nine)\\b", "9")
+				.replaceAll("\\b(ten)\\b", "10")
+				.replaceAll("\\b(eleven)\\b", "11")
+				.replaceAll("\\b(twelve)\\b", "12")
+				.replaceAll("\\b(thirteen)\\b", "13")
+				.replaceAll("\\b(fourteen)\\b", "14")
+				.replaceAll("\\b(fifteen)\\b", "15")
+				.replaceAll("\\b(twenty)\\b", "20")
+				.replaceAll("\\b(thirty)\\b", "30")
 				;
 			return input;
 		}
@@ -566,7 +623,7 @@ public class RegexParameterSearch {
 		//German
 		if (language.matches("de")){
 			//years (from 1999, 50 years ...)
-			input = replace_text_number(input, "(jahr(en|e|))", language);
+			input = replace_text_number_followed_by(input, "(jahr(en|e|))", language);
 			tag_y = NluTools.stringFindFirst(input, "(jahr(en|e|))");
 			//age_y = NLU_Tools.stringFindFirst(input, "(<|>|)(\\d+ " + tag_y + "|1\\d\\d\\d|2\\d\\d\\d)");
 			String age_y_regex;
@@ -601,7 +658,7 @@ public class RegexParameterSearch {
 		//English - and missing language support ...
 		}else{
 			//years (from 1999, 50 years ...)
-			input = replace_text_number(input, "(years|year)", language);
+			input = replace_text_number_followed_by(input, "(years|year)", language);
 			tag_y = NluTools.stringFindFirst(input, "(years|year)");
 			//age_y = NLU_Tools.stringFindFirst(input, "(<|>|)(\\d+ " + tag_y + "|1\\d\\d\\d|2\\d\\d\\d)");
 			String age_y_regex;
@@ -1034,13 +1091,21 @@ public class RegexParameterSearch {
 		String date_tag ="";
 		String time_tag ="";
 		
+		//Check UNIX time first (we are more tolerant than required here ^^)
+		String unixTimeString = NluTools.stringFindFirst(text, "\\b\\d{12,14}\\b");
+		if (!unixTimeString.isEmpty()){
+			pv.put("date_tag", unixTimeString);
+			pv.put("time_tag", "");
+			return pv;
+		}
+		
 		//Common
 		text = replace_all_months_by_numbers(text, language);
 		
 		//German
 		if (language.matches(LANGUAGES.DE)){
 			//note: make sure you use the same replacements in "remove_date(..)" too!
-			text = replace_text_number(text, DateAndTime.TIME_TAGS_DE, language);
+			text = replace_text_number_followed_by(text, DateAndTime.TIME_TAGS_DE, language);
 			
 			time_tag = NluTools.stringFindFirst(text, DateAndTime.TIME_UNSPECIFIC_TAGS_DE);
 			if (!time_tag.isEmpty()) text = NluTools.stringRemoveFirst(text, time_tag);
@@ -1067,7 +1132,7 @@ public class RegexParameterSearch {
 		//English and non-supported language
 		}else{
 			//note: make sure you use the same replacements in "remove_date(..)" too!
-			text = replace_text_number(text, DateAndTime.TIME_TAGS_EN, language);
+			text = replace_text_number_followed_by(text, DateAndTime.TIME_TAGS_EN, language);
 			
 			time_tag = NluTools.stringFindFirst(text, DateAndTime.TIME_UNSPECIFIC_TAGS_EN);
 			if (!time_tag.isEmpty()) text = NluTools.stringRemoveFirst(text, time_tag);
@@ -1145,7 +1210,7 @@ public class RegexParameterSearch {
 		
 		//English
 		if (language.equals(LANGUAGES.EN)){
-			text = replace_text_number(text, DateAndTime.TIME_TAGS_EN, language);
+			text = replace_text_number_followed_by(text, DateAndTime.TIME_TAGS_EN, language);
 			text = text.replaceFirst("\\b(from the |from |(starting|arrival) at (the |))(" + Pattern.quote(date.trim()) + ")(\\s|$)", "").trim();
 			text = text.replaceFirst("\\b(until the |until |till the |till |(departure) at (the |)|to the |to )(" + Pattern.quote(date.trim()) + ")(\\s|$)", "").trim();
 			text = text.replaceFirst("\\b(for the |for |in the |during the |at the |at |the |this |in |on |)(" + Pattern.quote(date.trim()) + ")(\\s|$)", "").trim();
@@ -1153,7 +1218,7 @@ public class RegexParameterSearch {
 			
 		//German
 		}else if (language.equals(LANGUAGES.DE)){
-			text = replace_text_number(text, DateAndTime.TIME_TAGS_DE, language);
+			text = replace_text_number_followed_by(text, DateAndTime.TIME_TAGS_DE, language);
 			text = text.replaceFirst("\\b(von dem |vom |ab dem |ab |von |anreise (am|an dem) )(" + Pattern.quote(date.trim()) + ")(\\s|$)", "").trim();
 			text = text.replaceFirst("\\b(bis zu dem |bis zum |bis |abreise (am|an dem) )(" + Pattern.quote(date.trim()) + ")(\\s|$)", "").trim();
 			text = text.replaceFirst("\\b(fuer den |fuer |in dem |in den |waehrend der |an dem |der |die |dem |diesem |diesen |dieser |in |am |)(" + Pattern.quote(date.trim()) + ")(\\s|$)", "").trim();
@@ -1424,7 +1489,7 @@ public class RegexParameterSearch {
 	}
 	/**
 	 * Replace all month names in a string with their corresponding numbers (January=01.).
-	 * If the month is followed or preceded by a day like "first of January" or "January the first" it is converted to "01.01."
+	 * If the month is followed or preceded by a day like "first of February" or "February the first" it is converted to "01.02."
 	 * @param input - string to search
 	 * @param language - language code
 	 * @return string with names replaced by numbers 
@@ -1487,6 +1552,10 @@ public class RegexParameterSearch {
 			input = input.replaceAll("\\b(\\d+)th(\\.)", "$1.");
 			//...continue?
 		}
+		
+		//check for a year at the end
+		input = input.replaceAll("\\b(\\d{1,2}\\.)(\\d{1,2}\\.)\\s(\\d{4})\\b", "$1$2$3");
+		
 		return input;
 	}
 	
@@ -2029,19 +2098,19 @@ public class RegexParameterSearch {
 	public static String get_creator(String input, String language){
 		String creator = "";
 		//German
-		if (language.matches("de")){
-			if (!input.matches(".*\\b(von|vom)\\b.*(nach|bis)\\b.*")){
+		if (language.matches(LANGUAGES.DE)){
+			if (!input.matches(".*\\b(von|vom) .+ (nach|bis)\\b.*")){
 				creator = NluTools.stringFindFirst(input, "(von|vom) .*");
-				creator = creator.replaceAll("^(von|vom)", "");
-				creator = creator.replaceAll("^(der|die|das|dem|den|einer|eine|einem)", "");
+				creator = creator.replaceAll("^(von|vom) ", "");
+				creator = creator.replaceAll("^(der|die|das|dem|den|einer|eine|einem) ", "");
 			}
 			
 		//English and other
 		}else{
-			if (!input.matches(".*\\b(from|of|by)\\b.*(to|till|until)\\b.*")){
+			if (!input.matches(".*\\b(from|of|by) .+ (to|till|until)\\b.*")){
 				creator = NluTools.stringFindFirst(input, "(from|of|by) .*");
-				creator = creator.replaceAll("^(from|of|by)", "");
-				creator = creator.replaceAll("^(the|a|an)", "");
+				creator = creator.replaceAll("^(from|of|by) ", "");
+				creator = creator.replaceAll("^(the|a|an) ", "");
 			}
 		}
 		return creator.trim();

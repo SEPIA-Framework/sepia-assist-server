@@ -9,11 +9,14 @@ import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.endpoints.AssistEndpoint;
 import net.b07z.sepia.server.assist.endpoints.AssistEndpoint.InputParameters;
+import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.server.Start;
+import net.b07z.sepia.server.assist.services.ServiceResult;
 import net.b07z.sepia.server.core.server.FakeRequest;
 import net.b07z.sepia.server.core.server.FakeResponse;
 import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 import net.b07z.sepia.websockets.client.SepiaSocketClient;
 import net.b07z.sepia.websockets.common.SocketConfig;
@@ -54,6 +57,27 @@ public class AssistantSocketClient extends SepiaSocketClient{
     	SocketMessage reply = getReply(msg, msg.sender, msg.sender);
 		sendMessage(reply, 3000);
     }
+	
+	/**
+	 * WebSockets support duplex communication which means you can send an answer first and after a few seconds send a follow-up
+	 * message to add more info/data to the previous reply.<br>
+	 * Since this is called by {@link Clients} it is assumed that nluInput.isDuplexConnection() was checked before!
+	 * @param nluInput - initial {@link NluInput} to follow-up
+	 * @param serviceResult - {@link ServiceResult} as produced by services to send as follow-up
+	 */
+	public void sendFollowUpMessage(NluInput nluInput, ServiceResult serviceResult){
+		//use duplex data for channel?
+		//String channelId = JSON.getString(JSON.parseString(nluInput.duplexData), "channelId");
+		//or use receiver id?
+		//String channelId = nluInput.user.getUserID()
+		//We use the user ID to post directly into user channel
+		String channelId = "<auto>"; 	//Note: "<auto>" will find the receiver active channel if the sender is "omnipresent" (assistant is)
+		String receiver = nluInput.user.getUserID();
+		String receiverOnError = receiver;
+		SocketMessage msg = buildFollowUp(serviceResult.getResultJSONObject(), channelId, receiver, receiverOnError);
+		if (Is.notNullOrEmpty(nluInput.msgId)) msg.setMessageId(nluInput.msgId); 		//add old ID as reference
+		sendMessage(msg, 3000);
+	}
 
     //Triggered when this client reads an arbitrary chat message
     @Override
@@ -139,15 +163,26 @@ public class AssistantSocketClient extends SepiaSocketClient{
     public FakeRequest buildAssistEndpointRequest(SocketMessage msg){
     	JSONObject data = msg.data;
     	//System.out.println(data); 		//DEBUG
-    	String text = msg.text;
-    	return buildAssistEndpointRequest(data, text);
+    	return buildAssistEndpointRequest(data, msg.text, msg.msgId, getDuplexData(msg));
     }
     /**
      * Convert "data" and "text" of {@link SocketMessage} to {@link Request} for {@link AssistEndpoint} call.
      */
-    public FakeRequest buildAssistEndpointRequest(JSONObject data, String text){
+    public FakeRequest buildAssistEndpointRequest(JSONObject data, String text, String msgId, JSONObject duplexData){
     	JSONObject credentials = (JSONObject) data.get("credentials");
     	JSONObject parameters = (JSONObject) data.get("parameters");
+    	
+    	//add proper connection type and msg ID if not given (to identify Websocket origin and help with duplex connections)
+    	if (!parameters.containsKey(AssistEndpoint.InputParameters.connection.name())){ 
+    		JSON.put(parameters, AssistEndpoint.InputParameters.connection.name(), "ws");
+    	}
+    	if (!parameters.containsKey(AssistEndpoint.InputParameters.msg_id.name()) && Is.notNullOrEmpty(msgId)){ 
+    		JSON.put(parameters, AssistEndpoint.InputParameters.msg_id.name(), msgId);
+    	}
+    	//add some duplex connection data
+    	if (duplexData != null){
+    		JSON.put(parameters, AssistEndpoint.InputParameters.duplex_data.name(), duplexData);
+    	}
     	
     	//build map with parameters
     	Map<String, String> keyTextAndParameters = new HashMap<>();
@@ -160,18 +195,22 @@ public class AssistantSocketClient extends SepiaSocketClient{
     }
     /**
      * Build a custom request for {@link AssistEndpoint} call.
-     * @param data - data of {@link SocketMessage}
-     * @param text - text or direct command
+     * @param msg - {@link SocketMessage}
      * @param overwriteParameters - parameters to overwrite, see {@link AssistEndpoint.InputParameters}
      * @return
      */
-    public FakeRequest buildAssistEndpointCustomCommandRequest(JSONObject data, String text, Map<String, String> overwriteParameters){
-    	FakeRequest frq = buildAssistEndpointRequest(data, text);
+    public FakeRequest buildAssistEndpointCustomCommandRequest(SocketMessage msg, Map<String, String> overwriteParameters){
+    	FakeRequest frq = buildAssistEndpointRequest(msg.data, msg.text, msg.msgId, getDuplexData(msg));
     	overwriteParameters.forEach((String k, String v) -> {
     		frq.overwriteParameter(k, v);
     	});
     	return frq;
     }
+    private JSONObject getDuplexData(SocketMessage msg) {
+    	return JSON.make( 
+				"channelId", msg.channelId
+		);
+	}
     
     /**
      * Build {@link SocketMessage} reply from {@link AssistEndpoint} answer.
@@ -197,6 +236,30 @@ public class AssistantSocketClient extends SepiaSocketClient{
     	}else{
     		reply = new SocketMessage(channelId, getUserId(), receiverOnError, "Login? Error?", TextType.status.name());
     	}
+    	return reply;
+    }
+    /**
+     * Build {@link SocketMessage} assistant follow-up message from {@link ServiceResult} answer.
+     */
+    public SocketMessage buildFollowUp(JSONObject answer, String channelId, String receiver, String receiverOnError){
+    	SocketMessage reply;
+    	if (!JSON.getString(answer, "result").equals("fail")){
+	    	String answerText = (String) answer.get("answer");
+	    	if (answerText == null){
+	    		reply = new SocketMessage(channelId, getUserId(), receiverOnError, "Error?", TextType.status.name());
+	    	}else{
+	    		//The 'real' message:
+	    		JSONObject data = new JSONObject();
+		        JSON.add(data, "dataType", DataType.assistFollowUp.name());
+		        JSON.add(data, "assistAnswer", answer); 		//NOTE: we keep the name 'assistAnswer' here for client ... should have called it 'assistMsg'
+		        reply = new SocketMessage(channelId, getUserId(), receiver, data);
+	    	}
+    	
+    	//no login or error
+    	}else{
+    		reply = new SocketMessage(channelId, getUserId(), receiverOnError, "Login? Error?", TextType.status.name());
+    	}
+    	reply.setSenderType(SenderType.assistant.name());
     	return reply;
     }
     
@@ -235,7 +298,7 @@ public class AssistantSocketClient extends SepiaSocketClient{
     				JSON.put(newParams, InputParameters.client.name(), JSON.getString(parameters, InputParameters.client.name())); 	//REQUIRED! Need more?
     				JSON.put(msg.data, "parameters", newParams);
     				String text = "chat;;reply=<error_0a>";
-    				Request request = buildAssistEndpointRequest(msg.data, text);
+    				Request request = buildAssistEndpointRequest(msg.data, text, msgId, getDuplexData(msg));
     				JSONObject answer = JSON.parseString(AssistEndpoint.answerAPI(request, new FakeResponse()));
     				reply = buildReply(answer, channelId, receiver, receiverOnError);
     				

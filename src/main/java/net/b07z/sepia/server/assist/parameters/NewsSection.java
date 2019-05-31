@@ -85,7 +85,7 @@ public class NewsSection implements ParameterHandler{
 							+ "wm|em|(europa|welt)(meister| meister)(schaft|)|"
 							+ "racing|auto rennen|rennen|race|raceing|formel 1|formel eins|"
 							+ "games|lol|league of legends|dota|overwatch|heroes|"
-							+ "musik(er|)|music|band(s|)|kino(s|)|cinema(s|)|film(e|)|movie(s|)|serie(n|)|tv|television|fernseh(serie(n|)|sendung(en|))|fernseh|show(s|)|"
+							+ "musik(er|)|music|band(s|)|kino(s|)|cinema(s|)|film(e|)|movie(s|)|serie(n|)|tv|television|fernseh(serie(n|)|sendung(en|))|fernseh|shows|"
 							+ "start( |-|)up(s|)|gruender|gruenderszene");
 			
 		//English and other
@@ -97,7 +97,7 @@ public class NewsSection implements ParameterHandler{
 							+ "baseball|football|basketball|golf|ice hockey|hockey|tennis|handball|wrestling|"
 							+ "racing|race|formula one|formula 1|"
 							+ "games|lol|league of legends|dota|overwatch|heroes|"
-							+ "music|band(s|)|cinema(s|)|movie(s|)|film(s|)|tv|series|serial|television|show(s|)|"
+							+ "music|band(s|)|cinema(s|)|movie(s|)|film(s|)|tv|series|serial|television|shows|"
 							+ "start( |-|)up(s|)|founder(s|)");
 			
 		}

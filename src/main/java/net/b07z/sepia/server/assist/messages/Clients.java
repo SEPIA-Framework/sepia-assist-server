@@ -4,12 +4,13 @@ import java.util.Properties;
 
 import org.json.simple.JSONObject;
 
+import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.server.Config;
+import net.b07z.sepia.server.assist.services.ServiceResult;
 import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.FilesAndStreams;
 import net.b07z.sepia.server.core.tools.JSON;
-import net.b07z.sepia.websockets.client.SocketClient;
 import net.b07z.sepia.websockets.client.SocketClientHandler;
 import net.b07z.sepia.websockets.common.SocketConfig;
 
@@ -27,7 +28,7 @@ public class Clients {
 	public static SocketClientHandler webSocketMessenger;
 	public static Thread webSocketMessengerThread;
 	
-	private static SocketClient assistantSocket;
+	private static AssistantSocketClient assistantSocket;
 	
 	/**
 	 * Setup and run webSocket messenger. Creates a new thread to maintain the connection.
@@ -71,6 +72,22 @@ public class Clients {
 			return assistantSocket.getStats(); 
 		}else{
 			return "No active assistant sockets.";
+		}
+	}
+	
+	/**
+	 * WebSockets support duplex communication which means you can send an answer first and after a few seconds send a follow-up
+	 * message to add more info/data to the previous reply.
+	 * @param nluInput - initial {@link NluInput} to follow-up
+	 * @param serviceResult - {@link ServiceResult} as produced by services to send as follow-up
+	 * @return true if sent, false if not
+	 */
+	public static boolean sendAssistantFollowUpMessage(NluInput nluInput, ServiceResult serviceResult){
+		if (assistantSocket != null && Config.assistantAllowFollowUps && nluInput.isDuplexConnection()){
+			assistantSocket.sendFollowUpMessage(nluInput, serviceResult);
+			return true;
+		}else{
+			return false;
 		}
 	}
 	

@@ -15,6 +15,7 @@ import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.interviews.AskClient;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.core.assistant.ACTIONS;
+import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.JSON;
 
@@ -30,6 +31,10 @@ import net.b07z.sepia.server.core.tools.JSON;
  */
 public class OpenCustomLink {
 	
+	public static final String TITLE = "title";
+	public static final String DESCRIPTION = "description";
+	public static final String ICON_URL = "icon_url";
+	
 	/**
 	 * The default method to create a service result handling all the question/answer/action construction. 
 	 * @param NluResult - typically this is given by a direct command
@@ -40,20 +45,21 @@ public class OpenCustomLink {
 		ServiceBuilder api = new ServiceBuilder(nluResult);
 		
 		//get parameters
-		String url = nluResult.getParameter("url");							//the url to call (can include wildcards in the form ***)
+		String url = nluResult.getParameter(PARAMETERS.URL);				//the url to call (can include wildcards in the form ***)
 		
 		String parameter_set = nluResult.getParameter("parameter_set");		//the parameters filling the wildcards connected by "&&"
 		String question_set = nluResult.getParameter("question_set");			//a set of questions to the wildcards connected by "&&"
 		String answer_set = nluResult.getParameter("answer_set");				//a set of answers to complete the command, if there is more than one (separated by "||") a random one will be chosen
 		
-		String title = nluResult.getParameter("title");					//title of link-card
+		String title = nluResult.getParameter(TITLE);					//title of link-card
 		if (title.isEmpty()) title = "Link";
 		
-		String description = nluResult.getParameter("description");		//description of link-card
+		String description = nluResult.getParameter(DESCRIPTION);		//description of link-card
 		if (description.isEmpty()) description = ActionBuilder.getDefaultButtonText(api.language);
 		
-		String iconUrl = nluResult.getParameter("icon_url");				//icon URL to be used for link-card
-		if (iconUrl.isEmpty())	iconUrl = Config.urlWebImages + "/cards/link.png";
+		String iconUrl = nluResult.getParameter(ICON_URL);				//icon URL to be used for link-card
+		boolean isCustomIcon = !iconUrl.isEmpty(); 
+		if (!isCustomIcon)	iconUrl = Config.urlWebImages + "/cards/link.png";
 		
 		//handle parameters/answers/questions
 		//p
@@ -139,7 +145,7 @@ public class OpenCustomLink {
 			callURL = "";
 			//e.printStackTrace();
 		}
-		api.addAction(ACTIONS.OPEN_URL);
+		api.addAction(ACTIONS.OPEN_IN_APP_BROWSER);
 		api.putActionInfo("url", callURL);
 		/*
 		api.actionInfo_add_action(ACTIONS.BUTTON_URL);
@@ -149,13 +155,20 @@ public class OpenCustomLink {
 		
 		//card
 		Card card = new Card(Card.TYPE_SINGLE);
+		String linkType = (isCustomIcon)? "custom" : "default";
 		JSONObject linkCard = card.addElement(ElementType.link, 
-				JSON.make("title", title, "desc", description),
+				JSON.make(
+					"title", title, 
+					"desc", description,
+					"type", linkType
+				),
 				null, null, "", 
 				callURL, 
 				iconUrl, 
 				null, null);
-		JSON.put(linkCard, "imageBackground", "transparent");	//use any CSS background option you wish
+		if (isCustomIcon){
+			JSON.put(linkCard, "imageBackground", "transparent");	//use any CSS background option you wish
+		}
 		api.addCard(card.getJSON());
 		
 		api.hasAction = true;

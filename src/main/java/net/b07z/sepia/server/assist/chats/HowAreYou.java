@@ -40,6 +40,23 @@ public class HowAreYou {
 		//anything else?
 		api.context = CMD.CHAT;		//how do we handle chat contexts? Just like that and do the rest with cmd_summary?
 		
+		//DEBUG
+		/*
+		if (nluResult.input.isDuplexConnection()){
+			System.out.println(nluResult.input.connection);
+			System.out.println(nluResult.input.msgId);
+			System.out.println(nluResult.input.duplexData);
+			api.runInBackground(3000, () -> {
+				//initialize follow-up result
+				ServiceBuilder service = new ServiceBuilder(nluResult);
+				service.answer = Answers.getAnswerString(nluResult, "<direct>Ach was ich noch sagen wollte. Habs vergessen.");
+				service.status = "success";
+				boolean wasSent = service.sendFollowUpMessage(nluResult.input, service.buildResult());
+				return;
+			});
+		}
+		*/
+		
 		//finally build the API_Result
 		ServiceResult result = api.buildResult();
 		

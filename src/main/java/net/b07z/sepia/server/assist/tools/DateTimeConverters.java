@@ -2,9 +2,11 @@ package net.b07z.sepia.server.assist.tools;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import net.b07z.sepia.server.assist.answers.AnswerStatics;
@@ -365,14 +367,35 @@ public class DateTimeConverters {
 	}
 	
 	/**
-	 * Get the UNIX time (ms) of the given date in the given format.
+	 * Get the UNIX time (ms) of the given GMT date in the given format.
 	 * @param dateString - any string containing a date that can be parsed
 	 * @param format - format to parse
 	 * @return UNIX time or Long.MIN_VALUE
 	 */
-	public static long getUnixTimeOfDate(String dateString, String format){
+	public static long getUnixTimeOfDateGMT(String dateString, String format){
 		//parse input
 		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+		Date date;
+		try {
+			date = sdf.parse(dateString);
+			return date.getTime();
+						
+		} catch (ParseException e) {
+			return Long.MIN_VALUE;
+		}
+	}
+	/**
+	 * Get the UNIX time (ms) of the given date in the given format and timezone.
+	 * @param dateString - any string containing a date that can be parsed
+	 * @param format - format to parse
+	 * @param timezone - {@link ZoneId} of TimeZone, either an abbreviation such as "PST", a full name such as "America/Los_Angeles", or a custom ID such as "GMT-8:00". 
+	 * @return UNIX time or Long.MIN_VALUE
+	 */
+	public static long getUnixTimeOfDateAtZone(String dateString, String format, String timezone){
+		//parse input
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		sdf.setTimeZone(TimeZone.getTimeZone(ZoneId.of(timezone)));
 		Date date;
 		try {
 			date = sdf.parse(dateString);

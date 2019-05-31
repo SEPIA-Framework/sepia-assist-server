@@ -3,7 +3,7 @@
 	
 	<groupId>net.b07z.sepia.server.assist</groupId>
 	<artifactId>sepia-assist-API</artifactId>
-	<version>2.2.1</version>
+	<version>2.2.2</version>
 	<name>SEPIA Assist API</name>
 	<description>Core server of the SEPIA Framework for personal digital assistants. Responsible for NLU, conversation, smart-service integration, user-accounts and more.</description>
 	<url>https://sepia-framework.github.io</url>
@@ -106,7 +106,7 @@
 		<dependency>
 			<groupId>net.b07z.sepia.websockets</groupId>
 			<artifactId>sepia-websockets</artifactId>
-			<version>1.1.0</version>
+			<version>1.1.1</version>
 		</dependency>
 		<!-- included in sepia-websockets 
 		<dependency>

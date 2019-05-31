@@ -1,5 +1,8 @@
 package net.b07z.sepia.server.assist.services;
 
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -7,9 +10,12 @@ import net.b07z.sepia.server.assist.answers.ServiceAnswers;
 import net.b07z.sepia.server.assist.assistant.Assistant;
 import net.b07z.sepia.server.assist.data.Card;
 import net.b07z.sepia.server.assist.data.Parameter;
+import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
+import net.b07z.sepia.server.assist.messages.Clients;
 import net.b07z.sepia.server.assist.parameters.Confirm;
+import net.b07z.sepia.server.assist.parameters.Select;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.core.assistant.CMD;
@@ -226,6 +232,38 @@ public class ServiceBuilder {
 	}
 	
 	/**
+	 * Define the name of a parameter and options the user can select from. The name can be anything and will be stored in the NluResult. 
+	 * In detail this method creates a new options parameter and matching dynamic select-parameter, sets it to incomplete and asks the user for it with the 'question' given.<br>
+	 * Format of selectOptions: {"1": "red", "2": "green", "3": "blue|yellow", "4": ...} - Allowed are words and regular expressions.
+	 */
+	public void askUserToSelectOption(String customSelectparameterName, JSONObject selectOptions, String question){
+		String dynamicSelectParameter = Select.PREFIX + customSelectparameterName;
+		String dynamicSelectOptions = Select.OPTIONS_PREFIX + customSelectparameterName;
+		nluResult.addDynamicParameter(dynamicSelectParameter);
+		nluResult.setParameter(dynamicSelectOptions, selectOptions.toJSONString());
+		setIncompleteAndAsk(dynamicSelectParameter, question);
+	}
+	/**
+	 * Get result of custom select request to user or null. Format: {"value": "green", "selection": 2, "input": "..."}
+	 */
+	public JSONObject getSelectedOptionOf(String customSelectparameterName){
+		Parameter selectP = nluResult.getOptionalParameter(Select.PREFIX + customSelectparameterName, "");
+		if (selectP.isDataEmpty()){
+			return null;
+		}else{
+			JSONObject json = selectP.getData();
+			if (!json.containsKey("selection") || JSON.getIntegerOrDefault(json, "selection", 0) == 0){
+				return null;
+			}else{
+				//clean up options
+				nluResult.setParameter(Select.OPTIONS_PREFIX + customSelectparameterName, "");
+				//return
+				return json;
+			}
+		}
+	}
+	
+	/**
 	 * Put "value" to "key" in current actionInfo element. E.g.: putActionInfo("url", call_url). The current JSONArray element (action) is previously
 	 * set by using addAction(value), so be sure to first add an action and then add info for that action.<br>
 	 * See also: {@link net.b07z.sepia.server.assist.assistant.ActionBuilder}
@@ -408,6 +446,30 @@ public class ServiceBuilder {
 		}
 		//System.out.println("N=" + nlu_result.input.last_cmd_N + ", DS=" + dialog_stage); 	//debug
 	}	
+	
+	/**
+	 * Run a task in the background, optionally with a delay.
+	 * @param delayMs - start after this many ms
+	 * @param task - use it like this: () -> { my code... }
+	 */
+	public void runInBackground(long delayMs, Runnable task){
+		int corePoolSize = 1;
+	    final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(corePoolSize);
+	    executor.schedule(task, delayMs, TimeUnit.MILLISECONDS);
+		//other option (but does not support lambda expression):
+		//Timer timer = new Timer();
+	    //timer.schedule(task, delayMs);
+	}
+	
+	/**
+	 * WebSockets support duplex communication which means you can send an answer first and after a few seconds send a follow-up
+	 * message to add more info/data to the previous reply. Test for nluInput.isDuplexConnection() first!
+	 * @param nluInput - initial {@link NluInput} to follow-up
+	 * @param serviceResult - {@link ServiceResult} as produced by services to send as follow-up
+	 */
+	public boolean sendFollowUpMessage(NluInput nluInput, ServiceResult serviceResult){
+		return Clients.sendAssistantFollowUpMessage(nluInput, serviceResult);
+	}
 	
 	/**
 	 * Build {@link ServiceResult} from the info in this class. Handles some specific procedures like context management to generate all necessary info.

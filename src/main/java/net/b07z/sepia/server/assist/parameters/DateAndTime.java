@@ -2,6 +2,7 @@ package net.b07z.sepia.server.assist.parameters;
 
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 import org.json.simple.JSONObject;
 
@@ -54,13 +55,13 @@ public class DateAndTime implements ParameterHandler{
 	
 	public static final String TIME_TAGS_SHORT = "( |)(sec|sek|s|min|std|h|hr|d|wk|mo|j|a|yr|y)(\\.|)($|\\s)";
 	
-	public static final String TIME_UNSPECIFIC_TAGS_DE = "(am |)(am morgen|morgens|frueh|vormittag(s|)|mittag(s|)|nachmittag(s|)|abend(s|)|nacht(s|)|spaet)";
-	public static final String TIME_UNSPECIFIC_TAGS_EN = "(in the |at the |at |by |)(morning|early|forenoon|midday|afternoon|noon|evening|night|late)";
-	
 	public static final String DAY_TAGS_DE = "(montag|dienstag|mittwoch|donnerstag|freitag|samstag|sonntag)";
-	public static final String DAY_TAGS_RELATIVE_DE = "(heute|jetzt|uebermorgen|morgen|wochenende|naechste woche|die(se|) woche|naechsten tage)";
+	public static final String DAY_TAGS_RELATIVE_DE = "(heute|jetzt|uebermorgen|(?<!" + DAY_TAGS_DE + ")morgen|wochenende|naechste woche|die(se|) woche|naechsten tage)";
 	public static final String DAY_TAGS_EN = "(monday|tuesday|wednesday|thursday|friday|saturday|sunday|weekend)";
 	public static final String DAY_TAGS_RELATIVE_EN = "(today|now|day after tomorrow|tomorrow|next week|(this|the) week|next days|next few days)";
+	
+	public static final String TIME_UNSPECIFIC_TAGS_DE = "(am |)((?<=" + DAY_TAGS_DE + ") morgen|am morgen|morgens|frueh|vormittag(s|)|mittag(s|)|nachmittag(s|)|abend(s|)|nacht(s|)|spaet)";
+	public static final String TIME_UNSPECIFIC_TAGS_EN = "(in the |at the |at |by |)(morning|early|forenoon|midday|afternoon|noon|evening|night|late)";
 	
 	public static final String CLOCK_TAGS_DE =    "( |)(uhr)|"
 												+ "(um (\\d{1,2}:\\d\\d|\\d\\d|\\d))(\\s?|$)|"
@@ -346,6 +347,11 @@ public class DateAndTime implements ParameterHandler{
 		String dateType = DateType.unknown.name();
 		String day = "";
 		String time = "";
+		
+		//extract again/first
+		if (input.startsWith("<unix>")){
+			input = extract(input.replaceFirst(Pattern.quote("<unix>"), ""));
+		}
 
 		//extracted time-date
 		if (input.startsWith("<") && input.contains("&&")){
@@ -468,6 +474,14 @@ public class DateAndTime implements ParameterHandler{
 		
 		if (dateTag.isEmpty() && timeTag.isEmpty()){
 			return (new String[]{"", ""});
+		}
+		if (dateTag.matches("\\d{12,14}")){
+			long eventUnixTime = Long.parseLong(dateTag);
+			//calculate difference to user time
+			long secondsDiffToUser = (eventUnixTime - nluInput.userTime)/1000l;
+			//TODO: this fails when the event is crossing summer/winter-time switch
+			String[] eventDateRelativeToUser = DateTimeConverters.getTodayPlusX_seconds("yyyy.MM.dd_HH:mm:ss", nluInput, secondsDiffToUser).split("_");
+			return (new String[]{eventDateRelativeToUser[0], eventDateRelativeToUser[1]});
 		}
 		if (dateTag.matches("\\d\\d\\d\\d\\.\\d\\d\\.\\d\\d_\\d\\d:\\d\\d:\\d\\d")){
 			String[] dateTimeRes = dateTag.split("_");

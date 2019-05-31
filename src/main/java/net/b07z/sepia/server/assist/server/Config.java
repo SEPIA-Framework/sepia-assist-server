@@ -30,6 +30,7 @@ import net.b07z.sepia.server.assist.interpreters.NormalizerLightEN;
 import net.b07z.sepia.server.assist.interpreters.NormalizerLightTR;
 import net.b07z.sepia.server.assist.services.ServiceAccessManager;
 import net.b07z.sepia.server.assist.tools.RssFeedReader;
+import net.b07z.sepia.server.assist.tools.SpotifyApi;
 import net.b07z.sepia.server.assist.tts.TtsAcapelaWeb;
 import net.b07z.sepia.server.assist.users.AccountDynamoDB;
 import net.b07z.sepia.server.assist.users.AccountElasticsearch;
@@ -43,6 +44,7 @@ import net.b07z.sepia.server.core.server.ConfigDefaults;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.FilesAndStreams;
+import net.b07z.sepia.server.core.tools.Is;
 
 /**
  * Server configuration class.
@@ -52,7 +54,7 @@ import net.b07z.sepia.server.core.tools.FilesAndStreams;
  */
 public class Config {
 	public static final String SERVERNAME = "SEPIA-Assist-API"; 		//public server name
-	public static final String apiVersion = "v2.2.1";					//API version
+	public static final String apiVersion = "v2.2.2";					//API version
 	public static String privacyPolicyLink = "";						//Link to privacy policy
 	
 	//helper for dynamic class creation (e.g. from strings in config-file) - TODO: reduce dependencies further 
@@ -88,6 +90,7 @@ public class Config {
 	
 	//General and assistant settings
 	public static String assistantName = "Sepia";				//**Name - this might become user-specific once ...
+	public static boolean assistantAllowFollowUps = true;		//**allow the assistant to send follow-up messages to requests (plz don't spam the user!)
 	public static String defaultClientInfo = ConfigDefaults.defaultClientInfo;	//in case the client does not submit the info use this.
 	
 	public static String userIdPrefix = "uid";					//**prefix used when generating for example user ids or checking them
@@ -261,10 +264,10 @@ public class Config {
 	/**
 	 * Prepare interpretation chain by adding the default modules in the proper order to 'nluInterpretationSteps' list.
 	 */
-	public static void setup_nlu_steps(){
+	public static void setupNluSteps(){
 		//direct command
 		nluInterpretationSteps.add((input, cachedResults) -> InterpretationStep.getDirectCommand(input));
-		//spoken response
+		//response to previous input
 		nluInterpretationSteps.add((input, cachedResults) -> InterpretationStep.getResponse(input));
 		//slash command
 		nluInterpretationSteps.add((input, cachedResults) -> InterpretationStep.getSlashCommand(input));
@@ -300,6 +303,8 @@ public class Config {
 	public static String google_maps_key = "";
 	public static String graphhopper_key = "";
 	public static String forecast_io_key = "";
+	public static String spotify_client_id = "";
+	public static String spotify_client_secret = "";
 	public static String dirble_key = "";
 	public static String acapela_vaas_app = "";
 	public static String acapela_vaas_key = "";
@@ -368,8 +373,21 @@ public class Config {
 	
 	//------other tools------
 
-	//RSS feed reader
-	public static RssFeedReader rssReader = new RssFeedReader();
+	//RSS feed reader, Spotify API, etc. ...
+	public static RssFeedReader rssReader;
+	public static SpotifyApi spotifyApi;
+	
+	/**
+	 * Setup tools like RssFeedReader or SpotifyApi.
+	 */
+	public static void setupTools(){
+		//RSS
+		rssReader = new RssFeedReader();
+		//Spotify
+		if (Is.notNullOrEmpty(spotify_client_id) && Is.notNullOrEmpty(spotify_client_secret)){
+			spotifyApi = new SpotifyApi(spotify_client_id, spotify_client_secret);
+		}
+	}
 	
 	//----------helpers----------
 	
@@ -455,6 +473,10 @@ public class Config {
 			assistantId = settings.getProperty("assistant_id");
 			assistantEmail = settings.getProperty("assistant_email");
 			assistantPwd = settings.getProperty("assistant_pwd");
+			String assistantAllowFollowUpsString = settings.getProperty("assistant_allow_follow_ups");
+			if (assistantAllowFollowUpsString != null && !assistantAllowFollowUpsString.isEmpty()){
+				assistantAllowFollowUps = Boolean.valueOf(assistantAllowFollowUpsString);
+			}
 			//credentials
 			userIdPrefix = settings.getProperty("user_id_prefix");
 			guidOffset =  Long.valueOf(settings.getProperty("guid_offset"));
@@ -467,6 +489,8 @@ public class Config {
 			google_maps_key = settings.getProperty("google_maps_key");
 			graphhopper_key = settings.getProperty("graphhopper_key");
 			forecast_io_key = settings.getProperty("forecast_io_key");
+			spotify_client_id = settings.getProperty("spotify_client_id");
+			spotify_client_secret = settings.getProperty("spotify_client_secret");
 			dirble_key = settings.getProperty("dirble_key");
 			acapela_vaas_app = settings.getProperty("acapela_vaas_app");
 			acapela_vaas_key = settings.getProperty("acapela_vaas_key");
@@ -530,6 +554,7 @@ public class Config {
 		config.setProperty("assistant_id", assistantId);
 		config.setProperty("assistant_email", assistantEmail);
 		config.setProperty("assistant_pwd", "");
+		config.setProperty("assistant_allow_follow_ups", String.valueOf(assistantAllowFollowUps));
 		//credentials
 		config.setProperty("user_id_prefix", userIdPrefix);
 		config.setProperty("guid_offset", String.valueOf(guidOffset));

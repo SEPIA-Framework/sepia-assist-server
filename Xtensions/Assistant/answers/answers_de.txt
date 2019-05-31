@@ -25,7 +25,7 @@ ok_0c;;		rep=0|mood=5;;		Ok, ist erledigt.		;;char=neutral
 default_ask_parameter_0a;;		rep=0|mood=5;;		Hmm, die Anfrage ist scheinbar unvollständig, was ist der fehlende Parameter? ;;char=polite,neutral
 default_ask_parameter_0a;;		rep=1|mood=5;;		Und der nächste fehlende Parameter? ;;char=cool,rude,neutral
 default_ask_parameter_0a;;		rep=2|mood=5;;		Und noch einen Parameter bitte! ;;char=cool,rude
-default_ask_parameter_0b;;		rep=0|mood=5;;		Hmm, die Anfrage ist scheinbar unvollständig, was ist der fehlende Parameter? ;;char=neutral
+default_ask_parameter_0b;;		rep=0|mood=5;;		Hmm, die Anfrage ist scheinbar unvollständig, wie lautet der Wert des fehlende Parameters? ;;char=neutral
 default_ask_parameter_0b;;		rep=1|mood=5;;		Ne, hat nicht funktioniert, versuch noch mal bitte. ;;char=cool
 default_ask_parameter_0b;;		rep=2|mood=5;;		Nein, auch das hat nicht geklappt. Einmal noch bitte. ;;char=neutral
 default_ask_action_0a;;		rep=0|mood=5;;		Welche Aktion soll ich ausführen? ;;char=neutral
@@ -45,6 +45,7 @@ default_open_link_0a;;		rep=0|mood=5;;		Mist, da gibts scheinbar ein Problem mit
 default_open_link_1a;;		rep=0|mood=5;;		Ok, ich öffne den Link für dich. ;;char=neutral
 default_open_link_1a;;		rep=0|mood=5;;		Eine Sekunde, ich öffne den Link. ;;char=neutral
 default_under_construction_0a;;		rep=0|mood=5;;		Daran wird noch gearbeitet, sorry.  ;;char=neutral
+default_under_construction_0b;;		rep=0|mood=5;;		Oh, hab mich vertan, sorry! Daran wird noch gearbeitet.  ;;char=neutral
 default_abort_no_change_0a;;		rep=0|mood=5;;		Ok, dann lasse ich mal alles so.  ;;char=neutral
 default_not_possible_0a;;			rep=0|mood=5;;		Sorry aber das ist nicht möglich, glaube ich.  ;;char=neutral
 yes_no_ask_0a;;		rep=0|mood=5;;		ja oder nein <user_name>? ;;char=cool,rude,neutral
@@ -164,8 +165,15 @@ music_0c;;		rep=0|mood=5;;		Im Moment kann ich <1> leider nicht abspielen, sorry
 music_0d;;		rep=0|mood=5;;		Im Moment kann ich <1> von <2> leider nicht abspielen, sorry. Hast du schon eine Radio Suche probiert? ;;char=cool,polite,neutral
 music_ask_0a;;	rep=0|mood=5;;		Welche Musik soll ich für dich suchen? ;;char=neutral
 music_ask_0a;;	rep=0|mood=5;;		Wie heißt der Titel, Künstler oder das Genre das ich suchen soll? ;;char=polite,neutral
+music_ask_0b;;	rep=0|mood=5;;		Möchtest du einen Song, einen Künstler oder eine Playlist hören? ;;char=neutral
+music_ask_0b;;	rep=1|mood=5;;		Sorry sagtest du Song, Künstler oder Playlist? ;;char=neutral
+music_ask_0b;;	rep=2|mood=5;;		Sorry <user_name>, habs immer noch nicht verstanden. Du kannst wählen zwischen Song, Künstler oder Playlist. Was soll es sein? ;;char=neutral
+music_ask_1a;;	rep=0|mood=5;;		Wie heißt der Song, den ich suchen soll? ;;char=neutral
+music_ask_1b;;	rep=0|mood=5;;		Wie heißt der Künstler, den ich suchen soll? ;;char=neutral
+music_ask_1c;;	rep=0|mood=5;;		Wie heißt die Playlist, die ich suchen soll? ;;char=neutral
 music_1a;;		rep=0|mood=5;;		Sekunde, ich lade <1> von <2>. ;;char=polite,neutral
 music_1b;;		rep=0|mood=5;;		Alles klar, ich starte dann mal <1>. ;;char=cool,polite,neutral
+music_1c;;		rep=0|mood=5;;		Eine Sekunde, Musik wird gesucht. ;;char=cool,polite,neutral
 music_radio_0a;;		rep=0|mood=5;;		<user_name>, ich kann gerade leider kein Radio finden. Weiß auch nicht wieso. ;;char=cool,rude
 music_radio_0b;;		rep=0|mood=5;;		<user_name>, zu diesem Suchbegriff habe ich leider kein Radio gefunden. ;;char=polite,neutral
 music_radio_ask_0a;;	rep=0|mood=5;;		Welchen Radiosender, welches Genre oder welche Band soll ich für dich suchen? ;;char=cool,polite,neutral 

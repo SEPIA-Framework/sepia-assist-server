@@ -36,7 +36,7 @@ public class Test_RadioStation_MusicGenre {
 		texts.add("Spiele ein Radio mit Rockmusik");
 		texts.add("Spiele ein Radio mit Metallica");
 		texts.add("Spiele ein Radio mit Musik von Metallica");
-		texts.add("Spiele Rockradio");
+		texts.add("Spiele Rockradio"); 		//TODO: this one fails
 		
 		printTestResults(texts, parametersToTest, language);
 		
@@ -54,12 +54,12 @@ public class Test_RadioStation_MusicGenre {
 		texts.add("play a radio with rockmusic");
 		texts.add("play a radio with Metallica");
 		texts.add("play a radio with songs of Metallica");
-		texts.add("play rockstation");
+		texts.add("play rockstation"); 		//TODO: this one fails
 
 		printTestResults(texts, parametersToTest, language);
 	}
 	
-	static void printTestResults(List<String> texts, String[] parametersToTest, String language){
+	private static void printTestResults(List<String> texts, String[] parametersToTest, String language){
 		for (String text : texts){
 			NluInput input = ConfigTestServer.getFakeInput("test", language);
 			

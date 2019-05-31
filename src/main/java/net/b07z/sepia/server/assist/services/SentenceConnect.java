@@ -1,5 +1,8 @@
 package net.b07z.sepia.server.assist.services;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -20,6 +23,7 @@ import net.b07z.sepia.server.core.assistant.ACTIONS;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.Is;
 
 /**
  * Class that handles NPS feedback
@@ -28,6 +32,10 @@ import net.b07z.sepia.server.core.tools.Debugger;
  *
  */
 public class SentenceConnect implements ServiceInterface{
+	
+	//flexible parameter replacements (e.g. for TeachUI)
+	public static final String VAR_BASE = "var";
+	public static final int VAR_N = 5;	//-> var1, var2 ... varN
 	
 	//---data---
 	public static String getButtonText(String language){
@@ -49,6 +57,10 @@ public class SentenceConnect implements ServiceInterface{
 		Parameter p1 = new Parameter(PARAMETERS.SENTENCES)
 				.setRequired(true)
 				.setQuestion(askSentence);
+		
+		//optional
+		//see below at 'background parameters'
+		
 		info.addParameter(p1);
 		
 		//Answers:
@@ -72,7 +84,14 @@ public class SentenceConnect implements ServiceInterface{
 		JSONArray sentencesArray = (JSONArray) sentenceJson.get(InterviewData.ARRAY);
 		
 		//get background parameters
-		String reply = nluResult.getParameter(PARAMETERS.REPLY);
+		String reply = nluResult.getParameter(PARAMETERS.REPLY);	//a reply
+		List<String> flexParameters = new ArrayList<>();			//flex parameters
+		for (int i=0; i<VAR_N; i++){
+			String var = nluResult.getParameter(VAR_BASE + (i+1));
+			if (Is.notNullOrEmpty(var)){
+				flexParameters.add(var);
+			}
+		}
 		
 		Debugger.println("cmd: sentence connect: " + sentencesArray, 2);		//debug
 		
@@ -84,6 +103,15 @@ public class SentenceConnect implements ServiceInterface{
 			
 			for (Object o : sentencesArray){
 				String s = (String) o;
+				
+				//Replace flex parameters (variables)
+				for (int i=0; i<flexParameters.size(); i++){
+					String tag = "<" + VAR_BASE + (i+1) + ">";
+					if (s.contains(tag)){
+						s = s.replace(tag, flexParameters.get(i));
+					}
+				}
+				
 				//TODO: making a clean input would be better
 				nluResult.input.clearParameterResultStorage();
 				nluResult.input.inputType = "question";

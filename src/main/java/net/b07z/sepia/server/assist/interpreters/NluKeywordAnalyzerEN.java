@@ -165,44 +165,8 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 			possibleParameters.add(pv);
 		}
 		
-		//fashion shopping
-		if (NluTools.stringContains(text, "(buy|fashion|shopping)") || 
-				((NluTools.stringContains(text, FashionItem.fashionItems_en) || NluTools.stringContains(text, FashionBrand.fashionBrandsSearch)) 
-					&& !NluTools.stringContains(text, "(i have |there are |my )"))
-			){
-			possibleCMDs.add(CMD.FASHION);
-			possibleScore.add(1);	index++;
-			Map<String, String> pv = new HashMap<String, String>(); 		//TODO: pass this down to avoid additional checking
-			FashionShopping fs = new FashionShopping().setup(input, pv);
-			fs.getParameters();
-			possibleScore.set(index, possibleScore.get(index) + fs.getScore());
-			possibleParameters.add(pv);
-		}
-		
-		//food
-		if (NluTools.stringContains(text, "^food$|"
-				+ "(food|foodstuff|meal|breakfast|lunch|dinner|groceries|nourishments) .*\\b(order|buy|deliver|eat)|"
-				+ "(" + Language.languageClasses_en + "|" + FoodClass.foodClasses_en + ") .*\\b(order|buy|deliver|eat)|"
-				+ "(order|buy|deliver|eat|what) .*\\b(food|foodstuff|meal|breakfast|lunch|dinner|groceries|nourishments|eat)|"
-				+ "(order|buy|deliver|eat) .*\\b(" + Language.languageClasses_en + "|" + FoodClass.foodClasses_en + ")|"
-				+ "hunger|hungry|appetite|delivery|"
-				+ "(from) .*\\b(\\w*restaurant(s|))") 
-				||	NluTools.stringContains(text, FoodItem.foodItems_en)
-			){
-			possibleCMDs.add(CMD.FOOD);
-			possibleScore.add(1);	index++;
-			
-			Map<String, String> pv = new HashMap<String, String>(); 		//TODO: pass this down to avoid additional checking
-			AbstractParameterSearch aps = new AbstractParameterSearch()
-					.setParameters(PARAMETERS.FOOD_ITEM, PARAMETERS.FOOD_CLASS)
-					.setup(input, pv);
-			aps.getParameters();
-			possibleScore.set(index, possibleScore.get(index) + aps.getScore());
-			possibleParameters.add(pv);
-		}
-		
 		//wikipedia/knowledgebase
-		if (NluTools.stringContains(text, "wiki|wikipedia|information|informations|"
+		if (NluTools.stringContains(text, "wiki|wikipedia|information|informations|knowledge base|"
 							+ "who (is|are|was|were) .*|"
 							+ "meaning of .*|what (is|was|are|were) .*|"
 							+ "when (is|was|are|were) .*|"
@@ -211,6 +175,12 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 			String this_text = text;
 			possibleCMDs.add(CMD.KNOWLEDGEBASE);
 			possibleScore.add(1);	index++;
+			
+			//score a bit extra if we start with certain words
+			if (NluTools.stringContains(this_text, "^((search |)(the |)(wikipedia|knowledge base))")){
+				possibleScore.set(index, possibleScore.get(index)+1);
+			}
+			
 			//kb search term
 			String kb_search="";
 			if (NluTools.stringContains(this_text, "how (high|large) (is|are|was|were)|how old (is|are|was|were)|how many .* (are|has|were|had|live|lived) ")){
@@ -247,11 +217,11 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 		//web search
 		//TODO: optimize exceptions
 		if (NluTools.stringContains(text, "websearch|web search|search the web|"
-						+ "^google|^bing|^yahoo|^duck duck|^duck duck go|"
+						+ "^google|^bing|^yahoo|^duck duck|^duck duck go|^youtube|"
 						+ "^(picture(s|)|recipe(s|)|video(s|)|movie(s|)|film(s|)|share(s|)|stock(s|)|book(s|))|"
 						+ "what is the (stock|share) (value|price)|"
 						+ "(search|find|show|look|searching|looking)( | .* )((on |)the (web|internet))|"
-						+ "(search|find|show|look|searching|looking)( | .* )(with|on|via|per|over|by) (google|bing|duck duck go|duck duck|yahoo)|"
+						+ "(search|find|show|look|searching|looking)( | .* )(with|on|via|per|over|by) (google|bing|duck duck go|duck duck|yahoo|youtube)|"
 						+ "(search|find|show|look|searching|looking)( | .* )(picture(s|)|recipe(s|)|video(s|)|youtube|book(s|)|share(s|)|stock(s|))")
 					//|| NLU_Tools.stringContains(text, "search|find|show|look for|searching for|looking for") 
 					//|| (NLU_Tools.stringContains(text, "search|find|show") 
@@ -291,6 +261,42 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 			AbstractParameterSearch aps = new AbstractParameterSearch()
 					.setParameters(PARAMETERS.TIME, PARAMETERS.TRAVEL_TYPE, PARAMETERS.TRAVEL_REQUEST_INFO, 
 							PARAMETERS.LOCATION_END, PARAMETERS.LOCATION_WAYPOINT, PARAMETERS.LOCATION_START)
+					.setup(input, pv);
+			aps.getParameters();
+			possibleScore.set(index, possibleScore.get(index) + aps.getScore());
+			possibleParameters.add(pv);
+		}
+		
+		//fashion shopping
+		if (NluTools.stringContains(text, "(buy|fashion|shopping)") || 
+				((NluTools.stringContains(text, FashionItem.fashionItems_en) || NluTools.stringContains(text, FashionBrand.fashionBrandsSearch)) 
+					&& !NluTools.stringContains(text, "(i have |there are |my )"))
+			){
+			possibleCMDs.add(CMD.FASHION);
+			possibleScore.add(1);	index++;
+			Map<String, String> pv = new HashMap<String, String>(); 		//TODO: pass this down to avoid additional checking
+			FashionShopping fs = new FashionShopping().setup(input, pv);
+			fs.getParameters();
+			possibleScore.set(index, possibleScore.get(index) + fs.getScore());
+			possibleParameters.add(pv);
+		}
+		
+		//food
+		if (NluTools.stringContains(text, "^food$|"
+				+ "(food|foodstuff|meal|breakfast|lunch|dinner|groceries|nourishments) .*\\b(order|buy|deliver|eat)|"
+				+ "(" + Language.languageClasses_en + "|" + FoodClass.foodClasses_en + ") .*\\b(order|buy|deliver|eat)|"
+				+ "(order|buy|deliver|eat|what) .*\\b(food|foodstuff|meal|breakfast|lunch|dinner|groceries|nourishments|eat)|"
+				+ "(order|buy|deliver|eat) .*\\b(" + Language.languageClasses_en + "|" + FoodClass.foodClasses_en + ")|"
+				+ "hunger|hungry|appetite|delivery|"
+				+ "(from) .*\\b(\\w*restaurant(s|))") 
+				||	NluTools.stringContains(text, FoodItem.foodItems_en)
+			){
+			possibleCMDs.add(CMD.FOOD);
+			possibleScore.add(1);	index++;
+			
+			Map<String, String> pv = new HashMap<String, String>(); 		//TODO: pass this down to avoid additional checking
+			AbstractParameterSearch aps = new AbstractParameterSearch()
+					.setParameters(PARAMETERS.FOOD_ITEM, PARAMETERS.FOOD_CLASS)
 					.setup(input, pv);
 			aps.getParameters();
 			possibleScore.set(index, possibleScore.get(index) + aps.getScore());
@@ -412,34 +418,26 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 		}
 		
 		//music
-		if (NluTools.stringContains(text, "music|play .*|song|songs") 
-							&& !possibleCMDs.contains(CMD.KNOWLEDGEBASE)){
-			String this_text = text;
+		if (NluTools.stringContains(text, "music|play .*|(start|open|show) .*\\b(title(s|)|track(s|)|of|by)|song(s|)|playlist|"
+				+ "album|record|spotify|deezer|soundcloud|youtube|vlc") 
+										&& !possibleCMDs.contains(CMD.KNOWLEDGEBASE)){
+			//String this_text = text;
 			possibleCMDs.add(CMD.MUSIC);
 			possibleScore.add(1);	index++;
 			
-			search_music_parameters(this_text, language);
+			//it is so obvious, score again
+			//possibleScore.set(index, possibleScore.get(index)+1);
 			
-			//genre
-			String genre = music_parameters.get("music_genre");
-			if (!genre.isEmpty()){
-				possibleScore.set(index, possibleScore.get(index)+1);
-			}
-			//artist
-			String artist = music_parameters.get("music_artist");
-			if (!artist.isEmpty()){
-				possibleScore.set(index, possibleScore.get(index)+1);
-			}
-			String title = music_parameters.get("music_search");
-			//a "startable" is to vague to trigger a score increase ...
-			//if (!title.matches("")){
-			//	possibleScore.set(index, possibleScore.get(index)+1);
-			//}
-			
-			HashMap<String, String> pv = new HashMap<String, String>();
-				pv.put(PARAMETERS.SONG, title);
-				pv.put(PARAMETERS.MUSIC_GENRE, genre);
-				pv.put(PARAMETERS.MUSIC_ARTIST, artist);
+			HashMap<String, String> pv = new HashMap<String, String>(); 		//TODO: pass this down to avoid additional checking
+			AbstractParameterSearch aps = new AbstractParameterSearch()
+					.setParameters(
+							PARAMETERS.MUSIC_SERVICE, PARAMETERS.MUSIC_GENRE, PARAMETERS.MUSIC_ALBUM, 
+							PARAMETERS.MUSIC_ARTIST, PARAMETERS.SONG, 
+							PARAMETERS.PLAYLIST_NAME
+					)
+					.setup(input, pv);
+			aps.getParameters();
+			possibleScore.set(index, possibleScore.get(index) + aps.getScore());
 			possibleParameters.add(pv);
 		}
 		

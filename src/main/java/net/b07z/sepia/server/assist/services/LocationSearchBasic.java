@@ -17,6 +17,7 @@ import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.ConfigServices;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
+import net.b07z.sepia.server.core.assistant.ACTIONS;
 import net.b07z.sepia.server.core.assistant.CLIENTS;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Converters;
@@ -157,9 +158,10 @@ public class LocationSearchBasic implements ServiceInterface{
 			Debugger.println("Location_Mapsearch - failed to encode URL with: " + end, 1);
 			//e.printStackTrace();
 		}
+		//make action to open URL
+		api.addAction(ACTIONS.OPEN_IN_APP_BROWSER);
+		api.putActionInfo("url", (appleMapsURL.isEmpty())? googleMapsURL : appleMapsURL);
 		/*
-		api.actionInfo_add_action(ACTIONS.OPEN_URL);
-		api.actionInfo_put_info("url", googleMapsURL);
 		
 		//google button
 		api.actionInfo_add_action(ACTIONS.BUTTON_URL);
@@ -183,7 +185,11 @@ public class LocationSearchBasic implements ServiceInterface{
 		Card googleCard = new Card(Card.TYPE_SINGLE);
 		//JSONObject linkCard1 = 
 		googleCard.addElement(ElementType.link, 
-				JSON.make("title", "Google Maps", "desc", description),
+				JSON.make(
+					"title", "Google Maps", 
+					"desc", description,
+					"type", "maps"
+				),
 				null, null, "", 
 				googleMapsURL, 
 				Config.urlWebImages + "/brands/google-maps.png", 
@@ -196,7 +202,11 @@ public class LocationSearchBasic implements ServiceInterface{
 			Card appleCard = new Card(Card.TYPE_SINGLE);
 			//JSONObject linkCard2 = 
 			appleCard.addElement(ElementType.link, 
-					JSON.make("title", "Apple Maps", "desc", description),
+					JSON.make(
+						"title", "Apple Maps", 
+						"desc", description,
+						"type", "maps"
+					),
 					null, null, "", 
 					appleMapsURL, 
 					Config.urlWebImages + "/brands/apple-maps.png", 

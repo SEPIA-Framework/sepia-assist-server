@@ -23,6 +23,8 @@ public interface InterpretationStep {
 	 */
 	public NluResult call(NluInput input, Map<String, NluResult> cachedResults);
 	
+	/* --- Static implementations --- */
+	
 	/**
 	 * Check if its a direct command or return null.
 	 */

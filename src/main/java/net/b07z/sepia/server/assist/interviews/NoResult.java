@@ -49,7 +49,7 @@ public class NoResult {
 		
 		//websearch action
 		api.addAction(ACTIONS.BUTTON_CMD);
-		api.putActionInfo("title", "Websearch");
+		api.putActionInfo("title", "Web Search");
 		api.putActionInfo("info", "direct_cmd");
 		api.putActionInfo("cmd", CmdBuilder.getWebSearch(nluResult.input.textRaw));
 		api.putActionInfo("options", JSON.make(ACTIONS.SKIP_TTS, true));

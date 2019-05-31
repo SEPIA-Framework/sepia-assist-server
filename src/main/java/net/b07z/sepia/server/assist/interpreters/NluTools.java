@@ -191,10 +191,10 @@ public class NluTools {
 	
 	/**
 	 * Capitalize first letter of all words in a sentence.
-	 * @param low - input with low case sentence
-	 * @return sentence with every first letter of a word capital
+	 * @param low - input with lower-case sentence
+	 * @return sentence where ALL words begin with a capital letter
 	 */
-	public static String capitalizeAll(String low){
+	public static String capitalizeAllFirstLetters(String low){
 		StringBuffer res = new StringBuffer();
 	    String[] strArr = low.split("\\s+");
 	    for (String str : strArr) {

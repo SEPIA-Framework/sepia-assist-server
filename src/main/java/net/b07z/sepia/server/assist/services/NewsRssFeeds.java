@@ -88,7 +88,7 @@ public class NewsRssFeeds implements ServiceInterface{
 		localTerms_en.put("<soccer>", "Soccer");
 		localTerms_en.put("<economy>", "Economy");
 		localTerms_en.put("<games>", "Games");
-		localTerms_en.put("<music>", "MusiC");
+		localTerms_en.put("<music>", "Music");
 		localTerms_en.put("<cinema>", "Cinema");
 		localTerms_en.put("<tv>", "Tv series");
 		localTerms_en.put("<startup>", "Start-up");

@@ -70,11 +70,12 @@ public class NluTaggedSentenceMatcher implements NluInterface{
 		if (commands_this != null){
 			
 			//run through all sentences
-			for(Entry<String, String> entry : commands_this.entrySet()) {
+			for(Entry<String, String> entry : commands_this.entrySet()){
 				String sentence = entry.getKey();
 				SentenceMatch sm = new SentenceMatch(search, sentence);
-				//System.out.println("COMPARE: '" + search + "' and '" + sentence + "'"); 		//debug
+				//System.out.println("COMPARE: '" + search + "' and '" + sentence + "'"); 	//debug
 				sm.getIdentity()
+					.getRequiredMatches()
 					.getBagOfWordsMatch()
 					.getWordDistance();
 				if (sm.isIdentical){
@@ -83,6 +84,8 @@ public class NluTaggedSentenceMatcher implements NluInterface{
 					best_sm = sm;
 					best_cmd = entry.getValue();
 					break;
+				}else if (!sm.matchedRequiredWords){
+					continue;
 				}else{
 					double this_score = (sm.matchedWords_P);
 					int this_score2 = (sm.wordDistance);
@@ -113,7 +116,6 @@ public class NluTaggedSentenceMatcher implements NluInterface{
 				}
 			}
 			
-			
 		//no commands list available
 		}else{
 			return null;
@@ -125,9 +127,10 @@ public class NluTaggedSentenceMatcher implements NluInterface{
 			System.out.println("SENTENCE MATCH: " + best_score);				//debug
 			System.out.println("SENTENCE MATCH: " + best_sm.inputSentence);		//debug
 			System.out.println("SENTENCE MATCH: " + best_sm.testSentence);		//debug
-			System.out.println("SENTENCE MATCH: " + best_sm.matchedWords_N);		//debug
+			System.out.println("SENTENCE MATCH: " + best_sm.matchedWords_N);	//debug
 			System.out.println("SENTENCE MATCH: " + best_sm.taggedWords_N);		//debug
-			System.out.println("SENTENCE MATCH: " + best_sm.differentWords_N);		//debug */
+			System.out.println("SENTENCE MATCH: " + best_sm.differentWords_N);	//debug 
+			*/
 			
 			//replace command summary with new parameters
 			if (best_sm.isIdentical){

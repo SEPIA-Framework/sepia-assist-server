@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONObject;
+
 import net.b07z.sepia.server.assist.answers.ServiceAnswers;
 import net.b07z.sepia.server.assist.parameters.ParameterResult;
 import net.b07z.sepia.server.assist.server.Config;
@@ -11,6 +13,8 @@ import net.b07z.sepia.server.assist.services.ServiceInfo;
 import net.b07z.sepia.server.assist.tools.DateTimeConverters;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.data.CmdMap;
+import net.b07z.sepia.server.core.tools.Is;
+import net.b07z.sepia.server.core.tools.JSON;
 
 /**
  * Use this to generate the input for any NL-Processor.
@@ -28,7 +32,7 @@ public class NluInput {
 
 	//main input	-						API param /	Description
 	//public Request request;				//request data
-	public String text = "";				//:text:	input text/question/query
+	public String text = "";				//text:		input text/question/query
 	public String textRaw = "";				//			input text in its raw form, no replacements, no cmd transformation (e.g. for direct commands it tries to retain the text)
 	public String language = "en";			//lang: 	language used for interpretation and results (ISO 639-1 code)
 	public String context = "default";		//context:	context is what the user did/said before to answer queries like "do that again" or "and in Berlin?"
@@ -45,10 +49,16 @@ public class NluInput {
 	//personal info
 	public String userLocation = "";		//user_location:	address, longitude, latitude coordinates of user
 	public long userTime = -1;				//time:				system time at request sent
-	public String userTimeLocal = "";		//time_local:		system date and time at locally at user location, default format 2016.12.31_22:44:11
+	public String userTimeLocal = "";		//time_local:		system date and time at user location, default format 2016.12.31_22:44:11
 	public User user;						//user:				holds all info about the user, can reload from account
 	//... more to come
+	public String deviceId = "";			//device_id:		an ID defined by the user to identify a certain device
+	public String msgId = null;				//msg_id:			an ID to identify request, especially helpful in duplex scenarios
+	public String duplexData = null;		//duplex_data:		data helpful to trace back a duplex call and answer or follow-up, e.g. the chat-channel-ID. Format is JSON, parse when required
+	public String connection = "http";		//connection:		http request or WebSocket connection - has influence on delayed replies
 	public boolean demoMode = false;		//demomode:			true/false if you want to use the demomode
+	public String customData = null; 		//custom_data:		a dynamic variable to carry any data that does not fit to the pre-defined stuff. Should be a JSONObject converted to string.
+	private JSONObject customDataJson = null;					//custom data is parsed when needed and the result is stored here. 
 	
 	//Stuff to cache during all processes from NLU to service result:
 	
@@ -98,11 +108,11 @@ public class NluInput {
 	
 	/**
 	 * Set user local time.
-	 * @param timeString - Date in default format (Config.defaultSdf): "yyyy.MM.hh_HH:mm:ss"
+	 * @param timeString - Date in default format (Config.defaultSdf): "yyyy.MM.dd_HH:mm:ss"
 	 */
-	public void setTime(String timeString){
+	public void setTimeGMT(String timeString){
 		this.userTimeLocal = timeString;
-		this.userTime = DateTimeConverters.getUnixTimeOfDate(userTimeLocal, Config.defaultSdf);
+		this.userTime = DateTimeConverters.getUnixTimeOfDateGMT(userTimeLocal, Config.defaultSdf);
 	}
 	
 	//handle (session) STORAGEs:
@@ -217,7 +227,34 @@ public class NluInput {
 		}
 	}
 	
+	//Custom data
+	/**
+	 * Get a value of the custom-data object submitted by client.
+	 * @param key - the field in the JSON object
+	 * @return value or null
+	 */
+	public Object getCustomDataObject(String key){
+		if (customDataJson != null){
+			return customDataJson.get(key);
+		}else if (Is.notNullOrEmpty(customData)){
+			JSONObject cd = JSON.parseString(customData);
+			if (cd != null){
+				customDataJson = cd;
+				return customDataJson.get(key);
+			}else{
+				return null;
+			}
+		}else{
+			return null;
+		}
+	}
+	
 	//-------helper methods--------
+	
+	//connection type
+	public boolean isDuplexConnection(){
+		return (connection.equals("ws")); 		//more types can be added here when available
+	}
 	
 	//question/answer handling
 	/**

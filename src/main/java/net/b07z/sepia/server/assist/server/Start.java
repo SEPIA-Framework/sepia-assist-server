@@ -209,7 +209,8 @@ public class Start {
 		Config.setupAnswers();			//answers
 		Config.setupCommands();			//predefined commands
 		Config.setupChats(); 			//predefined chats
-		Config.setup_nlu_steps(); 		//interpretation chain
+		Config.setupNluSteps(); 		//interpretation chain
+		Config.setupTools(); 			//tools like RssFeedReader or SpotifyApi
 		Workers.setupWorkers(); 		//setup and start selected workers
 		if (Config.connectToWebSocket){
 			Clients.setupSocketMessenger();		//setup webSocket messenger and connect
