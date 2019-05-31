@@ -128,10 +128,10 @@ public class MediaControls implements ParameterHandler {
 		String play, pause, stop, close, next, previous, resume, repeat, vol_up, vol_down, vol_set;
 		//German
 		if (language.matches(LANGUAGES.DE)){
-			play = "(spiele(n|)|abspielen|starten|oeffne(n|)|play)(?!.*\\b(naechste(\\w|)|vorherige(\\w|)))";
+			play = "(spiele(n|)|abspielen|starten|oeffne(n|)|play)(?!.*\\b(naechste(\\w|)|vorherige(\\w|)))|(an|ein)schalten|an$|ein$";
 			pause = "pausieren|pause|anhalten";
 			stop = "stoppen|stop(p|)";
-			close = "schliesse(n|)";
+			close = "schliesse(n|)|(aus|ab)schalten|aus$";
 			next = "naechste(\\w|)|vorwaerts|vor|next";
 			previous = "zurueck|vorherige(\\w|)";
 			resume = "weiter|fortsetzen";
@@ -142,10 +142,10 @@ public class MediaControls implements ParameterHandler {
 			
 		//English and other
 		}else{
-			play = "(play|start|open)(?!.*\\b(next|previous))";
+			play = "(play|start|open)(?!.*\\b(next|previous))|turn on|on$";
 			pause = "pause";
-			stop = "stop|end";
-			close = "close";
+			stop = "stop";
+			close = "close|end|off";
 			next = "next|forward";
 			previous = "back|previous";
 			resume = "continue|resume";

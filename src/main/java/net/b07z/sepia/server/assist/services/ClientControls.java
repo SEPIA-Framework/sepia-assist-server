@@ -7,8 +7,6 @@ import org.json.simple.JSONObject;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
-import net.b07z.sepia.server.assist.interpreters.NluTools;
-import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.parameters.Action;
 import net.b07z.sepia.server.assist.parameters.ClientFunction;
 import net.b07z.sepia.server.assist.parameters.MediaControls;
@@ -80,8 +78,8 @@ public class ClientControls implements ServiceInterface{
 				+ "(.* |)medi(a|en)(-| |)(player|wiedergabe)( .*|)|"
 				+ "(.* |)(naechste(\\w|)|vorherige(\\w|)) (musik|song|lied|medien|media|titel)( .*|)|"
 				+ "(naechste(\\w|)|vorherige(\\w|)|vor|zurueck|stop(pen|p|)|play|abspielen|lauter|leiser|fortsetzen|weiter)|"
-				+ "(.* |)(musik|song|lied|medien|media|titel|player|wiedergabe) (anhalten|stoppen|stop(p|)|beenden|schliessen|fortsetzen|weiter|wiederholen)( .*|)|"
-				+ "(.* |)(stoppe|stop(p|)|schliesse)( .* | )(musik|song|lied|medien|media|titel|player|sound|wiedergabe)( .*|)"
+				+ "(.* |)(musik|song|lied|medien|media|titel|player|wiedergabe) (anhalten|stoppen|stop(p|)|beenden|schliessen|(aus|ab)schalten|fortsetzen|weiter|wiederholen)( .*|)|"
+				+ "(.* |)(stoppe|stop(p|)|schliesse|schalte|beende|halte)( .* | )(musik|song|lied|medien|media|titel|player|sound|wiedergabe)( .*|)"
 				+ ")$", DE);
 		info.setCustomTriggerRegX("^("
 				+ "(.* |)open setting(s|)( .*|)|"
@@ -177,20 +175,20 @@ public class ClientControls implements ServiceInterface{
 			}
 		}else if (isMedia && !isVolume){
 			//media support 
-			if (mediaControls.equals(MediaControls.Type.close.name())){
+			if (mediaControls.equals(MediaControls.Type.close.name()) || action.equals(Action.Type.remove.name())){
 				actionName = "close";
-			}else if (mediaControls.equals(MediaControls.Type.stop.name())){
+			}else if (mediaControls.equals(MediaControls.Type.stop.name()) || action.equals(Action.Type.off.name())){
 				actionName = "stop";
-			}else if (mediaControls.equals(MediaControls.Type.pause.name())){
+			}else if (mediaControls.equals(MediaControls.Type.pause.name()) || action.equals(Action.Type.pause.name())){
 				actionName = "pause";
-			}else if (mediaControls.equals(MediaControls.Type.play.name())){
-				actionName = "play";
 			}else if (mediaControls.equals(MediaControls.Type.next.name())){
 				actionName = "next";
 			}else if (mediaControls.equals(MediaControls.Type.previous.name())){
 				actionName = "previous";
 			}else if (mediaControls.equals(MediaControls.Type.resume.name())){
 				actionName = "resume";
+			}else if (mediaControls.equals(MediaControls.Type.play.name()) || isActionOpen){
+				actionName = "play";
 			/*}else if (isActionOpen){
 				
 			}else if (isActionClose){*/

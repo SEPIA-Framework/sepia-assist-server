@@ -136,7 +136,7 @@ public class Action implements ParameterHandler{
 			off = "(mach|schalte|dreh) .*\\b(aus)|"
 					+ "^\\w+\\b (aus$)|"
 					+ "schliessen|schliesse|deaktivieren|deaktiviere|"
-					+ "beenden|beende|ausschalten|aus schalten|ausmachen|aus machen|ausdrehen|aus drehen|stop(pen|pe|p|)|exit";
+					+ "beenden|beende|(aus|ab)schalten|aus schalten|ausmachen|aus machen|ausdrehen|aus drehen|stop(pen|pe|p|)|exit";
 			pause = "pausieren|pause|anhalten|halte .*\\b(an)";
 			increase = "(mach|dreh) .*\\b(auf|hoch)|"
 					+ "(?<!(wie ))hoch|rauf|hoeher|groesser|erhoehen|aufdrehen|erhoehe|verstaerk(en|e)|heller|(?<!(ist ))schneller|(?<!(ist ))staerker|waermer|warm|lauter|laut";
@@ -253,7 +253,7 @@ public class Action implements ParameterHandler{
 		}
 		if (language.matches(LANGUAGES.DE)){
 			input = input.replaceFirst("\\b(mach|schalte|dreh|nimm|fuege|trage)\\b", "");
-			input = input.replaceFirst("\\b(an|ein|aus|auf|zu|von|hoch|runter|hinzu)$", "").trim();
+			input = input.replaceFirst("\\b(an|ein|aus|ab|auf|zu|von|hoch|runter|hinzu)$", "").trim();
 		}else{
 			input = input.replaceFirst("\\b(make|switch|turn|shut|take|put|add|enter)( on| off| up| down| to|)\\b", "");
 			input = input.replaceFirst("\\b(on|off|up|down)$", "").trim();
