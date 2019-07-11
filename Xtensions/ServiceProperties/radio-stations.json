@@ -29,11 +29,11 @@
         "WDR 5": "http://www1.wdr.de/radio/wdr5/musik/titelsuche-wdrfuenf-104.html",
         "WDR 3": "http://www1.wdr.de/radio/wdr3/titelsuche-wdrdrei-104.html",
         "WDR 4": "http://www1.wdr.de/radio/wdr4/titelsuche-wdrvier-102.html",
-        "egoFM Pure": "http://www.egofm.de/musik/play-history-raw",
+        "egoFM": "https://www.egofm.de/radio/playlist?stream=egofm",
+		"egoFM Pure": "https://www.egofm.de/radio/playlist?stream=egopure",
         "YOU FM": "http://www.you-fm.de/playlist/youfm.html",
         "ANTENNE BAYERN": "http://www.antenne.de/musik/song-suche/?station=antenne",
         "1LIVE": "http://www1.wdr.de/radio/1live/on-air/1live-playlist/index.html",
-        "egoFM": "http://www.egofm.de/musik/play-history",
         "WDR 2": "http://www1.wdr.de/radio/wdr2/titelsuche-wdrzwei-124.html",
         "DELUXE LOUNGE RADIO": "http://onlineradiobox.com/de/radiodeluxelounge/playlist/"
     },
