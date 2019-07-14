@@ -149,7 +149,7 @@ public class Alarms implements ServiceInterface{
 			//check some alarm-specific action expressions
 			if (api.language.equals(LANGUAGES.DE) && NluTools.stringContains(nluResult.input.text, "(weck(e|)|(wecker|timer) (fuer|auf)|erinner(e|)|erinnerung (an|fuer)|aufstehen|aus .* bett)")){
 				action = Action.Type.set.name();
-			}else if (api.language.equals(LANGUAGES.EN) && NluTools.stringContains(nluResult.input.text, "(wake|remind|get up|out .* bed)")){
+			}else if (api.language.equals(LANGUAGES.EN) && NluTools.stringContains(nluResult.input.text, "(wake|remind|remember|get up|out .* bed)")){
 				action = Action.Type.set.name();
 			}else{
 				//make some smart action assumptions

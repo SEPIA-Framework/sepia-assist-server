@@ -354,7 +354,7 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 			possibleParameters.add(pv);
 		}
 		
-		//timer
+		//timer - reminder
 		if (NluTools.stringContains(text, "(\\w+(-|)|)timer(s|)|(\\w+(-|)|)counter(s|)|(\\w+(-|)|)countdown(s|)|(\\w+(-|)|)stoppuhr(en|)|stop uhr(en|)|zeitnehmer|zeitgeber|zeitmesser|"
 							+ "(\\w+(-|)|)alarm(e|s|)|weck (mich|uns)|(\\w+(-|)|)wecker|wecken|aufstehen|aus dem bett|"
 							+ "erinnere|(\\w+(-|)|)erinnerung(en|)|erinnern|"

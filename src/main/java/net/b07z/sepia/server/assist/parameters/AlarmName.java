@@ -112,8 +112,8 @@ public class AlarmName implements ParameterHandler{
 			
 			String alarm = "alarm(s|)|timer(s|)|time clock|stop( |)watch(es|)|countdown(s|)|reminder(s|)|appointment(s|)";
 			
-			if (NluTools.stringContains(input, "(for|because of|remind( \\w+|) to) .*")){
-				found = input.replaceFirst(".*?\\b(for|because of|remind( \\w+|) to)\\b", "").trim();
+			if (NluTools.stringContains(input, "(for|because of|remind( \\w+|) (to|of)|remember) .*")){
+				found = input.replaceFirst(".*?\\b(for|because of|remind( \\w+|) (to|of)|remember)\\b", "").trim();
 				found = found.replaceAll("\\b(the|an|a|my|that) (" + alarm + ")\\b", "").trim();
 				
 			}else if (NluTools.stringContains(input, "\\w+ (" + alarm + ")")){

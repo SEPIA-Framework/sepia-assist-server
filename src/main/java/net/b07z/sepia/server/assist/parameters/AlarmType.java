@@ -135,7 +135,7 @@ public class AlarmType implements ParameterHandler{
 			input = input.replaceAll("-", " ").replaceAll("(\\w+)(timer|alarm|countdown|reminder|stopwatch|appointment)", "$1 $2");
 			
 			found = NluTools.stringFindFirst(input, "wake (me|up)|alarm(s|)|get up|"
-					+ "timer(s|)|time clock|stop( |)watch(es|)|countdown(s|)|remind me|reminder(s|)|appointment(s|)|calendar(s|)");
+					+ "timer(s|)|time clock|stop( |)watch(es|)|countdown(s|)|remind me|reminder(s|)|remember|appointment(s|)|calendar(s|)");
 			
 			if (!found.isEmpty()){
 				if (NluTools.stringContains(found, "wake (me|up)|alarm(s|)|get up")){
@@ -144,7 +144,7 @@ public class AlarmType implements ParameterHandler{
 				}else if (NluTools.stringContains(found, "timer(s|)|time clock|stop( |)watch(es|)|countdown(s|)")){
 					type = "<" + Type.timer.name() + ">";
 				
-				}else if (NluTools.stringContains(found, "remind me|reminder(s|)")){
+				}else if (NluTools.stringContains(found, "remind me|reminder(s|)|remember")){
 					type = "<" + Type.reminder.name() + ">";
 
 				}else if (NluTools.stringContains(found, "appointment(s|)|calendar(s|)")){
