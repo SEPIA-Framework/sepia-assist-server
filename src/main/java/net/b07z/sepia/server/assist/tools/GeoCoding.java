@@ -27,6 +27,14 @@ public class GeoCoding {
 	//TODO: improve tools to enable storing results in BatchWrite processes 
 	
 	/**
+	 * Is geo-coding supported?
+	 */
+	public static boolean isSupported(){
+		//return graphhopper_is_supported();
+		return googlemaps_is_supported();
+	}
+	
+	/**
 	 * Default method to get latitude, longitude from address name. 
 	 * @param address - string with an address, optimally Street, City, Country
 	 * @return Map with different parameters ("latitude", "longitude", ...), see LOCATION class statics.
@@ -79,24 +87,32 @@ public class GeoCoding {
 	public static void test_get_coordinates(String address, String language){
 		Map<String, Object> result = new HashMap<String, Object>();
 		//different implementations:
-		result = graphhopper_get_coordinates(address, language);
-		System.out.println("------GRAPHHOPPER-------");
-		System.out.println("Coordinates: " + result.get(LOCATION.LAT) + ", "+ result.get(LOCATION.LNG));
-		System.out.println("Street Nbr.: " + result.get(LOCATION.STREET_NBR));
-		System.out.println("Street: " + result.get(LOCATION.STREET));
-		System.out.println("Postal Code: " + result.get(LOCATION.POSTAL_CODE));
-		System.out.println("City: " + result.get(LOCATION.CITY));
-		System.out.println("State: " + result.get(LOCATION.STATE));
-		System.out.println("Country: " + result.get(LOCATION.COUNTRY));
-		result = google_get_coordinates(address, language);
-		System.out.println("------GOOGLE-------");
-		System.out.println("Coordinates: " + result.get(LOCATION.LAT) + ", "+ result.get(LOCATION.LNG));
-		System.out.println("Street Nbr.: " + result.get(LOCATION.STREET_NBR));
-		System.out.println("Street: " + result.get(LOCATION.STREET));
-		System.out.println("Postal Code: " + result.get(LOCATION.POSTAL_CODE));
-		System.out.println("City: " + result.get(LOCATION.CITY));
-		System.out.println("State: " + result.get(LOCATION.STATE));
-		System.out.println("Country: " + result.get(LOCATION.COUNTRY));
+		if (graphhopper_is_supported()){
+			result = graphhopper_get_coordinates(address, language);
+			System.out.println("------GRAPHHOPPER-------");
+			System.out.println("Coordinates: " + result.get(LOCATION.LAT) + ", "+ result.get(LOCATION.LNG));
+			System.out.println("Street Nbr.: " + result.get(LOCATION.STREET_NBR));
+			System.out.println("Street: " + result.get(LOCATION.STREET));
+			System.out.println("Postal Code: " + result.get(LOCATION.POSTAL_CODE));
+			System.out.println("City: " + result.get(LOCATION.CITY));
+			System.out.println("State: " + result.get(LOCATION.STATE));
+			System.out.println("Country: " + result.get(LOCATION.COUNTRY));
+		}else{
+			System.out.println("Graphhopper is missing API key!");
+		}
+		if (googlemaps_is_supported()){
+			result = google_get_coordinates(address, language);
+			System.out.println("------GOOGLE-------");
+			System.out.println("Coordinates: " + result.get(LOCATION.LAT) + ", "+ result.get(LOCATION.LNG));
+			System.out.println("Street Nbr.: " + result.get(LOCATION.STREET_NBR));
+			System.out.println("Street: " + result.get(LOCATION.STREET));
+			System.out.println("Postal Code: " + result.get(LOCATION.POSTAL_CODE));
+			System.out.println("City: " + result.get(LOCATION.CITY));
+			System.out.println("State: " + result.get(LOCATION.STATE));
+			System.out.println("Country: " + result.get(LOCATION.COUNTRY));
+		}else{
+			System.out.println("Googlemaps is missing API key!");
+		}
 	}
 	/**
 	 * Test get_address output of all available methods.
@@ -128,6 +144,11 @@ public class GeoCoding {
 	}
 	
 	//----private methods----
+	
+	private static boolean graphhopper_is_supported(){
+		//requirements
+		return !Is.nullOrEmpty(Config.graphhopper_key);
+	}
 	
 	//Graphhopper implementation for get_coordinates
 	private static HashMap<String, Object> graphhopper_get_coordinates(String address, String language){
@@ -203,6 +224,10 @@ public class GeoCoding {
 		return result;
 	}
 	
+	private static boolean googlemaps_is_supported(){
+		//requirements
+		return !Is.nullOrEmpty(Config.google_maps_key);
+	}
 
 	//Google implementation for get_coordinates
 	private static Map<String, Object> google_get_coordinates(String address, String language){

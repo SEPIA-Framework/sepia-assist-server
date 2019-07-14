@@ -285,7 +285,12 @@ public class LocationStart implements ParameterHandler{
 		JSONObject locationJSON = LOCATION.getInfoBySearch(input, nluInput); //new JSONObject();
 		//System.out.println("loc: " + locationJSON.toJSONString()); 		//debug
 		if (locationJSON == null || locationJSON.isEmpty()){
-			return new Object[]{ buildSuccess, Interview.ERROR_API_FAIL + ";;" + Interview.TYPE_GEOCODING + ";;" + "get_coordinates"};
+			if (GeoCoding.isSupported()){
+				return new Object[]{ buildSuccess, Interview.ERROR_API_FAIL + ";;" + Interview.TYPE_GEOCODING + ";;" + "get_coordinates"};
+			}else{
+				locationJSON = JSON.make("search", input, "error", "missing GeoCoding support");
+				Debugger.println("LOCATION.getInfoBySearch - FAILED due to missing Geo-Coder support (no API keys?).", 3);
+			}
 		}
 		//add input too
 		JSON.add(locationJSON, InterviewData.INPUT, input);
