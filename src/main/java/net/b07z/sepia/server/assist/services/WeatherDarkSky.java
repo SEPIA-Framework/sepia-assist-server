@@ -12,6 +12,7 @@ import net.b07z.sepia.server.assist.server.Statistics;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.assist.tools.DateTimeConverters;
+import net.b07z.sepia.server.assist.tools.GeoCoding;
 import net.b07z.sepia.server.core.assistant.ACTIONS;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Connectors;
@@ -157,7 +158,13 @@ public class WeatherDarkSky implements ServiceInterface{
 		JSONObject timeJSON = nluResult.getRequiredParameter(PARAMETERS.TIME).getData();	//... because we set default values in getInfo
 				
 		//parameter adaptation to service format
-		String coords = placeJSON.get(InterviewData.LOCATION_LAT).toString() + "," + placeJSON.get(InterviewData.LOCATION_LNG).toString();
+		String coords = null;
+		boolean missingGeoCoder = false;
+		if (placeJSON.containsKey("error") && !GeoCoding.isSupported()){
+			missingGeoCoder = true;
+		}else{
+			coords = placeJSON.get(InterviewData.LOCATION_LAT).toString() + "," + placeJSON.get(InterviewData.LOCATION_LNG).toString();
+		}
 		String place = (String) placeJSON.get(InterviewData.LOCATION_CITY);
 		if (place == null){
 			place = (String) placeJSON.get(InterviewData.LOCATION_STATE);
@@ -229,12 +236,13 @@ public class WeatherDarkSky implements ServiceInterface{
 		//make the HTTP GET call to DarkSky API
 		//TODO: add Accept-Encoding: gzip to request header ????
 		String url = "";
-		if (Is.nullOrEmpty(Config.forecast_io_key)){
+		if (Is.nullOrEmpty(Config.forecast_io_key) || missingGeoCoder){
 			//set all parameters to empty to avoid AnswerLoader complaints
 			api.resultInfoFill();
 						
 			//add some real info here about missing key
 			api.setCustomAnswer(answerNoApiKey);
+			//TODO: we can distinguish between weather API keys and e.g. Geo-Coder API keys for Googlemaps ...
 			
 			//add button that links to help
 			api.addAction(ACTIONS.BUTTON_IN_APP_BROWSER);
