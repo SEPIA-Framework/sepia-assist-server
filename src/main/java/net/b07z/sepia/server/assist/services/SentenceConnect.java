@@ -26,7 +26,8 @@ import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 
 /**
- * Class that handles NPS feedback
+ * The sentence-connect service can execute multiple other existing commands (non-custom) in a row and supports flexible parameters.
+ * It will add all actions to one queue.
  * 
  * @author Florian Quirin
  *
@@ -100,7 +101,7 @@ public class SentenceConnect implements ServiceInterface{
 			
 		}else{
 			//Normalizer_Interface normalizer = Config.input_normalizers.get(api.language);
-			
+			int goodResults = 0;
 			for (Object o : sentencesArray){
 				String s = (String) o;
 				
@@ -123,7 +124,7 @@ public class SentenceConnect implements ServiceInterface{
 				//interpret
 				NluResult thisRes = new InterpretationChain()
 						.setSteps(Config.nluInterpretationSteps).getResult(nluResult.input);
-				//System.out.println("cmd_sum: " + thisRes.cmd_summary); 	//DEBUG
+				//System.out.println("cmd_sum: " + thisRes.cmdSummary + " - in: " + thisRes.language);		//DEBUG
 				
 				//push - filter no_results and chained sentence_connect commands (to prevent endless loop)
 				if (!thisRes.getCommand().equals(CMD.SENTENCE_CONNECT) 
@@ -133,7 +134,9 @@ public class SentenceConnect implements ServiceInterface{
 					api.addAction(ACTIONS.QUEUE_CMD);
 					api.putActionInfo("info", "direct_cmd");
 					api.putActionInfo("cmd", thisRes.cmdSummary);
+					api.putActionInfo("lang", thisRes.language);
 					//api.actionInfo_put_info("options", JSON.make(ACTIONS.SKIP_TTS, true));
+					goodResults++;
 				}
 				//use new result for next command? TODO: I think we need some context handling here
 				//nluResult = thisRes;
@@ -145,7 +148,11 @@ public class SentenceConnect implements ServiceInterface{
 				api.setCustomAnswer(reply);
 			}
 			
-			api.status = "success";
+			if (goodResults == 0){
+				api.status = "fail";
+			}else{
+				api.status = "success";
+			}
 		}
 		
 		//finally build the API_Result
