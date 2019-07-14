@@ -265,6 +265,8 @@ public class Config {
 	 * Prepare interpretation chain by adding the default modules in the proper order to 'nluInterpretationSteps' list.
 	 */
 	public static void setupNluSteps(){
+		//check for input modifiers
+		nluInterpretationSteps.add((input, cachedResults) -> InterpretationStep.applyInputModifiers(input));
 		//direct command
 		nluInterpretationSteps.add((input, cachedResults) -> InterpretationStep.getDirectCommand(input));
 		//response to previous input
