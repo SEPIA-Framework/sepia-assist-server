@@ -128,13 +128,15 @@ public class Action implements ParameterHandler{
 		String on, off, pause, increase, decrease, set, toggle, show, add, remove, create, edit;
 		//German
 		if (language.matches(LANGUAGES.DE)){
-			on = "(mach|schalte|dreh) .*\\b(an|ein)|"
-					+ "^\\w+\\b (an$|ein$)|"
+			on = "(mach|schalte|dreh|(setze|stelle)) .*\\b(an|ein)|"
+					+ "^\\w+\\b (an|ein)$|"
+					+ "(^|auf )(an|ein)$|"
 					+ "oeffne|oeffnen|aktiviere|aktivieren|starte|starten|start|lade|laden|"
 					+ "anschalten|einschalten|anmachen|an machen|aufmachen|auf machen|aufdrehen|auf drehen|spielen|spiele|spiel|abspielen|"
 					+ "ausfuehren|aufrufen";
-			off = "(mach|schalte|dreh) .*\\b(aus)|"
-					+ "^\\w+\\b (aus$)|"
+			off = "(mach|schalte|dreh|(setze|stelle)) .*\\b(aus)|"
+					+ "^\\w+\\b (aus)$|"
+					+ "(^|auf )(aus)$|"
 					+ "schliessen|schliesse|deaktivieren|deaktiviere|"
 					+ "beenden|beende|(aus|ab)schalten|aus schalten|ausmachen|aus machen|ausdrehen|aus drehen|stop(pen|pe|p|)|exit";
 			pause = "pausieren|pause|anhalten|halte .*\\b(an)";
@@ -142,11 +144,15 @@ public class Action implements ParameterHandler{
 					+ "(?<!(wie ))hoch|rauf|hoeher|groesser|erhoehen|aufdrehen|erhoehe|verstaerk(en|e)|heller|(?<!(ist ))schneller|(?<!(ist ))staerker|waermer|warm|lauter|laut";
 			decrease = "(mach|dreh) .*\\b(runter|aus)|"
 					+ "runterdrehen|runter|kleiner|niedriger|erniedrigen|erniedrige|abschwaechen|schwaech(er|en|e)|senk(en|e|)|dunkler|dimmen|dimme|(?<!(wie ))langsam|langsamer|kaelter|(?<!(wie ))kalt|leiser|leise";
-			set = "setzen|setze|stelle|stellen|auswaehlen|waehlen|waehle|"
+			set = "setzen|(setze|stelle)(?! .* (aus|an)$)|stellen|auswaehlen|waehlen|waehle|"
 					+ "erinnere|weck(e|)|"
-					+ "^lautstaerke auf ";
+					+ "^lautstaerke (von .* |)(auf )|"
+					+ "^wert(e|) (von .* |)(auf )";
 			toggle = "umschalten|schalten|schalte";
-			show = "anzeigen|zeig|zeigen|check|checken|was sagt|wieviel|status";
+			show = "anzeigen|zeig|zeigen|check|checken|was sagt|wieviel|"
+					+ "(\\w+|)status(?! .* (" + set + "|(an|aus)$))|"
+					+ "welche(n|r) wert(e|) (hat|haben)|"
+					+ "wert (von|der)(?! .* (" + set + "))";
 			add = "fuege .*\\bhinzu|hinzufuegen|ergaenze|ergaenzen|eintragen|trage .*\\bein|"
 					+ "auf .*\\b(\\w*list(e|)|\\w*zettel|\\w*note(s|))";		//tricky one for lists ... user can "mean" add, but not say it (milk on my list)
 			remove = "entferne|entfernen|loesche|loeschen|nimm .*\\bvon";
@@ -155,11 +161,13 @@ public class Action implements ParameterHandler{
 			
 		//English and other
 		}else{
-			on = "(make|switch|turn) .*\\b(on)|"
+			on = "(make|switch|turn|set) .*\\b(on)|"
 					+ "^\\w+\\b (on$)|"
+					+ "(^|to )(on$)|"
 					+ "open|activate|start|play|load|run|execute|call";
-			off = "(make|switch|turn) .*\\b(off)|"
+			off = "(make|switch|turn|set) .*\\b(off)|"
 					+ "^\\w+\\b (off$)|"
+					+ "(^|to )(off$)|"
 					+ "close|deactivate|end|exit|quit|stop|shut\\b.*? down";
 			pause = "pause|onhold|on hold";
 			increase = "(make|switch|turn) .*\\b(up)|"
@@ -168,11 +176,14 @@ public class Action implements ParameterHandler{
 			decrease = "(make|switch|turn) .*\\b(down)|"
 					+ "^\\w+\\b (down$)|"
 					+ "downwards|smaller|lower|decrease|reduce|weaker|darker|dim|slow|(?<!(is ))slower|colder|cold|quieter|quiet";
-			set = "set|put|select|choose|"
+			set = "set(?! .* (off|on)$)|put|select|choose|"
 					+ "remind (\\w+) to|wake|"
-					+ "^volume to ";
+					+ "^volume (of .* |)(to )|"
+					+ "^value (of .* |)(to )";
 			toggle = "toggle|switch";
-			show = "show|shows|display|check|what does .* say|how much|status";
+			show = "show|shows|display|check|what does .* say|how much|"
+					+ "status|state of|"
+					+ "what value(s|) ((do|does) .* | )(has|have)|value(s|) of";
 			add = "add|enter|"
 					+ "on .*\\b(\\w*list|\\w*note(s|))";		//tricky one for lists ... user can "mean" add, but not say it (milk on my list)
 			remove = "remove|delete|take .*\\boff";

@@ -130,7 +130,7 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 		//smart device control
 		if (NluTools.stringContains(text, "light(s|)|lighting|lamp(s|)|illumination|brightness|"
 				+ "heater(s|)|temperature(s|)|thermostat(s|)|"
-				+ "smart( |)home control"
+				+ "(smart( |)home|device|sensor) (control|stat(us|e))"
 			)){
 			possibleCMDs.add(CMD.SMARTDEVICE);
 			possibleScore.add(1);	index++;
