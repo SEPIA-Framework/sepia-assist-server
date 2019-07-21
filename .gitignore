@@ -30,6 +30,8 @@ Desktop.ini
 # Project
 Xtensions/Backups/*
 Xtensions/Plugins/net/b07z/sepia/sdk/services/uid*
+Xtensions/WebContent/app*
+Xtensions/WebContent/tools*
 
 # Avoid ignoring Maven wrapper jar file (.jar files are usually ignored)
 !/.mvn/wrapper/maven-wrapper.jar
