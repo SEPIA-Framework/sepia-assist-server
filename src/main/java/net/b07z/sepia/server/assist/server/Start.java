@@ -4,13 +4,13 @@ import static spark.Spark.*;
 
 import java.security.Policy;
 import java.util.Date;
-
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.answers.DefaultReplies;
 import net.b07z.sepia.server.assist.endpoints.AccountEndpoint;
 import net.b07z.sepia.server.assist.endpoints.AssistEndpoint;
 import net.b07z.sepia.server.assist.endpoints.AuthEndpoint;
+import net.b07z.sepia.server.assist.endpoints.ConfigServer;
 import net.b07z.sepia.server.assist.endpoints.RemoteActionEndpoint;
 import net.b07z.sepia.server.assist.endpoints.SdkEndpoint;
 import net.b07z.sepia.server.assist.endpoints.TtsEndpoint;
@@ -250,7 +250,7 @@ public class Start {
 																Config.SERVERNAME, Config.apiVersion, Config.localName, Config.localSecret));
 		post("/hello", (request, response) -> 				helloWorld(request, response));
 		post("/cluster", (request, response) ->				clusterData(request, response));
-		post("/config", (request, response) -> 				configServer(request, response));
+		post("/config", (request, response) -> 				ConfigServer.run(request, response));
 		
 		//Accounts and assistant
 		post("/user-management", (request, response) ->		UserManagementEndpoint.userManagementAPI(request, response));
@@ -385,102 +385,6 @@ public class Start {
 			return SparkJavaFw.returnResult(request, response, msg.toJSONString(), 200);
 		}else{
 			return SparkJavaFw.returnNoAccess(request, response);
-		}
-	}
-	
-	/**
-	 * ---CONFIG SERVER---<br>
-	 * End-point to remotely switch certain settings on run-time.
-	 */
-	public static String configServer(Request request, Response response){
-		//check request origin
-		if (!Config.allowGlobalDevRequests){
-			if (!SparkJavaFw.requestFromPrivateNetwork(request)){
-				JSONObject result = new JSONObject();
-				JSON.add(result, "result", "fail");
-				JSON.add(result, "error", "Not allowed to access service from outside the private network!");
-				return SparkJavaFw.returnResult(request, response, result.toJSONString(), 200);
-			}
-		}
-		//prepare parameters
-		RequestParameters params = new RequestGetOrFormParameters(request);		//TODO: because of form-post?
-		
-		//authenticate
-		Authenticator token = authenticate(params, request);
-		if (!token.authenticated()){
-			return SparkJavaFw.returnNoAccess(request, response, token.getErrorCode());
-		}else{
-			//create user
-			User user = new User(null, token);
-			
-			//check role
-			if (!user.hasRole(Role.superuser)){
-				Debugger.println("Unauthorized access attempt to server config! User: " + user.getUserID(), 3);
-				return SparkJavaFw.returnNoAccess(request, response);
-			}
-			
-			//check actions
-			
-			//-answers
-			String toggleAnswerModule = params.getString("answers");
-			if (toggleAnswerModule != null && toggleAnswerModule.equals("toggle")){
-				String newConfigEntryValue = Config.toggleAnswerModule();
-				Config.replaceSettings(Config.configFile, "module_answers", newConfigEntryValue);
-				Debugger.println("Config - answers module changed by user: " + user.getUserID(), 3);
-			}
-			//-commands
-			String toggleSentencesDB = params.getString("useSentencesDB");
-			if (toggleSentencesDB != null && toggleSentencesDB.equals("toggle")){
-				if (Config.useSentencesDB){
-					Config.useSentencesDB = false;
-				}else{
-					Config.useSentencesDB = true;
-				}
-				Config.replaceSettings(Config.configFile, "enable_custom_commands", Boolean.toString(Config.useSentencesDB));
-				Debugger.println("Config - loading of DB commands was changed by user: " + user.getUserID(), 3);
-			}
-			//-email bcc
-			String setEmailBCC = params.getString("setEmailBCC");
-			if (setEmailBCC != null && setEmailBCC.equals("remove")){
-				Config.emailBCC = "";
-			}
-			//-sdk
-			String toggleSdk = params.getString("sdk");
-			if (toggleSdk != null && toggleSdk.equals("toggle")){
-				if (Config.enableSDK){
-					Config.enableSDK = false;
-				}else{
-					Config.enableSDK = true;
-				}
-				Config.replaceSettings(Config.configFile, "enable_sdk", Boolean.toString(Config.enableSDK));
-				Debugger.println("Config - sdk status changed by user: " + user.getUserID(), 3);
-			}
-			//-database
-			String reloadDB = params.getString("reloadDB");
-			String dbReloadMsg = "no-update"; 
-			if (reloadDB != null && !reloadDB.isEmpty()){
-				String[] dbCmd = reloadDB.split("-");
-				if (dbCmd.length == 2){
-					if (dbCmd[0].equals("es")){
-						if (!dbCmd[1].isEmpty()){
-							try{
-								Setup.writeElasticsearchMapping(dbCmd[1]);
-								dbReloadMsg = "reloaded:" + reloadDB;
-							}catch(Exception e){
-								dbReloadMsg = "reload-error:" + reloadDB;
-							}
-						}
-					}
-				}
-			}
-			
-			JSONObject msg = new JSONObject();
-			JSON.add(msg, "answerModule", Config.answerModule);
-			JSON.add(msg, "useSentencesDB", Config.useSentencesDB);
-			JSON.add(msg, "emailBCC", Config.emailBCC);
-			JSON.add(msg, "sdk", Config.enableSDK);
-			JSON.add(msg, "dbUpdate", dbReloadMsg);
-			return SparkJavaFw.returnResult(request, response, msg.toJSONString(), 200);
 		}
 	}
 	
