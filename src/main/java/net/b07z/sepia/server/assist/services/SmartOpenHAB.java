@@ -104,11 +104,11 @@ public class SmartOpenHAB implements ServiceInterface {
 				getInfoFreshOrCache(nluResult.input, this.getClass().getCanonicalName()));
 		
 		//check if we know an OpenHAB server
-		if (Is.nullOrEmpty(Config.openhab_host)){
+		if (Is.nullOrEmpty(Config.smarthome_hub_name) || !Config.smarthome_hub_name.equals(OpenHAB.NAME)){
 			service.setStatusOkay(); 				//"soft"-fail (no error just missing info)
 			return service.buildResult();
 		}
-		SmartHomeHub smartHomeHUB = new OpenHAB(Config.openhab_host);
+		SmartHomeHub smartHomeHUB = new OpenHAB(Config.smarthome_hub_host);
 				
 		//check user role 'smarthomeguest' for this skill (because it controls devices in the server's network)
 		if (!nluResult.input.user.hasRole(Role.smarthomeguest)){

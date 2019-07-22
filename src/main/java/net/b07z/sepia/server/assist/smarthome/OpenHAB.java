@@ -19,6 +19,7 @@ import net.b07z.sepia.server.core.tools.JSON;
 public class OpenHAB implements SmartHomeHub {
 	
 	private String host;
+	public static String NAME = "openhab";
 	
 	public OpenHAB(String host){
 		if (Is.nullOrEmpty(host)){

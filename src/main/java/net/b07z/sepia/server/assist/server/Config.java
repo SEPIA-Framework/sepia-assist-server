@@ -29,6 +29,7 @@ import net.b07z.sepia.server.assist.interpreters.NormalizerLightDE;
 import net.b07z.sepia.server.assist.interpreters.NormalizerLightEN;
 import net.b07z.sepia.server.assist.interpreters.NormalizerLightTR;
 import net.b07z.sepia.server.assist.services.ServiceAccessManager;
+import net.b07z.sepia.server.assist.smarthome.OpenHAB;
 import net.b07z.sepia.server.assist.tools.RssFeedReader;
 import net.b07z.sepia.server.assist.tools.SpotifyApi;
 import net.b07z.sepia.server.assist.tts.TtsAcapelaWeb;
@@ -54,7 +55,7 @@ import net.b07z.sepia.server.core.tools.Is;
  */
 public class Config {
 	public static final String SERVERNAME = "SEPIA-Assist-API"; 		//public server name
-	public static final String apiVersion = "v2.2.2";					//API version
+	public static final String apiVersion = "v2.2.3";					//API version
 	public static String privacyPolicyLink = "";						//Link to privacy policy
 	
 	//helper for dynamic class creation (e.g. from strings in config-file) - TODO: reduce dependencies further 
@@ -315,7 +316,8 @@ public class Config {
 	public static String deutscheBahnOpenApi_key = "";
 	
 	//API URLs - loaded from config file
-	public static String openhab_host = "";
+	public static String smarthome_hub_host = "";
+	public static String smarthome_hub_name = "";
 	
 	//------Database loading and default interpreters------
 	
@@ -500,7 +502,15 @@ public class Config {
 			affilinet_key = settings.getProperty("affilinet_key");
 			deutscheBahnOpenApi_key = settings.getProperty("deutscheBahnOpenApi_key");
 			//API URLs
-			openhab_host = settings.getProperty("openhab_host");
+			smarthome_hub_host = settings.getProperty("smarthome_hub_host");
+			smarthome_hub_name = settings.getProperty("smarthome_hub_name");
+			if (Is.nullOrEmpty(smarthome_hub_host)){
+				//try legacy settings
+				smarthome_hub_host = settings.getProperty("openhab_host");
+				if (Is.notNullOrEmpty(smarthome_hub_host)){
+					smarthome_hub_name = OpenHAB.NAME;
+				}
+			}
 			
 			Debugger.println("loading settings from " + confFile + "... done." , 3);
 		}catch (Exception e){

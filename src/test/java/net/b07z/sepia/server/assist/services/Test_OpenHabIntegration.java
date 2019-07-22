@@ -25,7 +25,12 @@ public class Test_OpenHabIntegration {
 		Start.loadSettings(new String[]{"--test"});
 		System.out.println("\nIntegration Test: openHAB\n");
 		
-		SmartHomeHub smartHomeHub = new OpenHAB(Config.openhab_host);
+		if (!Config.smarthome_hub_name.equals(OpenHAB.NAME)){
+			System.err.println("Test aborted: HUB is not defined or not of type openHAB!");
+			return;
+		}
+		
+		SmartHomeHub smartHomeHub = new OpenHAB(Config.smarthome_hub_host);
 		
 		//get devices
 		long tic = Debugger.tic();
