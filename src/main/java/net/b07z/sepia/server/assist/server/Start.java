@@ -4,6 +4,9 @@ import static spark.Spark.*;
 
 import java.security.Policy;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.answers.DefaultReplies;
@@ -51,6 +54,7 @@ public class Start {
 	//stuff
 	public static String startGMT = "";
 	public static String serverType = "";
+	public static String[] startUpArgs = null;
 	
 	public static final String LIVE_SERVER = "live";
 	public static final String TEST_SERVER = "test";
@@ -315,6 +319,50 @@ public class Start {
 		
 		//SERVER END-POINTS
 		loadEndpoints();
+		
+		//remember arguments for restart
+		startUpArgs = args;
+	}
+	
+	/**
+	 * Stop server and wait for finish signal.
+	 */
+	public static void stopServer() {
+		Debugger.println("Stopping server ...", 3);
+		
+		//Stop running workers
+		Workers.stopWorkers();
+		
+		//Disconnect websocket
+		if (Config.connectToWebSocket){
+			Clients.killSocketMessenger();
+		}
+		
+		//Stop server and wait
+		stop();
+		awaitStop();
+		Debugger.println("------ SERVER STOPPED ------", 3);
+	}
+	
+	/**
+	 * Soft-restart of server using a {@link TimerTask} and a certain delay.<br>
+	 * Note: Delay starts AFTER successful server stop.<br>
+	 * Note2: You should probably not rely on this method as your only way of restarting the server as this does not clean up thoroughly.
+	 * @return true if restart was scheduled 
+	 */
+	public static boolean restartServer(long delayMs) {
+		if (startUpArgs == null){
+			return false;
+		}else{
+			new Timer().schedule(new TimerTask() {
+	            @Override
+	            public void run() {
+	            	stopServer();
+	                main(startUpArgs);
+	            }
+	        }, delayMs);
+			return true;
+		}
 	}
 	
 	/**

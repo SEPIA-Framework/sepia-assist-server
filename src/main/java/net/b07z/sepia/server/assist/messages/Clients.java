@@ -24,6 +24,7 @@ public class Clients {
 	
 	private static long waitBeforeClientStart = 5555;
 	private static long maxWaitOnFail = 30000;
+	private static long activeClientId = 0l;
 	
 	public static SocketClientHandler webSocketMessenger;
 	public static Thread webSocketMessengerThread;
@@ -36,23 +37,29 @@ public class Clients {
 	public static void setupSocketMessenger(){
 		//setup messenger - TODO: get this directly from webSocketServer
 		loadConfig();
+		activeClientId++;
+		long thisClientId = activeClientId;
 		
 		webSocketMessengerThread = new Thread(() -> {
 			try{ Thread.sleep(waitBeforeClientStart); } catch (InterruptedException e) {}
 			int fails = 0;
 			long newWait = waitBeforeClientStart;
-			while (!pingSocketMessenger()){
+			while (thisClientId == activeClientId && !pingSocketMessenger()){
 				fails++;
 				newWait = Math.min(maxWaitOnFail, waitBeforeClientStart * fails); 		//never wait longer than maxWait
 				try{ Thread.sleep(newWait); } catch (InterruptedException e) {}
 			}
-			//note: assistant name has to be stored in the account just like with normal users
-			assistantSocket = new AssistantSocketClient(
-				JSON.make("userId", Config.assistantId, "pwd", Config.assistantPwd)
-			);
-			webSocketMessenger = new SocketClientHandler(assistantSocket);
-			webSocketMessenger.setTryReconnect(true);
-			webSocketMessenger.connect();
+			if (thisClientId == activeClientId){
+				//note: assistant name has to be stored in the account just like with normal users
+				assistantSocket = new AssistantSocketClient(
+					JSON.make("userId", Config.assistantId, "pwd", Config.assistantPwd)
+				);
+				webSocketMessenger = new SocketClientHandler(assistantSocket);
+				webSocketMessenger.setTryReconnect(true);
+				webSocketMessenger.connect();
+			}else{
+				Debugger.println("Clients: Skipped setup of client with ID: " + thisClientId + " (currently active ID: " + activeClientId + ").", 3);
+			}
 		});
 		webSocketMessengerThread.start();
 	}
@@ -60,8 +67,12 @@ public class Clients {
 	 * Kill webSocket messenger and close thread.
 	 */
 	public static void killSocketMessenger(){
-		webSocketMessenger.setTryReconnect(false);
-		webSocketMessenger.close();
+		activeClientId++; 		//this will abort any pending connections
+		if (webSocketMessenger != null){
+			Debugger.println("Clients: Closing connection to socket messenger...", 3);
+			webSocketMessenger.setTryReconnect(false);
+			webSocketMessenger.close();
+		}
 	}
 	
 	/**

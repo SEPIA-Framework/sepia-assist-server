@@ -97,14 +97,16 @@ public class RssFeedWorker implements WorkerInterface {
 	public boolean kill(){
 		abort = true;
 		long thisWait = 0; 
-		while (workerStatus > 0){
-			try {	Thread.sleep(waitInterval);	} catch (Exception e){	e.printStackTrace(); return false;	}
-			thisWait += waitInterval;
-			if (thisWait >= maxWait){
-				break;
+		if (executedRefreshs != 0){
+			while (workerStatus > 0){
+				try {	Thread.sleep(waitInterval);	} catch (Exception e){	e.printStackTrace(); return false;	}
+				thisWait += waitInterval;
+				if (thisWait >= maxWait){
+					break;
+				}
 			}
 		}
-		if (workerStatus < 1){
+		if (workerStatus < 1 || executedRefreshs == 0){
 			return true;
 		}else{
 			return false;
@@ -151,7 +153,11 @@ public class RssFeedWorker implements WorkerInterface {
 		    	try {	Thread.sleep(startDelay);	} catch (Exception e){	e.printStackTrace(); }
 		    	totalRefreshTime = 0;
 		    	executedRefreshs = 0;
-		    	Debugger.println(name + ": START", 3);
+		    	if (!abort){
+		    		Debugger.println(name + ": START", 3);
+		    	}else{
+		    		Debugger.println(name + ": CANCELED before start", 3);
+		    	}
 		    	while (!abort){
 		    		workerStatus = 2;
 			    	long tic = Debugger.tic();

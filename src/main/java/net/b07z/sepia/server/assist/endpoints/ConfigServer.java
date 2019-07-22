@@ -61,6 +61,17 @@ public class ConfigServer {
 				return SparkJavaFw.returnNoAccess(request, response);
 			}
 			
+			//soft-restart server
+			String restartServer = params.getString("restartServer");
+			if (restartServer != null && restartServer.equals("true")){
+				JSONObject msg = JSON.make(
+						"result", "success",
+						"msg", "scheduled server restart, plz wait a bit."
+				);
+				Start.restartServer(3000l); 	//will run in separate thread after 3s
+				return SparkJavaFw.returnResult(request, response, msg.toJSONString(), 200);
+			}
+			
 			//read and write directly to settings
 			String setConfig = params.getString("setConfig");
 			String lastSetKey = null;

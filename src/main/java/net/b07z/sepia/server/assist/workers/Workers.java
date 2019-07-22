@@ -71,6 +71,23 @@ public class Workers {
 	}
 	
 	/**
+	 * Try to stop workers that have been started with last setup.
+	 */
+	public static void stopWorkers(){
+		for (String workerName : Config.backgroundWorkers){
+			WorkerInterface worker = workers.get(workerName.trim());
+			if (worker != null){
+				Debugger.println("Stopping worker: " + workerName, 3);
+				if (worker.kill()){
+					Debugger.println("Success: " + workerName + " stopped", 3);
+				}else{
+					Debugger.println("Fail: " + workerName + " could not be stopped in time.", 1);
+				}
+			}
+		}
+	}
+	
+	/**
 	 * Get a string that contains some status info about the workers.
 	 */
 	public static String getStatsReport(){
