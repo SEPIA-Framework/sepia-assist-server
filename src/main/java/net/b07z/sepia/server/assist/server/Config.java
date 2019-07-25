@@ -41,6 +41,7 @@ import net.b07z.sepia.server.assist.users.Authenticator;
 import net.b07z.sepia.server.assist.users.ID;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.assist.users.UserDataDefault;
+import net.b07z.sepia.server.core.assistant.CLIENTS;
 import net.b07z.sepia.server.core.server.ConfigDefaults;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
 import net.b07z.sepia.server.core.tools.Debugger;
@@ -172,6 +173,8 @@ public class Config {
 	public static String assistantId = "uid1001";						//**the assistant itself also has an account
 	public static String assistantEmail = "assistant@sepia.localhost";	//**pseudo-email to be blocked for assistant, cannot be created or used for password reset
 	public static String assistantPwd = "4be708b703c518d10a97e4db421f0f75b66f9ff8c0ae65b6c5c13684a01f804d";				//**
+	public static String assistantDeviceId = "serv1";
+	public static String assistantClientInfo = assistantDeviceId + "_" + CLIENTS.JAVA_APP + "_" + apiVersion;
 	
 	public static boolean validateUniversalToken(){
 		superuserToken = new Authenticator(superuserId, superuserPwd, ID.Type.uid, defaultClientInfo, null);
@@ -477,6 +480,10 @@ public class Config {
 			assistantId = settings.getProperty("assistant_id");
 			assistantEmail = settings.getProperty("assistant_email");
 			assistantPwd = settings.getProperty("assistant_pwd");
+			String assistDeviceId = settings.getProperty("assistant_device_id");
+			if (Is.notNullOrEmpty(assistDeviceId)){
+				assistantDeviceId = assistDeviceId;
+			}
 			String assistantAllowFollowUpsString = settings.getProperty("assistant_allow_follow_ups");
 			if (assistantAllowFollowUpsString != null && !assistantAllowFollowUpsString.isEmpty()){
 				assistantAllowFollowUps = Boolean.valueOf(assistantAllowFollowUpsString);

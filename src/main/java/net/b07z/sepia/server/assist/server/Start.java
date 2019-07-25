@@ -482,15 +482,15 @@ public class Start {
 		}
 	}
 	public static Authenticator authenticate(RequestParameters params, Request metaInfo){
-		String key = params.getString("KEY");
+		String key = params.getString(AuthEndpoint.InputParameters.KEY.name());
 		if (key == null || key.isEmpty()){
-			String guuid = params.getString("GUUID");
-			String pwd = params.getString("PWD");
+			String guuid = params.getString(AuthEndpoint.InputParameters.GUUID.name());
+			String pwd = params.getString(AuthEndpoint.InputParameters.PWD.name());
 			if (guuid != null && pwd != null && !guuid.isEmpty() && !pwd.isEmpty()){
 				key = guuid + ";" + Security.hashClientPassword(pwd);
 			} 
 		}
-		String client_info = params.getString("client");
+		String client_info = params.getString(AuthEndpoint.InputParameters.client.name());
 		if (client_info == null || client_info.isEmpty()){
 			client_info = Config.defaultClientInfo;
 		}

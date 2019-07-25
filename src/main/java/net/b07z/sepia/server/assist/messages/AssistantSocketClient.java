@@ -39,13 +39,31 @@ public class AssistantSocketClient extends SepiaSocketClient{
 	private String sepiaGivenName = "";
 	private String regExToMatchIdOrName = "";
 	
+	/**
+     * Create a SEPIA assistant client for the WebSocket server without any data.
+     */
 	public AssistantSocketClient(){
 		super();
 		SocketConfig.isSSL = Start.isSSL;
 		SocketConfig.keystorePwd = Start.keystorePwd;
 	}
+	/**
+     * Create a SEPIA assistant client for the WebSocket server with credentials to authenticate against server.
+     * @param credentials - JSONObject with "userId" and "pwd" (parameters like client info will not be sent)
+     */
 	public AssistantSocketClient(JSONObject credentials){
 		super(credentials);
+		SocketConfig.isSSL = Start.isSSL;
+		SocketConfig.keystorePwd = Start.keystorePwd;
+	}
+	/**
+     * Create a SEPIA assistant client for the WebSocket server with credentials to authenticate against server.
+     * Parameters are set as well here so you can give a specific client info, environment, device id etc..
+     * @param credentials - JSONObject with "userId" and "pwd" (parameters like client info will not be sent)
+     * @param clientParameters - things that specify the client like info, environment, location, time etc.
+     */
+	public AssistantSocketClient(JSONObject credentials, JSONObject clientParameters){
+		super(credentials, clientParameters);
 		SocketConfig.isSSL = Start.isSSL;
 		SocketConfig.keystorePwd = Start.keystorePwd;
 	}
