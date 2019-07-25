@@ -12,6 +12,7 @@ import net.b07z.sepia.server.assist.server.Statistics;
 import net.b07z.sepia.server.assist.users.Authenticator;
 import net.b07z.sepia.server.assist.users.ID;
 import net.b07z.sepia.server.assist.users.User;
+import net.b07z.sepia.server.core.data.Role;
 import net.b07z.sepia.server.core.server.RequestParameters;
 import net.b07z.sepia.server.core.server.RequestPostParameters;
 import net.b07z.sepia.server.core.server.SparkJavaFw;
@@ -35,6 +36,16 @@ public class AuthEndpoint {
 	
 	//temporary token is valid for
 	public static final long TEMP_TOKEN_VALID_FOR = 300000l; 	//5minutes
+	
+	/**
+	 * Input parameters required for authentication. Usually combined with {@link AssistEndpoint.InputParameters}. 
+	 */
+	public static enum InputParameters {
+		PWD,
+		GUUID,
+		KEY,
+		client		//NOTE: this is identical to AssistEndpoint.InputParameters.client
+	}
 	
 	/**
 	 * This class can be used to create and restore a temporary token. A temporary token is issued by the
@@ -450,18 +461,42 @@ public class AuthEndpoint {
 		
 		//delete user
 		else if (action.trim().equals("deleteUser")){
-			//return returnResult(request, response, "{\"result\":\"fail\",\"error\":\"not yet implemented oO\"}", 200);
-			//TODO: improve to operate more like "createUser" and delete ALL user data including the one in ElasticSearch
+			//TODO: improve to operate more like "createUser"?
+			//TODO: Delete ALL user data (commands, services, answers, etc.) not just the account !!
 			
 			//authenticate
 			Authenticator token = Start.authenticate(params, request);
 			if (!token.authenticated()){
 				return SparkJavaFw.returnNoAccess(request, response, token.getErrorCode());
 			}else{
+				//create user and get IDs
+				User user = new User(null, token);
+				String userId = token.getUserID();
+				String userIdToBeDeleted = params.getString("userid");		//NOTE: this parameter is called "userid" not "userId" ... O_o
+				if (Is.notNullOrEmpty(userIdToBeDeleted)){
+					userIdToBeDeleted = ID.clean(userIdToBeDeleted);
+					//superusers are allowed to use this...
+					if (user.hasRole(Role.superuser)){
+						userId = userIdToBeDeleted;
+					}else{
+						return SparkJavaFw.returnResult(request, response, JSON.make(
+								"result", "fail", 
+								"error", "must be 'superuser' to use parameter 'userid'!"
+						).toJSONString(), 200);
+					}
+				}
+							
+				//prevent deletion of core accounts
+				if (userId.equals(Config.superuserId) || userId.equals(Config.assistantId)){
+					Debugger.println("deleteUser for account: " + userId + " FAILED. Core account cannot be deleted! As 'superuser' use parameter 'userid' to delete accounts.", 1);
+					return SparkJavaFw.returnResult(request, response, JSON.make(
+							"result", "fail", 
+							"error", "account cannot be deleted! As 'superuser' use parameter 'userid' to delete users"
+					).toJSONString(), 200);
+				}
+				
 				//request info
-				String userID = token.getUserID();
-				JSONObject info = new JSONObject();
-				JSON.add(info, "userid", userID);
+				JSONObject info = JSON.make("userid", userId);
 				//TODO: i'd prefer to improve this here with additional pwd check
 				
 				AuthenticationInterface auth = (AuthenticationInterface) ClassBuilder.construct(Config.authenticationModule);
@@ -473,17 +508,17 @@ public class AuthEndpoint {
 					//fail
 					JSONObject msg = new JSONObject();
 					JSON.add(msg, "result", "fail");
-					JSON.add(msg, "error", "account could not be deleted. Please try again or contact user support!");
+					JSON.add(msg, "error", "account '" + userId + "' could not be deleted. Please try again or contact user support!");
 					JSON.add(msg, "code", auth.getErrorCode());
-					Debugger.println("deleteUser for account: " + userID + " could not finish successfully!?!", 1);
+					Debugger.println("deleteUser for account: " + userId + " could not finish successfully!?!", 1);
 					return SparkJavaFw.returnResult(request, response, msg.toJSONString(), 200);
 				}else{
 					//success
 					JSONObject msg = new JSONObject();
 					JSON.add(msg, "result", "success");
-					JSON.add(msg, "message", "account has been deleted! Goodbye :-(");
+					JSON.add(msg, "message", "account has been deleted! Goodbye " + userId + " :-(");
 					JSON.add(msg, "duration_ms", Debugger.toc(tic));
-					Debugger.println("Account: " + userID + " has successfully been deleted :-(", 3);
+					Debugger.println("deleteUser: " + userId + " has successfully been deleted :-(", 3);
 					return SparkJavaFw.returnResult(request, response, msg.toJSONString(), 200);
 				}
 			}
