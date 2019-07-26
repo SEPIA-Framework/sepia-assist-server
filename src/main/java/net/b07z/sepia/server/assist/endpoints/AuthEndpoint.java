@@ -5,10 +5,12 @@ import java.util.List;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
+import net.b07z.sepia.server.assist.database.DB;
 import net.b07z.sepia.server.assist.email.SendEmail;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.Start;
 import net.b07z.sepia.server.assist.server.Statistics;
+import net.b07z.sepia.server.assist.users.ACCOUNT;
 import net.b07z.sepia.server.assist.users.Authenticator;
 import net.b07z.sepia.server.assist.users.ID;
 import net.b07z.sepia.server.assist.users.User;
@@ -360,19 +362,72 @@ public class AuthEndpoint {
 		}
 		
 		//request password change
-		else if (action.trim().equals("forgotPassword")){
+		else if (action.trim().equals("forgotPassword") || action.trim().equals("requestPasswordChange")){
 			Statistics.add_forgot_pwd_hit();				//hit counter
 			
 			String userID = params.getString("userid");		//any of the allowed unique IDs, e.g. email address
 			String type = params.getString("type");			//type to use for recovery, e.g. "email"
 			String language = params.getString("lang");		//language for email
 			if (language == null){
-				language = LANGUAGES.DE;
+				language = LANGUAGES.EN;
 			}
+			boolean sendEmail = false;
+			boolean superUserOverwrite = false;
+			String superUserId = "";
 			
 			//check type
-			if (type == null || !type.equals(ID.Type.email)){
-				String msg = "{\"result\":\"fail\",\"error\":\"this 'type' to reset password is not supported!\"}";
+			if (Is.nullOrEmpty(type) || Is.nullOrEmpty(userID)){
+				String msg = "{\"result\":\"fail\",\"error\":\"request 'type' (e.g. email, oldPassword) or 'userid' is missing!\"}";
+				return SparkJavaFw.returnResult(request, response, msg, 200);
+			
+			}else if (type.equals(ID.Type.email)){
+				sendEmail = true;
+				
+			}else if (type.equals("oldPassword")){
+				//get extra authentication
+				String authKey = params.getString("authKey");
+				RequestParameters authParams = new RequestPostParameters(JSON.make(
+						AuthEndpoint.InputParameters.KEY.name(), authKey,
+						AuthEndpoint.InputParameters.client.name(), "tmp_web_app" 	//choosing a client that will usually not be used in any real client
+				));
+				Authenticator token = Start.authenticate(authParams, request);
+				String email = null;
+				if (!token.authenticated() || !token.getUserID().equals(userID.toLowerCase())){
+					//check requesting user
+					Authenticator reqUserToken = Start.authenticate(params, request);
+					if (reqUserToken.authenticated()){
+						User reqUser = new User(null, reqUserToken);
+						if (reqUser.hasRole(Role.superuser)){
+							//SUPERUSER ACCESS
+							email = (String) DB.getAccountInfos(userID, ACCOUNT.EMAIL).get(ACCOUNT.EMAIL);
+							superUserOverwrite = true;
+							superUserId = reqUser.getUserID();
+						}else{
+							return SparkJavaFw.returnNoAccess(request, response, token.getErrorCode());
+						}
+					}else{
+						return SparkJavaFw.returnNoAccess(request, response, token.getErrorCode());
+					}
+				}else{
+					//check access level and get email
+					if (token.getAccessLevel() >= 1){ 		//this means: logged in with 'real' password
+						email = (String) token.getBasicInfo().get(Authenticator.EMAIL);
+					}
+				}
+				if (Is.nullOrEmpty(email)){
+					return SparkJavaFw.returnResult(request, response, JSON.make(
+							"result", "fail",
+							"error", "missing basic info of user account: email!"
+					).toJSONString(), 200);
+				}
+				
+				//revert back to email but only transfer data (don't send an actual mail)
+				type = ID.Type.email;
+				userID = email;
+				sendEmail = false;
+			
+			}else{
+				String msg = "{\"result\":\"fail\",\"error\":\"this 'type' to reset password is not supported (try 'email' or 'oldPassword')!\"}";
 				return SparkJavaFw.returnResult(request, response, msg, 200);
 			}
 			
@@ -387,46 +442,57 @@ public class AuthEndpoint {
 				JSONObject in = new JSONObject();
 				JSON.add(in, "userid", email);		JSON.add(in, "type", type);
 				JSONObject result = auth.requestPasswordChange(in);
+				//-log
+				if (superUserOverwrite){
+					Debugger.println("password reset attempt by SUPERUSER '" + superUserId + "' for ID: " + userID + " - timestamp: " + System.currentTimeMillis(), 3);
+				}else{
+					Debugger.println("password reset attempt - ID: " + userID + " - timestamp: " + System.currentTimeMillis(), 3);
+				}
 				//check result for user-exists or server communication error
 				if (((String) result.get("result")).equals("fail")){
 					return SparkJavaFw.returnResult(request, response, result.toJSONString(), 200);
 				}
 				//Send via email:
-				//-create message
-				SendEmail emailClient = (SendEmail) ClassBuilder.construct(Config.emailModule);
-				
-				String subject = "Here is the link to change your password";
-				if (language.equals(LANGUAGES.DE)){
-					subject = "Hier der Link zum Ändern deines Passworts";
-				}
-				
-				String message = emailClient.loadPasswordResetMessage(language, email,
-									(String) result.get("ticketid"),
-									(String) result.get("token"),
-									(String) result.get("time")
-				);
-				//-send
-				int code = emailClient.send(email, message, subject, null);
-	
-				//-check result
-				if (code == 0){
-					//-log
-					Debugger.println("password reset attempt - ID: " + userID + " - timestamp: " + System.currentTimeMillis(), 3);
-					//-overwrite token and return
-					JSON.add(result, "token", "sent via email to " + userID);
-					return SparkJavaFw.returnResult(request, response, result.toJSONString(), 200);
-				}else{
-					//-error
-					if (code == 1){
-						return SparkJavaFw.returnResult(request, response, "{\"result\":\"fail\",\"error\":\"could not send email! Invalid address? Server problem?\"}", 200);
-					}else if (code == 2){
-						return SparkJavaFw.returnResult(request, response, "{\"result\":\"fail\",\"error\":\"could not send email! Invalid address?\"}", 200);
-					}else{
-						return SparkJavaFw.returnResult(request, response, "{\"result\":\"fail\",\"error\":\"could not send email! Server problem?\"}", 200);
+				if (sendEmail){
+					//-create message
+					SendEmail emailClient = (SendEmail) ClassBuilder.construct(Config.emailModule);
+					
+					String subject = "Here is the link to change your password";
+					if (language.equals(LANGUAGES.DE)){
+						subject = "Hier der Link zum Ändern deines Passworts";
 					}
+					
+					String message = emailClient.loadPasswordResetMessage(language, email,
+										(String) result.get("ticketid"),
+										(String) result.get("token"),
+										(String) result.get("time")
+					);
+					//-send
+					int code = emailClient.send(email, message, subject, null);
+		
+					//-check result
+					if (code == 0){
+						//-overwrite token and return
+						JSON.add(result, "token", "sent via email to " + userID);
+						return SparkJavaFw.returnResult(request, response, result.toJSONString(), 200);
+					}else{
+						//-error
+						if (code == 1){
+							return SparkJavaFw.returnResult(request, response, "{\"result\":\"fail\",\"error\":\"could not send email! Invalid address? Server problem?\"}", 200);
+						}else if (code == 2){
+							return SparkJavaFw.returnResult(request, response, "{\"result\":\"fail\",\"error\":\"could not send email! Invalid address?\"}", 200);
+						}else{
+							return SparkJavaFw.returnResult(request, response, "{\"result\":\"fail\",\"error\":\"could not send email! Server problem?\"}", 200);
+						}
+					}
+					
+				//Return token via result
+				}else{
+					return SparkJavaFw.returnResult(request, response, result.toJSONString(), 200);
 				}
+			}else{
+				return SparkJavaFw.returnResult(request, response, "{\"result\":\"fail\",\"error\":\"no valid user ID found!\"}", 200);
 			}
-			return SparkJavaFw.returnResult(request, response, "{\"result\":\"fail\",\"error\":\"no valid user ID found!\"}", 200);
 		}
 		//change password
 		else if (action.trim().equals("changePassword")){
@@ -440,7 +506,7 @@ public class AuthEndpoint {
 				AuthenticationInterface auth = (AuthenticationInterface) ClassBuilder.construct(Config.authenticationModule);
 				auth.setRequestInfo(request);
 				JSONObject in = new JSONObject();
-				JSON.add(in, "userid", userID.trim());		JSON.add(in, "new_pwd", password.trim());
+				JSON.add(in, "userid", userID.trim());		JSON.add(in, "new_pwd", password.trim()); 		//NOTE: new_pwd has to be client-hashed!
 				JSON.add(in, "token", token.trim());		JSON.add(in, "type", type);	
 				JSON.add(in, "time", timestamp);			JSON.add(in, "ticketid", ticketID);
 				boolean success = auth.changePassword(in);
