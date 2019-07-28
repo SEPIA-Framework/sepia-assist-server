@@ -46,21 +46,10 @@ public class AccountDynamoDB implements AccountInterface{
 			return 2;
 		}
 		
-		//keys:
-		ArrayList<String> checkedKeys = new ArrayList<>();
-		for (String s : keys){
-			//restrict access to database	TODO: keep this up to date!!! Introduce access levels?
-			if (ACCOUNT.restrictReadAccess.contains(s.replaceFirst("\\..*", "").trim())){
-				//password and tokens retrieval is NOT allowed! NEVER! only if you run this as an authenticator (own class)
-				Debugger.println("DB read access to '" + s + "' has been denied!", 3);
-				continue;
-			}
-			if (!api.isAllowedToAccess(s)){
-				Debugger.println("API: " + api.getName() + " is NOT! allowed to access field " + s, 3);
-				continue;
-			}
-			checkedKeys.add(s);
-		}
+		//filter keys to make sure we only read what we are allowed to
+		ArrayList<String> checkedKeys = ACCOUNT.filterServiceReadData(api, keys);
+		
+		//make sure we have filters
 		if (checkedKeys.isEmpty()){
 			Debugger.println("getInfo - no valid keys (left)!", 1);
 			return 2;
@@ -177,32 +166,21 @@ public class AccountDynamoDB implements AccountInterface{
 			return 2;
 		}
 		
-		//Convert it back to the old format - TODO: this is probably computational "heavy", but it was my best idea to restore compatibility 
+		//Convert it back to the old format - we need this because we don't know if the user/system uses/requires keys with dots (e.g. uname.first). 
+		//TODO: this is probably computational "heavy", but it was my best idea to restore compatibility 
 		JSONObject flatJson = JSON.makeFlat(data, "", null);
 		
-		//Filter by access restrictions
+		//Filter the fields that are not allowed to be accessed - Note: applies to top level and some partially accessible direct children!
+		//TODO: we should test this again before considering DynamoDB as database (I'm 'almost' sure it works).
+		JSONObject filteredData = ACCOUNT.filterServiceWriteData(api, flatJson);
+		
+		//Convert again to separate key-value pairs
 		ArrayList<String> keys = new ArrayList<>();
 		ArrayList<Object> objects = new ArrayList<>();
-		for (Object kO : flatJson.keySet()){
+		for (Object kO : filteredData.keySet()){
 			String k = kO.toString();
-			//restrict access to database
-			if (ACCOUNT.restrictWriteAccess.contains(k.replaceFirst("\\..*", "").trim())){
-				Debugger.println("DB write access to '" + k + "' has been denied!", 3);
-				continue;
-			}
-			if (!ACCOUNT.allowFlexAccess(k)){
-				//password, tokens etc. can NOT be written here! NEVER!
-				Debugger.println("DB write access to '" + k + "' has been denied!", 3);
-				continue;
-			}
-			if (!api.isAllowedToAccess(k.toLowerCase())){
-				Debugger.println("API: " + api.getName() + " is NOT! allowed to access field " + k, 3);
-				continue;
-			
-			}else{
-				keys.add(k);
-				objects.add(flatJson.get(k));
-			}
+			keys.add(k);
+			objects.add(flatJson.get(k));
 		}
 		if (keys.isEmpty()){
 			Debugger.println("setInfo - no valid keys (left)!", 1);

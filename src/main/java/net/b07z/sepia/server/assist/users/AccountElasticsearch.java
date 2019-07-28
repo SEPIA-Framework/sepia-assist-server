@@ -43,22 +43,8 @@ public class AccountElasticsearch implements AccountInterface{
 		
 		String userId = user.getUserID();
 		
-		//keys:
-		ArrayList<String> checkedFields = new ArrayList<>();
-		for (String s : keys){
-			//restrict access to database	
-			//TODO: keep this up to date!!!
-			if (ACCOUNT.restrictReadAccess.contains(s.replaceFirst("\\..*", "").trim())){
-				//password and tokens retrieval is NOT allowed! NEVER! only if you run this as an authenticator (own class)
-				Debugger.println("DB read access to '" + s + "' has been denied!", 3);
-				continue;
-			}
-			if (!api.isAllowedToAccess(s)){
-				Debugger.println("API: " + api.getName() + " is NOT! allowed to access field " + s, 3);
-				continue;
-			}
-			checkedFields.add(s);
-		}
+		//filter keys to make sure we only read what we are allowed to
+		ArrayList<String> checkedFields = ACCOUNT.filterServiceReadData(api, keys);
 		
 		//make sure we have filters
 		if (checkedFields.isEmpty()){
@@ -143,26 +129,8 @@ public class AccountElasticsearch implements AccountInterface{
 			return 2;
 		}
 		
-		//filter the fields that are not allowed to be accessed - Note: applies to top level!
-		JSONObject filteredData = new JSONObject();
-		for (Object kObj : data.keySet()){
-			String k = kObj.toString();
-			//restrict access to database
-			if (ACCOUNT.restrictWriteAccess.contains(k.replaceFirst("\\..*", "").trim())){
-				Debugger.println("DB write access to '" + k + "' has been denied!", 3);
-				continue;
-			}
-			if (!ACCOUNT.allowFlexAccess(k)){
-				//password, tokens etc. can NOT be written here! NEVER!
-				Debugger.println("DB write access to '" + k + "' has been denied!", 3);
-				continue;
-			}
-			if (!api.isAllowedToAccess(k.toLowerCase())){
-				Debugger.println("API: " + api.getName() + " is NOT! allowed to access field " + k, 3);
-				continue;
-			}
-			JSON.put(filteredData, k, JSON.getJObject(data, k));
-		}
+		//filter the fields that are not allowed to be accessed - Note: applies to top level and some partially accessible direct children!
+		JSONObject filteredData = ACCOUNT.filterServiceWriteData(api, data);
 		if (filteredData.isEmpty()){
 			Debugger.println("setInfo - Failed due to empty (allowed) data!", 1);			//debug
 			return 2;

@@ -48,6 +48,9 @@ public class ServiceInfo {
 	public static final String DATA_ACTION = "action";				//client action
 	*/
 	
+	//id
+	public String serviceId = null;				//service ID generated from class name of service
+	
 	//settings
 	public boolean worksStandalone = false;		//does this API handle the interview job as well?
 	public String serviceType = "";				//type of integration (link, REST, ...)
@@ -81,6 +84,7 @@ public class ServiceInfo {
 	 * Build common info object.
 	 */
 	public ServiceInfo(Type serviceType, Content contentType, boolean worksStandalone){
+		this.serviceId = getCallerClassName();
 		this.serviceType = serviceType.name();
 		this.contentType = contentType.name();
 		this.worksStandalone = worksStandalone;
@@ -90,6 +94,20 @@ public class ServiceInfo {
 		listOfRequiredChoices = new ArrayList<>();		listOfChoiceQuestions = new ArrayList<>();
 		customAnswerMap = new HashMap<>();
 		answerParameters = new ArrayList<>();
+	}
+	private String getCallerClassName(){
+		try{
+			return new Exception().getStackTrace()[2].getClassName(); 
+		}catch(Exception e){
+			return null;
+		}
+	}
+	
+	/**
+	 * Get service ID generated during construction of service info from service class name.
+	 */
+	public String getServiceId(){
+		return serviceId;
 	}
 	
 	/**

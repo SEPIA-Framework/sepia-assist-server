@@ -1,8 +1,5 @@
 package net.b07z.sepia.server.assist.services;
 
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -18,6 +15,8 @@ import net.b07z.sepia.server.assist.parameters.Confirm;
 import net.b07z.sepia.server.assist.parameters.Select;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
+import net.b07z.sepia.server.assist.workers.ServiceBackgroundTask;
+import net.b07z.sepia.server.assist.workers.ServiceBackgroundTaskManager;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
@@ -451,14 +450,12 @@ public class ServiceBuilder {
 	 * Run a task in the background, optionally with a delay.
 	 * @param delayMs - start after this many ms
 	 * @param task - use it like this: () -> { my code... }
+	 * @return 
 	 */
-	public void runInBackground(long delayMs, Runnable task){
-		int corePoolSize = 1;
-	    final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(corePoolSize);
-	    executor.schedule(task, delayMs, TimeUnit.MILLISECONDS);
-		//other option (but does not support lambda expression):
-		//Timer timer = new Timer();
-	    //timer.schedule(task, delayMs);
+	public ServiceBackgroundTask runOnceInBackground(long delayMs, Runnable task){
+		String userId = getUserId();
+		String serviceId = this.serviceInfo.getServiceId();
+		return ServiceBackgroundTaskManager.runOnceInBackground(userId, serviceId, delayMs, task);
 	}
 	
 	/**

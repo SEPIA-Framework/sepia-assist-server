@@ -71,7 +71,7 @@ public class Config {
 	public static String dbSetupFolder = xtensionsFolder + "Database/";		//folder for database stuff
 	public static String webServerFolder = xtensionsFolder + "WebContent";	//folder for web-server
 	public static boolean hostFiles = true;									//use web-server?
-	public static String localName = "sepia-assist-server";					//**user defined local server name
+	public static String localName = "sepia-assist-server-1";				//**user defined local server name - should be unique inside cluster because it might be used as serverId
 	public static String localSecret = "123456";							//**user defined secret to validate local server
 	public static int serverPort = 20721;									//**server port
 	public static boolean enableCORS = true;								//enable CORS (set access-control headers)
@@ -162,7 +162,7 @@ public class Config {
 	}
 	
 	//Default users and managers
-	public static ServiceAccessManager superuserApiMng = new ServiceAccessManager("API_BOSS"); 	//universal API manager for internal procedures
+	public static ServiceAccessManager superuserServiceAccMng = new ServiceAccessManager("API_BOSS"); 	//universal API manager for internal procedures
 	private static Authenticator superuserToken;
 	private static User superUser;
 	public static String superuserId = "uid1000";						//**for DB sentences check also Defaults.USER

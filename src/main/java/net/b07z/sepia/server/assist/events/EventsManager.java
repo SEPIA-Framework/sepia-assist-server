@@ -72,7 +72,7 @@ public class EventsManager {
 			locationIsKnown = false;
 		}
 		if (locationIsKnown){
-			input.user.loadInfoFromAccount(Config.superuserApiMng, ACCOUNT.USER_HOME, ACCOUNT.USER_WORK);
+			input.user.loadInfoFromAccount(Config.superuserServiceAccMng, ACCOUNT.USER_HOME, ACCOUNT.USER_WORK);
 		}
 		boolean homeIsKnown = true;
 		Address homeAdr = input.user.getTaggedAddress(Address.USER_HOME_TAG, false);		//load from account
