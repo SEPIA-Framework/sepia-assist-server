@@ -26,6 +26,7 @@ import net.b07z.sepia.server.assist.tools.DateTimeConverters;
 import net.b07z.sepia.server.assist.users.Authenticator;
 import net.b07z.sepia.server.assist.users.ID;
 import net.b07z.sepia.server.assist.users.User;
+import net.b07z.sepia.server.assist.workers.ServiceBackgroundTaskManager;
 import net.b07z.sepia.server.assist.workers.Workers;
 import net.b07z.sepia.server.core.data.Role;
 import net.b07z.sepia.server.core.endpoints.CoreEndpoints;
@@ -330,8 +331,9 @@ public class Start {
 	public static void stopServer() {
 		Debugger.println("Stopping server ...", 3);
 		
-		//Stop running workers
+		//Stop running workers and service-background-tasks
 		Workers.stopWorkers();
+		ServiceBackgroundTaskManager.cancelAllScheduledTasks();
 		
 		//Disconnect websocket
 		if (Config.connectToWebSocket){
@@ -346,8 +348,8 @@ public class Start {
 	
 	/**
 	 * Soft-restart of server using a {@link TimerTask} and a certain delay.<br>
-	 * Note: Delay starts AFTER successful server stop.<br>
-	 * Note2: You should probably not rely on this method as your only way of restarting the server as this does not clean up thoroughly.
+	 * Note: You should probably not rely on this method as your only way of restarting the server, but use a hard reset from time to time.
+	 * It tries to clean up workers and clients properly when shutting down but will not reset all static variables!
 	 * @return true if restart was scheduled 
 	 */
 	public static boolean restartServer(long delayMs) {
@@ -428,6 +430,7 @@ public class Start {
 			JSONObject msg = new JSONObject();
 			JSON.add(msg, "result", "success");
 			JSON.add(msg, "serverName", Config.SERVERNAME);
+			JSON.add(msg, "serverId", Config.localName);
 			JSON.add(msg, "assistantUserId", Config.assistantId);
 			JSON.add(msg, "assistantName", Config.assistantName);
 			return SparkJavaFw.returnResult(request, response, msg.toJSONString(), 200);
