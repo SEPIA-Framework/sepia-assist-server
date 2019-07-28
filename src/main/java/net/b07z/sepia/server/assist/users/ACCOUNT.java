@@ -174,8 +174,9 @@ public class ACCOUNT {
 				Debugger.println("Service: " + sam.getServiceName() + " - read access to '" + s + "' has been denied! (never allowed)", 3);
 				continue;
 			}
-			if (!sam.isAllowedToAccess(s)){
-				Debugger.println("Service: " + sam.getServiceName() + " is NOT! allowed to access field " + s, 3);
+			String sReduced = s.replaceFirst("(.*?\\..*?)\\..*", "$1");
+			if (!sam.isAllowedToAccess(sReduced)){
+				Debugger.println("Service: " + sam.getServiceName() + " is NOT! allowed to access field " + sReduced, 3);
 				continue;
 			}
 			checkedFields.add(s);

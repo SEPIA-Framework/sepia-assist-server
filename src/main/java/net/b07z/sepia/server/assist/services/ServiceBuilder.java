@@ -15,11 +15,13 @@ import net.b07z.sepia.server.assist.parameters.Confirm;
 import net.b07z.sepia.server.assist.parameters.Select;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
+import net.b07z.sepia.server.assist.users.ACCOUNT;
 import net.b07z.sepia.server.assist.workers.ServiceBackgroundTask;
 import net.b07z.sepia.server.assist.workers.ServiceBackgroundTaskManager;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 
 /**
@@ -382,15 +384,6 @@ public class ServiceBuilder {
 	}
 	
 	/**
-	 * Add a message to the extended log. Extended log will be added to "more" if its not empty and if the service is not public.
-	 * This is supposed to be used to debug services under development.
-	 * @param logMessage - message to log.
-	 */
-	public void addToExtendedLog(String logMessage){
-		JSON.add(extendedLog, logMessage);
-	}
-	
-	/**
 	 * Set or overwrite a certain parameter and reconstruct cmd_summary if command_type is set.
 	 * @param parameter - parameter to set or overwrite
 	 * @param new_value - new value for parameter. Note: has to be valid input for parameter build method!
@@ -459,6 +452,44 @@ public class ServiceBuilder {
 	}
 	
 	/**
+	 * Convenience method to read data specifically stored for this service and the active user.
+	 * @param sam {@link ServiceAccessManager} that authorizes data access
+	 * @param key - a specific data field of the expected user data object or null (to get all user data)
+	 * @return JSON data with entries for "data" and "resultCode" 
+	 * 		(0 - no error, 1 - can't reach database, 2 - access denied, 3 - no account found, 4 - other error) 
+	 */
+	public JSONObject readServiceDataForUser(ServiceAccessManager sam, String key){
+		String fullKey = ACCOUNT.SERVICES + "." + sam.getServiceName() + "." + this.nluResult.input.user.getUserID();
+		if (Is.notNullOrEmpty(key)) {
+			fullKey += "." + key;
+		}
+		int resCode = this.nluResult.input.user.loadInfoFromAccount(sam, fullKey);
+		Object data = this.nluResult.input.user.getInfo(fullKey);
+		return JSON.make(
+				"data", data, 
+				"resultCode", resCode
+		);
+	}
+	/**
+	 * Convenience method to write data specifically for this service and the active user.
+	 * @param sam {@link ServiceAccessManager} that authorizes data access
+	 * @param userData - partial or full data to store for user
+	 * @return resultCode for write status: 
+	 * 0 - no error, 1 - can't reach database, 2 - access denied, 3 - no account found, 4 - other error
+	 */
+	public int writeServiceDataForUser(ServiceAccessManager sam, JSONObject userData){
+		JSONObject data = JSON.make(
+				ACCOUNT.SERVICES, JSON.make(
+					sam.getServiceName(), JSON.make(
+							this.nluResult.input.user.getUserID(), userData
+					)
+				)
+		);
+		int resCode = nluResult.input.user.saveInfoToAccount(sam, data);
+		return resCode;
+	}
+	
+	/**
 	 * WebSockets support duplex communication which means you can send an answer first and after a few seconds send a follow-up
 	 * message to add more info/data to the previous reply. Test for nluInput.isDuplexConnection() first!
 	 * @param nluInput - initial {@link NluInput} to follow-up
@@ -466,6 +497,15 @@ public class ServiceBuilder {
 	 */
 	public boolean sendFollowUpMessage(NluInput nluInput, ServiceResult serviceResult){
 		return Clients.sendAssistantFollowUpMessage(nluInput, serviceResult);
+	}
+	
+	/**
+	 * Add a message to the extended log. Extended log will be added to "more" if its not empty and if the service is not public.
+	 * This is supposed to be used to debug services under development.
+	 * @param logMessage - message to log.
+	 */
+	public void addToExtendedLog(String logMessage){
+		JSON.add(extendedLog, logMessage);
 	}
 	
 	/**

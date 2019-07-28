@@ -21,13 +21,17 @@ public class Test_ACCOUNT {
 						"last", "Testor"
 				),
 				ACCOUNT.SERVICES, JSON.make(
-						firstService, JSON.make("data", "Test1"),
+						firstService, JSON.make(
+								"data", "Test1",
+								"uid1007", JSON.make("tasks", "Task1")
+						),
 						secondService, JSON.make("data", "Test2")
 				)
 		);
 		String[] keysToRead = new String[]{
 			ACCOUNT.USER_NAME, ACCOUNT.USER_NAME_FIRST, ACCOUNT.USER_NAME_LAST,
-			ACCOUNT.SERVICES + "." + firstService, 
+			ACCOUNT.SERVICES + "." + firstService,
+			ACCOUNT.SERVICES + "." + firstService + ".uid1007.tasks",
 			ACCOUNT.SERVICES + "." + secondService
 		};
 		
@@ -47,17 +51,17 @@ public class Test_ACCOUNT {
 		
 		//WRITE
 		System.out.println("\n----------");
-		System.out.println("try write again with 'realistic' name (expect 2 keys)");
+		System.out.println("try write again with 'realistic' name (expect 3 keys)");
 		sam.debugOverwriteServiceName(firstService);
 		System.out.println(JSONWriter.getPrettyString((ACCOUNT.filterServiceWriteData(sam, dataToWrite))));
 		
 		System.out.println("\n----------");
-		System.out.println("try write with flat JSON and 'realistic' name (expect 2 keys)");
+		System.out.println("try write with flat JSON and 'realistic' name (expect 3 keys)");
 		System.out.println(JSONWriter.getPrettyString((ACCOUNT.filterServiceWriteData(sam, flatJson))));
 		
 		//READ
 		System.out.println("\n----------");
-		System.out.println("check read filter with 'realistic' name (expect 2 keys)");
+		System.out.println("check read filter with 'realistic' name (expect 3 keys)");
 		System.out.println(ACCOUNT.filterServiceReadData(sam, keysToRead));
 		
 		//FAIL
