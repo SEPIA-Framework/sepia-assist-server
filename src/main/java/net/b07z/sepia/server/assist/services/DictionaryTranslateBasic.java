@@ -5,8 +5,11 @@ import java.net.URLEncoder;
 
 import net.b07z.sepia.server.assist.answers.Answers;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
+import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
+import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.interviews.AskClient;
+import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.core.assistant.ACTIONS;
@@ -16,12 +19,15 @@ import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
 
 /**
- * German/English dictionary API by Linguee and partially others.
+ * German/English dictionary API by Linguee/DeepL and some others.
  * 
  * @author Florian Quirin
  *
  */
 public class DictionaryTranslateBasic implements ServiceInterface{
+	
+	//TODO: update this service with 2.0 syntax and methods ...
+	//TODO: do something with 'switch language'-action
 	
 	//--- data ---
 	public static String getButtonText(String language){
@@ -44,45 +50,47 @@ public class DictionaryTranslateBasic implements ServiceInterface{
 		ServiceBuilder api = new ServiceBuilder(nluResult);
 		
 		//get parameters
+		
+		/* this will not work due to stand-alone mode of service ...
+		Parameter searchP = nluResult.getOptionalParameter(PARAMETERS.SEARCH, "");
+		String search = searchP.getDataFieldOrDefault(InterviewData.VALUE).toString();
+		Parameter targetLangP = nluResult.getOptionalParameter(PARAMETERS.LANGUAGE, nluResult.input.language);
+		String targetLang = targetLangP.getDataFieldOrDefault(InterviewData.VALUE).toString().replaceFirst("-.*", "").trim();
+		*/
 		String search = nluResult.getParameter(PARAMETERS.SEARCH);
-		String target_lang = nluResult.getParameter(PARAMETERS.LANGUAGE);
-		Debugger.println("cmd: dict_translate, search " + search + ", target_lang=" + target_lang, 2);		//debug
+		String targetLang = nluResult.getParameter(PARAMETERS.LANGUAGE);
+		Debugger.println("cmd: dict_translate, search " + search + ", target_lang=" + targetLang, 2);		//debug
 		
 		//check'em
 		if (search.isEmpty()){
 			return AskClient.question("dict_translate_ask_0a", "search", nluResult);
 		}
-		if (target_lang.isEmpty()){
-			//set default target language
-			if (nluResult.language.matches("en")){
-				target_lang = "de";
-			}else{
-				target_lang = "en";
-			}
-		}
-		
-		String supported_languages = "(de|en|tr)";		//add languages here when adding more target languages
+				
+		String supportedLanguages = "(de|en|tr|es|fr)";		//add languages here when adding more target languages
 		
 		//make answer - if more than one direct answer choose randomly
-		if (target_lang.matches(supported_languages)){
+		if (targetLang.matches(supportedLanguages)){
 			//supported language
-			api.answer = Answers.getAnswerString(nluResult, "dict_translate_1a", search, target_lang);
+			api.answer = Answers.getAnswerString(nluResult, "dict_translate_1a", search, targetLang);
 		}else{
 			//unsupported target language
-			api.answer = Answers.getAnswerString(nluResult, "dict_translate_1b", search, target_lang);
+			api.answer = Answers.getAnswerString(nluResult, "dict_translate_1b", search, targetLang);
 		}
 		api.answerClean = Converters.removeHTML(api.answer);
 		
-		//make action: browser url call
+		//make action: browser URL call
 		String call_url = "";
-		if (target_lang.matches("(de|en)")){
+		
+		//German and English
+		if (targetLang.equals(LANGUAGES.DE) || targetLang.equals(LANGUAGES.EN)){
 			try {
 				call_url = "http://m.linguee.de/deutsch-englisch/search?source=auto&query=" + URLEncoder.encode(search, "UTF-8");
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 				call_url = "http://m.linguee.de/deutsch-englisch/";
 			}
-		}else if (target_lang.matches("(tr)")){
+		//Turkish Dictionary
+		}else if (targetLang.equals(LANGUAGES.TR) && NluTools.countWords(search) == 1){
 			try {
 				//call_url = "http://detr.dict.cc/?s=" + URLEncoder.encode(search, "UTF-8");
 				call_url = "http://www.seslisozluk.net/de/was-bedeutet-" + URLEncoder.encode(search, "UTF-8");
@@ -90,12 +98,30 @@ public class DictionaryTranslateBasic implements ServiceInterface{
 				e.printStackTrace();
 				call_url = "http://detr.dict.cc";
 			}
+		//Japanese and Turkish text
+		}else if (targetLang.equals(LANGUAGES.TR) || targetLang.equals(LANGUAGES.JA)) {
+			call_url = "https://translate.google.com/?sl=" 
+					+ nluResult.input.language + "&tl=" 
+					+ targetLang + "&text=";
+			try {
+				call_url += URLEncoder.encode(search, "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+		//Others (not all might be supported)
 		}else{
-			call_url = "http://m.linguee.de/";
+			call_url = "https://www.deepl.com/translator#" 
+					+ nluResult.input.language + "/" 
+					+ targetLang + "/";
+			try {
+				call_url += URLEncoder.encode(search, "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
 		}
 		
 		//action - for supported languages
-		if (target_lang.matches(supported_languages)){
+		if (targetLang.matches(supportedLanguages)){
 			api.addAction(ACTIONS.OPEN_IN_APP_BROWSER);
 			api.putActionInfo("url", call_url);
 
