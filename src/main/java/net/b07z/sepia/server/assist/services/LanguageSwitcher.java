@@ -54,7 +54,7 @@ public class LanguageSwitcher implements ServiceInterface{
 				.addAnswer(whatLanguage, 0, "Auf welche Sprache soll ich wechseln?")
 				.addAnswer(whatLanguage, 1, "Sorry welche Sprache war das? Englisch oder Deutsch wäre zum Beispiel möglich.")
 				.addAnswer(whatLanguage, 2, "Sorry hab es immer noch nicht verstanden. Sag noch mal die Sprache bitte?")
-				.addAnswer(followUpTest, 0, "Hallo <user_name>. Habe die Sprache geändert.")
+				.addAnswer(followUpTest, 0, "Bin jetzt im deutsch Modus <user_name>.")
 				.addAnswer(languageIsSame, 0, "<user_name>, ich glaube das sprechen wir bereits.")
 				;
 			return answerPool;
@@ -65,7 +65,7 @@ public class LanguageSwitcher implements ServiceInterface{
 				.addAnswer(whatLanguage, 0, "To which language should I switch?")
 				.addAnswer(whatLanguage, 1, "Sorry what was the language? I can speak English and German for example.")
 				.addAnswer(whatLanguage, 2, "Sorry I still didn't get it. Say the language once again, please!")
-				.addAnswer(followUpTest, 0, "Hello <user_name>. I've changed the language.")
+				.addAnswer(followUpTest, 0, "English is now active <user_name>.")
 				.addAnswer(languageIsSame, 0, "<user_name>, I think this is already what we are speaking right now.")
 				;
 			return answerPool;
@@ -94,10 +94,10 @@ public class LanguageSwitcher implements ServiceInterface{
 		
 		//Regular expression triggers:
 		info.setCustomTriggerRegX(".*\\b("
-					+ "(change|switch|set)( the | )language to"
+					+ "(change|switch|set)( the | )language (to|$)"
 				+ ")\\b.*", EN);
 		info.setCustomTriggerRegX(".*\\b("
-					+ "(aendere die sprache|sprache aendern) (auf|zu)"
+					+ "((aendere|setze|stelle|wechsle) die sprache|sprache (aendern|setzen|stellen|wechseln)) (auf|zu|$)"
 				+ ")\\b.*", DE);
 		info.setCustomTriggerRegXscoreBoost(3);		//boost service a bit to increase priority over similar ones
 		
@@ -111,7 +111,7 @@ public class LanguageSwitcher implements ServiceInterface{
 		info.addParameter(p1);
 		
 		//Default answers
-		info.addSuccessAnswer("ok_0b")
+		info.addSuccessAnswer("ok_0a") 	//TODO: timing is tricky here because switch action can come before TTS triggers. Thats why we use the simplest answer: "ok" ;-)
 			.addFailAnswer("error_0a")
 			.addOkayAnswer("default_not_possible_0a");
 		
@@ -142,15 +142,18 @@ public class LanguageSwitcher implements ServiceInterface{
 		api.addAction(ACTIONS.SWITCH_LANGUAGE);
 		api.putActionInfo("language_code", targetLang);
 		
-		//Schedule a test sentence
+		//Schedule a test sentence as follow-up result after 3s if possible
 		if (nluResult.input.isDuplexConnection()){
 			//Some info about the connection and message:
 			//System.out.println(nluResult.input.connection);
 			//System.out.println(nluResult.input.msgId);
 			//System.out.println(nluResult.input.duplexData);
-			
 			api.runOnceInBackground(3000, () -> {
-				//initialize follow-up result
+				//set new language for following dialog
+				nluResult.input.language = targetLangShort;
+				nluResult.language = nluResult.input.language;
+				
+				//build follow-up result
 				ServiceBuilder service = new ServiceBuilder(nluResult);
 				service.answer = Answers.getAnswerString(nluResult, followUpTest);
 				service.status = "success";

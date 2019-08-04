@@ -5,11 +5,9 @@ import java.net.URLEncoder;
 
 import net.b07z.sepia.server.assist.answers.Answers;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
-import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.interviews.AskClient;
-import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.core.assistant.ACTIONS;
@@ -80,9 +78,10 @@ public class DictionaryTranslateBasic implements ServiceInterface{
 		
 		//make action: browser URL call
 		String call_url = "";
+		int numOfWords = NluTools.countWords(search);
 		
 		//German and English
-		if (targetLang.equals(LANGUAGES.DE) || targetLang.equals(LANGUAGES.EN)){
+		if ((targetLang.equals(LANGUAGES.DE) || targetLang.equals(LANGUAGES.EN)) && numOfWords == 1){
 			try {
 				call_url = "http://m.linguee.de/deutsch-englisch/search?source=auto&query=" + URLEncoder.encode(search, "UTF-8");
 			} catch (UnsupportedEncodingException e) {
@@ -90,10 +89,10 @@ public class DictionaryTranslateBasic implements ServiceInterface{
 				call_url = "http://m.linguee.de/deutsch-englisch/";
 			}
 		//Turkish Dictionary
-		}else if (targetLang.equals(LANGUAGES.TR) && NluTools.countWords(search) == 1){
+		}else if (targetLang.equals(LANGUAGES.TR) && numOfWords == 1){
 			try {
 				//call_url = "http://detr.dict.cc/?s=" + URLEncoder.encode(search, "UTF-8");
-				call_url = "http://www.seslisozluk.net/de/was-bedeutet-" + URLEncoder.encode(search, "UTF-8");
+				call_url = "http://www.seslisozluk.net/de/was-bedeutet-" + URLEncoder.encode(search, "UTF-8").replace("+", "%20");
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 				call_url = "http://detr.dict.cc";
@@ -114,7 +113,7 @@ public class DictionaryTranslateBasic implements ServiceInterface{
 					+ nluResult.input.language + "/" 
 					+ targetLang + "/";
 			try {
-				call_url += URLEncoder.encode(search, "UTF-8");
+				call_url += URLEncoder.encode(search, "UTF-8").replace("+", "%20");
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}
