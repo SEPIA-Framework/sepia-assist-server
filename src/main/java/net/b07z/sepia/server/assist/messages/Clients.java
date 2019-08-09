@@ -4,7 +4,6 @@ import java.util.Properties;
 
 import org.json.simple.JSONObject;
 
-import net.b07z.sepia.server.assist.endpoints.AssistEndpoint;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.services.ServiceResult;
@@ -12,6 +11,7 @@ import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.FilesAndStreams;
 import net.b07z.sepia.server.core.tools.JSON;
+import net.b07z.sepia.websockets.client.SepiaSocketClient;
 import net.b07z.sepia.websockets.client.SocketClientHandler;
 import net.b07z.sepia.websockets.common.SocketConfig;
 
@@ -54,11 +54,12 @@ public class Clients {
 				//note: assistant name has to be stored in the account just like with normal users
 				assistantSocket = new AssistantSocketClient(
 					JSON.make(
-						"userId", Config.assistantId, "pwd", Config.assistantPwd
+						SepiaSocketClient.CREDENTIALS_USER_ID, Config.assistantId, 
+						SepiaSocketClient.CREDENTIALS_PASSWORD, Config.assistantPwd
 					),
 					JSON.make(
-						AssistEndpoint.InputParameters.client.name(), Config.assistantClientInfo,
-						AssistEndpoint.InputParameters.device_id.name(), Config.assistantDeviceId
+						SepiaSocketClient.PARAMETERS_CLIENT, Config.assistantClientInfo,
+						SepiaSocketClient.PARAMETERS_DEVICE_ID, Config.assistantDeviceId
 					)
 				);
 				webSocketMessenger = new SocketClientHandler(assistantSocket);

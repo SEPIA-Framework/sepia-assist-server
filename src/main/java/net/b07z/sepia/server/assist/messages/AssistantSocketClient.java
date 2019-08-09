@@ -10,6 +10,7 @@ import org.json.simple.JSONObject;
 import net.b07z.sepia.server.assist.endpoints.AssistEndpoint;
 import net.b07z.sepia.server.assist.endpoints.AssistEndpoint.InputParameters;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
+import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.Start;
 import net.b07z.sepia.server.assist.services.ServiceResult;
 import net.b07z.sepia.server.core.server.FakeRequest;
@@ -40,23 +41,6 @@ public class AssistantSocketClient extends SepiaSocketClient {
 	private String regExToMatchIdOrName = "";
 	private String regExToMatchTriggerPrefix = "(?i)^(hi|hello|hallo|hey|ok|alo)";
 	
-	/**
-     * Create a SEPIA assistant client for the WebSocket server without any data.
-     */
-	public AssistantSocketClient(){
-		super();
-		SocketConfig.isSSL = Start.isSSL;
-		SocketConfig.keystorePwd = Start.keystorePwd;
-	}
-	/**
-     * Create a SEPIA assistant client for the WebSocket server with credentials to authenticate against server.
-     * @param credentials - JSONObject with "userId" and "pwd" (parameters like client info will not be sent)
-     */
-	public AssistantSocketClient(JSONObject credentials){
-		super(credentials);
-		SocketConfig.isSSL = Start.isSSL;
-		SocketConfig.keystorePwd = Start.keystorePwd;
-	}
 	/**
      * Create a SEPIA assistant client for the WebSocket server with credentials to authenticate against server.
      * Parameters are set as well here so you can give a specific client info, environment, device id etc..
@@ -247,13 +231,14 @@ public class AssistantSocketClient extends SepiaSocketClient {
     	if (!JSON.getString(answer, "result").equals("fail")){
 	    	String answerText = (String) answer.get("answer");
 	    	if (answerText == null){
-	    		reply = new SocketMessage(channelId, getUserId(), receiverOnError, "Error?", TextType.status.name());
+	    		reply = new SocketMessage(channelId, getUserId(), getDeviceId(), receiverOnError, receiverDeviceId, 
+	    				"Error?", TextType.status.name());
 	    	}else{
 	    		//The 'real' message:
 	    		JSONObject data = new JSONObject();
 		        JSON.add(data, "dataType", DataType.assistAnswer.name());
 		        JSON.add(data, "assistAnswer", answer);
-		        reply = new SocketMessage(channelId, getUserId(), receiver, data);
+		        reply = new SocketMessage(channelId, getUserId(), getDeviceId(), receiver, receiverDeviceId, data);
 	    		//reply = new SocketMessage(getUserName(), receiver, answerText, "default");
 	    		//reply.addData("assistAnswer", answer);
 	    		//reply.addData("dataType", DataType.assistAnswer.name());
@@ -261,11 +246,13 @@ public class AssistantSocketClient extends SepiaSocketClient {
     	
     	//no login or error
     	}else{
-    		reply = new SocketMessage(channelId, getUserId(), receiverOnError, "Login? Error?", TextType.status.name());
+    		reply = new SocketMessage(channelId, getUserId(), getDeviceId(), receiverOnError, receiverDeviceId, 
+    				"Login? Error?", TextType.status.name());
     	}
     	if (Is.notNullOrEmpty(receiverDeviceId)){
     		reply.setReceiverDeviceId(receiverDeviceId);
     	}
+    	reply.setSenderDeviceId(Config.assistantDeviceId);
     	return reply;
     }
     /**
@@ -277,23 +264,26 @@ public class AssistantSocketClient extends SepiaSocketClient {
     	if (!JSON.getString(answer, "result").equals("fail")){
 	    	String answerText = (String) answer.get("answer");
 	    	if (answerText == null){
-	    		reply = new SocketMessage(channelId, getUserId(), receiverOnError, "Error?", TextType.status.name());
+	    		reply = new SocketMessage(channelId, getUserId(), getDeviceId(), receiverOnError, receiverDeviceId, 
+	    				"Error?", TextType.status.name());
 	    	}else{
 	    		//The 'real' message:
 	    		JSONObject data = new JSONObject();
 		        JSON.add(data, "dataType", DataType.assistFollowUp.name());
 		        JSON.add(data, "assistAnswer", answer); 		//NOTE: we keep the name 'assistAnswer' here for client ... should have called it 'assistMsg'
-		        reply = new SocketMessage(channelId, getUserId(), receiver, data);
+		        reply = new SocketMessage(channelId, getUserId(), getDeviceId(), receiver, receiverDeviceId, data);
 	    	}
     	
     	//no login or error
     	}else{
-    		reply = new SocketMessage(channelId, getUserId(), receiverOnError, "Login? Error?", TextType.status.name());
+    		reply = new SocketMessage(channelId, getUserId(), getDeviceId(), receiverOnError, receiverDeviceId, 
+    				"Login? Error?", TextType.status.name());
     	}
     	reply.setSenderType(SenderType.assistant.name());
     	if (Is.notNullOrEmpty(receiverDeviceId)){
     		reply.setReceiverDeviceId(receiverDeviceId);
     	}
+    	reply.setSenderDeviceId(Config.assistantDeviceId);
     	return reply;
     }
     
@@ -307,6 +297,7 @@ public class AssistantSocketClient extends SepiaSocketClient {
     	String msgId = msg.msgId;
     	String channelId = msg.channelId;
     	String receiverOnError = msg.sender;
+    	String receiverDeviceId = msg.senderDeviceId;
     	if (msg.data != null && msg.data.get("credentials") != null){
     		try{
 		    	Request request = buildAssistEndpointRequest(msg);
@@ -340,13 +331,15 @@ public class AssistantSocketClient extends SepiaSocketClient {
     				//if that fails as well just make an error status message
     				Debugger.println(e.getMessage(), 1);		//DEBUG
         			Debugger.printStackTrace(e, 4);				//DEBUG
-    				reply = new SocketMessage(channelId, getUserId(), receiverOnError, "Internal Error!", TextType.status.name());
+    				reply = new SocketMessage(channelId, getUserId(), getDeviceId(), receiverOnError, receiverDeviceId, 
+    						"Internal Error!", TextType.status.name());
         			reply.addData("dataType", DataType.errorMessage.name());
     			}
     		}
     	//no login?
     	}else{
-    		reply = new SocketMessage(channelId, getUserId(), receiverOnError, "Login?", TextType.status.name());
+    		reply = new SocketMessage(channelId, getUserId(), getDeviceId(), receiverOnError, receiverDeviceId, 
+    				"Login?", TextType.status.name());
     	}
     	reply.setSenderType(SenderType.assistant.name());
     	if (msgId != null) reply.setMessageId(msgId);

@@ -54,12 +54,12 @@ public class RemoteActionEndpoint {
 			String type =  params.getString("type");			//e.g.: RemoteActionType.hotkey.name()
 			//get action info
 			String action =  params.getString("action");
-			//get channel
+			//get target channel
 			String channelId =  params.getString("channelId");
 			if (channelId == null || channelId.isEmpty())	channelId = "<auto>";
-			//get device
-			String deviceId =  params.getString("deviceId");
-			if (deviceId == null || deviceId.isEmpty())		deviceId = "<auto>";
+			//get target device
+			String targetDeviceId =  params.getString("deviceId");
+			if (targetDeviceId == null || targetDeviceId.isEmpty())		targetDeviceId = "<auto>";
 			
 			//validate
 			if (type == null || type.isEmpty() || action == null || action.isEmpty()){
@@ -77,9 +77,11 @@ public class RemoteActionEndpoint {
 			//try to broadcast to socket messenger
 			JSONObject data = JSON.make("dataType", DataType.remoteAction.name(), 
 					"user", token.getUserID(),
-					"targetDeviceId", deviceId,
+					"targetDeviceId", targetDeviceId,
 					"type", type, "action", action);
-			SocketMessage sMessage = new SocketMessage(channelId, token.getUserID(), token.getUserID(), data);		//TODO: select proper parameters? Receiver will be set by server depending on action
+			SocketMessage sMessage = new SocketMessage(channelId, Config.assistantId, Config.assistantDeviceId, "", "", 
+					data);		
+					//TODO: select proper parameters? Receiver will be set by server depending on action
 			boolean msgSent = Clients.webSocketMessenger.send(sMessage, 2000);
 			if (!msgSent){
 				Queues.addSocketMessageToSend(sMessage);
