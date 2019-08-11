@@ -17,6 +17,7 @@
         "channel_id" : { "type" : "string", "analyzer": "keylower" },
         "channel_key" : { "type" : "string", "analyzer": "keylower" },
 		"channel_name" : { "type" : "string" },
+		"server_id" : { "type" : "string" },
         "members" : { "type" : "string" },
 		"assistants" : { "type" : "string" },
         "public" : { "type": "boolean" },
@@ -27,6 +28,7 @@
 	"channel_data" : {
       "properties" : {
 		"channel_id" : { "type" : "string", "analyzer": "keylower" },
+		"server_id" : { "type" : "string" },
 		"message" : { "type" : "string" },
         "sender_id" : { "type" : "string", "analyzer": "keylower" },
 		"date" : { "type" : "date" },
