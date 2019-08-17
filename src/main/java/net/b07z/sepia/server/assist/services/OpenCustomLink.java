@@ -17,6 +17,7 @@ import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.core.assistant.ACTIONS;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Converters;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 
 /**
@@ -30,6 +31,8 @@ import net.b07z.sepia.server.core.tools.JSON;
  *
  */
 public class OpenCustomLink {
+	
+	//TODO: update this class with all the new syntax, it's ancient ... ^^
 	
 	public static final String TITLE = "title";
 	public static final String DESCRIPTION = "description";
@@ -60,6 +63,15 @@ public class OpenCustomLink {
 		String iconUrl = nluResult.getParameter(ICON_URL);				//icon URL to be used for link-card
 		boolean isCustomIcon = !iconUrl.isEmpty(); 
 		if (!isCustomIcon)	iconUrl = Config.urlWebImages + "/cards/link.png";
+		
+		//custom data?
+		String addedData = nluResult.getParameter(PARAMETERS.DATA);
+		JSONObject addedDataJson = null;
+		if (Is.notNullOrEmpty(addedData) && addedData.startsWith("{")){
+			addedDataJson = JSON.parseString(addedData);
+		}
+		boolean isSourceLinkshareSlashCmd = Is.notNullOrEmpty(addedDataJson)? 
+				JSON.getString(addedDataJson, "source").equalsIgnoreCase("linkshare") : false; 
 		
 		//handle parameters/answers/questions
 		//p
@@ -145,13 +157,18 @@ public class OpenCustomLink {
 			callURL = "";
 			//e.printStackTrace();
 		}
-		api.addAction(ACTIONS.OPEN_IN_APP_BROWSER);
-		api.putActionInfo("url", callURL);
-		/*
-		api.actionInfo_add_action(ACTIONS.BUTTON_URL);
-		api.actionInfo_put_info("url", callURL);
-		api.actionInfo_put_info("title", ACTIONS.getDefaultButtonText(api.language));
-		*/
+		if (!isSourceLinkshareSlashCmd){
+			api.addAction(ACTIONS.OPEN_IN_APP_BROWSER);
+			api.putActionInfo("url", callURL);
+			/*
+			api.actionInfo_add_action(ACTIONS.BUTTON_URL);
+			api.actionInfo_put_info("url", callURL);
+			api.actionInfo_put_info("title", ACTIONS.getDefaultButtonText(api.language));
+			*/
+			api.hasAction = true;
+		}else{
+			api.hasAction = false;
+		}
 		
 		//card
 		Card card = new Card(Card.TYPE_SINGLE);
@@ -170,8 +187,6 @@ public class OpenCustomLink {
 			JSON.put(linkCard, "imageBackground", "transparent");	//use any CSS background option you wish
 		}
 		api.addCard(card.getJSON());
-		
-		api.hasAction = true;
 		
 		//build card
 		/*
