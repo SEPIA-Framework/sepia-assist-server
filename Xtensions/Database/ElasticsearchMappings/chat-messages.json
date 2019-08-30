@@ -1,0 +1,33 @@
+{
+  "settings":{
+    "index": {
+      "analysis": {
+        "analyzer": {
+          "keylower": {
+            "tokenizer": "keyword",
+            "filter": "lowercase"
+          },
+		  "exactfit": {
+            "tokenizer": "keyword",
+            "filter": []
+          }
+        }
+      }
+    }
+  },
+  "mappings" : {
+	"all" : {
+      "properties" : {
+		"msgId" : { "type" : "string", "analyzer": "keylower" },
+		"channelId" : { "type" : "string", "analyzer": "exactfit" },
+		"serverId" : { "type" : "string", "analyzer": "keylower" },
+		"sender" : { "type" : "string", "analyzer": "keylower" },
+		"senderDeviceId" : { "type" : "string", "analyzer": "keylower" },
+		"timeUNIX" : { "type" : "long" },
+		"receiver" : { "type" : "string", "analyzer": "keylower" },
+		"receiverDeviceId" : { "type" : "string", "analyzer": "keylower" },
+		"data" : { "type" : "object" }
+      }
+    }
+  }
+}

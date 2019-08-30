@@ -24,16 +24,6 @@
 		"owner" : { "type" : "string", "analyzer": "keylower" }
 		"info" : { "type" : "object" }
       }
-    },
-	"channel_data" : {
-      "properties" : {
-		"channel_id" : { "type" : "string", "analyzer": "keylower" },
-		"server_id" : { "type" : "string" },
-		"message" : { "type" : "string" },
-        "sender_id" : { "type" : "string", "analyzer": "keylower" },
-		"date" : { "type" : "date" },
-        "data" : { "type" : "object" }
-      }
     }
   }
 }
