@@ -303,6 +303,14 @@ public class Start {
 		//load settings
 		loadSettings(args);
 		
+		//test database(s)
+		try{
+			Config.testDatabases();
+		}catch (Exception e){
+			Debugger.printStackTrace(e, 3);
+			return;
+		}
+		
 		//load statics and workers and setup modules (loading stuff to memory etc.)
 		setupModules();
 		

@@ -89,6 +89,7 @@ public class Config {
 	public static boolean useSentencesDB = true;						//use sentences in the database to try to match user input
 	public static List<String> backgroundWorkers = new ArrayList<>(); 	//workers to activate on server-start
 	public static boolean cacheRssResults = true;						//cache results for RSS worker
+	public static boolean checkElasticsearchMappingsOnStart = true;		//test Elasticsearch mappings
 	
 	//General and assistant settings
 	public static String assistantName = "Sepia";				//**Name - this might become user-specific once ...
@@ -328,7 +329,18 @@ public class Config {
 	 * Setup the modules for database access.
 	 */
 	public static void setupDatabases(){
+		//refresh stuff
 		DB.refreshSettings();
+	}
+	/**
+	 * Test databases, e.g. Elasticsearch mappings etc.
+	 * @throws Exception
+	 */
+	public static void testDatabases() throws Exception{
+		//check Elasticsearch mappings
+		if (checkElasticsearchMappingsOnStart){
+			Setup.testAndUpdateElasticsearchMapping(true);
+		}
 	}
 	
 	//set answer loader - this is for common answers, API answers can also be loaded inside the API itself
@@ -456,6 +468,7 @@ public class Config {
 			ConfigElasticSearch.endpoint_custom = settings.getProperty("db_elastic_endpoint_custom", "");
 			ConfigElasticSearch.endpoint_eu1 = settings.getProperty("db_elastic_endpoint_eu1");
 			ConfigElasticSearch.endpoint_us1 = settings.getProperty("db_elastic_endpoint_us1");
+			checkElasticsearchMappingsOnStart = Boolean.valueOf(settings.getProperty("checkElasticsearchMappingsOnStart", "true"));
 			//chat
 			connectToWebSocket = Boolean.valueOf(settings.getProperty("connect_to_websocket"));
 			//workers
