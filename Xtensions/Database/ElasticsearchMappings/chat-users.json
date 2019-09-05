@@ -15,7 +15,9 @@
 	"all" : {
       "properties" : {
 		"userId" : { "type" : "string", "analyzer": "keylower" },
-		"checkChannels" : { "type" : "string" }
+		"checkChannels" : { "type" : "string" },
+		"lastMissedMessage" : { "type" : "long" },
+		"lastMissNoteReceived" : { "type" : "long" }
       }
     }
   }
