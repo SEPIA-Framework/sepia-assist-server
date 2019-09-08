@@ -63,6 +63,8 @@ public class OpenLigaWorker implements WorkerInterface {
 	
 	@Override
 	public void setup(){
+		Debugger.println(name + ": Setting-up worker for league '" + this.league + "' and season '" + this.season + "'.", 3);
+		
 		if (openLigaData == null){
 			openLigaData = new JSONObject();
 		}
@@ -72,7 +74,7 @@ public class OpenLigaWorker implements WorkerInterface {
 			JSONObject leagueData = (JSONObject) openLeagueData.get(league);
 			if (leagueData != null){
 				JSON.add(openLigaData, league, leagueData);
-				Debugger.println(name + " - backup restored with " + (leagueData.size()-1) + " match days.", 3);
+				Debugger.println(name + ": Backup restored with " + (leagueData.size()-1) + " match days.", 3);
 			}
 		}
 		workerStatus = 0;
@@ -118,14 +120,16 @@ public class OpenLigaWorker implements WorkerInterface {
 	public boolean kill(){
 		abort = true;
 		long thisWait = 0; 
-		while (workerStatus > 0){
-			try {	Thread.sleep(waitInterval);	} catch (Exception e){	e.printStackTrace(); return false;	}
-			thisWait += waitInterval;
-			if (thisWait >= maxWait){
-				break;
+		if (executedRefreshs != 0){
+			while (workerStatus > 0){
+				try {	Thread.sleep(waitInterval);	} catch (Exception e){	e.printStackTrace(); return false;	}
+				thisWait += waitInterval;
+				if (thisWait >= maxWait){
+					break;
+				}
 			}
 		}
-		if (workerStatus < 1){
+		if (workerStatus < 1 || executedRefreshs == 0){
 			return true;
 		}else{
 			return false;
@@ -163,7 +167,11 @@ public class OpenLigaWorker implements WorkerInterface {
 		    	boolean isMatchDayOk = false;
 		    	boolean isDataUpdatePossible = true;
 		    	String newDbRefreshDate = "";
-		    	Debugger.println(name + ": START", 3);
+		    	if (!abort){
+		    		Debugger.println(name + ": START", 3);
+		    	}else{
+		    		Debugger.println(name + ": CANCELED before start", 3);
+		    	}
 		    	while (!abort){
 		    		workerStatus = 2;
 			    	long tic = Debugger.tic();
@@ -339,6 +347,7 @@ public class OpenLigaWorker implements WorkerInterface {
 	//----------------- API -------------------
 	
 	public static final String BUNDESLIGA = "bl1";
+	public static final String BUNDESLIGA_SEASON = "2019";		//TODO: update automatically after season?
 	public static final String BUNDESLIGA_2 = "bl2";
 	public static final String DFB_POKAL = "DFB";
 	public static final String PRIMERA_DIVISION = "PD";

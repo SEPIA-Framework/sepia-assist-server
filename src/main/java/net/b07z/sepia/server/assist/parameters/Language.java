@@ -1,5 +1,7 @@
 package net.b07z.sepia.server.assist.parameters;
 
+import java.util.Locale;
+
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
@@ -13,44 +15,88 @@ import net.b07z.sepia.server.core.tools.JSON;
 public class Language implements ParameterHandler{
 
 	//-----data-----
-	public static final String languageClasses_de = 
-			"(deutsch|englisch|britisch|irisch|italienisch|chinesisch|griechisch|portugiesisch|spanisch|tuerkisch|indisch|thai|thailaendisch|franzoesisch|"
-			+ "russisch|vietnamesisch|afrikanisch|hollaendisch|niederlaendisch|belgisch|daenisch|polnisch|kroatisch|"
-			+ "japanisch|mongolisch|mexikanisch)(e|es|)";
-	public static final String languageClasses_en = 
-			"(german|english|brtish|irish|italian|chinese|greek|portuguese|spanish|turkish|indian|thai|french|"
-			+ "russian|vietnamese|african|dutch|belgian|danish|polish|croatian|"
-			+ "japanese|mongolian|mexican)";
+	public static final String languageClasses_de =	"("
+				+ "oesterreichisch|"
+				+ "schweizer|"
+				+ "deutsch|"
+				+ "britisch|"
+				+ "amerikanisch|"
+				+ "irisch|"
+				+ "schottisch|"
+				+ "australisch|"
+				+ "englisch|"
+				+ "italienisch|"
+				+ "chinesisch|"
+				+ "griechisch|"
+				+ "brasilianisch|"
+				+ "portugiesisch|"
+				+ "mexikanisch|"
+				+ "spanisch|"
+				+ "tuerkisch|"
+				+ "indisch|"
+				+ "thai|"
+				+ "thailaendisch|"
+				+ "kanadisch|"
+				+ "franzoesisch|"
+				+ "russisch|"
+				+ "vietnamesisch|"
+				+ "afrikanisch|"
+				+ "hollaendisch|niederlaendisch|"
+				+ "belgisch|"
+				+ "daenisch|"
+				+ "schwedisch|"
+				+ "polnisch|"
+				+ "kroatisch|"
+				+ "japanisch|"
+				+ "koreanisch|"
+				+ "mongolisch"
+			+ ")(e|es|)";
+	public static final String languageClasses_en =	"("
+				+ "austrian|"
+				+ "swiss|" 		//TODO: could be French swiss etc. ... the order here might matter
+				+ "german|"
+				+ "british|"
+				+ "american|"
+				+ "irish|"
+				+ "scottish|scotch|"
+				+ "australian|"
+				+ "english|"
+				+ "italian|"
+				+ "chinese|"
+				+ "greek|"
+				+ "brasilian|"
+				+ "portuguese|"
+				+ "mexican|"
+				+ "spanish|"
+				+ "turkish|"
+				+ "indian|"
+				+ "thai|"
+				+ "canadian|"
+				+ "french|"
+				+ "russian|"
+				+ "vietnamese|"
+				+ "african|"
+				+ "belgian|"
+				+ "dutch|"
+				+ "danish|"
+				+ "swedish|"
+				+ "polish|"
+				+ "croatian|"
+				+ "japanese|"
+				+ "korean|"
+				+ "mongolian"
+			+ ")";
+	
 	/*
-	public static HashMap<String, String> colors_de = new HashMap<>();
-	public static HashMap<String, String> colors_en = new HashMap<>();
+	public static Map<String, String> languages_de = new HashMap<>();
+	public static Map<String, String> languages_en = new HashMap<>();
 	static {
-		colors_de.put("<blue>", "blau");
+		languages_de.put("<en>", "Englisch");
 				
-		colors_en.put("<blue>", "blue");
+		languages_en.put("<en>", "English");
 	}
 	*/
-	/**
-	 * Translate generalized news value (e.g. &ltscience&gt) to local name (e.g. Wissenschaft).
-	 * If generalized value is unknown returns empty string
-	 * @param newsValue - generalized value 
-	 * @param language - ISO language code
-	 */
-	public static String getLocal(String newsValue, String language){
-		String localName = "";
-		/*
-		if (language.equals(LANGUAGES.DE)){
-			localName = colors_de.get(colorValue);
-		}else if (language.equals(LANGUAGES.EN)){
-			localName = colors_en.get(colorValue);
-		}
-		if (localName == null){
-			Debugger.println("Color.java - getLocal() has no '" + language + "' version for '" + colorValue + "'", 3);
-			return "";
-		}
-		*/
-		return localName;
-	}
+	
 	//----------------
 	
 	User user;
@@ -116,15 +162,86 @@ public class Language implements ParameterHandler{
 
 	@Override
 	public String build(String input) {
-		//expects a color tag!
-		String commonValue = input.replaceAll("^<|>$", "").trim();
-		String localValue = getLocal(input, language);
+		//String commonValue = input.replaceAll("^<|>$", "").trim();
+				
+		//Find generalized value - language (ISO 639-1) + country (ISO 3166)
+		String iso639 = "";
+		String iso3166 = "";
+		String bcp47 = "";
+		String localName = "";
+		
+		if (NluTools.stringContains(input, "american|(amerikanisch)\\w*")) {
+			iso639 = "en";
+			iso3166 = "US";
+			
+		}else if (NluTools.stringContains(input, "english|british|(englisch|britisch)\\w*")) {
+			iso639 = "en";
+			iso3166 = "GB";
+		
+		}else if (NluTools.stringContains(input, "german|(deutsch)\\w*")) {
+			iso639 = "de";
+			iso3166 = "DE";
+			
+		}else if (NluTools.stringContains(input, "spanish|(spanisch)\\w*")) {
+			iso639 = "es";
+			iso3166 = "ES";
+			
+		}else if (NluTools.stringContains(input, "portuguese|(portugiesisch)\\w*")) {
+			iso639 = "pt";
+			iso3166 = "PT";
+		
+		}else if (NluTools.stringContains(input, "french|(franzoesisch)\\w*")) {
+			iso639 = "fr";
+			iso3166 = "FR";
+			
+		}else if (NluTools.stringContains(input, "turkish|(tuerkisch)\\w*")) {
+			iso639 = "tr";
+			iso3166 = "TR";
+			
+		}else if (NluTools.stringContains(input, "dutch|(hollaendisch|niederlaendisch)\\w*")) {
+			iso639 = "nl";
+			iso3166 = "NL";
+			
+		}else if (NluTools.stringContains(input, "italian|(italienisch)\\w*")) {
+			iso639 = "it";
+			iso3166 = "IT";
+			
+		}else if (NluTools.stringContains(input, "japanese|(japanisch)\\w*")) {
+			iso639 = "ja";
+			iso3166 = "JP";
+			
+		}else if (NluTools.stringContains(input, "russian|(russisch)\\w*")) {
+			iso639 = "ru";
+			iso3166 = "RU";
+			
+		}else if (NluTools.stringContains(input, "swedish|(schwedisch)\\w*")) {
+			iso639 = "sv";
+			iso3166 = "SE";
+			
+		}else if (NluTools.stringContains(input, "greek|(griechisch)\\w*")) {
+			iso639 = "el";
+			iso3166 = "GR";
+		}
+		
+		//TODO: add more
+		
+		//BCP47 and locale name
+		if (!iso639.isEmpty() && !iso3166.isEmpty()) {
+			bcp47 = iso639 + "-" + iso3166;
+			
+			if (this.language.equals(LANGUAGES.DE)){
+				localName = Locale.forLanguageTag(bcp47).getDisplayLanguage(Locale.GERMAN);
+			
+			}else if (this.language.equals(LANGUAGES.EN)){
+				localName = Locale.forLanguageTag(bcp47).getDisplayLanguage(Locale.ENGLISH);
+			}
+		}
 		
 		//build default result
 		JSONObject itemResultJSON = new JSONObject();
-			JSON.add(itemResultJSON, InterviewData.VALUE, commonValue);
-			JSON.add(itemResultJSON, InterviewData.VALUE_LOCAL, localValue);
-			JSON.add(itemResultJSON, InterviewData.GENERALIZED, "??");			//TODO: add abstract value, e.g. language code ISO-xy 		
+			JSON.add(itemResultJSON, InterviewData.VALUE, bcp47);
+			JSON.add(itemResultJSON, InterviewData.VALUE_LOCAL, localName);
+			JSON.add(itemResultJSON, InterviewData.FOUND, input); 		
 		
 		buildSuccess = true;
 		return itemResultJSON.toJSONString();

@@ -27,6 +27,20 @@ import net.b07z.sepia.server.core.tools.Debugger;
 public class RegexParameterSearch {
 	
 	/**
+	 * Check if input contains a special modifier like "i18n:de" and return it.
+	 * @param input - user input
+	 * @return modifier or null
+	 */
+	public static String find_input_modifier(String input){
+		input = input.toLowerCase().trim();
+		if (input.matches("(^|^\\\\)(i18n:\\w+)\\s.*")){
+			return input.split("\\s")[0].toLowerCase();
+		}else{
+			return null;
+		}
+	}
+	
+	/**
 	 * Check if input contains a special slash command like "saythis" and "linkshare" or a URL with "http(s)://.
 	 * @param input - user input
 	 * @return true/false

@@ -20,7 +20,8 @@ public class SmartDevice implements ParameterHandler{
 	//Parameter types
 	public static enum Types{
 		light,
-		heater;
+		heater,
+		device;
 	}
 	
 	//Parameter local type names
@@ -29,9 +30,11 @@ public class SmartDevice implements ParameterHandler{
 	static {
 		types_de.put("light", "das Licht");
 		types_de.put("heater", "die Heizung");
+		types_de.put("device", "das Gerät");
 		
 		types_en.put("light", "the light");
 		types_en.put("heater", "the heater");
+		types_en.put("device", "the device");
 	}
 	
 	/**
@@ -50,7 +53,7 @@ public class SmartDevice implements ParameterHandler{
 		}
 		if (localName == null){
 			Debugger.println(SmartDevice.class.getSimpleName() + " - getLocal() has no '" + language + "' version for '" + type + "'", 3);
-			return "";
+			return getLocal(Types.device.name(), language);		//fallback
 		}
 		return localName;
 	}
@@ -98,16 +101,33 @@ public class SmartDevice implements ParameterHandler{
 
 	@Override
 	public String extract(String input) {
-		String type = getType(input, language);
-		if (type.isEmpty()){
+		String device = getType(input, language);
+		if (device.isEmpty()){
+			//no known type so let's check some general constructions
+			if (language.matches(LANGUAGES.DE)){
+				String re = "(von (der |dem |des |meine(r|m) |)|vom |des |meine(r|s) )";
+				device = NluTools.stringFindFirst(input, "\\w*status " + re + "\\w+");
+				if (!device.isEmpty()){
+					device = device.replaceFirst(".*\\b" + re, "").trim();
+				}
+			}else{
+				String re = "(status|state) of (the |a |my |)";
+				device = NluTools.stringFindFirst(input, re + "\\w+");
+				if (!device.isEmpty()){
+					device = device.replaceFirst(".*\\b" + re, "").trim();
+				}
+			}
+		}
+		if (device.isEmpty()){
+			//Still empty
 			return "";
 		}else{
 			//we should take device names (tag/number..) into account, like "Lamp 1", "Light A" or "Desk-Lights" etc.
-			String deviceWithNumber = NluTools.stringFindFirst(input, type + " \\d+");
+			String deviceWithNumber = NluTools.stringFindFirst(input, device + " \\d+");
 			if (!deviceWithNumber.isEmpty()){
 				this.found = deviceWithNumber;
 			}else{
-				this.found = type;
+				this.found = device;
 			}
 			//System.out.println("found: " + this.found); 		//DEBUG
 			
@@ -116,16 +136,16 @@ public class SmartDevice implements ParameterHandler{
 		
 		//classify into types:
 		
-		if (NluTools.stringContains(type, "licht(er|es|)|lampe(n|)|beleuchtung|leuchte(n|)|helligkeit|"
+		if (NluTools.stringContains(device, "licht(er|es|)|lampe(n|)|beleuchtung|leuchte(n|)|helligkeit|"
 				+ "light(s|)|lighting|lamp(s|)|illumination|brightness")){
-			return "<" + Types.light.name() + ">";
+			return "<" + Types.light.name() + ">" + this.found;
 			
-		}else if (NluTools.stringContains(type, "heiz(er|ungen|ung|koerper|luefter|strahler)|thermostat(s|)|temperatur(regler|en|)|"
+		}else if (NluTools.stringContains(device, "heiz(er|ungen|ung|koerper|luefter|strahler)|thermostat(s|)|temperatur(regler|en|)|"
 				+ "heater(s|)|temperature(s|)")){
-			return "<" + Types.heater.name() + ">";
+			return "<" + Types.heater.name() + ">" + this.found;
 		
 		}else{
-			return "";
+			return "<" + Types.device.name() + ">" + this.found;
 		}
 	}
 	
@@ -152,9 +172,9 @@ public class SmartDevice implements ParameterHandler{
 	@Override
 	public String responseTweaker(String input){
 		if (language.equals(LANGUAGES.DE)){
-			return input.replaceAll(".*\\b(einen|einem|einer|eine|ein|der|die|das|den|ne|ner)\\b", "").trim();
+			return input.replaceAll(".*\\b(einen|einem|einer|eine|ein|der|die|das|den|dem|des|ne|ner|meine(r|s|m|))\\b", "").trim();
 		}else{
-			return input.replaceAll(".*\\b(a|the)\\b", "").trim();
+			return input.replaceAll(".*\\b(a|the|my)\\b", "").trim();
 		}
 	}
 
@@ -162,6 +182,17 @@ public class SmartDevice implements ParameterHandler{
 	public String build(String input) {
 		
 		//expects a type!
+		String deviceName = "";
+		if (NluTools.stringContains(input, "^<\\w+>")){
+			String[] typeAndName = input.split(">", 2);
+			if (typeAndName.length == 2){
+				deviceName = typeAndName[1];
+				input = typeAndName[0];
+			}else{
+				input = typeAndName[0];
+			}
+			input = input.replaceAll("^<|>$", "");
+		}
 		String commonValue = input.replaceAll("^<|>$", "").trim();
 		String localValue = getLocal(input, language);
 		
@@ -169,7 +200,7 @@ public class SmartDevice implements ParameterHandler{
 		JSONObject itemResultJSON = new JSONObject();
 			JSON.add(itemResultJSON, InterviewData.VALUE, commonValue);
 			JSON.add(itemResultJSON, InterviewData.VALUE_LOCAL, localValue);
-			//JSON.add(itemResultJSON, InterviewData.SMART_DEVICE_NAME, this.found); 	//not working because this.found is not set in build
+			JSON.add(itemResultJSON, InterviewData.FOUND, deviceName); 		//Note: we can't use this.found here because it is not set in build
 		
 		buildSuccess = true;
 		return itemResultJSON.toJSONString();

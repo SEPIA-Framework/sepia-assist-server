@@ -103,8 +103,8 @@ public class AbstractParameterSearch {
 				}
 				if (!result.isEmpty() && guess){
 					//clean up guessed item by removing all other items
-					//TODO: remove all other parameters
-					/*
+					//TODO: remove all other parameters (this has been removed from abstract handler)
+					/* example:
 					if (colorHandler != null) item = colorHandler.remove(item, colorHandler.getFound());
 					if (genHandler != null) item = genHandler.remove(item, genHandler.getFound());
 					if (sizeHandler != null) item = sizeHandler.remove(item, sizeHandler.getFound());

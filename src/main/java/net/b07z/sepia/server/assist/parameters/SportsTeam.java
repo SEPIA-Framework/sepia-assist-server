@@ -19,39 +19,127 @@ public class SportsTeam implements ParameterHandler{
 	
 	//cities that might be mentioned together with "played" etc.
 	public static final String sportCities_de = "("
-			+ "bremen|bremer|muenchen(er|)|hamburg(er|)|berlin(er|)|koeln(er|)|nuernberg(er|)|koelle|dortmund(er|)|gelsenkirchen(er|)|frankfurt(er|)|"
-			+ "leipzig(er|)|hoffenheim(er|)|leverkusen(er|)|freiburg(er|)|mainz(er|)|(moenchengladbach|gladbach)(er|)|"
-			+ "augsburg(er|)|wolfsburg(er|)|bochum(er|)|darmstadt|darmstaedter|ingolstadt|ingolstaedter|stuttgart(er|)|hannover(aner|)|duesseldorf(er|)|"
-			+ "essen kray(er|)|essen(er|)|kray(er|)|duisburg(er|)|"
+			+ "bremen|bremer|"
+			+ "muenchen(er|)|"
+			+ "hamburg(er|)|"
+			+ "berlin(er|)|"
+			+ "koeln(er|)|koelle|"
+			+ "nuernberg(er|)|"
+			+ "dortmund(er|)|"
+			+ "gelsenkirchen(er|)|"
+			+ "frankfurt(er|)|"
+			+ "leipzig(er|)|"
+			+ "hoffenheim(er|)|"
+			+ "leverkusen(er|)|"
+			+ "freiburg(er|)|"
+			+ "mainz(er|)|"
+			+ "(moenchengladbach|gladbach)(er|)|"
+			+ "augsburg(er|)|"
+			+ "wolfsburg(er|)|"
+			+ "bochum(er|)|"
+			+ "darmstadt|darmstaedter|"
+			+ "ingolstadt|ingolstaedter|"
+			+ "stuttgart(er|)|"
+			+ "hannover(aner|)|"
+			+ "duesseldorf(er|)|"
+			+ "paderborn(er|)|"
+			+ "essen kray(er|)|essen(er|)|kray(er|)|"
+			+ "duisburg(er|)|"
 			+ "istanbul|london|liverpool|manchester|leicester|barcelona|madrid"
 			+ ")";
 	public static final String sportCities_en = "("
-			+ "bremen|munich|hamburg|berlin|cologne|nu(e|)rnberg|dortmund|gelsenkirchen|frankfurt|"
-			+ "leipzig|hoffenheim|leverkusen|freiburg|mainz|(moenchengladbach|gladbach)|"
-			+ "augsburg|wolfsburg|bochum|darmstadt|darmstaedter|ingolstadt|ingolstaedter|stuttgart|hannover|duesseldorf|"
-			+ "essen kray|essen|kray|duisburg|"
+			+ "bremen|"
+			+ "munich|"
+			+ "hamburg|"
+			+ "berlin|"
+			+ "cologne|"
+			+ "nu(e|)rnberg|"
+			+ "dortmund|"
+			+ "gelsenkirchen|"
+			+ "frankfurt|"
+			+ "leipzig|"
+			+ "hoffenheim|"
+			+ "leverkusen|"
+			+ "freiburg|"
+			+ "mainz|"
+			+ "(moenchengladbach|gladbach)|"
+			+ "augsburg|"
+			+ "wolfsburg|"
+			+ "bochum|"
+			+ "darmstadt|darmstaedter|"
+			+ "ingolstadt|ingolstaedter|"
+			+ "stuttgart|"
+			+ "hannover|"
+			+ "duesseldorf|"
+			+ "paderborn|"
+			+ "essen kray|essen|kray|"
+			+ "duisburg|"
 			+ "istanbul|london|liverpool|manchester|leicester|barcelona|madrid"
 			+ ")";
 	
 	//teams 
 	public static final String soccerTeams_de = "("
-			+ "(sv |)werder( bremen|)|svw|(fc |)bayern( muenchen|)|fcb|hamburger sv|hsv|hertha( bsc|)( berlin|)|"
-			+ "(1\\. |1 |erster )fc koeln|(1\\. |1 |erster )fc nuernberg|borussia dortmund|bvb|(fc |)schalke( 04|)|eintracht frankfurt|rb leipzig|"
-			+ "tsg (1899 |)hoffenheim|bayer( 04|)( leverkusen|)|(sc |sport(-| )club |)freiburg|(1\\. |1 |erster )fsv mainz( 05|)|fsv|"
-			+ "borussia moenchengladbach|fc augsburg|vfl wolfsburg|vfl bochum|vfl|sv darmstadt( 09|)|fc ingolstadt( 09|)|"
-			+ "hannover 96|vfb stuttgart|fortuna duesseldorf|"
-			+ "(fc |)(st |)pauli|(fc |)kray|rot weiss essen|rwe|"
+			+ "(sv |)werder( bremen|)|svw|"
+			+ "(fc |)bayern( muenchen|)|fcb|"
+			+ "hamburger sv|hsv|"
+			+ "hertha( bsc|)( berlin|)|"
+			+ "(1\\. |1 |erster |)fc koeln|"
+			+ "(1\\. |1 |erster |)fc nuernberg|"
+			+ "borussia dortmund|bvb|"
+			+ "(fc |)schalke( 04|)|"
+			+ "eintracht frankfurt|"
+			+ "rb leipzig|"
+			+ "tsg (1899 |)hoffenheim|"
+			+ "bayer( 04|)( leverkusen|)|"
+			+ "(sc |sport(-| )club |)freiburg|"
+			+ "(1\\. |1 |erster |)fsv mainz( 05|)|fsv|"
+			+ "borussia moenchengladbach|"
+			+ "fc augsburg|"
+			+ "vfl wolfsburg|"
+			+ "vfl bochum|vfl|"
+			+ "sv darmstadt( 09|)|"
+			+ "fc ingolstadt( 09|)|"
+			+ "hannover 96|"
+			+ "vfb stuttgart|"
+			+ "fortuna duesseldorf|"
+			+ "(1\\. |1 |erster |)(fc |)union berlin|"
+			+ "sc paderborn( 07|)|"
+			+ "(fc |)(st |)pauli|"
+			+ "(fc |)kray|rot weiss essen|rwe|"
+			+ "msv duisburg|msv|"
 			+ "galatasaray|cimbom|cim bom|besiktas|fenerbahce|"
 			+ "fc liverpool|fc chelsea|manchester united|manu|manunited|manchester city|mancity|leicester city( fc|)|"
 			+ "fc barcelona|real madrid|atletico madrid"
 			+ ")";
 	public static final String soccerTeams_en = "("
-			+ "(sv |)werder( bremen|)|svw|(fc |)bayern( munich|)|fcb|hamburger sv|hsv|hertha( bsc|)( berlin|)|"
-			+ "(1\\. |1 )fc cologne|(1\\. |1 )fc nu(e|)rnberg|borussia dortmund|bvb|(fc |)schalke( 04|)|eintracht frankfurt|rb leipzig|"
-			+ "tsg (1899 |)hoffenheim|bayer( 04|)( leverkusen|)|(sc |sport(-| )club |)freiburg|(1\\. |1 )fsv mainz( 05|)|fsv|"
-			+ "borussia moenchengladbach|fc augsburg|vfl wolfsburg|vfl bochum|vfl|sv darmstadt( 09|)|fc ingolstadt( 09|)|"
-			+ "hannover 96|vfb stuttgart|fortuna duesseldorf|"
-			+ "(fc |)(st |st\\. |)pauli|(fc |)kray|rot weiss essen|rwe|msv duisburg|msv|"
+			+ "(sv |)werder( bremen|)|svw|"
+			+ "(fc |)bayern( munich|)|fcb|"
+			+ "hamburger sv|hsv|"
+			+ "hertha( bsc|)( berlin|)|"
+			+ "(1\\. |1 |)fc cologne|"
+			+ "(1\\. |1 |)fc nu(e|)rnberg|"
+			+ "borussia dortmund|bvb|"
+			+ "(fc |)schalke( 04|)|"
+			+ "eintracht frankfurt|"
+			+ "rb leipzig|"
+			+ "tsg (1899 |)hoffenheim|"
+			+ "bayer( 04|)( leverkusen|)|"
+			+ "(sc |sport(-| )club |)freiburg|"
+			+ "(1\\. |1 |)fsv mainz( 05|)|fsv|"
+			+ "borussia moenchengladbach|"
+			+ "fc augsburg|"
+			+ "vfl wolfsburg|"
+			+ "vfl bochum|vfl|"
+			+ "sv darmstadt( 09|)|"
+			+ "fc ingolstadt( 09|)|"
+			+ "hannover 96|"
+			+ "vfb stuttgart|"
+			+ "fortuna duesseldorf|"
+			+ "(1\\. |1 |)(fc |)union berlin|"
+			+ "sc paderborn( 07|)|"
+			+ "(fc |)(st |st\\. |)pauli|"
+			+ "(fc |)kray|rot weiss essen|rwe|"
+			+ "msv duisburg|msv|"
 			+ "galatasaray|cimbom|cim bom|besiktas|fenerbahce|"
 			+ "fc liverpool|fc chelsea|manchester united|manu|manunited|manchester city|mancity|leicester city( fc|)|"
 			+ "fc barcelona|real madrid|atletico madrid"
@@ -62,10 +150,10 @@ public class SportsTeam implements ParameterHandler{
 	public static HashMap<String, Long> soccerIDs_bundesliga = new HashMap<>();
 	public static HashMap<Long, String> shortNames = new HashMap<>();
 	static {
-		//TODO: requires konstant update (see https://www.openligadb.de/api/getmatchdata/bl1/2018/10)
-		soccerIDs_bundesliga.put("<sv_werder_bremen>", 	134l);			shortNames.put(134l, "SV Werder");
+		//TODO: requires constant update (see https://www.openligadb.de/api/getmatchdata/bl1/2018/10)
+		soccerIDs_bundesliga.put("<sv_werder_bremen>", 		134l);		shortNames.put(134l, "SV Werder");
 		soccerIDs_bundesliga.put("<fc_bayern_muenchen>", 	40l);		shortNames.put(40l, "FC Bayern");
-		soccerIDs_bundesliga.put("<hamburger_sv>", 		100l);			shortNames.put(100l, "HSV");
+		soccerIDs_bundesliga.put("<hamburger_sv>", 			100l);		shortNames.put(100l, "HSV");
 		soccerIDs_bundesliga.put("<hertha_bsc_berlin>", 	54l);		shortNames.put(54l, "Hertha");
 		soccerIDs_bundesliga.put("<1_fc_koeln>", 			65l);		shortNames.put(65l, "FC Köln");
 		soccerIDs_bundesliga.put("<borussia_dortmund>", 	7l);		shortNames.put(7l, "BVB");
@@ -75,16 +163,18 @@ public class SportsTeam implements ParameterHandler{
 		soccerIDs_bundesliga.put("<tsg_1899_hoffenheim>", 	123l);		shortNames.put(123l, "Hoffenheim");
 		soccerIDs_bundesliga.put("<bayer_04_leverkusen>", 	6l);		shortNames.put(6l, "Leverkusen");
 		soccerIDs_bundesliga.put("<sc_freiburg>", 			112l);		shortNames.put(112l, "Freiburg");
-		soccerIDs_bundesliga.put("<fsv_mainz_05>", 		81l);			shortNames.put(81l, "Mainz");
+		soccerIDs_bundesliga.put("<fsv_mainz_05>", 			81l);		shortNames.put(81l, "Mainz");
 		soccerIDs_bundesliga.put("<borussia_moenchengladbach>", 87l);	shortNames.put(87l, "Gladbach");
 		soccerIDs_bundesliga.put("<fc_augsburg>", 			95l);		shortNames.put(95l, "Augsburg");
 		soccerIDs_bundesliga.put("<vfl_wolfsburg>", 		131l);		shortNames.put(131l, "Wolfsburg");
 		soccerIDs_bundesliga.put("<sv_darmstadt_09>", 		118l);		shortNames.put(118l, "Darmstadt");
-		soccerIDs_bundesliga.put("<fc_ingolstadt_09>", 	171l);			shortNames.put(171l, "Ingolstadt");
-		soccerIDs_bundesliga.put("<hannover_96>", 	55l);				shortNames.put(55l, "Hannover");
-		soccerIDs_bundesliga.put("<vfb_stuttgart>", 	16l);			shortNames.put(16l, "Stuttgart");
-		soccerIDs_bundesliga.put("<1_fc_nuernberg>", 	79l);			shortNames.put(79l, "Nürnberg");
+		soccerIDs_bundesliga.put("<fc_ingolstadt_09>", 		171l);		shortNames.put(171l, "Ingolstadt");
+		soccerIDs_bundesliga.put("<hannover_96>", 			55l);		shortNames.put(55l, "Hannover");
+		soccerIDs_bundesliga.put("<vfb_stuttgart>", 		16l);		shortNames.put(16l, "Stuttgart");
+		soccerIDs_bundesliga.put("<1_fc_nuernberg>", 		79l);		shortNames.put(79l, "Nürnberg");
 		soccerIDs_bundesliga.put("<fortuna_duesseldorf>", 	185l);		shortNames.put(185l, "Düsseldorf");
+		soccerIDs_bundesliga.put("<sc_paderborn_07>", 		31l);		shortNames.put(31l, "Paderborn");
+		soccerIDs_bundesliga.put("<1_fc_union_berlin>", 	80l);		shortNames.put(80l, "Union");
 		
 		soccerIDs.putAll(soccerIDs_bundesliga);
 	}
@@ -207,10 +297,11 @@ public class SportsTeam implements ParameterHandler{
 		}else{
 			this.found = item;
 		}
+		//TODO: we should make this more efficient at some point ^^
 		if (NluTools.stringContains(item, "svw|werder|bremen|bremer")){				return "<sv_werder_bremen>";	}
 		else if (NluTools.stringContains(item, "bayern|muenchen(er|)|munich|fcb")){	return "<fc_bayern_muenchen>";	}
 		else if (NluTools.stringContains(item, "hamburg(er|)|hsv")){					return "<hamburger_sv>";		}
-		else if (NluTools.stringContains(item, "hertha|berlin(er|)")){					return "<hertha_bsc_berlin>";	}
+		else if (NluTools.stringContains(item, "hertha|(?<!(union) )berlin(er|)")){		return "<hertha_bsc_berlin>";	}
 		else if (NluTools.stringContains(item, "koeln(er|)|koelle")){					return "<1_fc_koeln>";			}
 		else if (NluTools.stringContains(item, "nuernberg(er|)")){					return "<1_fc_nuernberg>";			}
 		else if (NluTools.stringContains(item, "dortmund(er|)|bvb")){					return "<borussia_dortmund>";	}
@@ -230,9 +321,13 @@ public class SportsTeam implements ParameterHandler{
 		else if (NluTools.stringContains(item, "hannover(aner|)")){					return "<hannover_96>";		}
 		else if (NluTools.stringContains(item, "stuttgart(er|)")){						return "<vfb_stuttgart>";		}
 		else if (NluTools.stringContains(item, "fortuna|duesseldorf(er|)")){			return "<fortuna_duesseldorf>";		}
+		else if (NluTools.stringContains(item, "paderborn(er|)")){						return "<sc_paderborn_07>";		}
+		else if (NluTools.stringContains(item, "union|(?<!(hertha|bsc) )berlin(er|)")){		return "<1_fc_union_berlin>";		}
+		
 		else if (NluTools.stringContains(item, "kray(er|)")){							return "<fc_kray>";		}
 		else if (NluTools.stringContains(item, "essen(er|)|rwe")){						return "<rot_weiss_essen>";		}
 		else if (NluTools.stringContains(item, "duisburg(er|)|msv")){					return "<msv_duisburg>";		}
+		
 		else if (NluTools.stringContains(item, "galatasaray|cimbom|cim bom|istanbul")){return "<galatasaray_istanbul>";		}
 		else if (NluTools.stringContains(item, "besiktas")){							return "<besiktas_istanbul>";		}
 		else if (NluTools.stringContains(item, "fenerbahce")){							return "<fenerbahce_istanbul>";		}

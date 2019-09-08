@@ -19,7 +19,8 @@ public class Queues {
 	}
 	
 	public static void addSocketMessageToSend(SocketMessage message){
-		socketMessagesToSend.add(message);
+		//TODO: not yet fully implemented so we better deactivate it for now 
+		//socketMessagesToSend.add(message);
 	}
 	
 	public static void removeSocketMessageToSend(SocketMessage message){

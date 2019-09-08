@@ -2,6 +2,7 @@ package net.b07z.sepia.server.assist.interpreters;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.json.simple.JSONArray;
 
@@ -24,6 +25,24 @@ public interface InterpretationStep {
 	public NluResult call(NluInput input, Map<String, NluResult> cachedResults);
 	
 	/* --- Static implementations --- */
+	
+	/**
+	 * Check if there are input modifiers and apply them. 
+	 * Note: this will always return 'null' since it does not generate a result, it just modifies the input.
+	 */
+	public static NluResult applyInputModifiers(NluInput input){
+		String modifier = RegexParameterSearch.find_input_modifier(input.textRaw);
+		if (modifier != null){
+			//Language modifier?
+			if (modifier.matches("i18n:\\w+")){
+				String lang = modifier.split(":")[1];
+				input.textRaw = input.textRaw.trim().replaceFirst(Pattern.quote(modifier), "").trim();
+				input.text = input.text.trim().replaceFirst(Pattern.quote(modifier), "").trim();
+				input.language = lang;
+			}
+		}
+		return null;
+	}
 	
 	/**
 	 * Check if its a direct command or return null.

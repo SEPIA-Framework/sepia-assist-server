@@ -100,7 +100,7 @@ public class DB {
 		//create superuser
 		User user = createSuperuser(account_id);
 		//get info
-		int res_code = accounts.getInfos(user, Config.superuserApiMng, keys);
+		int res_code = accounts.getInfos(user, Config.superuserServiceAccMng, keys);
 		if (res_code == 0){
 			info = user.info;
 		}
@@ -115,7 +115,7 @@ public class DB {
 	public static Object getAccountObject(String account_id, String key) {
 		//create superuser
 		User user = createSuperuser(account_id);
-		return accounts.getInfoObject(user, Config.superuserApiMng, key);
+		return accounts.getInfoObject(user, Config.superuserServiceAccMng, key);
 	}
 	
 	//SET
@@ -128,7 +128,7 @@ public class DB {
 	public static int setAccountInfos(String account_id, JSONObject data) {
 		//create superuser
 		User user = createSuperuser(account_id);
-		return accounts.setInfos(user, Config.superuserApiMng, data);
+		return accounts.setInfos(user, Config.superuserServiceAccMng, data);
 	}
 	/**
 	 * Set account info of user id via "super" API-manager. Respects account access restrictions.
@@ -140,7 +140,7 @@ public class DB {
 	public static int setAccountInfoObject(String account_id, String key, Object object) {
 		//create superuser
 		User user = createSuperuser(account_id);
-		return accounts.setInfoObject(user, Config.superuserApiMng, key, object);
+		return accounts.setInfoObject(user, Config.superuserServiceAccMng, key, object);
 	}
 	
 	/**

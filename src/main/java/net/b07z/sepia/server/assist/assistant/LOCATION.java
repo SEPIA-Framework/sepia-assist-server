@@ -164,17 +164,21 @@ public class LOCATION {
 	 * @param language - language code
 	 */
 	public static JSONObject getInfoBySearch(String searchTerm, NluInput nluInput){
-		JSONObject jo = new JSONObject();
-		Map<String, Object> result = GeoCoding.getCoordinates(searchTerm, nluInput.language);
-		if (result.get(LAT) != null)	JSON.add(jo, LAT, result.get(LAT));
-		if (result.get(LNG) != null)	JSON.add(jo, LNG, result.get(LNG));
-		if (result.get(STREET_NBR) != null)	JSON.add(jo, STREET_NBR, result.get(STREET_NBR));
-		if (result.get(STREET) != null)		JSON.add(jo, STREET, result.get(STREET));
-		if (result.get(POSTAL_CODE) != null)JSON.add(jo, POSTAL_CODE, result.get(POSTAL_CODE));
-		if (result.get(CITY) != null)		JSON.add(jo, CITY, result.get(CITY));
-		if (result.get(STATE) != null)		JSON.add(jo, STATE, result.get(STATE));
-		if (result.get(COUNTRY) != null)	JSON.add(jo, COUNTRY, result.get(COUNTRY));
-		return jo;
+		if (GeoCoding.isSupported()){
+			JSONObject jo = new JSONObject();
+			Map<String, Object> result = GeoCoding.getCoordinates(searchTerm, nluInput.language);
+			if (result.get(LAT) != null)	JSON.add(jo, LAT, result.get(LAT));
+			if (result.get(LNG) != null)	JSON.add(jo, LNG, result.get(LNG));
+			if (result.get(STREET_NBR) != null)	JSON.add(jo, STREET_NBR, result.get(STREET_NBR));
+			if (result.get(STREET) != null)		JSON.add(jo, STREET, result.get(STREET));
+			if (result.get(POSTAL_CODE) != null)JSON.add(jo, POSTAL_CODE, result.get(POSTAL_CODE));
+			if (result.get(CITY) != null)		JSON.add(jo, CITY, result.get(CITY));
+			if (result.get(STATE) != null)		JSON.add(jo, STATE, result.get(STATE));
+			if (result.get(COUNTRY) != null)	JSON.add(jo, COUNTRY, result.get(COUNTRY));
+			return jo;
+		}else{
+			return null;
+		}
 	}
 	
 	/**

@@ -4,6 +4,8 @@ import static spark.Spark.*;
 
 import java.security.Policy;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.json.simple.JSONObject;
 
@@ -11,6 +13,7 @@ import net.b07z.sepia.server.assist.answers.DefaultReplies;
 import net.b07z.sepia.server.assist.endpoints.AccountEndpoint;
 import net.b07z.sepia.server.assist.endpoints.AssistEndpoint;
 import net.b07z.sepia.server.assist.endpoints.AuthEndpoint;
+import net.b07z.sepia.server.assist.endpoints.ConfigServer;
 import net.b07z.sepia.server.assist.endpoints.RemoteActionEndpoint;
 import net.b07z.sepia.server.assist.endpoints.SdkEndpoint;
 import net.b07z.sepia.server.assist.endpoints.TtsEndpoint;
@@ -23,6 +26,7 @@ import net.b07z.sepia.server.assist.tools.DateTimeConverters;
 import net.b07z.sepia.server.assist.users.Authenticator;
 import net.b07z.sepia.server.assist.users.ID;
 import net.b07z.sepia.server.assist.users.User;
+import net.b07z.sepia.server.assist.workers.ServiceBackgroundTaskManager;
 import net.b07z.sepia.server.assist.workers.Workers;
 import net.b07z.sepia.server.core.data.Role;
 import net.b07z.sepia.server.core.endpoints.CoreEndpoints;
@@ -51,6 +55,7 @@ public class Start {
 	//stuff
 	public static String startGMT = "";
 	public static String serverType = "";
+	public static String[] startUpArgs = null;
 	
 	public static final String LIVE_SERVER = "live";
 	public static final String TEST_SERVER = "test";
@@ -250,7 +255,7 @@ public class Start {
 																Config.SERVERNAME, Config.apiVersion, Config.localName, Config.localSecret));
 		post("/hello", (request, response) -> 				helloWorld(request, response));
 		post("/cluster", (request, response) ->				clusterData(request, response));
-		post("/config", (request, response) -> 				configServer(request, response));
+		post("/config", (request, response) -> 				ConfigServer.run(request, response));
 		
 		//Accounts and assistant
 		post("/user-management", (request, response) ->		UserManagementEndpoint.userManagementAPI(request, response));
@@ -298,6 +303,14 @@ public class Start {
 		//load settings
 		loadSettings(args);
 		
+		//test database(s)
+		try{
+			Config.testDatabases();
+		}catch (Exception e){
+			Debugger.printStackTrace(e, 3);
+			return;
+		}
+		
 		//load statics and workers and setup modules (loading stuff to memory etc.)
 		setupModules();
 		
@@ -315,6 +328,51 @@ public class Start {
 		
 		//SERVER END-POINTS
 		loadEndpoints();
+		
+		//remember arguments for restart
+		startUpArgs = args;
+	}
+	
+	/**
+	 * Stop server and wait for finish signal.
+	 */
+	public static void stopServer() {
+		Debugger.println("Stopping server ...", 3);
+		
+		//Stop running workers and service-background-tasks
+		Workers.stopWorkers();
+		ServiceBackgroundTaskManager.cancelAllScheduledTasks();
+		
+		//Disconnect websocket
+		if (Config.connectToWebSocket){
+			Clients.killSocketMessenger();
+		}
+		
+		//Stop server and wait
+		stop();
+		awaitStop();
+		Debugger.println("------ SERVER STOPPED ------", 3);
+	}
+	
+	/**
+	 * Soft-restart of server using a {@link TimerTask} and a certain delay.<br>
+	 * Note: You should probably not rely on this method as your only way of restarting the server, but use a hard reset from time to time.
+	 * It tries to clean up workers and clients properly when shutting down but will not reset all static variables!
+	 * @return true if restart was scheduled 
+	 */
+	public static boolean restartServer(long delayMs) {
+		if (startUpArgs == null){
+			return false;
+		}else{
+			new Timer().schedule(new TimerTask() {
+	            @Override
+	            public void run() {
+	            	stopServer();
+	                main(startUpArgs);
+	            }
+	        }, delayMs);
+			return true;
+		}
 	}
 	
 	/**
@@ -380,107 +438,12 @@ public class Start {
 			JSONObject msg = new JSONObject();
 			JSON.add(msg, "result", "success");
 			JSON.add(msg, "serverName", Config.SERVERNAME);
+			JSON.add(msg, "serverId", Config.localName);
 			JSON.add(msg, "assistantUserId", Config.assistantId);
 			JSON.add(msg, "assistantName", Config.assistantName);
 			return SparkJavaFw.returnResult(request, response, msg.toJSONString(), 200);
 		}else{
 			return SparkJavaFw.returnNoAccess(request, response);
-		}
-	}
-	
-	/**
-	 * ---CONFIG SERVER---<br>
-	 * End-point to remotely switch certain settings on run-time.
-	 */
-	public static String configServer(Request request, Response response){
-		//check request origin
-		if (!Config.allowGlobalDevRequests){
-			if (!SparkJavaFw.requestFromPrivateNetwork(request)){
-				JSONObject result = new JSONObject();
-				JSON.add(result, "result", "fail");
-				JSON.add(result, "error", "Not allowed to access service from outside the private network!");
-				return SparkJavaFw.returnResult(request, response, result.toJSONString(), 200);
-			}
-		}
-		//prepare parameters
-		RequestParameters params = new RequestGetOrFormParameters(request);		//TODO: because of form-post?
-		
-		//authenticate
-		Authenticator token = authenticate(params, request);
-		if (!token.authenticated()){
-			return SparkJavaFw.returnNoAccess(request, response, token.getErrorCode());
-		}else{
-			//create user
-			User user = new User(null, token);
-			
-			//check role
-			if (!user.hasRole(Role.superuser)){
-				Debugger.println("Unauthorized access attempt to server config! User: " + user.getUserID(), 3);
-				return SparkJavaFw.returnNoAccess(request, response);
-			}
-			
-			//check actions
-			
-			//-answers
-			String toggleAnswerModule = params.getString("answers");
-			if (toggleAnswerModule != null && toggleAnswerModule.equals("toggle")){
-				String newConfigEntryValue = Config.toggleAnswerModule();
-				Config.replaceSettings(Config.configFile, "module_answers", newConfigEntryValue);
-				Debugger.println("Config - answers module changed by user: " + user.getUserID(), 3);
-			}
-			//-commands
-			String toggleSentencesDB = params.getString("useSentencesDB");
-			if (toggleSentencesDB != null && toggleSentencesDB.equals("toggle")){
-				if (Config.useSentencesDB){
-					Config.useSentencesDB = false;
-				}else{
-					Config.useSentencesDB = true;
-				}
-				Config.replaceSettings(Config.configFile, "enable_custom_commands", Boolean.toString(Config.useSentencesDB));
-				Debugger.println("Config - loading of DB commands was changed by user: " + user.getUserID(), 3);
-			}
-			//-email bcc
-			String setEmailBCC = params.getString("setEmailBCC");
-			if (setEmailBCC != null && setEmailBCC.equals("remove")){
-				Config.emailBCC = "";
-			}
-			//-sdk
-			String toggleSdk = params.getString("sdk");
-			if (toggleSdk != null && toggleSdk.equals("toggle")){
-				if (Config.enableSDK){
-					Config.enableSDK = false;
-				}else{
-					Config.enableSDK = true;
-				}
-				Config.replaceSettings(Config.configFile, "enable_sdk", Boolean.toString(Config.enableSDK));
-				Debugger.println("Config - sdk status changed by user: " + user.getUserID(), 3);
-			}
-			//-database
-			String reloadDB = params.getString("reloadDB");
-			String dbReloadMsg = "no-update"; 
-			if (reloadDB != null && !reloadDB.isEmpty()){
-				String[] dbCmd = reloadDB.split("-");
-				if (dbCmd.length == 2){
-					if (dbCmd[0].equals("es")){
-						if (!dbCmd[1].isEmpty()){
-							try{
-								Setup.writeElasticsearchMapping(dbCmd[1]);
-								dbReloadMsg = "reloaded:" + reloadDB;
-							}catch(Exception e){
-								dbReloadMsg = "reload-error:" + reloadDB;
-							}
-						}
-					}
-				}
-			}
-			
-			JSONObject msg = new JSONObject();
-			JSON.add(msg, "answerModule", Config.answerModule);
-			JSON.add(msg, "useSentencesDB", Config.useSentencesDB);
-			JSON.add(msg, "emailBCC", Config.emailBCC);
-			JSON.add(msg, "sdk", Config.enableSDK);
-			JSON.add(msg, "dbUpdate", dbReloadMsg);
-			return SparkJavaFw.returnResult(request, response, msg.toJSONString(), 200);
 		}
 	}
 	
@@ -530,15 +493,15 @@ public class Start {
 		}
 	}
 	public static Authenticator authenticate(RequestParameters params, Request metaInfo){
-		String key = params.getString("KEY");
+		String key = params.getString(AuthEndpoint.InputParameters.KEY.name());
 		if (key == null || key.isEmpty()){
-			String guuid = params.getString("GUUID");
-			String pwd = params.getString("PWD");
+			String guuid = params.getString(AuthEndpoint.InputParameters.GUUID.name());
+			String pwd = params.getString(AuthEndpoint.InputParameters.PWD.name());
 			if (guuid != null && pwd != null && !guuid.isEmpty() && !pwd.isEmpty()){
 				key = guuid + ";" + Security.hashClientPassword(pwd);
 			} 
 		}
-		String client_info = params.getString("client");
+		String client_info = params.getString(AuthEndpoint.InputParameters.client.name());
 		if (client_info == null || client_info.isEmpty()){
 			client_info = Config.defaultClientInfo;
 		}

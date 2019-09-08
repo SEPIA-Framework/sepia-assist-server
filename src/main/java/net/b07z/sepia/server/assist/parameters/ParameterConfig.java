@@ -49,6 +49,7 @@ public class ParameterConfig {
 		handlerToParameter.put(PARAMETERS.CLOCK, DateClock.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.ALARM_NAME, AlarmName.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.ALARM_TYPE, AlarmType.class.getCanonicalName());
+		handlerToParameter.put(PARAMETERS.LANGUAGE, Language.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.LOCATION_START, LocationStart.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.LOCATION_END, LocationEnd.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.LOCATION_WAYPOINT, LocationWaypoint.class.getCanonicalName());

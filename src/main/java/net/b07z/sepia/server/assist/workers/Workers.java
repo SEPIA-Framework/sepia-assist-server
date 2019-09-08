@@ -44,7 +44,7 @@ public class Workers {
 		workers.put(rssWorker.getName(), rssWorker);
 		
 		//openLiga - German soccer: Bundesliga
-		openLigaWorkerBundesliga = new OpenLigaWorker(OpenLigaWorker.BUNDESLIGA, "2018"); 	//TODO: update automatically after season?
+		openLigaWorkerBundesliga = new OpenLigaWorker(OpenLigaWorker.BUNDESLIGA, OpenLigaWorker.BUNDESLIGA_SEASON);
 		workers.put(openLigaWorkerBundesliga.getName(), openLigaWorkerBundesliga);
 		
 		//Backups
@@ -68,6 +68,23 @@ public class Workers {
 			}
 		}
 		Debugger.println("Active workers: " + activeWorkers, 3);
+	}
+	
+	/**
+	 * Try to stop workers that have been started with last setup.
+	 */
+	public static void stopWorkers(){
+		for (String workerName : Config.backgroundWorkers){
+			WorkerInterface worker = workers.get(workerName.trim());
+			if (worker != null){
+				Debugger.println("Stopping worker: " + workerName, 3);
+				if (worker.kill()){
+					Debugger.println("Success: " + workerName + " stopped", 3);
+				}else{
+					Debugger.println("Fail: " + workerName + " could not be stopped in time.", 1);
+				}
+			}
+		}
 	}
 	
 	/**

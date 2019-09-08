@@ -130,7 +130,7 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 		//smart device control
 		if (NluTools.stringContains(text, "light(s|)|lighting|lamp(s|)|illumination|brightness|"
 				+ "heater(s|)|temperature(s|)|thermostat(s|)|"
-				+ "smart( |)home control"
+				+ "(smart( |)home|device|sensor) (control|stat(us|e))"
 			)){
 			possibleCMDs.add(CMD.SMARTDEVICE);
 			possibleScore.add(1);	index++;
@@ -348,10 +348,10 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 			possibleParameters.add(pv);
 		}
 		
-		//timer
+		//timer - reminder
 		if (NluTools.stringContains(text, "(\\w+(-)|)timer(s|)|(\\w+(-)|)counter(s|)|(\\w+(-)|)countdown(s|)|count down|stop watch(es|)|(\\w+(-)|)stopwatch(es|)|"
 								+ "(\\w+(-)|)alarm(s|)|wake me|out of bed|get up at|"
-								+ "(\\w+(-)|)reminder(s|)|remind (me|us)|"
+								+ "(\\w+(-)|)reminder(s|)|remind (me|us)|remember|"
 								+ "(\\w+(-)|)appointment(s|)|calendar(s|)")){
 			possibleCMDs.add(CMD.TIMER);
 			possibleScore.add(1);	index++;

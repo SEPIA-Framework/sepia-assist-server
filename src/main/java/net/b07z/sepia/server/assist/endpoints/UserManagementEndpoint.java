@@ -10,15 +10,18 @@ import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.Start;
 import net.b07z.sepia.server.assist.users.ACCOUNT;
 import net.b07z.sepia.server.assist.users.Authenticator;
+import net.b07z.sepia.server.assist.users.ID;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.data.Role;
 import net.b07z.sepia.server.core.server.RequestParameters;
 import net.b07z.sepia.server.core.server.RequestPostParameters;
 import net.b07z.sepia.server.core.server.SparkJavaFw;
+import net.b07z.sepia.server.core.tools.ClassBuilder;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 import net.b07z.sepia.server.core.tools.Tools;
+import net.b07z.sepia.server.core.users.AuthenticationInterface;
 import spark.Request;
 import spark.Response;
 
@@ -36,6 +39,8 @@ public class UserManagementEndpoint {
 	 * Not to be confused with service modules (I agree the naming was a bad choice here ;-)).
 	 */
 	public static String userManagementAPI(Request request, Response response){
+		long tic = System.currentTimeMillis();
+		
 		//check request origin
 		if (!Config.allowGlobalDevRequests){
 			if (!SparkJavaFw.requestFromPrivateNetwork(request)){
@@ -70,7 +75,7 @@ public class UserManagementEndpoint {
 				
 				//check role
 				if (!user.hasRole(Role.superuser) && !user.hasRole(Role.inviter)){
-					Debugger.println("Access denied to service whitelist! User: " + user.getUserID() + " is missing role.", 3);
+					Debugger.println("Access denied to service 'whitelist'! User: " + user.getUserID() + " is missing role.", 3);
 					return SparkJavaFw.returnNoAccess(request, response);
 				}
 				//add user to list
@@ -102,7 +107,7 @@ public class UserManagementEndpoint {
 				
 				//check role
 				if (!user.hasRole(Role.superuser) && !user.hasRole(Role.chiefdev)){
-					Debugger.println("Access denied to service roles! User: " + user.getUserID() + " is missing role.", 3);
+					Debugger.println("Access denied to service 'roles'! User: " + user.getUserID() + " is missing role.", 3);
 					return SparkJavaFw.returnNoAccess(request, response);
 				}
 				
@@ -189,7 +194,7 @@ public class UserManagementEndpoint {
 				
 				//check role
 				if (!user.hasRole(Role.superuser)){
-					Debugger.println("Access denied to service roles! User: " + user.getUserID() + " is missing role.", 3);
+					Debugger.println("Access denied to service 'users'! User: " + user.getUserID() + " is missing role.", 3);
 					return SparkJavaFw.returnNoAccess(request, response);
 				}
 				
@@ -226,6 +231,53 @@ public class UserManagementEndpoint {
 						Debugger.println("userManagement - create - " + e.getMessage(), 1);
 						Debugger.printStackTrace(e, 3);
 						return SparkJavaFw.returnResult(request, response, msg, 200);
+					}
+				
+				//delete - Note: this action basically offers the same function as 'authentication' endpoint with action "deleteUser"
+				}else if (action.equals("delete")){
+					//TODO: Delete ALL user data (commands, services, answers, etc.) not just the account !!
+					
+					String userIdToBeDeleted = JSON.getString(data, "userId");
+					if (Is.notNullOrEmpty(userIdToBeDeleted)){
+						userIdToBeDeleted = ID.clean(userIdToBeDeleted);
+					}else{
+						return SparkJavaFw.returnResult(request, response, JSON.make(
+								"result", "fail", 
+								"error", "parameters are missing or invalid! (userId)"
+						).toJSONString(), 200);
+					}
+					//check for core accounts
+					if (userIdToBeDeleted.equals(Config.superuserId) || userIdToBeDeleted.equals(Config.assistantId)){
+						return SparkJavaFw.returnResult(request, response, JSON.make(
+								"result", "fail", 
+								"error", "this core-account cannot be deleted! Note: You can modify core-accounts with the setup cmd-line tool."
+						).toJSONString(), 200);
+					}
+					
+					//request info - copy of above mentioned auth. endpoint ...
+					JSONObject info = JSON.make("userid", userIdToBeDeleted); 	//NOTE: 'userid' is written with lower-case 'i' now (legacy stuff... O_o)
+					AuthenticationInterface auth = (AuthenticationInterface) ClassBuilder.construct(Config.authenticationModule);
+					auth.setRequestInfo(request);
+					boolean success = auth.deleteUser(info);
+					
+					//check result
+					if (!success){
+						//fail
+						int code = auth.getErrorCode();
+						Debugger.println("userManagement - delete - " + "account '" + userIdToBeDeleted + "' could not be deleted. Code: " + code, 1);
+						return SparkJavaFw.returnResult(request, response, JSON.make(
+								"result", "fail", 
+								"error", "account '" + userIdToBeDeleted + "' could not be deleted. Please check error code!",
+								"code", code
+						).toJSONString(), 200);
+					}else{
+						//success
+						Debugger.println("userManagement - delete - " + "account '" + userIdToBeDeleted + "' has been deleted.", 3);
+						return SparkJavaFw.returnResult(request, response, JSON.make(
+								"result", "success", 
+								"message", "account '" + userIdToBeDeleted + "' has been deleted.",
+								"duration_ms", Debugger.toc(tic)
+						).toJSONString(), 200);
 					}
 				}
 			}

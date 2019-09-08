@@ -27,14 +27,14 @@ public interface AccountInterface {
 	
 	/**
 	 * Set a bunch of user values in account database at the same time to reduce traffic. 
-	 * If a key is not found the value remains null. Keys and objects must have the same array size otherwise errorCode 4 is thrown.
+	 * The data JSON object will be checked key-by-key for authorized access and the database object will then be set/updated.
 	 * The database implementation has to check if the user is authenticated correctly (and not just a user created with an ID and access level)!
 	 * 
 	 * @param user - the user we are looking for
 	 * @param api - ServiceAccessManager used to get API specific, allowed database access
 	 * @param data - JSON data with (partial or full) document to set/update
 	 * 
-	 * @return error code (0 - no error, 1 - can't reach database, 2 - access denied, 3 - no account found, 4 - other error (e.g. wrong key combination))
+	 * @return error code (0 - no error, 1 - can't reach database, 2 - access denied, 3 - no account found, 4 - other error)
 	 */
 	public int setInfos(User user, ServiceAccessManager api, JSONObject data);
 	

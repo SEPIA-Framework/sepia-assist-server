@@ -19,6 +19,7 @@ import net.b07z.sepia.server.assist.services.ServiceInterface;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Is;
+import net.b07z.sepia.server.core.tools.JSON;
 
 /**
  * Simple (at least from the idea) yet effective keyword analyzer to interpret user input.<br>
@@ -243,6 +244,7 @@ public class NluKeywordAnalyzer implements NluInterface {
 			Map<String, String> pv = new HashMap<String, String>();
 				pv.put(PARAMETERS.URL, link);
 				pv.put(OpenCustomLink.TITLE, title);
+				pv.put(PARAMETERS.DATA, JSON.make("source", "linkshare").toJSONString());
 			possibleParameters.add(pv);
 		
 		//Link open

@@ -4,7 +4,9 @@
 			"ego_fm_pure", 
 			"1live_diggi", 
 			"you_fm_just_music",
-			"laut_fm_charts"
+			"m1_fm_clubmix",
+			"deluxe_lounge",
+			"m1_fm_charts"
 		],
 		"rock": [ 
 			"antenne_bayern_classic_rock",
@@ -25,15 +27,20 @@
 			"ego_fm_pure"
 		]
 	},
+	"deprecations": {
+		"antenne_bayern_alpensound": "ANTENNE BAYERN Alpensound",
+		"laut_fm_charts": "laut.fm MyHit Charts",
+		"laut_fm_musikhitmix": "laut.fm Musikhitmix"
+	},
     "playlists": {
         "WDR 5": "http://www1.wdr.de/radio/wdr5/musik/titelsuche-wdrfuenf-104.html",
         "WDR 3": "http://www1.wdr.de/radio/wdr3/titelsuche-wdrdrei-104.html",
         "WDR 4": "http://www1.wdr.de/radio/wdr4/titelsuche-wdrvier-102.html",
-        "egoFM Pure": "http://www.egofm.de/musik/play-history-raw",
+        "egoFM": "https://www.egofm.de/radio/playlist?stream=egofm",
+		"egoFM Pure": "https://www.egofm.de/radio/playlist?stream=egopure",
         "YOU FM": "http://www.you-fm.de/playlist/youfm.html",
         "ANTENNE BAYERN": "http://www.antenne.de/musik/song-suche/?station=antenne",
         "1LIVE": "http://www1.wdr.de/radio/1live/on-air/1live-playlist/index.html",
-        "egoFM": "http://www.egofm.de/musik/play-history",
         "WDR 2": "http://www1.wdr.de/radio/wdr2/titelsuche-wdrzwei-124.html",
         "DELUXE LOUNGE RADIO": "http://onlineradiobox.com/de/radiodeluxelounge/playlist/"
     },
@@ -67,16 +74,8 @@
 			"streamURL": "http://streaming.hotmixradio.fm/hotmixradio-metal-128.mp3",
 			"name": "Hotmixradio METAL"
 		}],
-		"laut_fm_musikhitmix": [{
-			"streamURL": "https://musikhitmix.stream.laut.fm/musikhitmix",
-			"name": "laut.fm Musikhitmix"
-		}],
-		"laut_fm_charts": [{
-			"streamURL": "https://myhitchartsradio.stream.laut.fm/myhitchartsradio",
-			"name": "laut.fm MyHit Charts"
-		}],
         "ego_fm": [{
-            "streamURL": "http://egofm-live.cast.addradio.de/egofm/live/mp3/high/stream.mp3",
+            "streamURL": "https://egofm-live.cast.addradio.de/egofm/live/mp3/high/stream.mp3",
             "name": "egoFM"
         }, 
 			"ego_fm_pure", 
@@ -87,42 +86,54 @@
 			"ego_fm_snow"
 		],
 		"ego_fm_pure": [{
-            "streamURL": "http://egofm-live.cast.addradio.de/egofm/pure/mp3/high/stream.mp3",
+            "streamURL": "https://egofm-live.cast.addradio.de/egofm/pure/mp3/high/stream.mp3",
             "name": "egoFM Pure"
         }],
 		"ego_fm_riff": [{
-            "streamURL": "http://egofm-live.cast.addradio.de/egofm/riff/mp3/high/stream.mp3",
+            "streamURL": "https://egofm-live.cast.addradio.de/egofm/riff/mp3/high/stream.mp3",
             "name": "egoFM Riff"
         }],
 		"ego_fm_flash": [{
-            "streamURL": "http://egofm-live.cast.addradio.de/egofm/flash/mp3/high/stream.mp3",
+            "streamURL": "https://egofm-live.cast.addradio.de/egofm/flash/mp3/high/stream.mp3",
             "name": "egoFM Flash"
         }],
 		"ego_fm_soul": [{
-            "streamURL": "http://egofm-live.cast.addradio.de/egofm/soul/mp3/high/stream.mp3",
+            "streamURL": "https://egofm-live.cast.addradio.de/egofm/soul/mp3/high/stream.mp3",
             "name": "egoFM Soul"
         }],
 		"ego_fm_rap": [{
-            "streamURL": "http://egofm-live.cast.addradio.de/egofm/rap/mp3/high/stream.mp3",
+            "streamURL": "https://egofm-live.cast.addradio.de/egofm/rap/mp3/high/stream.mp3",
             "name": "egoFM Rap"
         }],
 		"ego_fm_snow": [{
-            "streamURL": "http://egofm-live.cast.addradio.de/egofm/snow/mp3/high/stream.mp3",
+            "streamURL": "https://egofm-live.cast.addradio.de/egofm/snow/mp3/high/stream.mp3",
             "name": "egoFM Snow"
+        }],
+		"deluxe_lounge": [{
+            "streamURL": "https://audiostreams.deluxemusic.tv/lounge/mp3-192/radio_de",
+            "name": "DELUXE LOUNGE RADIO"
         }],
 		"kexp": [{
 			"streamURL": "https://kexp-mp3-128.streamguys1.com/kexp128.mp3",
 			"name": "KEXP"
+		}],
+		"m1_fm_charts": [{
+			"streamURL": "http://tuner.m1.fm/charts.mp3",
+			"name": "M1.FM Charts"
+		}],
+		"m1_fm_hits": [{
+			"streamURL": "http://tuner.m1.fm/hits.mp3",
+			"name": "M1.FM Hits"
+		}],
+		"m1_fm_clubmix": [{
+			"streamURL": "http://tuner.m1.fm/clubmix.mp3",
+			"name": "M1.FM Clubmix"
 		}],
         "ndr3": null,
         "ndr2": null,
         "ndr1": null,
         "charivari_party_hitmix": null,
         "deutschlandfunk": null,
-        "deluxe_lounge": [{
-            "streamURL": "http://46.245.183.120:8000/0010",
-            "name": "DELUXE LOUNGE RADIO"
-        }],
         "rpr1": null,
         "bayern2": null,
         "bayern1": null,
@@ -169,7 +180,7 @@
         }],
         "sunshine_live": null,
         "antenne_bayern": [{
-            "streamURL": "http://mp3channels.webradio.antenne.de:80/antenne",
+            "streamURL": "https://mp3channels.webradio.antenne.de/antenne",
             "name": "ANTENNE BAYERN"
         }, 
 			"antenne_bayern_fresh", 
@@ -180,68 +191,63 @@
 			"antenne_bayern_classic_rock", 
 			"antenne_bayern_80er",
 			"antenne_bayern_90er", 
-			"antenne_bayern_lovesongs", 
-			"antenne_bayern_alpensound"
+			"antenne_bayern_lovesongs"
 		],
 		"antenne_bayern_fresh": [{
-            "streamURL": "http://mp3channels.webradio.antenne.de/fresh",
+            "streamURL": "https://mp3channels.webradio.antenne.de/fresh",
             "name": "ANTENNE BAYERN Fresh"
         }],
 		"rock_antenne": [{
-            "streamURL": "http://mp3channels.webradio.rockantenne.de/rockantenne",
+            "streamURL": "https://mp3channels.webradio.rockantenne.de/rockantenne",
             "name": "ROCK ANTENNE"
         }],
 		"rock_antenne_heavy_metal": [{
-			"streamURL": "http://mp3channels.webradio.rockantenne.de/heavy-metal",
+			"streamURL": "https://mp3channels.webradio.rockantenne.de/heavy-metal",
 			"name": "ROCK ANTENNE Heavy Metal"
 		}],
 		"antenne_bayern_workout_hits": [{
-            "streamURL": "http://mp3channels.webradio.antenne.de/workout-hits",
+            "streamURL": "https://mp3channels.webradio.antenne.de/workout-hits",
             "name": "ANTENNE BAYERN Workout Hits"
         }],
 		"antenne_bayern_black_beats": [{
-            "streamURL": "http://mp3channels.webradio.antenne.de/black-beatz",
+            "streamURL": "https://mp3channels.webradio.antenne.de/black-beatz",
             "name": "ANTENNE BAYERN Black Beatz"
         }],
 		"antenne_bayern_chillout": [{
-            "streamURL": "http://mp3channels.webradio.antenne.de/chillout",
+            "streamURL": "https://mp3channels.webradio.antenne.de/chillout",
             "name": "ANTENNE BAYERN Chillout"
         }],
 		"antenne_bayern_classic_rock": [{
-            "streamURL": "http://mp3channels.webradio.antenne.de/classic-rock-live",
+            "streamURL": "https://mp3channels.webradio.antenne.de/classic-rock-live",
             "name": "ANTENNE BAYERN Classic Rock Live"
         }],
 		"antenne_bayern_80er": [{
-            "streamURL": "http://mp3channels.webradio.antenne.de/80er-kulthits",
+            "streamURL": "https://mp3channels.webradio.antenne.de/80er-kulthits",
             "name": "ANTENNE BAYERN 80er Kulthits"
         }],
 		"antenne_bayern_90er": [{
-            "streamURL": "http://mp3channels.webradio.antenne.de/90er-hits",
+            "streamURL": "https://mp3channels.webradio.antenne.de/90er-hits",
             "name": "ANTENNE BAYERN 90er Hits"
         }],
 		"antenne_bayern_lovesongs": [{
-            "streamURL": "http://mp3channels.webradio.antenne.de/lovesongs",
+            "streamURL": "https://mp3channels.webradio.antenne.de/lovesongs",
             "name": "ANTENNE BAYERN Lovesongs"
-        }],
-		"antenne_bayern_alpensound": [{
-            "streamURL": "http://mp3channels.webradio.antenne.de/alpensound",
-            "name": "ANTENNE BAYERN Alpensound"
         }],
         "hr3": null,
         "hr2": null,
         "you_fm": [{
-            "streamURL": "http://hr-youfm-live.cast.addradio.de/hr/youfm/live/mp3/128/stream.mp3",
+            "streamURL": "https://hr-youfm-live.cast.addradio.de/hr/youfm/live/mp3/128/stream.mp3",
             "name": "YOU FM"
         },
 			"you_fm_club",
 			"you_fm_just_music"
 		],
 		"you_fm_club": [{
-            "streamURL": "http://hr-youfm-club.cast.addradio.de/hr/youfm/club/mp3/128/stream.mp3",
+            "streamURL": "https://hr-youfm-club.cast.addradio.de/hr/youfm/club/mp3/128/stream.mp3",
             "name": "YOU FM Club"
         }],
 		"you_fm_just_music": [{
-            "streamURL": "http://hr-youfm-justmusic.cast.addradio.de/hr/youfm/justmusic/mp3/128/stream.mp3",
+            "streamURL": "https://hr-youfm-justmusic.cast.addradio.de/hr/youfm/justmusic/mp3/128/stream.mp3",
             "name": "YOU FM Just Music"
         }],
         "ffn": null,

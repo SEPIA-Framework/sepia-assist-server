@@ -155,7 +155,7 @@ public class Test_AuthAndAccount {
 				
 		//create user and API manager
 		User user = new User(null, authToken);
-		ServiceAccessManager apiMan = Config.superuserApiMng; 		//TODO: this is not really implemented yet
+		ServiceAccessManager apiMan = Config.superuserServiceAccMng; 		//TODO: this is not really implemented yet
 		
 		//get roles previously defined
 		System.out.println("\n" + user.userName.nick + " has roles: " + user.getUserRoles().toString());
@@ -203,7 +203,7 @@ public class Test_AuthAndAccount {
 		//--------- USER TESTS -----------
 		
 		System.out.println("\nTest user class:");
-		ServiceAccessManager apiManager = Config.superuserApiMng;
+		ServiceAccessManager apiManager = Config.superuserServiceAccMng;
 		
 		//create fresh user
 		authToken = getAuthToken(guuid, "", loginToken, client);

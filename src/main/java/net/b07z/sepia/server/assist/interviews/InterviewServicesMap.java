@@ -15,6 +15,7 @@ import net.b07z.sepia.server.assist.services.DictionaryTranslateBasic;
 import net.b07z.sepia.server.assist.services.DirectionsGoogleMaps;
 import net.b07z.sepia.server.assist.services.EventsWrapper;
 import net.b07z.sepia.server.assist.services.FunCountToThree;
+import net.b07z.sepia.server.assist.services.LanguageSwitcher;
 import net.b07z.sepia.server.assist.services.Wikipedia;
 import net.b07z.sepia.server.assist.services.Lists;
 import net.b07z.sepia.server.assist.services.LocationSearchBasic;
@@ -238,6 +239,10 @@ public class InterviewServicesMap {
 		ArrayList<String> platform_controls = new ArrayList<String>();
 		platform_controls.add(PlatformControls.class.getCanonicalName());
 			systemInterviewServicesMap.put(CMD.PLATFORM_CONTROLS, platform_controls);
+		//LANGUAGE SWITCH 
+		ArrayList<String> langSwitch = new ArrayList<String>();
+		langSwitch.add(LanguageSwitcher.class.getCanonicalName());
+			systemInterviewServicesMap.put(CMD.LANGUAGE_SWITCH, langSwitch);
 		//PARROT (REPEAT USER)
 		ArrayList<String> parrot = new ArrayList<String>();
 			parrot.add(RepeatMe.class.getCanonicalName());

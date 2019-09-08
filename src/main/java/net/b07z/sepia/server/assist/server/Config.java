@@ -29,6 +29,7 @@ import net.b07z.sepia.server.assist.interpreters.NormalizerLightDE;
 import net.b07z.sepia.server.assist.interpreters.NormalizerLightEN;
 import net.b07z.sepia.server.assist.interpreters.NormalizerLightTR;
 import net.b07z.sepia.server.assist.services.ServiceAccessManager;
+import net.b07z.sepia.server.assist.smarthome.OpenHAB;
 import net.b07z.sepia.server.assist.tools.RssFeedReader;
 import net.b07z.sepia.server.assist.tools.SpotifyApi;
 import net.b07z.sepia.server.assist.tts.TtsAcapelaWeb;
@@ -40,6 +41,7 @@ import net.b07z.sepia.server.assist.users.Authenticator;
 import net.b07z.sepia.server.assist.users.ID;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.assist.users.UserDataDefault;
+import net.b07z.sepia.server.core.assistant.CLIENTS;
 import net.b07z.sepia.server.core.server.ConfigDefaults;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
 import net.b07z.sepia.server.core.tools.Debugger;
@@ -54,7 +56,7 @@ import net.b07z.sepia.server.core.tools.Is;
  */
 public class Config {
 	public static final String SERVERNAME = "SEPIA-Assist-API"; 		//public server name
-	public static final String apiVersion = "v2.2.2";					//API version
+	public static final String apiVersion = "v2.3.0";					//API version
 	public static String privacyPolicyLink = "";						//Link to privacy policy
 	
 	//helper for dynamic class creation (e.g. from strings in config-file) - TODO: reduce dependencies further 
@@ -69,7 +71,7 @@ public class Config {
 	public static String dbSetupFolder = xtensionsFolder + "Database/";		//folder for database stuff
 	public static String webServerFolder = xtensionsFolder + "WebContent";	//folder for web-server
 	public static boolean hostFiles = true;									//use web-server?
-	public static String localName = "sepia-assist-server";					//**user defined local server name
+	public static String localName = "sepia-assist-server-1";				//**user defined local server name - should be unique inside cluster because it might be used as serverId
 	public static String localSecret = "123456";							//**user defined secret to validate local server
 	public static int serverPort = 20721;									//**server port
 	public static boolean enableCORS = true;								//enable CORS (set access-control headers)
@@ -87,6 +89,7 @@ public class Config {
 	public static boolean useSentencesDB = true;						//use sentences in the database to try to match user input
 	public static List<String> backgroundWorkers = new ArrayList<>(); 	//workers to activate on server-start
 	public static boolean cacheRssResults = true;						//cache results for RSS worker
+	public static boolean checkElasticsearchMappingsOnStart = true;		//test Elasticsearch mappings
 	
 	//General and assistant settings
 	public static String assistantName = "Sepia";				//**Name - this might become user-specific once ...
@@ -160,7 +163,7 @@ public class Config {
 	}
 	
 	//Default users and managers
-	public static ServiceAccessManager superuserApiMng = new ServiceAccessManager("API_BOSS"); 	//universal API manager for internal procedures
+	public static ServiceAccessManager superuserServiceAccMng = new ServiceAccessManager("API_BOSS"); 	//universal API manager for internal procedures
 	private static Authenticator superuserToken;
 	private static User superUser;
 	public static String superuserId = "uid1000";						//**for DB sentences check also Defaults.USER
@@ -171,6 +174,8 @@ public class Config {
 	public static String assistantId = "uid1001";						//**the assistant itself also has an account
 	public static String assistantEmail = "assistant@sepia.localhost";	//**pseudo-email to be blocked for assistant, cannot be created or used for password reset
 	public static String assistantPwd = "4be708b703c518d10a97e4db421f0f75b66f9ff8c0ae65b6c5c13684a01f804d";				//**
+	public static String assistantDeviceId = "serv1";
+	public static String assistantClientInfo = assistantDeviceId + "_" + CLIENTS.JAVA_APP + "_" + apiVersion;
 	
 	public static boolean validateUniversalToken(){
 		superuserToken = new Authenticator(superuserId, superuserPwd, ID.Type.uid, defaultClientInfo, null);
@@ -265,6 +270,8 @@ public class Config {
 	 * Prepare interpretation chain by adding the default modules in the proper order to 'nluInterpretationSteps' list.
 	 */
 	public static void setupNluSteps(){
+		//check for input modifiers
+		nluInterpretationSteps.add((input, cachedResults) -> InterpretationStep.applyInputModifiers(input));
 		//direct command
 		nluInterpretationSteps.add((input, cachedResults) -> InterpretationStep.getDirectCommand(input));
 		//response to previous input
@@ -313,7 +320,8 @@ public class Config {
 	public static String deutscheBahnOpenApi_key = "";
 	
 	//API URLs - loaded from config file
-	public static String openhab_host = "";
+	public static String smarthome_hub_host = "";
+	public static String smarthome_hub_name = "";
 	
 	//------Database loading and default interpreters------
 	
@@ -321,7 +329,18 @@ public class Config {
 	 * Setup the modules for database access.
 	 */
 	public static void setupDatabases(){
+		//refresh stuff
 		DB.refreshSettings();
+	}
+	/**
+	 * Test databases, e.g. Elasticsearch mappings etc.
+	 * @throws Exception
+	 */
+	public static void testDatabases() throws Exception{
+		//check Elasticsearch mappings
+		if (checkElasticsearchMappingsOnStart){
+			Setup.testAndUpdateElasticsearchMapping(true);
+		}
 	}
 	
 	//set answer loader - this is for common answers, API answers can also be loaded inside the API itself
@@ -449,6 +468,7 @@ public class Config {
 			ConfigElasticSearch.endpoint_custom = settings.getProperty("db_elastic_endpoint_custom", "");
 			ConfigElasticSearch.endpoint_eu1 = settings.getProperty("db_elastic_endpoint_eu1");
 			ConfigElasticSearch.endpoint_us1 = settings.getProperty("db_elastic_endpoint_us1");
+			checkElasticsearchMappingsOnStart = Boolean.valueOf(settings.getProperty("checkElasticsearchMappingsOnStart", "true"));
 			//chat
 			connectToWebSocket = Boolean.valueOf(settings.getProperty("connect_to_websocket"));
 			//workers
@@ -473,6 +493,10 @@ public class Config {
 			assistantId = settings.getProperty("assistant_id");
 			assistantEmail = settings.getProperty("assistant_email");
 			assistantPwd = settings.getProperty("assistant_pwd");
+			String assistDeviceId = settings.getProperty("assistant_device_id");
+			if (Is.notNullOrEmpty(assistDeviceId)){
+				assistantDeviceId = assistDeviceId;
+			}
 			String assistantAllowFollowUpsString = settings.getProperty("assistant_allow_follow_ups");
 			if (assistantAllowFollowUpsString != null && !assistantAllowFollowUpsString.isEmpty()){
 				assistantAllowFollowUps = Boolean.valueOf(assistantAllowFollowUpsString);
@@ -498,7 +522,15 @@ public class Config {
 			affilinet_key = settings.getProperty("affilinet_key");
 			deutscheBahnOpenApi_key = settings.getProperty("deutscheBahnOpenApi_key");
 			//API URLs
-			openhab_host = settings.getProperty("openhab_host");
+			smarthome_hub_host = settings.getProperty("smarthome_hub_host");
+			smarthome_hub_name = settings.getProperty("smarthome_hub_name");
+			if (Is.nullOrEmpty(smarthome_hub_host)){
+				//try legacy settings
+				smarthome_hub_host = settings.getProperty("openhab_host");
+				if (Is.notNullOrEmpty(smarthome_hub_host)){
+					smarthome_hub_name = OpenHAB.NAME;
+				}
+			}
 			
 			Debugger.println("loading settings from " + confFile + "... done." , 3);
 		}catch (Exception e){

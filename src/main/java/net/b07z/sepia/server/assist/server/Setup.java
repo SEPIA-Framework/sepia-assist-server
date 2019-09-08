@@ -270,26 +270,39 @@ public class Setup {
 	 * @throws Exception
 	 */
 	public static void writeElasticsearchMapping(String indexToMap) throws Exception{
+		writeElasticsearchMapping(indexToMap, false);
+	}
+	/**
+	 * Clean and rewrite Elasticsearch mapping.
+	 * @param indexToMap - index to map, mapping is loaded from folder set in config. If null all mappings are cleared and written again.
+	 * @param skipIndexClean - if you know for sure that this index is missing set this to true
+	 * @throws Exception
+	 */
+	public static void writeElasticsearchMapping(String indexToMap, boolean skipIndexClean) throws Exception{
 		Elasticsearch db = new Elasticsearch();
 		List<File> mappingFiles = FilesAndStreams.directoryToFileList(Config.dbSetupFolder + "ElasticsearchMappings/", null, false);
-		if (indexToMap != null && !indexToMap.isEmpty() && !indexToMap.equals("_all")){
-			//clean one index
-			int resCode = db.deleteAny(indexToMap);
-			if (resCode == 0){
-				Debugger.println("Elasticsearch: cleaning index '" + indexToMap + "'", 3);
-				Thread.sleep(1500);
+		boolean writeSingleIndex = (indexToMap != null && !indexToMap.isEmpty() && !indexToMap.equals("_all"));
+		//Clean up before write
+		if (!skipIndexClean){
+			if (writeSingleIndex){
+				//clean one index
+				int resCode = db.deleteAny(indexToMap);
+				if (resCode == 0){
+					Debugger.println("Elasticsearch: cleaning index '" + indexToMap + "'", 3);
+					Thread.sleep(1500);
+				}else{
+					Debugger.println("Elasticsearch: ERROR in cleaning index '" + indexToMap + "' - maybe because it did not exist before? We'll see!", 1);
+					//throw new RuntimeException("Elasticsearch: communication error!");
+				}
 			}else{
-				Debugger.println("Elasticsearch: ERROR in cleaning index '" + indexToMap + "' - maybe because it did not exist before? We'll see!", 1);
-				//throw new RuntimeException("Elasticsearch: communication error!");
-			}
-		}else{
-			//clean all
-			int resCode = db.deleteAny("_all");
-			if (resCode == 0){
-				Debugger.println("Elasticsearch: cleaning old indices ...", 3);
-				Thread.sleep(1500);
-			}else{
-				throw new RuntimeException("Elasticsearch: communication error!");
+				//clean all
+				int resCode = db.deleteAny("_all");
+				if (resCode == 0){
+					Debugger.println("Elasticsearch: cleaning old indices ...", 3);
+					Thread.sleep(1500);
+				}else{
+					throw new RuntimeException("Elasticsearch: communication error!");
+				}
 			}
 		}
 		//Write mappings
@@ -323,7 +336,52 @@ public class Setup {
 			}
 		}
 		Thread.sleep(1500);
-		Debugger.println("Elasticsearch: ready for work.", 3);
+		if (writeSingleIndex){
+			Debugger.println("Elasticsearch: Index ready for work.", 3);
+		}else{
+			Debugger.println("Elasticsearch: DB ready for work.", 3);
+		}
+	}
+	
+	/**
+	 * Test if Elasticsearch index exists and (optionally) create when missing.
+	 * @param createWhenMissing - true/false
+	 * @throws Exception
+	 */
+	public static void testAndUpdateElasticsearchMapping(boolean createWhenMissing) throws Exception{
+		Elasticsearch db = new Elasticsearch();
+		List<File> mappingFiles = FilesAndStreams.directoryToFileList(Config.dbSetupFolder + "ElasticsearchMappings/", null, false);
+		//Test mappings
+		JSONObject mappings = db.getMappings();
+		if (mappings == null){
+			throw new RuntimeException("ElasticSearch - Failed to check mappings! Is ES running and reachable?");
+		}
+		int mr = 0;
+		int mf = 0;
+		for (File f : mappingFiles){
+			if (!f.getName().contains(".json")){
+				//File has to be a .json map
+				continue;
+			}
+			mr++;
+			String index = f.getName().replaceFirst("\\.json$", "").trim();
+			if (!mappings.containsKey(index)){
+				//missing index
+				Debugger.println("Elasticsearch - Missing index: " + index, 1);
+				if (createWhenMissing){
+					Debugger.println("Elasticsearch - Trying to create missing index: " + index, 3);
+					writeElasticsearchMapping(index, true);
+					mf++;
+				}
+			}else{
+				mf++;
+			}
+		}
+		if (mr == mf){
+			Debugger.println("Elasticsearch: found " + mf + " of " + mr + " mapped indices. All good.", 3);
+		}else{
+			throw new RuntimeException("Elasticsearch: missing " + (mr-mf) + " of " + mr + " mapped indices. Please check database setup.");
+		}
 	}
 	
 	/**

@@ -154,8 +154,8 @@ public class Authenticator {
 	}
 	
 	/**
-	 * Get basic info of the user acquired during authentication. This is useful to reduce data transfer late if this info is 
-	 * acquired anyhow and already part of authentication.
+	 * Get basic info of the user acquired during authentication. 
+	 * This typically includes GUUID, EMAIL, USER_ROLES, USER_NAME, USER_LANGUAGE, etc., but might depend on specific auth. module settings.
 	 * @return
 	 */
 	public HashMap<String, Object> getBasicInfo() {

@@ -427,15 +427,12 @@ chat_how_are_you_0a;;		rep=2|mood=5;;		Still the same. All good. ;;char=neutral
 chat_how_are_you_0a;;		rep=2|mood=5;;		Same old song and dance. ;;char=neutral
 chat_help_0a;;		rep=0|mood=5;;		I'm at your service ;;char=neutral
 chat_help_0a;;		rep=0|mood=5;;		I will help you, don't worry! ;;char=neutral,polite
-chat_help_0a;;		rep=0|mood=5;;		It would make me happy if I could help you ;;char=neutral,polite
-chat_help_0a;;		rep=0|mood=5;;		Ready for you, twentyfourseven. ;;char=neutral,polite
-chat_help_0a;;		rep=0|mood=5;;		I'm your personal assistant and here to help. Just ask me. ;;char=neutral
 chat_help_0a;;		rep=0|mood=5;;		How can I help you?  ;;char=neutral
 chat_help_0a;;		rep=0|mood=5;;		What can I do for you?  ;;char=neutral
 chat_help_0a;;		rep=0|mood=5;;		What's on your mind? ;;char=neutral
 chat_help_0a;;		rep=0|mood=5;;		I'm listening. How can I help you?  ;;char=neutral
 chat_help_0a;;		rep=0|mood=5;;		I'm here to help. Just tell me what you need! ;;char=neutral
-chat_help_0a;;		rep=0|mood=5;;		I'm always at your service. Just ask me what you wanna know? ;;char=neutral
+chat_help_0a;;		rep=0|mood=5;;		I'm always at your service. Just ask me what you want to know? ;;char=neutral
 chat_name_0a;;		rep=0|mood=5;;		My name is <name> ;;char=neutral
 chat_name_0a;;		rep=0|mood=5;;		<name> is my name. ;;char=neutral
 chat_name_0a;;		rep=0|mood=5;;		People call me <name> ;;char=neutral

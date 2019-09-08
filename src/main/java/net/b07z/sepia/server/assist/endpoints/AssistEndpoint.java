@@ -40,6 +40,9 @@ import spark.Response;
  */
 public class AssistEndpoint {
 	
+	/**
+	 * A combination of client info data (e.d. client, device_id, env, etc.) and assistant state parameters (e.g. msg_id, context, text, etc.). 
+	 */
 	public static enum InputParameters {
 		text,
 		lang,
@@ -50,7 +53,7 @@ public class AssistEndpoint {
 		//TODO: add something like "is_home_network" ?
 		time,
 		time_local,
-		client,
+		client,				//NOTE: this is identical to AuthEndpoint.InputParameters.client
 		last_cmd,
 		last_cmd_N,
 		input_type, 		//Values: question, direct_cmd, response

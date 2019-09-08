@@ -394,7 +394,9 @@ public final class User {
 		}
 	}
 	/**
-	 * Save multiple key objects to user account.
+	 * Save data to user account. The JSON data object will be checked key-by-key for access permission and the database document will then be
+	 * updated or set. Typically a service can always write to the field {@link ServiceAccessManager#getServiceName}, but other fields might be
+	 * restricted.
 	 *  
 	 * @param api - ServiceAccessManager for the API that is calling this ...
 	 * @param data - JSON with (full or partial) document data to set/update
@@ -405,10 +407,11 @@ public final class User {
 		return resultCode;
 	}
 	/**
-	 * Save key object to user account.
+	 * Save key object to user account. 
+	 * Please note that dots in the key will be transformed, e.g. level1.level2.key -> { "level1" : { "level2" : { "key" : value } } }.
 	 *  
 	 * @param api - ServiceAccessManager for the API that is calling this ...
-	 * @param key - info to look for in database
+	 * @param key - info to look for in database. Supports dot-path, see description above.
 	 * @param object - object to save at key position
 	 * @return resultCode (0 - no error, 1 - can't reach database, 2 - access denied, 3 - no account found, 4 - other error)
 	 */

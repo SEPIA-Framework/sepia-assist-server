@@ -151,7 +151,7 @@ public class ConfigServices {
 		blackList.add(DatabaseInterface.class.getPackage().getName());	//database.* 	from core-tools
 		blackList.add(Interview.class.getPackage().getName()); 		//interviews.*
 		blackList.add(SendEmail.class.getPackage().getName()); 		//email.*
-		//TODO: complete blacklist
+		//TODO: complete blacklist, e.g. workers? (but not ServiceBackgroundTask?) ...
 	}
 	/**
 	 * Add more classes or packages to blacklist.

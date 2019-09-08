@@ -62,7 +62,7 @@ public class AccountEndpoint {
 		if (get != null){
 			//using universal API because user is authenticated - is not really implemented yet ...
 			Object[] attributeKeys = get.toArray();
-			int statusGet = user.loadInfoFromAccount(Config.superuserApiMng, attributeKeys);
+			int statusGet = user.loadInfoFromAccount(Config.superuserServiceAccMng, attributeKeys);
 			if (statusGet == 0){
 				//fill result with found attributes and make a JSON
 				JSONObject res = new JSONObject();
@@ -85,7 +85,7 @@ public class AccountEndpoint {
 		
 		//SET DATA
 		if (set != null){
-			int statusSet = user.saveInfoToAccount(Config.superuserApiMng, set);
+			int statusSet = user.saveInfoToAccount(Config.superuserServiceAccMng, set);
 			if (statusSet == 0){
 				//ADD result
 				JSON.add(msg, "set_result", "saved");
@@ -102,7 +102,7 @@ public class AccountEndpoint {
 		//DELETE DATA
 		if (delete != null){
 			Object[] attributeKeys = delete.toArray();
-			int statusGet = user.deleteInfoFromAccount(Config.superuserApiMng, attributeKeys);
+			int statusGet = user.deleteInfoFromAccount(Config.superuserServiceAccMng, attributeKeys);
 			if (statusGet == 0){
 				//ADD result
 				JSON.add(msg, "delete_result", "done");
