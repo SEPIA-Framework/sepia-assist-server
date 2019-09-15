@@ -104,7 +104,7 @@ public class SmartOpenHAB implements ServiceInterface {
 				getInfoFreshOrCache(nluResult.input, this.getClass().getCanonicalName()));
 		
 		//check if we know an OpenHAB server
-		if (Is.nullOrEmpty(Config.smarthome_hub_name) || !Config.smarthome_hub_name.trim().equals(OpenHAB.NAME)){
+		if (Is.nullOrEmpty(Config.smarthome_hub_name) || !Config.smarthome_hub_name.trim().equalsIgnoreCase(OpenHAB.NAME)){
 			service.setStatusOkay(); 				//"soft"-fail (no error just missing info)
 			return service.buildResult();
 		}
