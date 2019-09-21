@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 import java.util.Set;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -22,7 +23,9 @@ import net.b07z.sepia.server.core.data.Answer;
 import net.b07z.sepia.server.core.data.CmdMap;
 import net.b07z.sepia.server.core.data.UserDataList;
 import net.b07z.sepia.server.core.data.UserDataList.Section;
+import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 
 /**
@@ -59,13 +62,11 @@ public class UserDataDefault implements UserDataInterface {
 			filters = new HashMap<>();
 		}
 		filters.put("userIds", user.getUserID());
-		if (!filters.containsKey("cmd_summary"))filters.put("cmd_summary", command + ";;");
 		if (!filters.containsKey("source")) filters.put("source", "assistAPI");
 		String language = (String) filters.get("language");
 		if (language == null || language.isEmpty()){
 			language = user.language;
 		}
-		
 		int code = DB.setCommand(command, sentence, language, true, filters);
 		return (code == 0);
 	}
@@ -214,13 +215,24 @@ public class UserDataDefault implements UserDataInterface {
 		for (Entry<String, List<String>> entry : serviceInfo.customTriggerSentences.entrySet()){
 			List<String> triggers = entry.getValue();
 			String language = entry.getKey();
-			//Normalizer_Interface normalizer = Config.input_normalizers_light.get(language);
-			Map<String, Object> filters = new HashMap<>();
-			filters.put("language", language);
-			filters.put("source", ("SDK " + userId + " " + command));
+			String source = "SDK " + userId + " " + command;
+			//Normalizer normalizer = Config.input_normalizers_light.get(language);
 			if (triggers != null){
 				for (String s : triggers){
+					JSONObject params = null;
+					if (s.contains(command + ";;")){
+						String[] sentenceAndCmdSum = s.split(Pattern.quote(command + ";;"), 2);
+						s = sentenceAndCmdSum[0].trim().replaceFirst(";;$", "");
+						String cmdSum = command + ";;" + sentenceAndCmdSum[1]; 
+						params = Converters.getParametersFromCommandSummary(command, cmdSum);
+					}
 					//String sent = normalizer.normalize_text(s);
+					Map<String, Object> filters = new HashMap<>();
+					filters.put("language", language);
+					filters.put("source", source);
+					if (Is.notNullOrEmpty(params)){
+						filters.put("params", params);
+					}
 					if (setPersonalCommand(user, command, s, filters)){
 						i++; 
 					}

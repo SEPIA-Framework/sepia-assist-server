@@ -5,7 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONObject;
+
 import net.b07z.sepia.server.assist.data.Parameter;
+import net.b07z.sepia.server.core.tools.Converters;
 
 /**
  * Get some info about the service like the type (link, REST, text, regular expressions ...).
@@ -273,8 +276,10 @@ public class ServiceInfo {
 		return !customTriggerRegEx.isEmpty();
 	}
 	/**
-	 * Add a custom trigger sentence to the collection. If the service registers itself as a custom services this will be used.
+	 * Add a custom trigger sentence for a given language to the collection. 
+	 * If the service registers itself as a custom services this will be used.
 	 * @param sentence - a sample sentence
+	 * @param language - language code for this sentence
 	 */
 	public ServiceInfo addCustomTriggerSentence(String sentence, String language){
 		List<String> list = customTriggerSentences.get(language);
@@ -282,6 +287,23 @@ public class ServiceInfo {
 			list = new ArrayList<>();
 			customTriggerSentences.put(language, list);
 		}
+		list.add(sentence);
+		return this;
+	}
+	/**
+	 * Add a custom trigger sentence for a given language to the collection with predefined parameters, e.g. "Bring me home" with "location=home". 
+	 * If the service registers itself as a custom services this will be used.
+	 * @param sentence - a sample sentence
+	 * @param language - language code for this sentence
+	 * @param parameters - predefined parameters for this sentence
+	 */
+	public ServiceInfo addCustomTriggerSentence(String sentence, String language, JSONObject parameters){
+		List<String> list = customTriggerSentences.get(language);
+		if (list == null){
+			list = new ArrayList<>();
+			customTriggerSentences.put(language, list);
+		}
+		sentence = sentence + ";;" + Converters.makeCommandSummary(this.intendedCommand, parameters);
 		list.add(sentence);
 		return this;
 	}
