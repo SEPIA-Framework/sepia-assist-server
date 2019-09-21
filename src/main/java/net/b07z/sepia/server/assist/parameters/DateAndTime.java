@@ -348,8 +348,12 @@ public class DateAndTime implements ParameterHandler{
 		String day = "";
 		String time = "";
 		
-		//extract again/first
-		if (input.startsWith("<unix>")){
+		//extract again/first?
+		if (Is.notNullOrEmpty(input) && !input.startsWith("<")){
+			input = extract(input);
+		
+		//use UNIX tag?
+		}else if (input.startsWith("<unix>")){
 			input = extract(input.replaceFirst(Pattern.quote("<unix>"), ""));
 		}
 
