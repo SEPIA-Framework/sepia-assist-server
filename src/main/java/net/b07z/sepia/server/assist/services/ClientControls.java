@@ -78,8 +78,8 @@ public class ClientControls implements ServiceInterface{
 				+ "(.* |)medi(a|en)(-| |)(player|wiedergabe)( .*|)|"
 				+ "(.* |)(naechste(\\w|)|vorherige(\\w|)) (musik|song|lied|medien|media|titel)( .*|)|"
 				+ "(naechste(\\w|)|vorherige(\\w|)|vor|zurueck|stop(pen|p|)|play|abspielen|lauter|leiser|fortsetzen|weiter)|"
-				+ "(.* |)(musik|song|lied|medien|media|titel|player|wiedergabe) (anhalten|stoppen|stop(p|)|beenden|schliessen|(aus|ab)schalten|fortsetzen|weiter|wiederholen)( .*|)|"
-				+ "(.* |)(stoppe|stop(p|)|schliesse|schalte|beende|halte)( .* | )(musik|song|lied|medien|media|titel|player|sound|wiedergabe)( .*|)"
+				+ "(.* |)(musik|song|lied|medien|media|titel|player|wiedergabe) (anhalten|stoppen|stop(p|)|beenden|schliessen|(aus|ab)schalten|pausieren|fortsetzen|weiter|wiederholen)( .*|)|"
+				+ "(.* |)(stoppe|stop(p|)|schliesse|schalte|beende|halte|pausiere)( .* | )(musik|song|lied|medien|media|titel|player|sound|wiedergabe)( .*|)"
 				+ ")$", DE);
 		info.setCustomTriggerRegX("^("
 				+ "(.* |)open setting(s|)( .*|)|"
@@ -89,8 +89,8 @@ public class ClientControls implements ServiceInterface{
 				+ "(.* |)(media(-| |)player)( .*|)|"
 				+ "(.* |)(next|previous) (media|music|song|track|title)( .*|)|"
 				+ "(next|previous|back|forward|stop|play|louder|quieter|resume)|"
-				+ "(.* |)(media|music|song|track|title|player|sound|playback) (stop|close|end)( .*|)|"
-				+ "(.* |)(stop|close|end|resume|continue|repeat)( .* | )(media|music|song|track|title|player|sound|playback)( .*|)"
+				+ "(.* |)(media|music|song|track|title|player|sound|playback) (stop|pause|close|end|continue|repeat|resume)( .*|)|"
+				+ "(.* |)(stop|pause|close|end|resume|continue|repeat)( .* | )(media|music|song|track|title|player|sound|playback)( .*|)"
 				+ ")$", EN);
 		info.setCustomTriggerRegXscoreBoost(2);		//boost service a bit to increase priority over similar ones
 		
