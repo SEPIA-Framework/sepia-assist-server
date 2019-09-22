@@ -8,7 +8,9 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.data.Parameter;
+import net.b07z.sepia.server.assist.interviews.Interview;
 import net.b07z.sepia.server.core.tools.Converters;
+import net.b07z.sepia.server.core.tools.JSON;
 
 /**
  * Get some info about the service like the type (link, REST, text, regular expressions ...).
@@ -295,15 +297,62 @@ public class ServiceInfo {
 	 * If the service registers itself as a custom services this will be used.
 	 * @param sentence - a sample sentence
 	 * @param language - language code for this sentence
-	 * @param parameters - predefined parameters for this sentence
+	 * @param rawParameters - predefined parameters for this sentence in raw format (not normalized, not extracted)
 	 */
-	public ServiceInfo addCustomTriggerSentence(String sentence, String language, JSONObject parameters){
+	public ServiceInfo addCustomTriggerSentenceWithRawParameters(String sentence, String language, JSONObject rawParameters){
 		List<String> list = customTriggerSentences.get(language);
 		if (list == null){
 			list = new ArrayList<>();
 			customTriggerSentences.put(language, list);
 		}
-		sentence = sentence + ";;" + Converters.makeCommandSummary(this.intendedCommand, parameters);
+		//tag parameters
+		for (Object keyObj : rawParameters.keySet()){
+			String key = (String) keyObj;
+			JSON.put(rawParameters, key, Interview.INPUT_RAW + JSON.getString(rawParameters, key));
+		}
+		//build sentence + cmdSummary
+		sentence = sentence + ";;" + Converters.makeCommandSummary(this.intendedCommand, rawParameters);
+		list.add(sentence);
+		return this;
+	}
+	/**
+	 * Add a custom trigger sentence for a given language to the collection with predefined parameters, e.g. "Bring me home" with "location=home". 
+	 * If the service registers itself as a custom services this will be used.
+	 * @param sentence - a sample sentence
+	 * @param language - language code for this sentence
+	 * @param normParameters - predefined parameters for this sentence in normalized format (not extracted yet)
+	 */
+	public ServiceInfo addCustomTriggerSentenceWithNormalizedParameters(String sentence, String language, JSONObject normParameters){
+		List<String> list = customTriggerSentences.get(language);
+		if (list == null){
+			list = new ArrayList<>();
+			customTriggerSentences.put(language, list);
+		}
+		//tag parameters
+		for (Object keyObj : normParameters.keySet()){
+			String key = (String) keyObj;
+			JSON.put(normParameters, key, Interview.INPUT_NORM + JSON.getString(normParameters, key));
+		}
+		//build sentence + cmdSummary
+		sentence = sentence + ";;" + Converters.makeCommandSummary(this.intendedCommand, normParameters);
+		list.add(sentence);
+		return this;
+	}
+	/**
+	 * Add a custom trigger sentence for a given language to the collection with predefined parameters, e.g. "Lights" with "action=&lt;on&gt;". 
+	 * If the service registers itself as a custom services this will be used.
+	 * @param sentence - a sample sentence
+	 * @param language - language code for this sentence
+	 * @param extParameters - predefined parameters for this sentence in 'extracted' format (result after ParameterHandler.extract)
+	 */
+	public ServiceInfo addCustomTriggerSentenceWithExtractedParameters(String sentence, String language, JSONObject extParameters){
+		List<String> list = customTriggerSentences.get(language);
+		if (list == null){
+			list = new ArrayList<>();
+			customTriggerSentences.put(language, list);
+		}
+		//build sentence + cmdSummary
+		sentence = sentence + ";;" + Converters.makeCommandSummary(this.intendedCommand, extParameters);
 		list.add(sentence);
 		return this;
 	}

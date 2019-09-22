@@ -220,6 +220,7 @@ public class DateAndTime implements ParameterHandler{
 		dateMap = RegexParameterSearch.get_date(input, language);
 		String dateTag = dateMap.get("date_tag");
 		String timeTag = dateMap.get("time_tag");
+		//System.out.println("input: " + input); 	//DEBUG
 		//System.out.println("DATE-MAP: "); 		//DEBUG
 		//Debugger.printMap(dateMap); 				//DEBUG
 		
@@ -348,7 +349,7 @@ public class DateAndTime implements ParameterHandler{
 		String day = "";
 		String time = "";
 		
-		//extract again/first?
+		//extract again/first? - this should only happen via predefined parameters (e.g. from direct triggers)
 		if (Is.notNullOrEmpty(input) && !input.startsWith("<")){
 			input = extract(input);
 		
