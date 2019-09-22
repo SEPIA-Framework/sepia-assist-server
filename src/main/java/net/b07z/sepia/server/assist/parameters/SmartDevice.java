@@ -21,6 +21,11 @@ public class SmartDevice implements ParameterHandler{
 	public static enum Types{
 		light,
 		heater,
+		tv,
+		music_player,
+		fridge,
+		oven,
+		coffee_maker,
 		device;
 	}
 	
@@ -30,10 +35,20 @@ public class SmartDevice implements ParameterHandler{
 	static {
 		types_de.put("light", "das Licht");
 		types_de.put("heater", "die Heizung");
+		types_de.put("tv", "der Fernseher");
+		types_de.put("music_player", "die Musikanlage");
+		types_de.put("fridge", "der Kühlschrank");
+		types_de.put("oven", "der Ofen");
+		types_de.put("coffee_maker", "die Kaffeemaschine");
 		types_de.put("device", "das Gerät");
 		
 		types_en.put("light", "the light");
 		types_en.put("heater", "the heater");
+		types_en.put("tv", "the TV");
+		types_en.put("music_player", "the music player");
+		types_en.put("fridge", "the fridge");
+		types_en.put("oven", "the oven");
+		types_en.put("coffee_maker", "the coffee maker");
 		types_en.put("device", "the device");
 	}
 	
@@ -57,6 +72,22 @@ public class SmartDevice implements ParameterHandler{
 		}
 		return localName;
 	}
+	
+	public static final String lightRegEx_en = "light(s|)|lighting|lamp(s|)|illumination|brightness";
+	public static final String heaterRegEx_en = "heater(s|)|temperature(s|)|thermostat(s|)";
+	public static final String tvRegEx_en = "tv|television";
+	public static final String musicPlayerRegEx_en = "(stereo|music)( |)(player)|stereo|bluetooth(-| )(speaker|box)|speaker(s|)";
+	public static final String fridgeRegEx_en = "fridge|refrigerator";
+	public static final String ovenRegEx_en = "oven|stove";
+	public static final String coffeeMakerRegEx_en = "coffee (maker|brewer|machine)";
+	
+	public static final String lightRegEx_de = "licht(er|es|)|lampe(n|)|beleuchtung|leuchte(n|)|helligkeit";
+	public static final String heaterRegEx_de = "heiz(er|ungen|ung|koerper(s|)|luefter(s|)|strahler(s|))|thermostat(es|s|)|temperatur(regler(s|)|en|)";
+	public static final String tvRegEx_de = "tv(s|)|television(s|)|fernseh(er(s|)|geraet(es|s|)|apparat(es|s|))";
+	public static final String musicPlayerRegEx_de = "(stereo|musi(k|c))( |)(anlage|player(s|))|bluetooth(-| )(lautsprecher(s|)|box)|lautsprecher(s|)|boxen";
+	public static final String fridgeRegEx_de = "kuehlschrank(s|)";
+	public static final String ovenRegEx_de = "ofen(s|)|herd(es|s)";
+	public static final String coffeeMakerRegEx_de = "kaffeemaschine";
 	//----------------
 	
 	User user;
@@ -84,14 +115,26 @@ public class SmartDevice implements ParameterHandler{
 		String type = "";
 		//German
 		if (language.matches(LANGUAGES.DE)){
-			type = NluTools.stringFindFirst(input, "(licht(er|es|)|lampe(n|)|beleuchtung|leuchte(n|)|helligkeit|"
-					+ "heiz(er|ungen|ung|koerper|luefter|strahler)|thermostat|temperatur(regler|en|)"
+			type = NluTools.stringFindFirst(input, "("
+					+ lightRegEx_de + "|"
+					+ heaterRegEx_de + "|"
+					+ tvRegEx_de + "|"
+					+ musicPlayerRegEx_de + "|"
+					+ fridgeRegEx_de + "|"
+					+ ovenRegEx_de + "|"
+					+ coffeeMakerRegEx_de
 				+ ")");
 			
 		//English and other
 		}else{
-			type = NluTools.stringFindFirst(input, "(light(s|)|lighting|lamp(s|)|illumination|brightness|"
-					+ "heater(s|)|temperature(s|)|thermostat(s|)"
+			type = NluTools.stringFindFirst(input, "("
+					+ lightRegEx_en + "|"
+					+ heaterRegEx_en + "|"
+					+ tvRegEx_en + "|"
+					+ musicPlayerRegEx_en + "|"
+					+ fridgeRegEx_en + "|"
+					+ ovenRegEx_en + "|"
+					+ coffeeMakerRegEx_en
 				+ ")");
 			
 		}
@@ -136,16 +179,56 @@ public class SmartDevice implements ParameterHandler{
 		
 		//classify into types:
 		
-		if (NluTools.stringContains(device, "licht(er|es|)|lampe(n|)|beleuchtung|leuchte(n|)|helligkeit|"
-				+ "light(s|)|lighting|lamp(s|)|illumination|brightness")){
-			return "<" + Types.light.name() + ">" + this.found;
+		if (language.matches(LANGUAGES.DE)){
+			if (NluTools.stringContains(device, lightRegEx_de)){
+				return "<" + Types.light.name() + ">" + this.found;
+				
+			}else if (NluTools.stringContains(device, heaterRegEx_de)){
+				return "<" + Types.heater.name() + ">" + this.found;
+				
+			}else if (NluTools.stringContains(device, tvRegEx_de)){
+				return "<" + Types.tv.name() + ">" + this.found;
+				
+			}else if (NluTools.stringContains(device, musicPlayerRegEx_de)){
+				return "<" + Types.music_player.name() + ">" + this.found;
+				
+			}else if (NluTools.stringContains(device, fridgeRegEx_de)){
+				return "<" + Types.fridge.name() + ">" + this.found;
+				
+			}else if (NluTools.stringContains(device, ovenRegEx_de)){
+				return "<" + Types.oven.name() + ">" + this.found;
+				
+			}else if (NluTools.stringContains(device, coffeeMakerRegEx_de)){
+				return "<" + Types.coffee_maker.name() + ">" + this.found;
 			
-		}else if (NluTools.stringContains(device, "heiz(er|ungen|ung|koerper|luefter|strahler)|thermostat(s|)|temperatur(regler|en|)|"
-				+ "heater(s|)|temperature(s|)")){
-			return "<" + Types.heater.name() + ">" + this.found;
-		
+			}else{
+				return "<" + Types.device.name() + ">" + this.found;
+			}
 		}else{
-			return "<" + Types.device.name() + ">" + this.found;
+			if (NluTools.stringContains(device, lightRegEx_en)){
+				return "<" + Types.light.name() + ">" + this.found;
+				
+			}else if (NluTools.stringContains(device, heaterRegEx_en)){
+				return "<" + Types.heater.name() + ">" + this.found;
+				
+			}else if (NluTools.stringContains(device, tvRegEx_en)){
+				return "<" + Types.tv.name() + ">" + this.found;
+				
+			}else if (NluTools.stringContains(device, musicPlayerRegEx_en)){
+				return "<" + Types.music_player.name() + ">" + this.found;
+				
+			}else if (NluTools.stringContains(device, fridgeRegEx_en)){
+				return "<" + Types.fridge.name() + ">" + this.found;
+				
+			}else if (NluTools.stringContains(device, ovenRegEx_en)){
+				return "<" + Types.oven.name() + ">" + this.found;
+				
+			}else if (NluTools.stringContains(device, coffeeMakerRegEx_en)){
+				return "<" + Types.coffee_maker.name() + ">" + this.found;
+			
+			}else{
+				return "<" + Types.device.name() + ">" + this.found;
+			}
 		}
 	}
 	

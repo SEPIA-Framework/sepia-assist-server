@@ -164,7 +164,7 @@ public class Action implements ParameterHandler{
 		}else{
 			on = "(make|switch|turn|set) .*\\b(on)|"
 					+ "^\\w+\\b (on$)|"
-					+ "(^|to )(on$)|"
+					+ "(^|to )(active$|on$)|"
 					+ "open|activate|start|play|load|run|execute|call";
 			off = "(make|switch|turn|set) .*\\b(off)|"
 					+ "^\\w+\\b (off$)|"
