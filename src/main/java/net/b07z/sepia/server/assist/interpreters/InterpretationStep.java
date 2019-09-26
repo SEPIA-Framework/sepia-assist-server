@@ -14,6 +14,13 @@ import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
 import net.b07z.sepia.server.core.tools.Debugger;
 
+/**
+ * An interpretation step is part of the {@link InterpretationChain} and is used to do natural-language-understanding (NLU) including 
+ * intent recognition (command) and optionally parameter extraction (e.g. location, action, time etc.).<br>
+ * This class contains some predefined (static) steps as well.
+ * 
+ * @author Florian Quirin
+ */
 public interface InterpretationStep {
 	
 	/**
@@ -234,4 +241,27 @@ public interface InterpretationStep {
 		return kwaResult;
 	}
 
+	/**
+	 * Get {@link NluResult} from a web API specified by 'apiUrl'. The class has to implement the {@link InterpretationStep} interface.
+	 * @param apiUrl - URL to a web-service that can create an {@link NluResult} as JSON object
+	 * @param input - {@link NluInput}
+	 * @param cachedResults - cached results from other NLU steps
+	 * @return result or null
+	 */
+	public static NluResult getWebApiResult(String apiUrl, NluInput input, Map<String, NluResult> cachedResults){
+		//TODO: implement
+		return null;
+	}
+	
+	/**
+	 * Get {@link NluResult} from a class specified by 'canonicalClassName'. The class has to implement the {@link InterpretationStep} interface.
+	 * @param canonicalClassName - name of the class to call that implements {@link InterpretationStep}
+	 * @param input - {@link NluInput}
+	 * @param cachedResults - cached results from other NLU steps
+	 * @return result or null
+	 */
+	public static NluResult getClassResult(String canonicalClassName, NluInput input, Map<String, NluResult> cachedResults){
+		InterpretationStep step = (InterpretationStep) ClassBuilder.construct(canonicalClassName);
+		return step.call(input, cachedResults);
+	}
 }

@@ -16,6 +16,7 @@ import net.b07z.sepia.server.assist.database.DB;
 import net.b07z.sepia.server.assist.database.DataLoader;
 import net.b07z.sepia.server.assist.database.Elasticsearch;
 import net.b07z.sepia.server.assist.email.SendEmailBasicSmtp;
+import net.b07z.sepia.server.assist.interpreters.InterpretationChain;
 import net.b07z.sepia.server.assist.interpreters.InterpretationStep;
 import net.b07z.sepia.server.assist.interpreters.NluInterface;
 import net.b07z.sepia.server.assist.interpreters.NluApproximateMatcher;
@@ -212,6 +213,9 @@ public class Config {
 			LANGUAGES.NL,			LANGUAGES.PL,
 			LANGUAGES.PT,			LANGUAGES.RU
 	};
+	
+	//NLU related configuration
+	
 	// - input normalizers
 	public static HashMap<String, Normalizer> inputNormalizers = new HashMap<String, Normalizer>();
 	static
@@ -263,42 +267,43 @@ public class Config {
 		keywordAnalyzers.put(LANGUAGES.EN, NluKeywordAnalyzerEN.class.getCanonicalName());
 		keywordAnalyzers.put("default", NluKeywordAnalyzer.class.getCanonicalName());		//KEEP THIS! needs to spit out "No_Result" and slash CMDs
     }
-	
-	//Some NLU related configuration
+	// - interpretation chain (default, can be overwritten by config file)
+	public static List<String> nluInterpretationStepsCustomChain =  Arrays.asList(
+			"getPersonalCommand",
+			"getFixCommandsExactMatch",
+			"getChatSmallTalkMatch",
+			"getPublicDbSentenceMatch",
+			"getKeywordAnalyzerResult",
+			"tryPersonalCommandAsFallback",
+			"tryChatSmallTalkAsFallback"
+	);
 	public static List<InterpretationStep> nluInterpretationSteps = new ArrayList<>(); 		//holds the default list for the interpretation chain
 	/**
 	 * Prepare interpretation chain by adding the default modules in the proper order to 'nluInterpretationSteps' list.
 	 */
 	public static void setupNluSteps(){
-		//check for input modifiers
-		nluInterpretationSteps.add((input, cachedResults) -> InterpretationStep.applyInputModifiers(input));
-		//direct command
-		nluInterpretationSteps.add((input, cachedResults) -> InterpretationStep.getDirectCommand(input));
-		//response to previous input
-		nluInterpretationSteps.add((input, cachedResults) -> InterpretationStep.getResponse(input));
-		//slash command
-		nluInterpretationSteps.add((input, cachedResults) -> InterpretationStep.getSlashCommand(input));
-		//spoken question/comment/chat
-		//TODO: Optimize database access! We are loading data from the DB multiple times here, each time with a slightly different configuration
-		//TODO: ... it would be better if we could just do one call and then distribute the data, also we can:
-		//TODO: Normalize first, store normalized input and then go into the interpreters
-		//check if its a personal command aka a command defined by the user (in SDK or teach-UI) 
-		nluInterpretationSteps.add((input, cachedResults) -> InterpretationStep.getPersonalCommand(input, true, "pcResult", cachedResults));
-		//check for exact sentence match of normalized text in commands ("teachIt") - high priority fixed commands
-		nluInterpretationSteps.add((input, cachedResults) -> InterpretationStep.getFixCommandsExactMatch(input));
-		//check for approximate matches in chats ("chat" aka small-talk)
-		nluInterpretationSteps.add((input, cachedResults) -> InterpretationStep.getChatSmallTalkMatch(input, true, "chatResult", cachedResults));
-		//check for DB sentences - NOTE: make sure to avoid duplicated sentences with previous step (smallTalk) 
-		nluInterpretationSteps.add((input, cachedResults) -> InterpretationStep.getPublicDbSentenceMatch(input, false, "dbSentencesResult", cachedResults));
-		//check with complex keyword matcher
-		nluInterpretationSteps.add((input, cachedResults) -> InterpretationStep.getKeywordAnalyzerResult(input, false, "kwaResult", cachedResults));
-		//check personal commands again with lower threshold (loads from "pcResult" cache)
-		nluInterpretationSteps.add((input, cachedResults) -> InterpretationStep.tryPersonalCommandAsFallback(input, cachedResults));
-		//check chats again with lower threshold (loads from "chatResult" cache)
-		nluInterpretationSteps.add((input, cachedResults) -> InterpretationStep.tryChatSmallTalkAsFallback(input, cachedResults));
-		
-		//TODO: make a new NLP to analyze context commands - search for simple context keywords, check last context, return to NLU
+		//add core steps
+		nluInterpretationSteps.add(InterpretationChain.coreSteps.get("applyInputModifiers"));	//things like i18n:...
+		nluInterpretationSteps.add(InterpretationChain.coreSteps.get("getDirectCommand"));		//predefined direct commands like events;;...
+		nluInterpretationSteps.add(InterpretationChain.coreSteps.get("getResponse"));			//response to assistant question
+		nluInterpretationSteps.add(InterpretationChain.coreSteps.get("getSlashCommand"));		//"slash-commands" like "\saythis"
+		//add custom steps
+		for (String stepName : nluInterpretationStepsCustomChain){
+			stepName = stepName.trim();
+			if (stepName.startsWith("WEB:")){
+				String webApiUrl = stepName.replace("WEB:", "").trim();
+				nluInterpretationSteps.add((input, cachedResults) -> InterpretationStep.getWebApiResult(webApiUrl, input, cachedResults));
+			}else if (stepName.startsWith("CLASS:")){
+				String className = stepName.replace("CLASS:", "").trim();
+				nluInterpretationSteps.add((input, cachedResults) -> InterpretationStep.getClassResult(className, input, cachedResults));
+			}else{
+				nluInterpretationSteps.add(InterpretationChain.availableSteps.get(stepName));
+			}
+		}
+		Debugger.println("Loaded NLU interpretation-chain with " + nluInterpretationStepsCustomChain.size() 
+			+ " steps: " + nluInterpretationStepsCustomChain.toString(), 3);
 	}
+	// - sentence matcher thresholds
 	public static double threshold_chats_match = 0.70;			//approximate chats identity threshold - first check 
 	public static double threshold_chats_last_chance = 0.55;	//approximate chats threshold if nothing else gave a result
 	public static double threshold_personal_cmd = 0.85;			//approximate personal commands threshold - first check 
@@ -471,6 +476,11 @@ public class Config {
 			checkElasticsearchMappingsOnStart = Boolean.valueOf(settings.getProperty("checkElasticsearchMappingsOnStart", "true"));
 			//chat
 			connectToWebSocket = Boolean.valueOf(settings.getProperty("connect_to_websocket"));
+			//NLU chain
+			String nluInterpretationChainArr = settings.getProperty("nlu_interpretation_chain", "");
+			if (nluInterpretationChainArr != null && !nluInterpretationChainArr.isEmpty()){
+				nluInterpretationStepsCustomChain = Arrays.asList(nluInterpretationChainArr.split(","));
+			}
 			//workers
 			String backgroundWorkersArr = settings.getProperty("background_workers", "");
 			if (backgroundWorkersArr != null && !backgroundWorkersArr.isEmpty()){
@@ -567,6 +577,8 @@ public class Config {
 		config.setProperty("enable_custom_commands", String.valueOf(useSentencesDB));
 		//chat
 		config.setProperty("connect_to_websocket", String.valueOf(connectToWebSocket));
+		//NLU chain
+		config.setProperty("nlu_interpretation_chain", nluInterpretationStepsCustomChain.toString().replaceAll("^\\[|\\]$", ""));
 		//workers
 		config.setProperty("background_workers", backgroundWorkers.toString().replaceAll("^\\[|\\]$", ""));
 		//web content
