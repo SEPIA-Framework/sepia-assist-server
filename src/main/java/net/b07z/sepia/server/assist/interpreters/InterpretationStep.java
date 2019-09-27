@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.database.DB;
 import net.b07z.sepia.server.assist.database.DataLoader;
@@ -12,6 +13,7 @@ import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.users.UserDataInterface;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
+import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Debugger;
 
 /**
@@ -249,8 +251,21 @@ public interface InterpretationStep {
 	 * @return result or null
 	 */
 	public static NluResult getWebApiResult(String apiUrl, NluInput input, Map<String, NluResult> cachedResults){
-		//TODO: implement
-		return null;
+		JSONObject inputJson = input.getJson();
+		JSONObject response = Connectors.httpPOST(apiUrl, inputJson.toJSONString(), null);
+		if (Connectors.httpSuccess(response)){
+			//TODO: test
+			NluResult nluResult = new NluResult(input);
+			nluResult.importJson(response);
+			if (nluResult.foundResult){
+				return nluResult;
+			}else{
+				return null;
+			}
+		}else{
+			Debugger.println("InterpretationStep - getWebApiResult FAILED with msg.: " + response.toJSONString(), 1);
+			return null;
+		}
 	}
 	
 	/**
