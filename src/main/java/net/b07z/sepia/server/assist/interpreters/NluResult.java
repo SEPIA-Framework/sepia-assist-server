@@ -13,6 +13,7 @@ import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 
 /**
@@ -61,20 +62,20 @@ public class NluResult {
 	
 	/**
 	 * Use this constructor only if you know what you are doing! ^^.
-	 * The default one is NLU_Result(possibleCMDs, possibleParameters, possibleScore, bestScoreIndex); 
+	 * The default one is NluResult(possibleCMDs, possibleParameters, possibleScore, bestScoreIndex); 
 	 */
 	public NluResult(){
 	}
 	/**
 	 * Use this constructor only if you know what you are doing! ^^.
-	 * The default one is NLU_Result(possibleCMDs, possibleParameters, possibleScore, bestScoreIndex); 
+	 * The default one is NluResult(possibleCMDs, possibleParameters, possibleScore, bestScoreIndex); 
 	 * This one sets the input, but usually this should be done by the NL-Processor (interpreter)
 	 */
 	public NluResult(NluInput input){
 		setInput(input);
 	}
 	/**
-	 * The default constructor for NLU_Results. It will automatically set bestCommand and bestCommand_parameters so please use this 
+	 * The default constructor for NluResult. It will automatically set bestCommand and bestCommand_parameters so please use this 
 	 * unless you know what you are doing ;-). It will also set the context to the best command.
 	 * Note: don't forget to add things like mood, language, etc. and the input!
 	 * 
@@ -149,6 +150,9 @@ public class NluResult {
 				params.put(e.replaceFirst("=.*", "").trim(), e.replaceFirst(".*?=", "").trim()); 
 			}*/
 			obj.put("parameters", params);
+			if (Is.notNullOrEmpty(normalizedText)){
+				obj.put("normalizedText", normalizedText);
+			}
 			return obj;
 		}else{
 			obj.put("result", "fail");
@@ -158,8 +162,39 @@ public class NluResult {
 			obj.put("context", context);
 			obj.put("environment", environment);
 			obj.put("mood", new Integer(mood));
+			if (Is.notNullOrEmpty(normalizedText)){
+				obj.put("normalizedText", normalizedText);
+			}
 			return obj;
 		}
+	}
+	/**
+	 * Import a result received as JSON object, e.g. from web-API.<br>
+	 * Works best with 'input' constructor: NluResult(NluInput input)
+	 * @param jsonData
+	 */
+	public void importJson(JSONObject jsonData){
+		String res = JSON.getStringOrDefault(jsonData, "result", "fail");
+		JSONObject paramsJson = null;
+		this.foundResult = (res.equals("success")? true : false);
+		if (this.foundResult){
+			this.commandType = JSON.getString(jsonData, "command");
+			this.certaintyLvl = Converters.obj2DoubleOrDefault(jsonData.get("certainty"), 0.0d);
+			this.bestDirectMatch = JSON.getStringOrDefault(jsonData, "bestDirectMatch", "---");
+		}
+		if (jsonData.containsKey("normalizedText")) this.normalizedText = JSON.getString(jsonData, "normalizedText");
+		if (jsonData.containsKey("parameters")){
+			paramsJson = JSON.getJObject(jsonData, "parameters");
+			this.parameters = Converters.json2HashMapStrStr(paramsJson);
+		}
+		if (Is.notNullOrEmpty(this.commandType) && Is.notNullOrEmptyMap(this.parameters)){
+			this.cmdSummary = Converters.makeCommandSummary(this.commandType, paramsJson);
+		}
+		//TODO: add this? modify input?
+		if (jsonData.containsKey("language")) this.language = JSON.getString(jsonData, "language");
+		if (jsonData.containsKey("context")) this.context = JSON.getString(jsonData, "context");
+		if (jsonData.containsKey("environment")) this.environment = JSON.getString(jsonData, "environment");
+		if (jsonData.containsKey("mood")) this.mood = JSON.getIntegerOrDefault(jsonData, "mood", 5);
 	}
 	
 	/**

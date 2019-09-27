@@ -7,6 +7,7 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.answers.ServiceAnswers;
+import net.b07z.sepia.server.assist.endpoints.AssistEndpoint.InputParameters;
 import net.b07z.sepia.server.assist.parameters.ParameterResult;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.services.ServiceInfo;
@@ -33,7 +34,7 @@ public class NluInput {
 	//main input	-						API param /	Description
 	//public Request request;				//request data
 	public String text = "";				//text:		input text/question/query
-	public String textRaw = "";				//			input text in its raw form, no replacements, no cmd transformation (e.g. for direct commands it tries to retain the text)
+	public String textRaw = "";				//text_raw:	input text in its raw form, no replacements, no cmd transformation (e.g. for direct commands it tries to retain the text)
 	public String language = "en";			//lang: 	language used for interpretation and results (ISO 639-1 code)
 	public String context = "default";		//context:	context is what the user did/said before to answer queries like "do that again" or "and in Berlin?"
 	public String environment = "default";	//env:		environments (web_app, android_app, ios_app) can be stuff like home, car, phone etc. to restrict and tweak some results
@@ -104,6 +105,40 @@ public class NluInput {
 		this.context = context;
 		this.mood = mood;
 		this.environment = environment;
+	}
+	
+	/**
+	 * Get input as JSON object (without session cache).
+	 */
+	public JSONObject getJson(){
+		JSONObject json = new JSONObject();
+		
+		JSON.put(json, InputParameters.msg_id.name(), 	this.msgId);
+		JSON.put(json, InputParameters.text.name(), 	this.text);
+		JSON.put(json, InputParameters.text_raw.name(),	this.textRaw);
+		JSON.put(json, InputParameters.lang.name(), 	this.language);
+		JSON.put(json, InputParameters.context.name(), 	this.context);
+		JSON.put(json, InputParameters.user.name(), 	this.user.exportJSON());
+		
+		JSON.put(json, InputParameters.time.name(), 		this.userTime);
+		JSON.put(json, InputParameters.time_local.name(), 	this.userTimeLocal);
+		JSON.put(json, InputParameters.user_location.name(),this.userLocation);
+		JSON.put(json, InputParameters.mood.name(), 		this.mood);
+		
+		JSON.put(json, InputParameters.last_cmd.name(), 	this.lastCmd);
+		JSON.put(json, InputParameters.last_cmd_N.name(), 	this.lastCmdN);
+		JSON.put(json, InputParameters.input_type.name(), 	this.inputType);
+		JSON.put(json, InputParameters.input_miss.name(), 	this.inputMiss);
+		JSON.put(json, InputParameters.dialog_stage.name(), this.dialogStage);
+		
+		JSON.put(json, InputParameters.client.name(), 		this.clientInfo);
+		JSON.put(json, InputParameters.env.name(), 			this.environment);
+		JSON.put(json, InputParameters.device_id.name(), 	this.deviceId);
+		JSON.put(json, InputParameters.connection.name(), 	this.connection);
+		JSON.put(json, InputParameters.duplex_data.name(), 	this.duplexData);
+		JSON.put(json, InputParameters.custom_data.name(), 	this.customData);
+		
+		return json;
 	}
 	
 	/**
