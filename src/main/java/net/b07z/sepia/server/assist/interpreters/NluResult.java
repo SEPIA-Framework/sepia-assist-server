@@ -36,6 +36,7 @@ public class NluResult {
 	public String context = "default";			//context is what the user did/said before to answer queries like "do that again" or "and in Berlin?"
 	public String environment = "default";		//environments can be stuff like home, car, phone etc. to restrict and tweak some results 
 	public int mood = -1;						//mood level 0-10 (10: super happy) of ILA (or whatever the name of the assistant is) can be passed around too
+	
 	//command summary
 	public String cmdSummary = "";				//this command as short summary, used e.g. as comparison to last_cmd of NLU_Input
 	public String bestDirectMatch = "---";		//if this command was found by a direct match, save the best sentence-key here. It helps to understand what command was found. 
@@ -348,5 +349,65 @@ public class NluResult {
 	 */
 	public double getCertaintyLevel() {
 		return certaintyLvl;
+	}
+	
+	//------ export / import ------
+	
+	/**
+	 * Transforms a cmd_summary back to a {@link NluResult} adding the {@link NluInput} and using it to restore the default
+	 * values for context, mood, environment etc.
+	 * @param input - {@link NluInput} with all the settings (language, environment, mood, etc...)
+	 * @param cmd_sum - cmd_summary to be transformed back
+	 * @return {@link NluResult}
+	 */
+	public static NluResult cmdSummaryToResult(NluInput input, String cmd_sum){
+		NluResult result = NluResult.cmdSummaryToResult(cmd_sum);
+		result.setInput(input);
+		return result;
+	}
+	/**
+	 * Transforms a cmd_summary back to a {@link NluResult}.<br>
+	 * Note: If you don't supply the {@link NluInput} you have to add it to the result later with result.setInput(NluInput input) or by adding all important stuff manually!
+	 * @param cmd_sum - cmd_summary to be transformed back
+	 * @return {@link NluResult}
+	 */
+	public static NluResult cmdSummaryToResult(String cmd_sum){
+		//initialize
+		List<String> possibleCMDs = new ArrayList<>();
+		List<Map<String, String>> possibleParameters = new ArrayList<>();
+		List<Integer> possibleScore = new ArrayList<>();
+		int bestScoreIndex = 0;
+		
+		//split string - Compare to: Converters.getParametersFromCommandSummary (TODO: use?)
+		String cmd;
+		String params;
+		if (cmd_sum.trim().matches(".*?;;.+")){
+			String[] parts = cmd_sum.split(";;", 2);		//TODO: change this whole ";;" structure to JSON?
+			cmd = parts[0].trim();
+			params = parts[1].trim();
+		}else{
+			cmd = cmd_sum.replaceFirst(";;$", "").trim();
+			params = "";
+		}
+		
+		//construct result
+		possibleCMDs.add(cmd);
+		possibleScore.add(1);
+		Map<String, String> kv = new HashMap<>();
+		for (String p : params.split(";;")){				//TODO: change this whole ";;" structure to JSON?
+			String[] e = p.split("=", 2);
+			if (e.length == 2){
+				String key = e[0].trim();
+				String value = e[1].trim();
+				kv.put(key, value);
+			}
+		}
+		possibleParameters.add(kv);
+		NluResult result = new NluResult(possibleCMDs, possibleParameters, possibleScore, bestScoreIndex);
+		result.certaintyLvl = 1.0d;
+		
+		//TODO: missing:	input parameters parsed to result (language, context, environment, etc. ...)
+		
+		return result;
 	}
 }

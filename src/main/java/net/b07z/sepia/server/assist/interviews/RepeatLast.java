@@ -1,7 +1,6 @@
 package net.b07z.sepia.server.assist.interviews;
 
 import net.b07z.sepia.server.assist.interpreters.NluResult;
-import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.services.ServiceResult;
 
 /**
@@ -28,7 +27,7 @@ public class RepeatLast {
 			new_result = null;
 		}else{
 			//reconstruct last command
-			new_result = NluTools.cmdSummaryToResult(NLU_result.input, cmd_summary);
+			new_result = NluResult.cmdSummaryToResult(NLU_result.input, cmd_summary);
 			
 			//TODO: this is in principle not complete with a restoration of all old parameters like context, environment, mood, etc...
 		}

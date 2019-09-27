@@ -15,7 +15,7 @@ public class NluCmdReconstructor implements NluInterface {
 	public NluResult interpret(NluInput input) {
 		String cmd_summary = input.text;
 		
-		NluResult result = NluTools.cmdSummaryToResult(input, cmd_summary);
+		NluResult result = NluResult.cmdSummaryToResult(input, cmd_summary);
 		double certainty_lvl = 1.0d;		//as this is the reconstructor it is 100% certain
 		result.certaintyLvl = certainty_lvl;
 		
