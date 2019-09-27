@@ -62,6 +62,8 @@ public class Start {
 	public static final String CUSTOM_SERVER = "custom";
 	
 	public static boolean isSSL = false;
+	public static boolean useSecurityPolicy = true;
+	public static boolean useSandboxBlacklist = true;
 	public static String keystorePwd = "13371337";
 	
 	/**
@@ -107,15 +109,30 @@ public class Start {
 			}else if (arg.equals("--ssl")){
 				//SSL
 				isSSL = true;
+			}else if (arg.equals("--nosecuritypolicy")){
+				//No security manager will be set
+				useSecurityPolicy = false;
+			}else if (arg.equals("--nosandbox")){
+				//Sandbox blacklist will be empty
+				useSandboxBlacklist = false;
 			}else if (arg.startsWith("keystorePwd=")){
 				//Java key-store password - TODO: maybe not the best way to load the pwd ...
 				keystorePwd = arg.replaceFirst(".*?=", "").trim();
 			}
 		}
 		//set security
-		Policy.setPolicy(new SandboxSecurityPolicy());
-		System.setSecurityManager(new SecurityManager());
-		ConfigServices.setupSandbox();
+		if (useSecurityPolicy){
+			Policy.setPolicy(new SandboxSecurityPolicy());
+			System.setSecurityManager(new SecurityManager());
+			Debugger.println("Security policy and manager set.", 3);
+			if (useSandboxBlacklist){
+				ConfigServices.setupSandbox();
+			}else{
+				Debugger.println("NO SANDBOX BLACKLIST LOADED.", 3);
+			}
+		}else{
+			Debugger.println("NO SECURITY POLICY ACTIVE.", 3);
+		}
 		if (isSSL){
 			secure(Config.xtensionsFolder + "SSL/ssl-keystore.jks", keystorePwd, null, null);
 		}

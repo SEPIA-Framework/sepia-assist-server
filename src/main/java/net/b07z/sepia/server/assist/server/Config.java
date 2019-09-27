@@ -85,6 +85,7 @@ public class Config {
 	//test and other configurations
 	public static boolean restrictRegistration = true; 			//check new registrations against white-list?
 	public static boolean enableSDK = false;					//enable or disable SDK uploads
+	//public static boolean useSandboxPolicy = true;				//use security sandbox for server (should always be true in production systems! Can only be set via commandline argument)
 	public static boolean connectToWebSocket = true;					//**connect assistant to WebSocket chat-server?
 	public static boolean collectGeoData = true;						//save anonymous geo-data on every API call?
 	public static boolean useSentencesDB = true;						//use sentences in the database to try to match user input
@@ -464,6 +465,7 @@ public class Config {
 				}
 			}
 			enableSDK = Boolean.valueOf(settings.getProperty("enable_sdk"));
+			//useSandboxPolicy = Boolean.valueOf(settings.getProperty("use_sandbox_security_policy", "true"));		//NOTE: this will only be accessible via commandline argument
 			useSentencesDB = Boolean.valueOf(settings.getProperty("enable_custom_commands"));
 			//databases
 			defaultRegion = settings.getProperty("db_default_region", "eu");
