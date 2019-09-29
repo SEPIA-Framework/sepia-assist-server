@@ -301,25 +301,28 @@ public final class User {
 	
 	/**
 	 * Export (part of) user account data to JSON string.
+	 * @param onlyBasics - reduce information to basics: id, name, prefLanguage
 	 */
-	public JSONObject exportJSON(){
+	public JSONObject exportJSON(boolean onlyBasics){
 		JSONObject account = new JSONObject();
 		JSON.add(account, "userId", userId);
-		JSON.add(account, "email", email);
-		JSON.add(account, "phone", phone);
 		JSON.add(account, "userName", userName.buildJSON());
-		JSON.add(account, "accessLevel", accessLvl);
-		List<String> u_roles = Converters.object2ArrayListStr(info.get(ACCOUNT.ROLES));
-		if (u_roles != null && !u_roles.isEmpty()){
-			JSON.add(account, "userRoles", JSON.stringListToJSONArray(u_roles));
-		}
 		String upl = (String) info.get(ACCOUNT.USER_PREFERRED_LANGUAGE);
 		if (upl != null && !upl.isEmpty()){
 			JSON.add(account, "prefLanguage", upl);
 		}
-		String ub = (String) info.get(ACCOUNT.USER_BIRTH);
-		if (ub != null && !ub.isEmpty()){
-			JSON.add(account, "userBirth", ub);
+		if (!onlyBasics){
+			JSON.add(account, "email", email);
+			JSON.add(account, "phone", phone);
+			JSON.add(account, "accessLevel", accessLvl);
+			List<String> u_roles = Converters.object2ArrayListStr(info.get(ACCOUNT.ROLES));
+			if (u_roles != null && !u_roles.isEmpty()){
+				JSON.add(account, "userRoles", JSON.stringListToJSONArray(u_roles));
+			}
+			String ub = (String) info.get(ACCOUNT.USER_BIRTH);
+			if (ub != null && !ub.isEmpty()){
+				JSON.add(account, "userBirth", ub);
+			}
 		}
 		return account;
 	}

@@ -118,7 +118,7 @@ public class NluInput {
 		JSON.put(json, InputParameters.text_raw.name(),	this.textRaw);
 		JSON.put(json, InputParameters.lang.name(), 	this.language);
 		JSON.put(json, InputParameters.context.name(), 	this.context);
-		JSON.put(json, InputParameters.user.name(), 	this.user.exportJSON());
+		JSON.put(json, InputParameters.user.name(), 	this.user.exportJSON(true));	//TODO: only basic info or all?
 		
 		JSON.put(json, InputParameters.time.name(), 		this.userTime);
 		JSON.put(json, InputParameters.time_local.name(), 	this.userTimeLocal);
@@ -136,7 +136,7 @@ public class NluInput {
 		JSON.put(json, InputParameters.device_id.name(), 	this.deviceId);
 		JSON.put(json, InputParameters.connection.name(), 	this.connection);
 		JSON.put(json, InputParameters.duplex_data.name(), 	this.duplexData);
-		JSON.put(json, InputParameters.custom_data.name(), 	this.customData);
+		JSON.put(json, InputParameters.custom_data.name(), 	getCustomDataJson());
 		
 		return json;
 	}
@@ -263,6 +263,24 @@ public class NluInput {
 	}
 	
 	//Custom data
+	/**
+	 * Get custom-data as JSON or null.
+	 */
+	public Object getCustomDataJson(){
+		if (customDataJson != null){
+			return customDataJson;
+		}else if (Is.notNullOrEmpty(customData)){
+			JSONObject cd = JSON.parseString(customData);
+			if (cd != null){
+				customDataJson = cd;
+				return customDataJson;
+			}else{
+				return null;
+			}
+		}else{
+			return null;
+		}
+	}
 	/**
 	 * Get a value of the custom-data object submitted by client.
 	 * @param key - the field in the JSON object
