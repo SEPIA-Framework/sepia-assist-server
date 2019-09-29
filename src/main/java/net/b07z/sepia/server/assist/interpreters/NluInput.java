@@ -58,7 +58,7 @@ public class NluInput {
 	public String duplexData = null;		//duplex_data:		data helpful to trace back a duplex call and answer or follow-up, e.g. the chat-channel-ID. Format is JSON, parse when required
 	public String connection = "http";		//connection:		http request or WebSocket connection - has influence on delayed replies
 	public boolean demoMode = false;		//demomode:			true/false if you want to use the demomode
-	public String customData = null; 		//custom_data:		a dynamic variable to carry any data that does not fit to the pre-defined stuff. Should be a JSONObject converted to string.
+	public String customData = null; 		//custom_data:		a dynamic variable to carry any data that does not fit to the predefined stuff. Should be a JSONObject converted to string.
 	private JSONObject customDataJson = null;					//custom data is parsed when needed and the result is stored here. 
 	
 	//Stuff to cache during all processes from NLU to service result:

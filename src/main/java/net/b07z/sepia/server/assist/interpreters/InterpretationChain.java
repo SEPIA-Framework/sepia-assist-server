@@ -111,6 +111,11 @@ public class InterpretationChain {
 			System.out.println("res. params: " + result.get_best_result_JSON().toJSONString());			//debug
 		}
 		*/
+		
+		//if nothing worked and not even NO_RESULT was returned...
+		if (result == null){
+			result = InterpretationStep.getNoResult(input, cachedResults);
+		}
 
 		return result;
 	}

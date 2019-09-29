@@ -55,6 +55,9 @@ public class NluResult {
 	Map<String, String> parameters;		//parameters of best result as HashMap
 	double certaintyLvl = 0.0d;			//scoring of the best result (from 0-1), strongly depends on the NL-Processor how reliable that is
 	
+	//custom interpreter data
+	public JSONObject customNluData = null;		//variable to carry any specific 'InterpretationStep' data that does not fit to the predefined stuff.
+	
 	//all NLP results are stored here:
 	List<String> possibleCMDs = new ArrayList<String>();			//make a list of possible interpretations (commands) of the text
 	List<Map<String, String>> possibleParameters = new ArrayList<>();		//possible parameters of these commands
@@ -138,35 +141,30 @@ public class NluResult {
 		JSONObject obj = new JSONObject();
 		if (foundResult && !commandType.matches(CMD.NO_RESULT)) {
 			obj.put("result", "success");
-			obj.put("language", language);
 			obj.put("command", commandType);
 			obj.put("certainty", new Double(certaintyLvl));
 			obj.put("bestDirectMatch", bestDirectMatch);
-			obj.put("context", context);
-			obj.put("environment", environment);
-			obj.put("mood", new Integer(mood));
 			JSONObject params = Converters.mapStrStr2Json(parameters);
 			/*for (String e : parameters){
 				params.put(e.replaceFirst("=.*", "").trim(), e.replaceFirst(".*?=", "").trim()); 
 			}*/
 			obj.put("parameters", params);
-			if (Is.notNullOrEmpty(normalizedText)){
-				obj.put("normalizedText", normalizedText);
-			}
-			return obj;
 		}else{
 			obj.put("result", "fail");
-			obj.put("language", language);
 			obj.put("error", "no match found");
 			obj.put("answer", "sorry, but I totally didn't understand that! :-(");
-			obj.put("context", context);
-			obj.put("environment", environment);
-			obj.put("mood", new Integer(mood));
-			if (Is.notNullOrEmpty(normalizedText)){
-				obj.put("normalizedText", normalizedText);
-			}
-			return obj;
 		}
+		obj.put("language", language);
+		obj.put("context", context);
+		obj.put("environment", environment);
+		obj.put("mood", new Integer(mood));
+		if (Is.notNullOrEmpty(normalizedText)){
+			obj.put("normalizedText", normalizedText);
+		}
+		if (Is.notNullOrEmpty(customNluData)){
+			obj.put("customNluData", customNluData);
+		}
+		return obj;
 	}
 	/**
 	 * Import a result received as JSON object, e.g. from web-API.<br>
@@ -183,6 +181,7 @@ public class NluResult {
 			this.bestDirectMatch = JSON.getStringOrDefault(jsonData, "bestDirectMatch", "---");
 		}
 		if (jsonData.containsKey("normalizedText")) this.normalizedText = JSON.getString(jsonData, "normalizedText");
+		if (jsonData.containsKey("customNluData")) this.customNluData = JSON.getJObject(jsonData, "customNluData");
 		if (jsonData.containsKey("parameters")){
 			paramsJson = JSON.getJObject(jsonData, "parameters");
 			this.parameters = Converters.json2HashMapStrStr(paramsJson);
@@ -384,6 +383,14 @@ public class NluResult {
 	 */
 	public double getCertaintyLevel() {
 		return certaintyLvl;
+	}
+	
+	/**
+	 * Get custom NLU data create by the {@link InterpretationStep}.
+	 * @return JSONObject or null
+	 */
+	public JSONObject getCustomNluData(){
+		return this.customNluData;
 	}
 	
 	//------ export / import ------

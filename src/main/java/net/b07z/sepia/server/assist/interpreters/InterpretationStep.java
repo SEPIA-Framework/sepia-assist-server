@@ -1,6 +1,8 @@
 package net.b07z.sepia.server.assist.interpreters;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -257,6 +259,8 @@ public interface InterpretationStep {
 			//TODO: test
 			NluResult nluResult = new NluResult(input);
 			nluResult.importJson(response);
+			//System.out.println(response.toJSONString());						//DEBUG
+			//System.out.println(nluResult.getBestResultJSON().toJSONString());	//DEBUG
 			if (nluResult.foundResult){
 				return nluResult;
 			}else{
@@ -278,5 +282,32 @@ public interface InterpretationStep {
 	public static NluResult getClassResult(String canonicalClassName, NluInput input, Map<String, NluResult> cachedResults){
 		InterpretationStep step = (InterpretationStep) ClassBuilder.construct(canonicalClassName);
 		return step.call(input, cachedResults);
+	}
+	
+	/**
+	 * Just return a proper 'no_result' command. 
+	 * @param input - {@link NluInput}
+	 * @param cachedResults - cached results from other NLU steps
+	 * @return result
+	 */
+	public static NluResult getNoResult(NluInput input, Map<String, NluResult> cachedResults){
+		//Prepare results
+		List<String> possibleCMDs = new ArrayList<>();			//make a list of possible interpretations of the text
+		List<Map<String, String>> possibleParameters = new ArrayList<>();		//possible parameters
+		List<Integer> possibleScore = new ArrayList<>();		//make scores to decide which one is correct command
+		
+		possibleCMDs.add(CMD.NO_RESULT);
+		possibleScore.add(1);
+		HashMap<String, String> pv = new HashMap<String, String>();
+			pv.put("text", input.textRaw);
+		possibleParameters.add(pv);
+		double certainty_lvl = 1.0d;
+		
+		NluResult result = new NluResult(possibleCMDs, possibleParameters, possibleScore, 0);
+		result.certaintyLvl = certainty_lvl;
+		result.setInput(input);
+		result.normalizedText = input.text;
+		
+		return result;
 	}
 }
