@@ -256,7 +256,6 @@ public interface InterpretationStep {
 		JSONObject inputJson = input.getJson();
 		JSONObject response = Connectors.httpPOST(apiUrl, inputJson.toJSONString(), null);
 		if (Connectors.httpSuccess(response)){
-			//TODO: test
 			NluResult nluResult = new NluResult(input);
 			nluResult.importJson(response);
 			//System.out.println(response.toJSONString());						//DEBUG
@@ -274,13 +273,13 @@ public interface InterpretationStep {
 	
 	/**
 	 * Get {@link NluResult} from a class specified by 'canonicalClassName'. The class has to implement the {@link InterpretationStep} interface.
-	 * @param canonicalClassName - name of the class to call that implements {@link InterpretationStep}
+	 * @param fullclassName - name of the class to call (in format of value returned by getName) that implements {@link InterpretationStep}
 	 * @param input - {@link NluInput}
 	 * @param cachedResults - cached results from other NLU steps
 	 * @return result or null
 	 */
-	public static NluResult getClassResult(String canonicalClassName, NluInput input, Map<String, NluResult> cachedResults){
-		InterpretationStep step = (InterpretationStep) ClassBuilder.construct(canonicalClassName);
+	public static NluResult getClassResult(String fullclassName, NluInput input, Map<String, NluResult> cachedResults){
+		InterpretationStep step = (InterpretationStep) ClassBuilder.construct(fullclassName);
 		return step.call(input, cachedResults);
 	}
 	

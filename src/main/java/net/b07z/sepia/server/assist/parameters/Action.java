@@ -283,6 +283,9 @@ public class Action implements ParameterHandler{
 		//extract again/first? - this should only happen via predefined parameters (e.g. from direct triggers)
 		if (Is.notNullOrEmpty(input) && !input.startsWith("<")){
 			input = extract(input);
+			if (Is.nullOrEmpty(input)){
+				return "";
+			}
 		}
 		
 		//is accepted result?

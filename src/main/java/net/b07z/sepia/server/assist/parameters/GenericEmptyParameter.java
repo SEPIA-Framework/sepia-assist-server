@@ -6,7 +6,7 @@ import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.core.tools.JSON;
 
 /**
- * The generic-empty parameter simply returns and empty string as VALUE or a user defined string via direct command. 
+ * The generic-empty parameter simply returns an empty string as VALUE or a user defined string via direct command. 
  * Should be used for parameters that have no handler yet, are optional and should only contain data if explicitly set via direct commands.<br>
  * Note: Generic parameters do not increase matching score in NLU process.
  * 
