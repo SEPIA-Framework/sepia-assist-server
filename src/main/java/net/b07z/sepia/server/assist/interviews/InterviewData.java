@@ -25,6 +25,7 @@ public class InterviewData {
 	public static final String CACHE_DATA = "cache_data";		//if the parameter can cache results this is the cache data
 	public static final String OPTIONS = "options";				//if there is more than one result ...
 	public static final String ARRAY = "array";					//a number of values
+	public static final String EXTRAS = "extras";				//custom JSON object that can be filled with anything parameter specific as required
 	
 	//-location
 	public static final String LOCATION_LAT = "latitude";

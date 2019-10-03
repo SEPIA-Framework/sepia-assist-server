@@ -48,6 +48,7 @@ public class Interview {
 	//tags for specific input handling
 	public static final String INPUT_RAW = "<i_raw>";
 	public static final String INPUT_NORM = "<i_norm>";
+	public static final String INPUT_EXTRACTED = "<i_ext>";
 	
 	//
 	public NluResult nluResult;				//keep a reference to the NluResult for building ServiceResult

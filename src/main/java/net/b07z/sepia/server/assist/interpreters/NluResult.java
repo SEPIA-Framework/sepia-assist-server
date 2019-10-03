@@ -56,7 +56,7 @@ public class NluResult {
 	double certaintyLvl = 0.0d;			//scoring of the best result (from 0-1), strongly depends on the NL-Processor how reliable that is
 	
 	//custom interpreter data
-	public JSONObject customNluData = null;		//variable to carry any specific 'InterpretationStep' data that does not fit to the predefined stuff.
+	public JSONObject customData = null;		//variable to carry any specific 'InterpretationStep' data that does not fit to the predefined stuff.
 	
 	//all NLP results are stored here:
 	List<String> possibleCMDs = new ArrayList<String>();			//make a list of possible interpretations (commands) of the text
@@ -130,11 +130,9 @@ public class NluResult {
 	}
 	
 	/**
-	 * Returns the best (highest scoring) result of the NLU interpreter 
-	 * as a JSON string object.
-	 * 
-	 * @return      the best result as JSON object
-	 * @see         JSONObject
+	 * Returns the best (highest scoring) result of the NLU interpreter as a JSON string object.
+	 * @return best result as JSON object in camel-case format
+	 * @see JSONObject
 	 */
 	@SuppressWarnings("unchecked")
 	public JSONObject getBestResultJSON(){
@@ -161,15 +159,46 @@ public class NluResult {
 		if (Is.notNullOrEmpty(normalizedText)){
 			obj.put("normalizedText", normalizedText);
 		}
-		if (Is.notNullOrEmpty(customNluData)){
-			obj.put("customNluData", customNluData);
+		if (Is.notNullOrEmpty(customData)){
+			obj.put("customData", customData);
 		}
 		return obj;
 	}
 	/**
-	 * Import a result received as JSON object, e.g. from web-API.<br>
+	 * Returns basic data of the instance as JSON object in snake-case format so it can be used with e.g. the Python-bridge API.<br>
+	 * NOTE: Parameter names are not guaranteed to be snake-case :-/
+	 * @return basic data as JSON object in snake-case format
+	 * @see JSONObject
+	 */
+	@SuppressWarnings("unchecked")
+	public JSONObject getJsonForWebApi(){
+		JSONObject obj = new JSONObject();
+		if (foundResult && !commandType.matches(CMD.NO_RESULT)){
+			obj.put("result", "success");
+			obj.put("command", commandType);
+			obj.put("certainty", new Double(certaintyLvl));
+			obj.put("best_direct_match", bestDirectMatch);
+			obj.put("parameters", Converters.mapStrStr2Json(parameters));	//note: parameter names are not guaranteed to be snake-case :-/
+		}else{
+			obj.put("result", "fail");
+			obj.put("error", "no match found");
+		}
+		obj.put("language", language);
+		obj.put("context", context);
+		obj.put("environment", environment);
+		obj.put("mood", new Integer(mood));
+		if (Is.notNullOrEmpty(normalizedText)){
+			obj.put("normalized_text", normalizedText);
+		}
+		if (Is.notNullOrEmpty(customData)){
+			obj.put("custom_data", customData);
+		}
+		return obj;
+	}
+	/**
+	 * Import a result received as JSON object in camel-case format, e.g. from internal API.<br>
 	 * Works best with 'input' constructor: NluResult(NluInput input)
-	 * @param jsonData
+	 * @param jsonData in camel-case format
 	 */
 	public void importJson(JSONObject jsonData){
 		String res = JSON.getStringOrDefault(jsonData, "result", "fail");
@@ -181,7 +210,37 @@ public class NluResult {
 			this.bestDirectMatch = JSON.getStringOrDefault(jsonData, "bestDirectMatch", "---");
 		}
 		if (jsonData.containsKey("normalizedText")) this.normalizedText = JSON.getString(jsonData, "normalizedText");
-		if (jsonData.containsKey("customNluData")) this.customNluData = JSON.getJObject(jsonData, "customNluData");
+		if (jsonData.containsKey("customData")) this.customData = JSON.getJObject(jsonData, "customData");
+		if (jsonData.containsKey("parameters")){
+			paramsJson = JSON.getJObject(jsonData, "parameters");
+			this.parameters = Converters.json2HashMapStrStr(paramsJson);
+		}
+		if (Is.notNullOrEmpty(this.commandType) && Is.notNullOrEmptyMap(this.parameters)){
+			this.cmdSummary = Converters.makeCommandSummary(this.commandType, paramsJson);
+		}
+		//TODO: add this? modify input?
+		if (jsonData.containsKey("language")) this.language = JSON.getString(jsonData, "language");
+		if (jsonData.containsKey("context")) this.context = JSON.getString(jsonData, "context");
+		if (jsonData.containsKey("environment")) this.environment = JSON.getString(jsonData, "environment");
+		if (jsonData.containsKey("mood")) this.mood = JSON.getIntegerOrDefault(jsonData, "mood", 5);
+	}
+	/**
+	 * Import a result received as JSON object in snake-case format, e.g. from web-API.
+	 * This version fits better when using e.g. the Python-bridge API.<br>
+	 * Works best with 'input' constructor: NluResult(NluInput input)
+	 * @param jsonData in snake-case format
+	 */
+	public void importJsonFromWebApi(JSONObject jsonData){
+		String res = JSON.getStringOrDefault(jsonData, "result", "fail");
+		JSONObject paramsJson = null;
+		this.foundResult = (res.equals("success")? true : false);
+		if (this.foundResult){
+			this.commandType = JSON.getString(jsonData, "command");
+			this.certaintyLvl = Converters.obj2DoubleOrDefault(jsonData.get("certainty"), 0.0d);
+			this.bestDirectMatch = JSON.getStringOrDefault(jsonData, "best_direct_match", "---");
+		}
+		if (jsonData.containsKey("normalized_text")) this.normalizedText = JSON.getString(jsonData, "normalized_text");
+		if (jsonData.containsKey("custom_data")) this.customData = JSON.getJObject(jsonData, "custom_data");
 		if (jsonData.containsKey("parameters")){
 			paramsJson = JSON.getJObject(jsonData, "parameters");
 			this.parameters = Converters.json2HashMapStrStr(paramsJson);
@@ -390,7 +449,7 @@ public class NluResult {
 	 * @return JSONObject or null
 	 */
 	public JSONObject getCustomNluData(){
-		return this.customNluData;
+		return this.customData;
 	}
 	
 	//------ export / import ------

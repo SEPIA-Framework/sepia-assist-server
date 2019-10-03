@@ -300,10 +300,10 @@ public final class User {
 	}
 	
 	/**
-	 * Export (part of) user account data to JSON string.
+	 * Export user account data to JSON string.
 	 * @param onlyBasics - reduce information to basics: id, name, prefLanguage
 	 */
-	public JSONObject exportJSON(boolean onlyBasics){
+	public JSONObject exportJSON(){
 		JSONObject account = new JSONObject();
 		JSON.add(account, "userId", userId);
 		JSON.add(account, "userName", userName.buildJSON());
@@ -311,17 +311,42 @@ public final class User {
 		if (upl != null && !upl.isEmpty()){
 			JSON.add(account, "prefLanguage", upl);
 		}
+		JSON.add(account, "email", email);
+		JSON.add(account, "phone", phone);
+		JSON.add(account, "accessLevel", accessLvl);
+		List<String> u_roles = Converters.object2ArrayListStr(info.get(ACCOUNT.ROLES));
+		if (u_roles != null && !u_roles.isEmpty()){
+			JSON.add(account, "userRoles", JSON.stringListToJSONArray(u_roles));
+		}
+		String ub = (String) info.get(ACCOUNT.USER_BIRTH);
+		if (ub != null && !ub.isEmpty()){
+			JSON.add(account, "userBirth", ub);
+		}
+		return account;
+	}
+	/**
+	 * Export part of user account data to JSON string in snake-case format. Fits better to python-bridge for example.
+	 * @param onlyBasics - reduce information to basics: id, name, prefLanguage
+	 */
+	public JSONObject exportJsonForWebApi(boolean onlyBasics){
+		JSONObject account = new JSONObject();
+		JSON.add(account, "user_id", userId);
+		JSON.add(account, "user_name", userName.buildJSON());
+		String upl = (String) info.get(ACCOUNT.USER_PREFERRED_LANGUAGE);
+		if (upl != null && !upl.isEmpty()){
+			JSON.add(account, "pref_language", upl);
+		}
 		if (!onlyBasics){
 			JSON.add(account, "email", email);
 			JSON.add(account, "phone", phone);
-			JSON.add(account, "accessLevel", accessLvl);
+			JSON.add(account, "access_level", accessLvl);
 			List<String> u_roles = Converters.object2ArrayListStr(info.get(ACCOUNT.ROLES));
 			if (u_roles != null && !u_roles.isEmpty()){
-				JSON.add(account, "userRoles", JSON.stringListToJSONArray(u_roles));
+				JSON.add(account, "user_roles", JSON.stringListToJSONArray(u_roles));
 			}
 			String ub = (String) info.get(ACCOUNT.USER_BIRTH);
 			if (ub != null && !ub.isEmpty()){
-				JSON.add(account, "userBirth", ub);
+				JSON.add(account, "user_birth", ub);
 			}
 		}
 		return account;

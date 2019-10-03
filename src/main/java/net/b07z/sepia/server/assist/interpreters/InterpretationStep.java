@@ -257,7 +257,7 @@ public interface InterpretationStep {
 		JSONObject response = Connectors.httpPOST(apiUrl, inputJson.toJSONString(), null);
 		if (Connectors.httpSuccess(response)){
 			NluResult nluResult = new NluResult(input);
-			nluResult.importJson(response);
+			nluResult.importJsonFromWebApi(response);
 			//System.out.println(response.toJSONString());						//DEBUG
 			//System.out.println(nluResult.getBestResultJSON().toJSONString());	//DEBUG
 			if (nluResult.foundResult){

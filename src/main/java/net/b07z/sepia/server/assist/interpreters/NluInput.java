@@ -108,7 +108,7 @@ public class NluInput {
 	}
 	
 	/**
-	 * Get input as JSON object (without session cache).
+	 * Get input as JSON object (without session cache) in snake-case format.
 	 */
 	public JSONObject getJson(){
 		JSONObject json = new JSONObject();
@@ -118,7 +118,7 @@ public class NluInput {
 		JSON.put(json, InputParameters.text_raw.name(),	this.textRaw);
 		JSON.put(json, InputParameters.lang.name(), 	this.language);
 		JSON.put(json, InputParameters.context.name(), 	this.context);
-		JSON.put(json, InputParameters.user.name(), 	this.user.exportJSON(true));	//TODO: only basic info or all?
+		JSON.put(json, InputParameters.user.name(), 	this.user.exportJsonForWebApi(true));	//TODO: only basic info or all?
 		
 		JSON.put(json, InputParameters.time.name(), 		this.userTime);
 		JSON.put(json, InputParameters.time_local.name(), 	this.userTimeLocal);
