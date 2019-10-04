@@ -11,6 +11,7 @@ import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 
 public class SmartDevice implements ParameterHandler{
@@ -179,57 +180,60 @@ public class SmartDevice implements ParameterHandler{
 		
 		//classify into types:
 		
+		String deviceTypeTag = null;
+		
 		if (language.matches(LANGUAGES.DE)){
 			if (NluTools.stringContains(device, lightRegEx_de)){
-				return "<" + Types.light.name() + ">" + this.found;
+				deviceTypeTag = "<" + Types.light.name() + ">";
 				
 			}else if (NluTools.stringContains(device, heaterRegEx_de)){
-				return "<" + Types.heater.name() + ">" + this.found;
+				deviceTypeTag = "<" + Types.heater.name() + ">";
 				
 			}else if (NluTools.stringContains(device, tvRegEx_de)){
-				return "<" + Types.tv.name() + ">" + this.found;
+				deviceTypeTag = "<" + Types.tv.name() + ">";
 				
 			}else if (NluTools.stringContains(device, musicPlayerRegEx_de)){
-				return "<" + Types.music_player.name() + ">" + this.found;
+				deviceTypeTag = "<" + Types.music_player.name() + ">";
 				
 			}else if (NluTools.stringContains(device, fridgeRegEx_de)){
-				return "<" + Types.fridge.name() + ">" + this.found;
+				deviceTypeTag = "<" + Types.fridge.name() + ">";
 				
 			}else if (NluTools.stringContains(device, ovenRegEx_de)){
-				return "<" + Types.oven.name() + ">" + this.found;
+				deviceTypeTag = "<" + Types.oven.name() + ">";
 				
 			}else if (NluTools.stringContains(device, coffeeMakerRegEx_de)){
-				return "<" + Types.coffee_maker.name() + ">" + this.found;
+				deviceTypeTag = "<" + Types.coffee_maker.name() + ">";
 			
 			}else{
-				return "<" + Types.device.name() + ">" + this.found;
+				deviceTypeTag = "<" + Types.device.name() + ">";
 			}
 		}else{
 			if (NluTools.stringContains(device, lightRegEx_en)){
-				return "<" + Types.light.name() + ">" + this.found;
+				deviceTypeTag = "<" + Types.light.name() + ">";
 				
 			}else if (NluTools.stringContains(device, heaterRegEx_en)){
-				return "<" + Types.heater.name() + ">" + this.found;
+				deviceTypeTag = "<" + Types.heater.name() + ">";
 				
 			}else if (NluTools.stringContains(device, tvRegEx_en)){
-				return "<" + Types.tv.name() + ">" + this.found;
+				deviceTypeTag = "<" + Types.tv.name() + ">";
 				
 			}else if (NluTools.stringContains(device, musicPlayerRegEx_en)){
-				return "<" + Types.music_player.name() + ">" + this.found;
+				deviceTypeTag = "<" + Types.music_player.name() + ">";
 				
 			}else if (NluTools.stringContains(device, fridgeRegEx_en)){
-				return "<" + Types.fridge.name() + ">" + this.found;
+				deviceTypeTag = "<" + Types.fridge.name() + ">";
 				
 			}else if (NluTools.stringContains(device, ovenRegEx_en)){
-				return "<" + Types.oven.name() + ">" + this.found;
+				deviceTypeTag = "<" + Types.oven.name() + ">";
 				
 			}else if (NluTools.stringContains(device, coffeeMakerRegEx_en)){
-				return "<" + Types.coffee_maker.name() + ">" + this.found;
+				deviceTypeTag = "<" + Types.coffee_maker.name() + ">";
 			
 			}else{
-				return "<" + Types.device.name() + ">" + this.found;
+				deviceTypeTag = "<" + Types.device.name() + ">";
 			}
 		}
+		return (deviceTypeTag + ";;" + this.found);
 	}
 	
 	@Override
@@ -263,21 +267,27 @@ public class SmartDevice implements ParameterHandler{
 
 	@Override
 	public String build(String input) {
+		//extract again/first? - this should only happen via predefined parameters (e.g. from direct triggers)
+		if (Is.notNullOrEmpty(input) && !input.startsWith("<")){
+			input = extract(input);
+			if (Is.nullOrEmpty(input)){
+				return "";
+			}
+		}
 		
 		//expects a type!
 		String deviceName = "";
-		if (NluTools.stringContains(input, "^<\\w+>")){
-			String[] typeAndName = input.split(">", 2);
+		if (input.contains(";;")){
+			String[] typeAndName = input.split(";;");
 			if (typeAndName.length == 2){
 				deviceName = typeAndName[1];
 				input = typeAndName[0];
 			}else{
 				input = typeAndName[0];
 			}
-			input = input.replaceAll("^<|>$", "");
 		}
 		String commonValue = input.replaceAll("^<|>$", "").trim();
-		String localValue = getLocal(input, language);
+		String localValue = getLocal(commonValue, language);
 		
 		//build default result
 		JSONObject itemResultJSON = new JSONObject();
