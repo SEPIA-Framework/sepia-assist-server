@@ -260,6 +260,14 @@ public class Start {
 			Debugger.println("Assistant token validated", 3);
 		}
 	}
+	/**
+	 * Setup accounts that allow only very limited number of failed logins until blocked for a while.
+	 */
+	public static void setupProtectedAccounts(){
+		Authenticator.addProtectedAccount(Config.superuserId, Config.superuserEmail);
+		Authenticator.addProtectedAccount(Config.assistantId, Config.assistantEmail);
+		Debugger.println("Added 'admin' and 'assistant' to protected accounts map", 3);
+	}
 	
 	/**
 	 * Defines the end-points that this server supports.
@@ -336,6 +344,9 @@ public class Start {
 		
 		//check existence of universal accounts (superuser and assistant)
 		checkCoreAccounts();
+		
+		//load protected accounts (e.g. admin and assistant)
+		setupProtectedAccounts();
 		
 		//load updates to the framework that have no specific place yet
 		loadUpdates();

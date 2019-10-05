@@ -81,6 +81,8 @@ public class Config {
 	public static int cklHashIterations = ((int) clusterKeyLight.charAt(clusterKeyLight.length()-1)) + 5;		//well defined but "random" hash iterations due to random key
 	public static boolean allowInternalCalls = true;			//**allow API-to-API authentication via cluster-key
 	public static boolean allowGlobalDevRequests = false;		//**restrict certain developer-specific requests to private network
+	public static boolean improveSecurityForProtectedAccounts = true;		//apply 'number of failed login attempts' check to protected accounts
+	public static long protectedAccountsBlockTimeout = 30000;				//blocked login timeout due to 'too many failed attempts' 
 	
 	//test and other configurations
 	public static boolean restrictRegistration = true; 			//check new registrations against white-list?
