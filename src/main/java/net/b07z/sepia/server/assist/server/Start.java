@@ -4,6 +4,7 @@ import static spark.Spark.*;
 
 import java.security.Policy;
 import java.util.Date;
+import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -266,7 +267,19 @@ public class Start {
 	public static void setupProtectedAccounts(){
 		Authenticator.addProtectedAccount(Config.superuserId, Config.superuserEmail);
 		Authenticator.addProtectedAccount(Config.assistantId, Config.assistantEmail);
-		Debugger.println("Added 'admin' and 'assistant' to protected accounts map", 3);
+		Debugger.println("Added 'admin' and 'assistant' to protected accounts list.", 3);
+		if (!Config.protectedAccounts.isEmpty()){
+			for (Entry<String, String> e : Config.protectedAccounts.entrySet()){
+				String uid = e.getKey();
+				String email = e.getValue();
+				if (uid.startsWith(Config.userIdPrefix) && email.contains("@")){
+					Authenticator.addProtectedAccount(e.getKey(), e.getValue());
+				}else{
+					throw new RuntimeException("Found INVALID format in protected accounts list for: " + uid + " - " + email);
+				}
+			}
+			Debugger.println("Added few more accounts to protected list: " + Config.protectedAccounts.keySet().toString(), 3);
+		}
 	}
 	
 	/**

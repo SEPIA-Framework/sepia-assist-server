@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import net.b07z.sepia.server.assist.answers.AnswerLoaderElasticsearch;
@@ -82,7 +83,8 @@ public class Config {
 	public static boolean allowInternalCalls = true;			//**allow API-to-API authentication via cluster-key
 	public static boolean allowGlobalDevRequests = false;		//**restrict certain developer-specific requests to private network
 	public static boolean improveSecurityForProtectedAccounts = true;		//apply 'number of failed login attempts' check to protected accounts
-	public static long protectedAccountsBlockTimeout = 30000;				//blocked login timeout due to 'too many failed attempts' 
+	public static long protectedAccountsBlockTimeout = 30000;				//blocked login timeout due to 'too many failed attempts'
+	public static Map<String, String> protectedAccounts = new HashMap<>();	//a map with UID, EMAIL pairs of "a few" more protected accounts (in addition to admin and assistant)
 	
 	//test and other configurations
 	public static boolean restrictRegistration = true; 			//check new registrations against white-list?
@@ -521,6 +523,15 @@ public class Config {
 			superuserId = settings.getProperty("universal_superuser_id");
 			superuserEmail = settings.getProperty("universal_superuser_email");
 			superuserPwd = settings.getProperty("universal_superuser_pwd");
+			//protected accounts
+			String protectedAccountsStr = settings.getProperty("protected_accounts_list", "").trim().replaceAll("^\\[|\\]$", "").trim();
+			if (!protectedAccountsStr.isEmpty()){
+				String[] protectedAccountsArray = protectedAccountsStr.split("\\s*,\\s*");
+				for (String kv : protectedAccountsArray){
+					String[] ue = kv.split(";;");
+					protectedAccounts.put(ue[0].trim(), ue[1].trim());
+				}
+			}
 			//API keys
 			amazon_dynamoDB_access = settings.getProperty("amazon_dynamoDB_access");
 			amazon_dynamoDB_secret = settings.getProperty("amazon_dynamoDB_secret");

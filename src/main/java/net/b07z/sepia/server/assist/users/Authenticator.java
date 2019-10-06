@@ -54,6 +54,8 @@ public class Authenticator {
 		if (!protectedAccountsFailedLoginAttempts.containsKey(uid)){
 			protectedAccountsFailedLoginAttempts.put(uid, new AtomicInteger(0));
 			protectedAccountsLastLoginAttempt.put(uid, new AtomicLong(0));
+		}
+		if (!protectedAccountsEmailToIdMap.containsKey(email)){
 			protectedAccountsEmailToIdMap.put(email, uid);
 		}
 	}
