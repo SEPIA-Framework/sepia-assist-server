@@ -33,7 +33,8 @@
 		{ "name": "Kino.de - Film-News", "url": "https://www.kino.de/rss/movienews", "name_html": "<b><span style='color:#039cfd;'>Kino.de</span><span style='color:#000000;'> - Film-News</span></b>" },
 		{ "name": "deutsche startups", "url": "https://www.deutsche-startups.de/feed/", "name_html": "<b><span style='color:#3b65b1;'>deutsche startups</span></b>" },
 		{ "name": "wissenschaft.de", "url": "https://www.wissenschaft.de/feed-wissenschaft", "name_html": "<span style='color:#004e9e;'><b>wissenschaft.de</b>.de</span>" },
-		{ "name": "MIT Technology Review", "url": "https://www.technologyreview.com/topnews.rss", "name_html": "<span style='color:#000;'><b>MIT Technology Review</b></span>" }
+		{ "name": "MIT Technology Review", "url": "https://www.technologyreview.com/topnews.rss", "name_html": "<span style='color:#000;'><b>MIT Technology Review</b></span>" },
+		{ "name": "HACKADAY", "url": "https://hackaday.com/blog/feed/", "name_html": "<span style='color:#000;'><b>HACKADAY</b></span>" }
 	],
 	"deprecated":[
 		{ "name": "RevierSport", "url": "https://abo.reviersport.de/?news-rss-ama", "name_html": "<span style='color:#000;'>RevierSport</span>" },
@@ -45,7 +46,7 @@
 			{"section": "economy", "group": ["SPIEGEL ONLINE", "Süddeutsche", "FAZ", "Tagesschau", "Gruenderszene"]},
 			{"section": "politics", "group": ["SPIEGEL ONLINE", "Süddeutsche", "FAZ", "Bild", "Tagesschau"]},
 			{"section": "science", "group": ["wissenschaft.de", "t3n", "golem.de", "heise online"]},
-			{"section": "tech", "group": ["golem.de", "t3n", "heise online", "heise Developer", "heise Make", "PCGames"]},
+			{"section": "tech", "group": ["golem.de", "t3n", "heise online", "heise Developer", "heise Make", "HACKADAY", "PCGames"]},
 			{"section": "sports", "group": ["Sport1", "Sportschau", "Kicker"]},
 			{"section": "soccer", "group": ["Sportschau - Fussball", "Kicker", "Sport1", "11FREUNDE"]},
 			{"section": "games", "group": ["PCGames", "GameStar"]},
@@ -59,7 +60,7 @@
 			{"section": "economy", "group": ["SPIEGEL ONLINE", "Süddeutsche", "FAZ", "Tagesschau", "Gruenderszene"]},
 			{"section": "politics", "group": ["SPIEGEL ONLINE", "Süddeutsche", "FAZ", "Bild", "Tagesschau"]},
 			{"section": "science", "group": ["Wired", "t3n", "golem.de", "heise online"]},
-			{"section": "tech", "group": ["Wired", "MIT Technology Review", "t3n", "golem.de", "heise online", "PCGames"]},
+			{"section": "tech", "group": ["Wired", "MIT Technology Review", "HACKADAY", "t3n", "golem.de", "heise online", "PCGames"]},
 			{"section": "sports", "group": ["Sport1", "Sportschau", "Kicker"]},
 			{"section": "soccer", "group": ["Sportschau - Fussball", "Kicker", "Sport1", "11FREUNDE"]},
 			{"section": "games", "group": ["PCGames", "GameStar"]},
