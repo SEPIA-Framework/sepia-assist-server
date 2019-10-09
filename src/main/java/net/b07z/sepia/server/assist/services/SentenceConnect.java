@@ -135,6 +135,7 @@ public class SentenceConnect implements ServiceInterface{
 					api.putActionInfo("info", "direct_cmd");
 					api.putActionInfo("cmd", thisRes.cmdSummary);
 					api.putActionInfo("lang", thisRes.language);
+					api.putActionInfo("newReceiver", Config.assistantId);		//make sure this comes back to the assistant
 					//api.actionInfo_put_info("options", JSON.make(ACTIONS.SKIP_TTS, true));
 					goodResults++;
 				}

@@ -78,7 +78,7 @@ public class ClientControls implements ServiceInterface{
 				+ "(.* |)medi(a|en)(-| |)(player|wiedergabe)( .*|)|"
 				+ "(.* |)(naechste(\\w|)|vorherige(\\w|)) (musik|song|lied|medien|media|titel)( .*|)|"
 				+ "(naechste(\\w|)|vorherige(\\w|)|vor|zurueck|stop(pen|p|)|play|abspielen|lauter|leiser|fortsetzen|weiter)|"
-				+ "(.* |)(musik|song|lied|medien|media|titel|player|wiedergabe) (anhalten|stoppen|stop(p|)|beenden|schliessen|(aus|ab)schalten|pausieren|fortsetzen|weiter|wiederholen)( .*|)|"
+				+ "(.* |)(musik|song|lied|medien|media|titel|player|wiedergabe) (anhalten|stoppen|stop(p|)|beenden|schliessen|(aus|ab)schalten|pause|pausieren|fortsetzen|weiter|wiederholen)( .*|)|"
 				+ "(.* |)(stoppe|stop(p|)|schliesse|schalte|beende|halte|pausiere)( .* | )(musik|song|lied|medien|media|titel|player|sound|wiedergabe)( .*|)"
 				+ ")$", DE);
 		info.setCustomTriggerRegX("^("
