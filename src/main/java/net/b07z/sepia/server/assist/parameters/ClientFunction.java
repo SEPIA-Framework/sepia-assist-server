@@ -49,6 +49,7 @@ public class ClientFunction implements ParameterHandler {
 		local_de.put("<media>", "die Medienwiedergabe");
 		//Button names
 		buttons_de.put("<default>", "Funktion");
+		buttons_de.put("<settings>", "Einstellungen");
 		buttons_de.put("<volume>", "Lautstärke");
 		buttons_de.put("<alwaysOn>", "Always-On Modus");
 		buttons_de.put("<meshNode>", "Mesh-Node");
