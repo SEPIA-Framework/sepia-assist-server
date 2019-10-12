@@ -3,7 +3,6 @@ package net.b07z.sepia.server.assist.endpoints;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.messages.Clients;
-import net.b07z.sepia.server.assist.messages.Queues;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.Start;
 import net.b07z.sepia.server.assist.server.Statistics;
@@ -55,10 +54,10 @@ public class RemoteActionEndpoint {
 			//get action info
 			String action =  params.getString("action");
 			//get target channel
-			String channelId =  params.getString("channelId");
-			if (channelId == null || channelId.isEmpty())	channelId = "<auto>";
+			String targetChannelId =  params.getString("targetChannelId");
+			if (targetChannelId == null || targetChannelId.isEmpty())	targetChannelId = "<auto>";
 			//get target device
-			String targetDeviceId =  params.getString("deviceId");
+			String targetDeviceId =  params.getString("targetDeviceId");
 			if (targetDeviceId == null || targetDeviceId.isEmpty())		targetDeviceId = "<auto>";
 			
 			//validate
@@ -69,25 +68,38 @@ public class RemoteActionEndpoint {
 				JSON.add(msg, "error", "'type' and 'action' missing or invalid");
 				return SparkJavaFw.returnResult(request, response, msg.toJSONString(), 200);
 			}
-	
-			JSONObject msg = new JSONObject();
-			JSON.add(msg, "result", "success");
-			JSON.add(msg, "info", "Action received");
 			
-			//try to broadcast to socket messenger
-			JSONObject data = JSON.make("dataType", DataType.remoteAction.name(), 
-					"user", token.getUserID(),
+			//data for socket message
+			JSONObject data = JSON.make(
+					"dataType", DataType.remoteAction.name(), 
+					"remoteUserId", token.getUserID(),
 					"targetDeviceId", targetDeviceId,
-					"type", type, "action", action);
-			SocketMessage sMessage = new SocketMessage(channelId, Config.assistantId, Config.assistantDeviceId, "", "", 
-					data);		
-					//TODO: select proper parameters? Receiver will be set by server depending on action
+					"targetChannelId", targetChannelId
+			);
+			JSON.put(data, "type", type);
+			JSON.put(data, "action", action);
+			
+			//using the assistant connection to transfer remote action to socket messenger
+			String ownChannel = Config.assistantId;
+			SocketMessage sMessage = new SocketMessage(ownChannel, Config.assistantId, Config.assistantDeviceId, "", "", data);
+			//send
 			boolean msgSent = Clients.webSocketMessenger.send(sMessage, 2000);
+			JSONObject msg;		//response to api call
 			if (!msgSent){
-				Queues.addSocketMessageToSend(sMessage);
+				//Queues.addSocketMessageToSend(sMessage);		//a: remote actions should probably not be delayed, b: queue is not implemented yet
 				Debugger.println("RemoteAction: failed to send message to webSocket messenger!", 1);
+				msg = JSON.make(
+						"result", "fail", 
+						"error", "Socket message could not be delivered - Unknown error"
+				);
+			}else{
+				msg = JSON.make(
+						"result", "success", 
+						"info", "Action received"
+				);
 			}
 			
+			//respond
 			return SparkJavaFw.returnResult(request, response, msg.toJSONString(), 200);
 		}
 	}
