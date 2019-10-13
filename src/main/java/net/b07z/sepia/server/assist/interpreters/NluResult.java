@@ -13,6 +13,7 @@ import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 
 /**
@@ -36,6 +37,7 @@ public class NluResult {
 	public String context = "default";			//context is what the user did/said before to answer queries like "do that again" or "and in Berlin?"
 	public String environment = "default";		//environments can be stuff like home, car, phone etc. to restrict and tweak some results 
 	public int mood = -1;						//mood level 0-10 (10: super happy) of ILA (or whatever the name of the assistant is) can be passed around too
+	
 	//command summary
 	public String cmdSummary = "";				//this command as short summary, used e.g. as comparison to last_cmd of NLU_Input
 	public String bestDirectMatch = "---";		//if this command was found by a direct match, save the best sentence-key here. It helps to understand what command was found. 
@@ -53,6 +55,9 @@ public class NluResult {
 	Map<String, String> parameters;		//parameters of best result as HashMap
 	double certaintyLvl = 0.0d;			//scoring of the best result (from 0-1), strongly depends on the NL-Processor how reliable that is
 	
+	//custom interpreter data
+	public JSONObject customData = null;		//variable to carry any specific 'InterpretationStep' data that does not fit to the predefined stuff.
+	
 	//all NLP results are stored here:
 	List<String> possibleCMDs = new ArrayList<String>();			//make a list of possible interpretations (commands) of the text
 	List<Map<String, String>> possibleParameters = new ArrayList<>();		//possible parameters of these commands
@@ -60,20 +65,20 @@ public class NluResult {
 	
 	/**
 	 * Use this constructor only if you know what you are doing! ^^.
-	 * The default one is NLU_Result(possibleCMDs, possibleParameters, possibleScore, bestScoreIndex); 
+	 * The default one is NluResult(possibleCMDs, possibleParameters, possibleScore, bestScoreIndex); 
 	 */
 	public NluResult(){
 	}
 	/**
 	 * Use this constructor only if you know what you are doing! ^^.
-	 * The default one is NLU_Result(possibleCMDs, possibleParameters, possibleScore, bestScoreIndex); 
+	 * The default one is NluResult(possibleCMDs, possibleParameters, possibleScore, bestScoreIndex); 
 	 * This one sets the input, but usually this should be done by the NL-Processor (interpreter)
 	 */
 	public NluResult(NluInput input){
 		setInput(input);
 	}
 	/**
-	 * The default constructor for NLU_Results. It will automatically set bestCommand and bestCommand_parameters so please use this 
+	 * The default constructor for NluResult. It will automatically set bestCommand and bestCommand_parameters so please use this 
 	 * unless you know what you are doing ;-). It will also set the context to the best command.
 	 * Note: don't forget to add things like mood, language, etc. and the input!
 	 * 
@@ -125,40 +130,129 @@ public class NluResult {
 	}
 	
 	/**
-	 * Returns the best (highest scoring) result of the NLU interpreter 
-	 * as a JSON string object.
-	 * 
-	 * @return      the best result as JSON object
-	 * @see         JSONObject
+	 * Returns the best (highest scoring) result of the NLU interpreter as a JSON string object.
+	 * @return best result as JSON object in camel-case format
+	 * @see JSONObject
 	 */
 	@SuppressWarnings("unchecked")
 	public JSONObject getBestResultJSON(){
 		JSONObject obj = new JSONObject();
 		if (foundResult && !commandType.matches(CMD.NO_RESULT)) {
 			obj.put("result", "success");
-			obj.put("language", language);
 			obj.put("command", commandType);
 			obj.put("certainty", new Double(certaintyLvl));
 			obj.put("bestDirectMatch", bestDirectMatch);
-			obj.put("context", context);
-			obj.put("environment", environment);
-			obj.put("mood", new Integer(mood));
 			JSONObject params = Converters.mapStrStr2Json(parameters);
 			/*for (String e : parameters){
 				params.put(e.replaceFirst("=.*", "").trim(), e.replaceFirst(".*?=", "").trim()); 
 			}*/
 			obj.put("parameters", params);
-			return obj;
 		}else{
 			obj.put("result", "fail");
-			obj.put("language", language);
 			obj.put("error", "no match found");
 			obj.put("answer", "sorry, but I totally didn't understand that! :-(");
-			obj.put("context", context);
-			obj.put("environment", environment);
-			obj.put("mood", new Integer(mood));
-			return obj;
 		}
+		obj.put("language", language);
+		obj.put("context", context);
+		obj.put("environment", environment);
+		obj.put("mood", new Integer(mood));
+		if (Is.notNullOrEmpty(normalizedText)){
+			obj.put("normalizedText", normalizedText);
+		}
+		if (Is.notNullOrEmpty(customData)){
+			obj.put("customData", customData);
+		}
+		return obj;
+	}
+	/**
+	 * Returns basic data of the instance as JSON object in snake-case format so it can be used with e.g. the Python-bridge API.<br>
+	 * NOTE: Parameter names are not guaranteed to be snake-case :-/
+	 * @return basic data as JSON object in snake-case format
+	 * @see JSONObject
+	 */
+	@SuppressWarnings("unchecked")
+	public JSONObject getJsonForWebApi(){
+		JSONObject obj = new JSONObject();
+		if (foundResult && !commandType.matches(CMD.NO_RESULT)){
+			obj.put("result", "success");
+			obj.put("command", commandType);
+			obj.put("certainty", new Double(certaintyLvl));
+			obj.put("best_direct_match", bestDirectMatch);
+			obj.put("parameters", Converters.mapStrStr2Json(parameters));	//note: parameter names are not guaranteed to be snake-case :-/
+		}else{
+			obj.put("result", "fail");
+			obj.put("error", "no match found");
+		}
+		obj.put("language", language);
+		obj.put("context", context);
+		obj.put("environment", environment);
+		obj.put("mood", new Integer(mood));
+		if (Is.notNullOrEmpty(normalizedText)){
+			obj.put("normalized_text", normalizedText);
+		}
+		if (Is.notNullOrEmpty(customData)){
+			obj.put("custom_data", customData);
+		}
+		return obj;
+	}
+	/**
+	 * Import a result received as JSON object in camel-case format, e.g. from internal API.<br>
+	 * Works best with 'input' constructor: NluResult(NluInput input)
+	 * @param jsonData in camel-case format
+	 */
+	public void importJson(JSONObject jsonData){
+		String res = JSON.getStringOrDefault(jsonData, "result", "fail");
+		JSONObject paramsJson = null;
+		this.foundResult = (res.equals("success")? true : false);
+		if (this.foundResult){
+			this.commandType = JSON.getString(jsonData, "command");
+			this.certaintyLvl = Converters.obj2DoubleOrDefault(jsonData.get("certainty"), 0.0d);
+			this.bestDirectMatch = JSON.getStringOrDefault(jsonData, "bestDirectMatch", "---");
+		}
+		if (jsonData.containsKey("normalizedText")) this.normalizedText = JSON.getString(jsonData, "normalizedText");
+		if (jsonData.containsKey("customData")) this.customData = JSON.getJObject(jsonData, "customData");
+		if (jsonData.containsKey("parameters")){
+			paramsJson = JSON.getJObject(jsonData, "parameters");
+			this.parameters = Converters.json2HashMapStrStr(paramsJson);
+		}
+		if (Is.notNullOrEmpty(this.commandType) && Is.notNullOrEmptyMap(this.parameters)){
+			this.cmdSummary = Converters.makeCommandSummary(this.commandType, paramsJson);
+		}
+		//TODO: add this? modify input?
+		if (jsonData.containsKey("language")) this.language = JSON.getString(jsonData, "language");
+		if (jsonData.containsKey("context")) this.context = JSON.getString(jsonData, "context");
+		if (jsonData.containsKey("environment")) this.environment = JSON.getString(jsonData, "environment");
+		if (jsonData.containsKey("mood")) this.mood = JSON.getIntegerOrDefault(jsonData, "mood", 5);
+	}
+	/**
+	 * Import a result received as JSON object in snake-case format, e.g. from web-API.
+	 * This version fits better when using e.g. the Python-bridge API.<br>
+	 * Works best with 'input' constructor: NluResult(NluInput input)
+	 * @param jsonData in snake-case format
+	 */
+	public void importJsonFromWebApi(JSONObject jsonData){
+		String res = JSON.getStringOrDefault(jsonData, "result", "fail");
+		JSONObject paramsJson = null;
+		this.foundResult = (res.equals("success")? true : false);
+		if (this.foundResult){
+			this.commandType = JSON.getString(jsonData, "command");
+			this.certaintyLvl = Converters.obj2DoubleOrDefault(jsonData.get("certainty"), 0.0d);
+			this.bestDirectMatch = JSON.getStringOrDefault(jsonData, "best_direct_match", "---");
+		}
+		if (jsonData.containsKey("normalized_text")) this.normalizedText = JSON.getString(jsonData, "normalized_text");
+		if (jsonData.containsKey("custom_data")) this.customData = JSON.getJObject(jsonData, "custom_data");
+		if (jsonData.containsKey("parameters")){
+			paramsJson = JSON.getJObject(jsonData, "parameters");
+			this.parameters = Converters.json2HashMapStrStr(paramsJson);
+		}
+		if (Is.notNullOrEmpty(this.commandType) && Is.notNullOrEmptyMap(this.parameters)){
+			this.cmdSummary = Converters.makeCommandSummary(this.commandType, paramsJson);
+		}
+		//TODO: add this? modify input?
+		if (jsonData.containsKey("language")) this.language = JSON.getString(jsonData, "language");
+		if (jsonData.containsKey("context")) this.context = JSON.getString(jsonData, "context");
+		if (jsonData.containsKey("environment")) this.environment = JSON.getString(jsonData, "environment");
+		if (jsonData.containsKey("mood")) this.mood = JSON.getIntegerOrDefault(jsonData, "mood", 5);
 	}
 	
 	/**
@@ -348,5 +442,73 @@ public class NluResult {
 	 */
 	public double getCertaintyLevel() {
 		return certaintyLvl;
+	}
+	
+	/**
+	 * Get custom NLU data create by the {@link InterpretationStep}.
+	 * @return JSONObject or null
+	 */
+	public JSONObject getCustomNluData(){
+		return this.customData;
+	}
+	
+	//------ export / import ------
+	
+	/**
+	 * Transforms a cmd_summary back to a {@link NluResult} adding the {@link NluInput} and using it to restore the default
+	 * values for context, mood, environment etc.
+	 * @param input - {@link NluInput} with all the settings (language, environment, mood, etc...)
+	 * @param cmd_sum - cmd_summary to be transformed back
+	 * @return {@link NluResult}
+	 */
+	public static NluResult cmdSummaryToResult(NluInput input, String cmd_sum){
+		NluResult result = NluResult.cmdSummaryToResult(cmd_sum);
+		result.setInput(input);
+		return result;
+	}
+	/**
+	 * Transforms a cmd_summary back to a {@link NluResult}.<br>
+	 * Note: If you don't supply the {@link NluInput} you have to add it to the result later with result.setInput(NluInput input) or by adding all important stuff manually!
+	 * @param cmd_sum - cmd_summary to be transformed back
+	 * @return {@link NluResult}
+	 */
+	public static NluResult cmdSummaryToResult(String cmd_sum){
+		//initialize
+		List<String> possibleCMDs = new ArrayList<>();
+		List<Map<String, String>> possibleParameters = new ArrayList<>();
+		List<Integer> possibleScore = new ArrayList<>();
+		int bestScoreIndex = 0;
+		
+		//split string - Compare to: Converters.getParametersFromCommandSummary (TODO: use?)
+		String cmd;
+		String params;
+		if (cmd_sum.trim().matches(".*?;;.+")){
+			String[] parts = cmd_sum.split(";;", 2);		//TODO: change this whole ";;" structure to JSON?
+			cmd = parts[0].trim();
+			params = parts[1].trim();
+		}else{
+			cmd = cmd_sum.replaceFirst(";;$", "").trim();
+			params = "";
+		}
+		
+		//construct result
+		possibleCMDs.add(cmd);
+		possibleScore.add(1);
+		Map<String, String> kv = new HashMap<>();
+		for (String p : params.split(";;")){				//TODO: change this whole ";;" structure to JSON?
+			String[] e = p.split("=", 2);
+			if (e.length == 2){
+				String key = e[0].trim();
+				String value = e[1].trim();
+				kv.put(key, value);
+			}
+		}
+		possibleParameters.add(kv);
+		NluResult result = new NluResult(possibleCMDs, possibleParameters, possibleScore, bestScoreIndex);
+		result.certaintyLvl = 1.0d;
+		
+		//TODO: missing:	input parameters parsed to result (language, context, environment, etc. ...)
+		
+		return result;
 	}
 }

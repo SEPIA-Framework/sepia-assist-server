@@ -53,7 +53,7 @@ public class ResponseHandler implements NluInterface{
 			response = normalizer.normalizeText(response);
 		}
 		
-		NluResult result = NluTools.cmdSummaryToResult(input, cmd_summary);
+		NluResult result = NluResult.cmdSummaryToResult(input, cmd_summary);
 		result.normalizedText = response;
 		
 		//abort?

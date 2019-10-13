@@ -2,6 +2,8 @@ package net.b07z.sepia.server.assist.users;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.json.simple.JSONObject;
 
@@ -43,6 +45,21 @@ public class Authenticator {
 	public static final String USER_BIRTH = "user_birth";
 	public static final String BOT_CHARACTER = "bot_character";
 	
+	//Account protection against brute force login-attempts 
+	private static Map<String, AtomicInteger> protectedAccountsFailedLoginAttempts = new HashMap<>();
+	private static Map<String, AtomicLong> protectedAccountsLastLoginAttempt = new HashMap<>();
+	private static Map<String, String> protectedAccountsEmailToIdMap = new HashMap<>();
+	private static int failedLoginAttemptThreshold = 3;
+	public static void addProtectedAccount(String uid, String email){
+		if (!protectedAccountsFailedLoginAttempts.containsKey(uid)){
+			protectedAccountsFailedLoginAttempts.put(uid, new AtomicInteger(0));
+			protectedAccountsLastLoginAttempt.put(uid, new AtomicLong(0));
+		}
+		if (!protectedAccountsEmailToIdMap.containsKey(email)){
+			protectedAccountsEmailToIdMap.put(email, uid);
+		}
+	}
+	
 	/**
 	 * Create invalid, empty token.
 	 */
@@ -59,7 +76,37 @@ public class Authenticator {
 				JSON.add(info, "pwd", password);
 				JSON.add(info, "idType", idType);
 				JSON.add(info, "client", client);
-			if (auth.authenticate(info)){
+			//Global login protection for special accounts
+			String protectedUid = null;
+			boolean blocked = false;
+			if (Config.improveSecurityForProtectedAccounts){
+				if (idType.equals(ID.Type.uid) && protectedAccountsLastLoginAttempt.containsKey(username)){
+					protectedUid = username;
+				}else if (protectedAccountsEmailToIdMap.containsKey(username)){
+					protectedUid = protectedAccountsEmailToIdMap.get(username);
+				}
+				if (protectedUid != null){
+					//check if there were too many failed login attempts recently
+					int attempts = protectedAccountsFailedLoginAttempts.get(protectedUid).get();
+					long timeSinceLastFail = System.currentTimeMillis() - protectedAccountsLastLoginAttempt.get(protectedUid).get();
+					if (attempts > 0){
+						if (timeSinceLastFail < Config.protectedAccountsBlockTimeout){
+							if (attempts >= failedLoginAttemptThreshold && timeSinceLastFail < Config.protectedAccountsBlockTimeout){
+								//block login try
+								blocked = true;
+								Debugger.println("Authenticator - temporarily blocked login for '" + protectedUid 
+										+ "' because of too many failed attempts!", 1);
+							}
+						}else{
+							protectedAccountsFailedLoginAttempts.get(protectedUid).decrementAndGet();
+						}
+					}
+				}
+			}
+			//Validate
+			if (blocked){
+				errorCode = 10;
+			}else if (auth.authenticate(info)){
 				timeCreated = System.currentTimeMillis();
 				authenticated = true;
 				userID = auth.getUserID();
@@ -69,7 +116,11 @@ public class Authenticator {
 				basicInfo = auth.getBasicInfo();
 				errorCode = 0;
 			}else{
-				errorCode = auth.getErrorCode(); 
+				errorCode = auth.getErrorCode();
+				if (protectedUid != null && (errorCode == 2 || errorCode == 3)){
+					protectedAccountsFailedLoginAttempts.get(protectedUid).incrementAndGet();
+					protectedAccountsLastLoginAttempt.get(protectedUid).set(System.currentTimeMillis());
+				}
 			}
 
 		} catch (Exception e) {
@@ -250,6 +301,7 @@ public class Authenticator {
 	 * 3 - might be 1 or 2 whereas 2 can also be that the parameters were wrong<br>
 	 * 4 - unknown error <br>
 	 * 5 - during registration: user already exists; during createUser: invalid token or time stamp	<br>
+	 * 10 - blocked due to too many failed attempts
 	 * @return
 	 */
 	public int getErrorCode(){

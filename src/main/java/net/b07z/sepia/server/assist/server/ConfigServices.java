@@ -69,7 +69,7 @@ public class ConfigServices {
 	//custom services
 	//see also UserData Objects
 	public static Map<String, SandboxClassLoader> classLoaders = new ConcurrentHashMap<>();
-	private static List<String> blackList;
+	private static List<String> blackList = new ArrayList<>();
 	
 	/**
 	 * Return class loader for a certain class that was created previously or create a new one.
@@ -152,6 +152,8 @@ public class ConfigServices {
 		blackList.add(Interview.class.getPackage().getName()); 		//interviews.*
 		blackList.add(SendEmail.class.getPackage().getName()); 		//email.*
 		//TODO: complete blacklist, e.g. workers? (but not ServiceBackgroundTask?) ...
+		
+		Debugger.println("Security sandbox loaded with " + blackList.size() + " entries.", 3);
 	}
 	/**
 	 * Add more classes or packages to blacklist.

@@ -1,10 +1,6 @@
 package net.b07z.sepia.server.assist.interpreters;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -14,64 +10,6 @@ import java.util.regex.Pattern;
  *
  */
 public class NluTools {
-	
-	/**
-	 * Transforms a cmd_summary back to a NLU_Result adding the NLU_input and using it to restore the default
-	 * values for context, mood, environment etc.
-	 * @param input - NLU_Input with all the settings (language, environment, mood, etc...)
-	 * @param cmd_sum - cmd_summary to be transformed back
-	 * @return NLU_Result
-	 */
-	public static NluResult cmdSummaryToResult(NluInput input, String cmd_sum){
-		NluResult result = cmdSummaryToResult(cmd_sum);
-		result.setInput(input);
-		return result;
-	}
-	/**
-	 * Transforms a cmd_summary back to a NLU_Result. <br>Note: If you don't supply an NLU_input you have to add it to 
-	 * the result later with result.set_input(NLU_Input input) or by adding all important stuff manually!
-	 * @param cmd_sum - cmd_summary to be transformed back
-	 * @return NLU_Result
-	 */
-	public static NluResult cmdSummaryToResult(String cmd_sum){
-		//initialize
-		List<String> possibleCMDs = new ArrayList<>();
-		List<Map<String, String>> possibleParameters = new ArrayList<>();
-		List<Integer> possibleScore = new ArrayList<>();
-		int bestScoreIndex = 0;
-		
-		//split string
-		String cmd;
-		String params;
-		if (cmd_sum.trim().matches(".*?;;.+")){
-			String[] parts = cmd_sum.split(";;",2);			//TODO: change this whole ";;" structure to JSON?
-			cmd = parts[0].trim();
-			params = parts[1].trim();
-		}else{
-			cmd = cmd_sum.replaceFirst(";;$", "").trim();
-			params = "";
-		}
-		
-		//construct result
-		possibleCMDs.add(cmd);
-		possibleScore.add(1);
-		Map<String, String> kv = new HashMap<>();
-		for (String p : params.split(";;")){				//TODO: change this whole ";;" structure to JSON?
-			String[] e = p.split("=",2);
-			if (e.length == 2){
-				String key = e[0].trim();
-				String value = e[1].trim();
-				kv.put(key, value);
-			}
-		}
-		possibleParameters.add(kv);
-		NluResult result = new NluResult(possibleCMDs, possibleParameters, possibleScore, bestScoreIndex);
-		result.certaintyLvl = 1.0d;
-		
-		//TODO: missing:	input parameters parsed to result (language, context, environment, etc. ...)
-		
-		return result;
-	}
 	
 	//--conventional help methods---
 	
@@ -113,7 +51,7 @@ public class NluTools {
 	 */
 	public static String stringFindFirst(String text, String find_first_of){
 		if (text.matches(".*?"+BREAK_S+"(" + find_first_of + ")"+BREAK_E+".*")){
-			return text.replaceAll(".*?"+BREAK_S+"(" + find_first_of + ")"+BREAK_E+".*", "$1");
+			return text.replaceAll(".*?"+BREAK_S+"(" + find_first_of + ")"+BREAK_E+".*", "$1");			//TODO: it would be better to name the group instead of using $1
 		}else{
 			return "";
 		}
@@ -126,7 +64,7 @@ public class NluTools {
 	 */
 	public static String stringFindLongest(String text, String find_first_of){
 		if (text.matches(".*?"+BREAK_S+"(" + find_first_of + ")"+BREAK_E+".*?")){
-			return text.replaceAll(".*?"+BREAK_S+"(" + find_first_of + ")"+BREAK_E+"(.*?).*", "$1");
+			return text.replaceAll(".*?"+BREAK_S+"(" + find_first_of + ")"+BREAK_E+"(.*?).*", "$1"); 	//TODO: it would be better to name the group instead of using $1
 		}else{
 			return "";
 		}
@@ -139,7 +77,7 @@ public class NluTools {
 	 */
 	public static String stringFindLastMin(String text, String find_last_of){
 		if (text.matches(".*"+BREAK_S+"(" + find_last_of + ")"+BREAK_E+".*")){
-			return text.replaceFirst(".*"+BREAK_S+"(" + find_last_of + ")"+BREAK_E+".*", "$1");
+			return text.replaceFirst(".*"+BREAK_S+"(" + find_last_of + ")"+BREAK_E+".*", "$1");			//TODO: it would be better to name the group instead of using $1
 		}else{
 			return "";
 		}

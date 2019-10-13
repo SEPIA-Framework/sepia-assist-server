@@ -220,6 +220,7 @@ public class DateAndTime implements ParameterHandler{
 		dateMap = RegexParameterSearch.get_date(input, language);
 		String dateTag = dateMap.get("date_tag");
 		String timeTag = dateMap.get("time_tag");
+		//System.out.println("input: " + input); 	//DEBUG
 		//System.out.println("DATE-MAP: "); 		//DEBUG
 		//Debugger.printMap(dateMap); 				//DEBUG
 		
@@ -343,15 +344,22 @@ public class DateAndTime implements ParameterHandler{
 			return Interview.ERROR_MISSING + ";;" + Interview.TYPE_INPUT_INFO + ";;" + "<user_time_local>";
 		}
 		
+		//extract again/first? - this should only happen via predefined parameters (e.g. from direct triggers)
+		if (Is.notNullOrEmpty(input) && !input.startsWith("<")){
+			input = extract(input);
+			if (Is.nullOrEmpty(input)){
+				return "";
+			}
+		
+		//use UNIX tag?
+		}else if (input.startsWith("<unix>")){
+			input = extract(input.replaceFirst(Pattern.quote("<unix>"), ""));
+		}
+		
 		//separate dateType
 		String dateType = DateType.unknown.name();
 		String day = "";
 		String time = "";
-		
-		//extract again/first
-		if (input.startsWith("<unix>")){
-			input = extract(input.replaceFirst(Pattern.quote("<unix>"), ""));
-		}
 
 		//extracted time-date
 		if (input.startsWith("<") && input.contains("&&")){

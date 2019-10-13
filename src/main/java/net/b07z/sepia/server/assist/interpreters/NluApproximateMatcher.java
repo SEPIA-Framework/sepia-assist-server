@@ -49,8 +49,8 @@ public class NluApproximateMatcher implements NluInterface{
 	/**
 	 * Try to find an approximate match for the input text (after text normalization).
 	 * Returns null if no match is found.
-	 * @param input - NLU_input
-	 * @return NLU_Result
+	 * @param input - NluInput
+	 * @return NluResult
 	 */
 	public NluResult interpret(NluInput input) {
 		//supports different languages

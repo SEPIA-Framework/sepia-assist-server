@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
+import net.b07z.sepia.server.assist.interpreters.Normalizer;
 import net.b07z.sepia.server.assist.parameters.ParameterHandler;
+import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.ConfigServices;
 import net.b07z.sepia.server.assist.services.ServiceInterface;
 import net.b07z.sepia.server.assist.services.ServiceResult;
@@ -15,6 +18,7 @@ import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.Is;
 
 /**
  * This class is a helper to do the interviews necessary to get all important parameters.<br>
@@ -41,9 +45,14 @@ public class Interview {
 	public static final String TYPE_INPUT_INFO = "<input_info>";					//use this for things like user_location or user_time
 	public static final String TYPE_GEOCODING = "<geocoding>"; 						 
 	
+	//tags for specific input handling
+	public static final String INPUT_RAW = "<i_raw>";
+	public static final String INPUT_NORM = "<i_norm>";
+	public static final String INPUT_EXTRACTED = "<i_ext>";
+	
 	//
-	public NluResult nluResult;				//keep a reference to the NLU_Result for building API_Result
-	public User user;							//reference to the user created by NLU_Result
+	public NluResult nluResult;				//keep a reference to the NluResult for building ServiceResult
+	public User user;						//reference to the user created by NluResult
 	private Set<String> finals;			//final parameters as list
 	private Set<String> dynamics;		//dynamic parameters as list. Dynamic parameters are used to add parameters to the interview handler that were previously not in required or optionals etc. ...
 	public boolean isFinished = false;	//interview finished?
@@ -273,17 +282,41 @@ public class Interview {
 		String input = p.getInput();
 		String parameter = p.getName();
 		ParameterHandler handler = p.getHandler();
-		handler.setup(nluResult);
+		handler.setup(this.nluResult);
+
+		//System.out.println("input: " + input);		//DEBUG
 		
-		//return buildParameterOrComment(input, parameter, handler);
+		//check for special input tags first:
 		
-		//check first if the parameter is already valid (TODO: is this a redundant call? Maybe not ...)
-		if (handler.validate(input)){
+		//raw input? (normalize and extract)
+		if (input.startsWith(INPUT_RAW)){
+			input = input.replaceFirst("^" + Pattern.quote(INPUT_RAW), "").trim();
+			//search the whole text
+			if (input.isEmpty()){
+				input = nluResult.input.textRaw;
+			}
+			//normalize input
+			Normalizer normalizer = Config.inputNormalizers.get(this.nluResult.language);
+			if (normalizer != null){
+				input = normalizer.normalizeText(input);
+			}
+			//extract
+			input = handler.extract(input);
+		
+		//normalized input? (extract)
+		}else if (input.startsWith(INPUT_NORM)){
+			input = input.replaceFirst("^" + Pattern.quote(INPUT_NORM), "").trim();
+			//extract
+			input = handler.extract(input);
+		
+		//check if the parameter is already valid (TODO: is this a redundant call? Maybe not ...)
+		}else if (handler.validate(input)){
 			makeFinal(parameter, input);
 			return null; //this means "all fine, no comments" ^^
 		}
+		
 		//handle it now
-		String resultJSON = handler.build(input);
+		String resultJSON = (Is.notNullOrEmpty(input))? handler.build(input) : "";
 		if (handler.buildSuccess()){ 			//TODO: better use? (handler.validate(resultJSON) and check for empty before?){
 			makeFinal(parameter, resultJSON);
 			return null; //this means "all fine, no comments" ^^

@@ -570,11 +570,20 @@ public class DB {
 
 		JSONObject params = null;
 		if (filters.containsKey("params")){
-			params = JSON.parseString((String) filters.get("params"));
+			Object po = filters.get("params");
+			if (po.getClass().equals(String.class)){
+				params = JSON.parseString((String) filters.get("params"));
+			}else{
+				params = (JSONObject) po;
+			}
 		}
 		String cmdSummary = (String) filters.get("cmd_summary");
-		if ((cmdSummary == null || cmdSummary.isEmpty()) && (params != null && !params.isEmpty())){
-			cmdSummary = Converters.makeCommandSummary(command, params);
+		if (cmdSummary == null || cmdSummary.isEmpty()){
+			if (params != null && !params.isEmpty()){
+				cmdSummary = Converters.makeCommandSummary(command, params);
+			}else{
+				cmdSummary = Converters.makeCommandSummary(command, new JSONObject());
+			}
 		}
 		String environment = (filters.containsKey("environment"))? (String) filters.get("environment") : "all";
 		String userLocation = (String) filters.get("user_location");
@@ -609,7 +618,7 @@ public class DB {
 		//build command
 		Command cmd = new Command(command);
 		cmd.add(sentenceList);
-		//System.out.println(cmd.toJson()); 		//debug
+		//System.out.println("DB.setCommand - write cmd: " + cmd.toJson()); 		//DEBUG
 		
 		//submit to DB
 		int code = -1;

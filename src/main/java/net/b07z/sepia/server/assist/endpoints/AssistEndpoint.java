@@ -25,6 +25,7 @@ import net.b07z.sepia.server.assist.services.ServiceResult;
 import net.b07z.sepia.server.assist.users.Authenticator;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.assistant.CMD;
+import net.b07z.sepia.server.core.assistant.ENVIRONMENTS;
 import net.b07z.sepia.server.core.server.RequestGetOrFormParameters;
 import net.b07z.sepia.server.core.server.RequestParameters;
 import net.b07z.sepia.server.core.server.SparkJavaFw;
@@ -45,10 +46,12 @@ public class AssistEndpoint {
 	 */
 	public static enum InputParameters {
 		text,
+		text_raw,
 		lang,
 		context,
 		mood,
 		env,
+		user,
 		device_id,
 		//TODO: add something like "is_home_network" ?
 		time,
@@ -300,7 +303,8 @@ public class AssistEndpoint {
 		if (msg_id!=null)			input.msgId = msg_id;
 		if (duplex_data!=null)		input.duplexData = duplex_data;
 		if (custom_data!=null)		input.customData = custom_data;
-		if (env!=null)				input.environment = env; 		else 	input.environment = "all"; //input.client_info.replaceFirst("_v\\d.*", "").trim();
+		if (env!=null)				input.environment = env; 		
+		else 						input.environment = ENVIRONMENTS.DEFAULT; //input.client_info.replaceFirst("_v\\d.*", "").trim();
 		if (deviceId!=null)			input.deviceId = deviceId;
 		if (user_location!=null)	input.userLocation = user_location;
 		if (time_local!=null)		input.userTimeLocal = time_local;

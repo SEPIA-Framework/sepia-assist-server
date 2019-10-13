@@ -11,6 +11,7 @@ import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 
 public class Room implements ParameterHandler{
@@ -20,10 +21,12 @@ public class Room implements ParameterHandler{
 	//Parameter types
 	public static enum Types{
 		livingroom,
+		diningroom,
 		kitchen,
 		bedroom,
 		bath,
 		study,
+		office,
 		garage,
 		shack;
 	}
@@ -33,18 +36,22 @@ public class Room implements ParameterHandler{
 	public static HashMap<String, String> types_en = new HashMap<>();
 	static {
 		types_de.put("livingroom", "im Wohnzimmer");
+		types_de.put("diningroom", "im Esszimmer");
 		types_de.put("kitchen", "in der Küche");
 		types_de.put("bedroom", "im Schlafzimmer");
 		types_de.put("bath", "im Badezimmer");
 		types_de.put("study", "im Arbeitszimmer");
+		types_de.put("office", "im Büro");
 		types_de.put("garage", "in der Garage");
 		types_de.put("shack", "im Schuppen");
 		
 		types_en.put("livingroom", "in the living room");
+		types_en.put("diningroom", "in the dining room");
 		types_en.put("kitchen", "in the kitchen");
 		types_en.put("bedroom", "in the bedroom");
 		types_en.put("bath", "in the bath");
 		types_en.put("study", "in the study room");
+		types_en.put("office", "in the office");
 		types_en.put("garage", "in the garage");
 		types_en.put("shack", "in the shack");
 	}
@@ -97,21 +104,25 @@ public class Room implements ParameterHandler{
 		//German
 		if (language.matches(LANGUAGES.DE)){
 			type = NluTools.stringFindFirst(input, "wohnzimmer(n|)|"
+					+ "esszimmer(n|)|"
 					+ "kueche(n|)|"
 					+ "badezimmer(n|)|bad|"
 					+ "schlafzimmer(n|)|"
 					+ "(arbeits|studier|herren)(zimmer|raum|raeumen)|"
+					+ "buero(s|)|office|"
 					+ "garage|auto(-| |)schuppen|"
 					+ "schuppen|gartenhaus"
 				+ "");
 			
 		//English and other
 		}else{
-			type = NluTools.stringFindFirst(input, "living( |-|)room(s|)|parlo(u|)r(s|)|lounge(s|)|family(-| )room|"
+			type = NluTools.stringFindFirst(input, "living( |-|)room(s|)|parlo(u|)r(s|)|lounge(s|)|family(-| )room(s|)|"
+					+ "dining( |-|)room(s|)|"
 					+ "kitchen(s|)|"
 					+ "bath(ing|)( |-|)room(s|)|bath|powder(-|)room(s|)|"
 					+ "bed(-|)(room|chamber)(s|)|"
 					+ "(study|work)(-|)(room|chamber)(s|)|study|"
+					+ "office|"
 					+ "garage|carhouse|"
 					+ "shack(s|)|shed(s|)"
 				+ "");
@@ -132,6 +143,10 @@ public class Room implements ParameterHandler{
 				+ "living( |-|)room(s|)|parlo(u|)r(s|)|lounge(s|)|family(-| )room")){
 			return "<" + Types.livingroom.name() + ">";
 			
+		}else if (NluTools.stringContains(type, "esszimmer(n|)|"
+				+ "dining( |-|)room(s|)")){
+			return "<" + Types.diningroom.name() + ">";
+			
 		}else if (NluTools.stringContains(type, "kueche(n|)|"
 				+ "kitchen(s|)")){
 			return "<" + Types.kitchen.name() + ">";
@@ -147,6 +162,10 @@ public class Room implements ParameterHandler{
 		}else if (NluTools.stringContains(type, "(arbeits|studier|herren)(zimmer|raum|raeumen)|"
 				+ "(study|work)(-|)(room|chamber)(s|)|study")){
 			return "<" + Types.study.name() + ">";
+			
+		}else if (NluTools.stringContains(type, "buero(s|)|"
+				+ "office")){
+			return "<" + Types.office.name() + ">";
 			
 		}else if (NluTools.stringContains(type, "garage|auto(-| |)schuppen|"
 				+ "carhouse")){
@@ -174,7 +193,7 @@ public class Room implements ParameterHandler{
 	@Override
 	public String remove(String input, String found) {
 		if (language.equals(LANGUAGES.DE)){
-			found = "(der |die |das |den |)" + found;
+			found = "(der |die |das |den |dem |(m|)ein(en|em|er|e) |)" + found;
 		}else{
 			found = "(a |the |)" + found;
 		}
@@ -184,7 +203,7 @@ public class Room implements ParameterHandler{
 	@Override
 	public String responseTweaker(String input){
 		if (language.equals(LANGUAGES.DE)){
-			return input.replaceAll(".*\\b(einen|einem|einer|eine|ein|der|die|das|den|ne|ner)\\b", "").trim();
+			return input.replaceAll(".*\\b((m|)ein(en|em|er|e|)|der|die|das|den|dem|ne|ner)\\b", "").trim();
 		}else{
 			return input.replaceAll(".*\\b(a|the)\\b", "").trim();
 		}
@@ -192,6 +211,10 @@ public class Room implements ParameterHandler{
 
 	@Override
 	public String build(String input) {
+		//extract again/first? - this should only happen via predefined parameters (e.g. from direct triggers)
+		if (Is.notNullOrEmpty(input) && !input.startsWith("<")){
+			input = extract(input);
+		}
 		
 		//expects a type
 		String commonValue = input.replaceAll("^<|>$", "").trim();

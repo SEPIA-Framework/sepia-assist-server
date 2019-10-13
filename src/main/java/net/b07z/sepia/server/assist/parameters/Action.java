@@ -13,6 +13,7 @@ import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 
 public class Action implements ParameterHandler{
@@ -163,7 +164,7 @@ public class Action implements ParameterHandler{
 		}else{
 			on = "(make|switch|turn|set) .*\\b(on)|"
 					+ "^\\w+\\b (on$)|"
-					+ "(^|to )(on$)|"
+					+ "(^|to )(active$|on$)|"
 					+ "open|activate|start|play|load|run|execute|call";
 			off = "(make|switch|turn|set) .*\\b(off)|"
 					+ "^\\w+\\b (off$)|"
@@ -273,12 +274,20 @@ public class Action implements ParameterHandler{
 	}
 	
 	@Override
-	public String responseTweaker(String input){
+	public String responseTweaker(String input) {
 		return input;
 	}
 
 	@Override
 	public String build(String input) {
+		//extract again/first? - this should only happen via predefined parameters (e.g. from direct triggers)
+		if (Is.notNullOrEmpty(input) && !input.startsWith("<")){
+			input = extract(input);
+			if (Is.nullOrEmpty(input)){
+				return "";
+			}
+		}
+		
 		//is accepted result?
 		String inputLocal = getLocal(input, language);
 		if (inputLocal.isEmpty()){

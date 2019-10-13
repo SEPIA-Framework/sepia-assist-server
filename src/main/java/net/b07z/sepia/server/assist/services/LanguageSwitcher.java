@@ -94,10 +94,12 @@ public class LanguageSwitcher implements ServiceInterface{
 		
 		//Regular expression triggers:
 		info.setCustomTriggerRegX(".*\\b("
-					+ "(change|switch|set)( the | )language (to|$)"
+					+ "(change|switch|set)( the | )language (to |$)|"
+					+ "^((change|switch) to |speak )(german|english)$"
 				+ ")\\b.*", EN);
 		info.setCustomTriggerRegX(".*\\b("
-					+ "((aendere|setze|stelle|wechsle) die sprache|sprache (aendern|setzen|stellen|wechseln)) (auf|zu|$)"
+					+ "((aendere|setze|stelle|wechs(le|el)) die sprache|sprache (aendern|setzen|stellen|wechseln)) (auf|zu|$)|"
+					+ "^(wech(seln|sel|sle) (auf|zu) |sprich )(deutsch|englisch)$"
 				+ ")\\b.*", DE);
 		info.setCustomTriggerRegXscoreBoost(3);		//boost service a bit to increase priority over similar ones
 		

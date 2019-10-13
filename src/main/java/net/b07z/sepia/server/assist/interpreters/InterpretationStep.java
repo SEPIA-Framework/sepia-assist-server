@@ -1,10 +1,13 @@
 package net.b07z.sepia.server.assist.interpreters;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.database.DB;
 import net.b07z.sepia.server.assist.database.DataLoader;
@@ -12,8 +15,16 @@ import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.users.UserDataInterface;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
+import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Debugger;
 
+/**
+ * An interpretation step is part of the {@link InterpretationChain} and is used to do natural-language-understanding (NLU) including 
+ * intent recognition (command) and optionally parameter extraction (e.g. location, action, time etc.).<br>
+ * This class contains some predefined (static) steps as well.
+ * 
+ * @author Florian Quirin
+ */
 public interface InterpretationStep {
 	
 	/**
@@ -234,4 +245,68 @@ public interface InterpretationStep {
 		return kwaResult;
 	}
 
+	/**
+	 * Get {@link NluResult} from a web API specified by 'apiUrl'. The class has to implement the {@link InterpretationStep} interface.
+	 * @param apiUrl - URL to a web-service that can create an {@link NluResult} as JSON object
+	 * @param input - {@link NluInput}
+	 * @param cachedResults - cached results from other NLU steps
+	 * @return result or null
+	 */
+	public static NluResult getWebApiResult(String apiUrl, NluInput input, Map<String, NluResult> cachedResults){
+		JSONObject inputJson = input.getJson();
+		JSONObject response = Connectors.httpPOST(apiUrl, inputJson.toJSONString(), null);
+		if (Connectors.httpSuccess(response)){
+			NluResult nluResult = new NluResult(input);
+			nluResult.importJsonFromWebApi(response);
+			//System.out.println(response.toJSONString());						//DEBUG
+			//System.out.println(nluResult.getBestResultJSON().toJSONString());	//DEBUG
+			if (nluResult.foundResult){
+				return nluResult;
+			}else{
+				return null;
+			}
+		}else{
+			Debugger.println("InterpretationStep - getWebApiResult FAILED with msg.: " + response.toJSONString(), 1);
+			return null;
+		}
+	}
+	
+	/**
+	 * Get {@link NluResult} from a class specified by 'canonicalClassName'. The class has to implement the {@link InterpretationStep} interface.
+	 * @param fullclassName - name of the class to call (in format of value returned by getName) that implements {@link InterpretationStep}
+	 * @param input - {@link NluInput}
+	 * @param cachedResults - cached results from other NLU steps
+	 * @return result or null
+	 */
+	public static NluResult getClassResult(String fullclassName, NluInput input, Map<String, NluResult> cachedResults){
+		InterpretationStep step = (InterpretationStep) ClassBuilder.construct(fullclassName);
+		return step.call(input, cachedResults);
+	}
+	
+	/**
+	 * Just return a proper 'no_result' command. 
+	 * @param input - {@link NluInput}
+	 * @param cachedResults - cached results from other NLU steps
+	 * @return result
+	 */
+	public static NluResult getNoResult(NluInput input, Map<String, NluResult> cachedResults){
+		//Prepare results
+		List<String> possibleCMDs = new ArrayList<>();			//make a list of possible interpretations of the text
+		List<Map<String, String>> possibleParameters = new ArrayList<>();		//possible parameters
+		List<Integer> possibleScore = new ArrayList<>();		//make scores to decide which one is correct command
+		
+		possibleCMDs.add(CMD.NO_RESULT);
+		possibleScore.add(1);
+		HashMap<String, String> pv = new HashMap<String, String>();
+			pv.put("text", input.textRaw);
+		possibleParameters.add(pv);
+		double certainty_lvl = 1.0d;
+		
+		NluResult result = new NluResult(possibleCMDs, possibleParameters, possibleScore, 0);
+		result.certaintyLvl = certainty_lvl;
+		result.setInput(input);
+		result.normalizedText = input.text;
+		
+		return result;
+	}
 }

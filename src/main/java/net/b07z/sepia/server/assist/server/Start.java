@@ -4,6 +4,7 @@ import static spark.Spark.*;
 
 import java.security.Policy;
 import java.util.Date;
+import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -62,6 +63,8 @@ public class Start {
 	public static final String CUSTOM_SERVER = "custom";
 	
 	public static boolean isSSL = false;
+	public static boolean useSecurityPolicy = true;
+	public static boolean useSandboxBlacklist = true;
 	public static String keystorePwd = "13371337";
 	
 	/**
@@ -107,15 +110,30 @@ public class Start {
 			}else if (arg.equals("--ssl")){
 				//SSL
 				isSSL = true;
+			}else if (arg.equals("--nosecuritypolicy")){
+				//No security manager will be set
+				useSecurityPolicy = false;
+			}else if (arg.equals("--nosandbox")){
+				//Sandbox blacklist will be empty
+				useSandboxBlacklist = false;
 			}else if (arg.startsWith("keystorePwd=")){
 				//Java key-store password - TODO: maybe not the best way to load the pwd ...
 				keystorePwd = arg.replaceFirst(".*?=", "").trim();
 			}
 		}
 		//set security
-		Policy.setPolicy(new SandboxSecurityPolicy());
-		System.setSecurityManager(new SecurityManager());
-		ConfigServices.setupSandbox();
+		if (useSecurityPolicy){
+			Policy.setPolicy(new SandboxSecurityPolicy());
+			System.setSecurityManager(new SecurityManager());
+			Debugger.println("Security policy and manager set.", 3);
+			if (useSandboxBlacklist){
+				ConfigServices.setupSandbox();
+			}else{
+				Debugger.println("NO SANDBOX BLACKLIST LOADED.", 3);
+			}
+		}else{
+			Debugger.println("NO SECURITY POLICY ACTIVE.", 3);
+		}
 		if (isSSL){
 			secure(Config.xtensionsFolder + "SSL/ssl-keystore.jks", keystorePwd, null, null);
 		}
@@ -243,6 +261,26 @@ public class Start {
 			Debugger.println("Assistant token validated", 3);
 		}
 	}
+	/**
+	 * Setup accounts that allow only very limited number of failed logins until blocked for a while.
+	 */
+	public static void setupProtectedAccounts(){
+		Authenticator.addProtectedAccount(Config.superuserId, Config.superuserEmail);
+		Authenticator.addProtectedAccount(Config.assistantId, Config.assistantEmail);
+		Debugger.println("Added 'admin' and 'assistant' to protected accounts list.", 3);
+		if (!Config.protectedAccounts.isEmpty()){
+			for (Entry<String, String> e : Config.protectedAccounts.entrySet()){
+				String uid = e.getKey();
+				String email = e.getValue();
+				if (uid.startsWith(Config.userIdPrefix) && email.contains("@")){
+					Authenticator.addProtectedAccount(e.getKey(), e.getValue());
+				}else{
+					throw new RuntimeException("Found INVALID format in protected accounts list for: " + uid + " - " + email);
+				}
+			}
+			Debugger.println("Added few more accounts to protected list: " + Config.protectedAccounts.keySet().toString(), 3);
+		}
+	}
 	
 	/**
 	 * Defines the end-points that this server supports.
@@ -319,6 +357,9 @@ public class Start {
 		
 		//check existence of universal accounts (superuser and assistant)
 		checkCoreAccounts();
+		
+		//load protected accounts (e.g. admin and assistant)
+		setupProtectedAccounts();
 		
 		//load updates to the framework that have no specific place yet
 		loadUpdates();
