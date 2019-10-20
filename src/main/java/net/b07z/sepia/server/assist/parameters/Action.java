@@ -32,6 +32,12 @@ public class Action implements ParameterHandler{
 		create,
 		edit
 	}
+	/**
+	 * Get generalized action type value in format of extraction method.
+	 */
+	public static String getExtractedValueFromType(Type actionType){
+		return ("<" + actionType.name() + ">");
+	}
 	
 	//-------data-------
 	public static HashMap<String, String> actions_de = new HashMap<>();

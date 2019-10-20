@@ -19,7 +19,7 @@ public class SmartDevice implements ParameterHandler{
 	//-----data-----
 	
 	//Parameter types
-	public static enum Types{
+	public static enum Types {
 		light,
 		heater,
 		tv,
@@ -28,6 +28,12 @@ public class SmartDevice implements ParameterHandler{
 		oven,
 		coffee_maker,
 		device;
+	}
+	/**
+	 * Get generalized 'Types' value in format of extraction method.
+	 */
+	public static String getExtractedValueFromType(Types deviceType, String name){
+		return ("<" + deviceType.name() + ">;;" + name);
 	}
 	
 	//Parameter local type names
