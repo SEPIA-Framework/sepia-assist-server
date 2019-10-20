@@ -128,7 +128,7 @@ public class SmartOpenHAB implements ServiceInterface {
 		
 		//check if device is supported 						TODO: for the test phase we're currently doing lights only
 		String deviceType = device.getValueAsString();
-		if (!deviceType.equals(SmartDevice.Types.light.name())){
+		if (!Is.typeEqual(deviceType, SmartDevice.Types.light)){
 			service.setStatusOkay();
 			service.setCustomAnswer(notYetControllable);	//"soft"-fail with "not yet controllable" answer
 			return service.buildResult();

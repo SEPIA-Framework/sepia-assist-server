@@ -163,17 +163,20 @@ public class OpenHAB implements SmartHomeHub {
 		String type = null;
 		String room = null;
 		String memoryState = "";
-		for (Object tagObj : tags){
-			String t = (String) tagObj;
-			if (t.startsWith("sepia-name=")){
-				name = t.split("=")[1];						//NOTE: has to be unique
-			}else if (t.startsWith("sepia-type=")){
-				type = t.split("=")[1];						//NOTE: as defined in device parameter
-			}else if (t.startsWith("sepia-room=")){
-				room = t.split("=")[1];						//NOTE: as defined in room parameter
-			}else if (t.startsWith("sepia-mem-state=")){
-				memoryState = t.split("=")[1];				//A state to remember like last non-zero brightness of a light 
-			} 
+		if (tags != null){
+			//try to find self-defined SEPIA tags first
+			for (Object tagObj : tags){
+				String t = (String) tagObj;
+				if (t.startsWith("sepia-name=")){
+					name = t.split("=")[1];						//NOTE: has to be unique
+				}else if (t.startsWith("sepia-type=")){
+					type = t.split("=")[1];						//NOTE: as defined in device parameter
+				}else if (t.startsWith("sepia-room=")){
+					room = t.split("=")[1];						//NOTE: as defined in room parameter
+				}else if (t.startsWith("sepia-mem-state=")){
+					memoryState = t.split("=")[1];				//A state to remember like last non-zero brightness of a light 
+				} 
+			}
 		}
 		//smart-guess if missing sepia-specific settings
 		if (name == null){
@@ -181,9 +184,9 @@ public class OpenHAB implements SmartHomeHub {
 		}
 		if (type == null){
 			String openHabCategory = JSON.getString(hubDevice, "category").toLowerCase();	//NOTE: we check category, not type 
-			if (openHabCategory.matches("light.*|lamp.*")){
+			if (openHabCategory.matches("(.*\\s|^)(light.*|lamp.*)")){
 				type = SmartDevice.Types.light.name();		//LIGHT
-			}else if (openHabCategory.matches("heat.*|thermo.*")){
+			}else if (openHabCategory.matches("(.*\\s|^)(heat.*|thermo.*)")){
 				type = SmartDevice.Types.heater.name();		//HEATER
 			}else{
 				type = openHabCategory;		//take this if we don't have a specific type yet

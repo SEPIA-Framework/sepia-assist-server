@@ -23,7 +23,7 @@ public class Test_RssRomeTools {
 	//Test a faulty RSS feed or improve reader
 	public static void main(String[] args) {
 		
-		String url = "http://rss.golem.de/rss.php?feed=RSS2.0";
+		String url = "https://rss.golem.de/rss.php?feed=RSS2.0";
 		//String url = "https://www.rollingstone.com/music/feed/";
 		//String url = "https://www.wired.de/feed/latest";
 		long tic = Debugger.tic();
@@ -72,6 +72,7 @@ public class Test_RssRomeTools {
 				//System.out.println(httpClientRes.content);
 				if (Is.notNullOrEmpty(httpClientRes.content)){
 					System.out.println(httpClientRes.content.substring(0, 50));
+					System.out.println(httpClientRes.headers.toString());
 					InputStream newStream;
 					if (httpClientRes.encoding != null){
 						newStream = new ByteArrayInputStream(httpClientRes.content.getBytes(httpClientRes.encoding));
