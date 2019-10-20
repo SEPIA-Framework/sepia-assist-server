@@ -1,6 +1,7 @@
 {
 	"collections": {
 		"my": [
+			"size_radio",
 			"ego_fm_pure", 
 			"1live_diggi", 
 			"you_fm_just_music",
@@ -24,7 +25,8 @@
 		"alternative": [
 			"kexp",
 			"delta_indie",
-			"ego_fm_pure"
+			"ego_fm_pure",
+			"size_radio"
 		]
 	},
 	"deprecations": {
@@ -42,7 +44,8 @@
         "ANTENNE BAYERN": "http://www.antenne.de/musik/song-suche/?station=antenne",
         "1LIVE": "http://www1.wdr.de/radio/1live/on-air/1live-playlist/index.html",
         "WDR 2": "http://www1.wdr.de/radio/wdr2/titelsuche-wdrzwei-124.html",
-        "DELUXE LOUNGE RADIO": "http://onlineradiobox.com/de/radiodeluxelounge/playlist/"
+        "DELUXE LOUNGE RADIO": "http://onlineradiobox.com/de/radiodeluxelounge/playlist/",
+		"SIZE RADIO": "http://www.size-radio.com"
     },
     "stations": {
 		"night": [
@@ -55,6 +58,10 @@
 			"antenne_bayern_lovesongs",
 			"1live_fiehe"
 		],
+		"size_radio": [{
+			"streamURL": "http://stream.radiojar.com/atr1e8aswa5tv",
+			"name": "SIZE RADIO"
+		}],
 		"delta_föhnfrisur": [{
 			"streamURL": "https://delta.hoerradar.de/deltaradio-foehnfrisur-mp3-hq",
 			"name": "delta radio Föhnfrisur"
