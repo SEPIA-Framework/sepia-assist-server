@@ -14,11 +14,19 @@ import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 
+/**
+ * Parameter to find any smart device like smart home lights, heater, tv, music player etc. 
+ * 
+ * @author Florian Quirin
+ * 
+ */
 public class SmartDevice implements ParameterHandler{
 
 	//-----data-----
 	
-	//Parameter types
+	/**
+	 * Smart devices typically found in a smart home like lights, heater, tv, music player etc. 
+	 */
 	public static enum Types {
 		light,
 		heater,

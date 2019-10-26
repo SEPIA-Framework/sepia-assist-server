@@ -14,11 +14,19 @@ import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 
+/**
+ * Parameter to find rooms typically found in a smart home like living-room etc.
+ * 
+ * @author Florian Quirin
+ * 
+ */
 public class Room implements ParameterHandler{
 
 	//-----data-----
 	
-	//Parameter types
+	/**
+	 * Rooms typically found in a smart home. 
+	 */
 	public static enum Types{
 		livingroom,
 		diningroom,
@@ -29,6 +37,7 @@ public class Room implements ParameterHandler{
 		office,
 		garage,
 		shack;
+		//TODO: hallway, entrance/front door, basement, veranda(h)/patio/porch/lanai, garden
 	}
 	
 	//Parameter local type names
