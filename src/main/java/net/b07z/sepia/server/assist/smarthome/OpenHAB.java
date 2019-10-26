@@ -28,6 +28,13 @@ public class OpenHAB implements SmartHomeHub {
 			this.host = host;
 		}
 	}
+	
+	@Override
+	public boolean registerSepiaFramework(){
+		//Currently no action required - just return true
+		return true;
+		//return SmartHomeHub.super.registerSepiaFramework();
+	}
 
 	@Override
 	public Map<String, SmartHomeDevice> getDevices() {
@@ -92,12 +99,12 @@ public class OpenHAB implements SmartHomeHub {
 		JSONObject response = Connectors.httpGET(deviceURL);
 		if (Connectors.httpSuccess(response)){
 			//clean up old tags first if needed (how annoying that we have to deal with arrays here)
-			String newTag = "sepia-mem-state=" + stateMemory;
+			String newTag = SmartHomeDevice.SEPIA_TAG_MEM_STATE + "=" + stateMemory;
 			JSONArray allTags = JSON.getJArray(response, "tags");
 			List<String> oldMemStateTags = new ArrayList<>();
 			for (Object tagObj : allTags){
 				String t = (String) tagObj;
-				if (t.startsWith("sepia-mem-state=")){
+				if (t.startsWith(SmartHomeDevice.SEPIA_TAG_MEM_STATE + "=")){
 					oldMemStateTags.add(t);
 				}
 			}
@@ -167,13 +174,13 @@ public class OpenHAB implements SmartHomeHub {
 			//try to find self-defined SEPIA tags first
 			for (Object tagObj : tags){
 				String t = (String) tagObj;
-				if (t.startsWith("sepia-name=")){
+				if (t.startsWith(SmartHomeDevice.SEPIA_TAG_NAME + "=")){
 					name = t.split("=")[1];						//NOTE: has to be unique
-				}else if (t.startsWith("sepia-type=")){
+				}else if (t.startsWith(SmartHomeDevice.SEPIA_TAG_TYPE + "=")){
 					type = t.split("=")[1];						//NOTE: as defined in device parameter
-				}else if (t.startsWith("sepia-room=")){
+				}else if (t.startsWith(SmartHomeDevice.SEPIA_TAG_ROOM + "=")){
 					room = t.split("=")[1];						//NOTE: as defined in room parameter
-				}else if (t.startsWith("sepia-mem-state=")){
+				}else if (t.startsWith(SmartHomeDevice.SEPIA_TAG_MEM_STATE + "=")){
 					memoryState = t.split("=")[1];				//A state to remember like last non-zero brightness of a light 
 				} 
 			}
@@ -184,9 +191,9 @@ public class OpenHAB implements SmartHomeHub {
 		}
 		if (type == null){
 			String openHabCategory = JSON.getString(hubDevice, "category").toLowerCase();	//NOTE: we check category, not type 
-			if (openHabCategory.matches("(.*\\s|^)(light.*|lamp.*)")){
+			if (openHabCategory.matches("(.*\\s|^|,)(light.*|lamp.*)")){
 				type = SmartDevice.Types.light.name();		//LIGHT
-			}else if (openHabCategory.matches("(.*\\s|^)(heat.*|thermo.*)")){
+			}else if (openHabCategory.matches("(.*\\s|^|,)(heat.*|thermo.*)")){
 				type = SmartDevice.Types.heater.name();		//HEATER
 			}else{
 				type = openHabCategory;		//take this if we don't have a specific type yet

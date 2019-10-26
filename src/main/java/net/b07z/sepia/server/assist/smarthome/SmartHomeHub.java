@@ -5,6 +5,15 @@ import java.util.Map;
 public interface SmartHomeHub {
 	
 	/**
+	 * Register SEPIA Framework in specific smart home HUB software. This can for example be the creation of new attributes 
+	 * inside the HUB to be able to use the SEPIA tags 'sepia-name', 'sepia-room', ... etc. (e.g. FHEM).
+	 * @return true if registration was successful, false if failed (print errors to log)
+	 */
+	public default boolean registerSepiaFramework(){
+		return true;
+	}
+	
+	/**
 	 * Get devices from HUB and convert them to SEPIA compatible {@link SmartHomeDevice}.
 	 * @return devices, empty (no devices received) or null (request error)
 	 */
