@@ -1,12 +1,9 @@
 package net.b07z.sepia.server.assist.services;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
-import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.parameters.Action;
@@ -142,7 +139,7 @@ public class SmartOpenHAB implements ServiceInterface {
 		}
 		//get all devices with right type and optionally right room
 		String roomType = room.getValueAsString();
-		List<SmartHomeDevice> matchingDevices = getMatchingDevices(devices, deviceType, roomType, -1);
+		List<SmartHomeDevice> matchingDevices = SmartHomeDevice.getMatchingDevices(devices, deviceType, roomType, -1);
 		
 		//have found any?
 		if (matchingDevices.isEmpty()){
@@ -181,7 +178,7 @@ public class SmartOpenHAB implements ServiceInterface {
 			actionValue = Action.Type.set.name();
 		}
 		if (actionIs(actionValue, Action.Type.toggle)){
-			if (Is.notNullOrEmpty(state) && !state.equals("0") && (state.matches("\\d+") || state.toUpperCase().equals(LIGHT_ON))){
+			if (Is.notNullOrEmpty(state) && !state.equals("0") && (state.matches("\\d+") || state.toUpperCase().equals(SmartHomeDevice.LIGHT_ON))){
 				actionValue = Action.Type.off.name();
 			}else{
 				actionValue = Action.Type.on.name();
@@ -191,7 +188,7 @@ public class SmartOpenHAB implements ServiceInterface {
 		//SHOW
 		if (actionIs(actionValue, Action.Type.show)){
 			//response info
-			service.resultInfoPut("state", getStateLocal(state, service.language));
+			service.resultInfoPut("state", SmartHomeDevice.getStateLocal(state, service.language));
 			//answer
 			if (hasRoom){
 				service.setCustomAnswer(showDeviceStateWithRoom);
@@ -199,16 +196,16 @@ public class SmartOpenHAB implements ServiceInterface {
 				service.setCustomAnswer(showDeviceState);
 			}
 			//response info
-			service.resultInfoPut("state", getStateLocal(state, service.language));
+			service.resultInfoPut("state", SmartHomeDevice.getStateLocal(state, service.language));
 			
 		//ON
 		}else if (actionIs(actionValue, Action.Type.on)){
-			String targetState = LIGHT_ON;
+			String targetState = SmartHomeDevice.LIGHT_ON;
 			
 			//already on?
 			if (Is.notNullOrEmpty(state) && !state.equals("0") && (state.matches("\\d+") || state.toUpperCase().equals(targetState))){
 				//response info
-				service.resultInfoPut("state", getStateLocal(state, service.language));
+				service.resultInfoPut("state", SmartHomeDevice.getStateLocal(state, service.language));
 				//answer
 				if (hasRoom){
 					service.setCustomAnswer(showDeviceStateWithRoom);
@@ -220,7 +217,7 @@ public class SmartOpenHAB implements ServiceInterface {
 				boolean setSuccess = smartHomeHUB.setDeviceState(selectedDevice, targetState);
 				if (setSuccess){
 					//response info
-					service.resultInfoPut("state", getStateLocal(targetState, service.language));
+					service.resultInfoPut("state", SmartHomeDevice.getStateLocal(targetState, service.language));
 					//answer
 					if (hasRoom){
 						service.setCustomAnswer(setDeviceToStateWithRoom);
@@ -237,12 +234,12 @@ public class SmartOpenHAB implements ServiceInterface {
 		
 		//OFF	
 		}else if (actionIs(actionValue, Action.Type.off)){
-			String targetState = LIGHT_OFF;
+			String targetState = SmartHomeDevice.LIGHT_OFF;
 			
 			//already off?
 			if (Is.notNullOrEmpty(state) && (state.matches("0") || state.toUpperCase().equals(targetState))){
 				//response info
-				service.resultInfoPut("state", getStateLocal(state, service.language));
+				service.resultInfoPut("state", SmartHomeDevice.getStateLocal(state, service.language));
 				//answer
 				if (hasRoom){
 					service.setCustomAnswer(showDeviceStateWithRoom);
@@ -254,7 +251,7 @@ public class SmartOpenHAB implements ServiceInterface {
 				boolean setSuccess = smartHomeHUB.setDeviceState(selectedDevice, targetState);
 				if (setSuccess){
 					//response info
-					service.resultInfoPut("state", getStateLocal(targetState, service.language));
+					service.resultInfoPut("state", SmartHomeDevice.getStateLocal(targetState, service.language));
 					//answer
 					if (hasRoom){
 						service.setCustomAnswer(setDeviceToStateWithRoom);
@@ -281,7 +278,7 @@ public class SmartOpenHAB implements ServiceInterface {
 				//already set?
 				if (Is.notNullOrEmpty(state) && state.toUpperCase().equals(targetSetValue.toUpperCase())){
 					//response info
-					service.resultInfoPut("state", getStateLocal(state, service.language));
+					service.resultInfoPut("state", SmartHomeDevice.getStateLocal(state, service.language));
 					//answer
 					if (hasRoom){
 						service.setCustomAnswer(showDeviceStateWithRoom);
@@ -293,7 +290,7 @@ public class SmartOpenHAB implements ServiceInterface {
 					boolean setSuccess = smartHomeHUB.setDeviceState(selectedDevice, targetSetValue);
 					if (setSuccess){
 						//response info
-						service.resultInfoPut("state", getStateLocal(targetSetValue, service.language));
+						service.resultInfoPut("state", SmartHomeDevice.getStateLocal(targetSetValue, service.language));
 						//answer
 						if (hasRoom){
 							service.setCustomAnswer(setDeviceToStateWithRoom);
@@ -312,7 +309,7 @@ public class SmartOpenHAB implements ServiceInterface {
 		//NOT POSSIBLE
 		}else{
 			//response info
-			service.resultInfoPut("state", getStateLocal(state, service.language));
+			service.resultInfoPut("state", SmartHomeDevice.getStateLocal(state, service.language));
 			
 			//action not supported or makes no sense
 			service.setStatusOkay();
@@ -335,51 +332,6 @@ public class SmartOpenHAB implements ServiceInterface {
 	
 	//----------- helper methods ------------
 	
-	//device states
-	public static final String LIGHT_ON = "ON";
-	public static final String LIGHT_OFF = "OFF";
-	public static final String LIGHT_INCREASE = "INCREASE";
-	public static final String LIGHT_DECREASE = "DECREASE";
-	
-	//locals
-	private static HashMap<String, String> states_de = new HashMap<>();
-	private static HashMap<String, String> states_en = new HashMap<>();
-	static {
-		states_de.put("on", "an");
-		states_de.put("off", "aus");
-		states_de.put("open", "offen");
-		states_de.put("close", "geschlossen");
-		
-		states_en.put("on", "on");
-		states_en.put("off", "off");
-		states_en.put("open", "open");
-		states_en.put("close", "close");
-	}
-	/**
-	 * Translate state value.
-	 * If state is unknown returns original string.
-	 * @param state - generalized state 
-	 * @param language - ISO language code
-	 */
-	public static String getStateLocal(String state, String language){
-		String localName = "";
-		state = state.toLowerCase();
-		if (language.equals(LANGUAGES.DE)){
-			localName = states_de.get(state);
-		}else if (language.equals(LANGUAGES.EN)){
-			localName = states_en.get(state);
-		}
-		if (localName == null){
-			if (!state.matches("\\d+")){
-				Debugger.println(SmartOpenHAB.class.getSimpleName() + 
-					" - getStateLocal() has no '" + language + "' version for '" + state + "'", 3);
-			}
-			return state;
-		}else{
-			return localName;
-		}
-	}
-	
 	/**
 	 * Shortcut for: actionValue.equals(actionType.name())
 	 * @return true/false
@@ -389,45 +341,17 @@ public class SmartOpenHAB implements ServiceInterface {
 	}
 	
 	/**
-	 * Get devices from the list that match type and room (optionally).
-	 * @param devices - map of devices taken e.g. from getDevices()
-	 * @param deviceType - type of device, see {@link SmartDevice.Types}
-	 * @param roomType - type of room or empty (not null!), see {@link Room.Types}
-	 * @param maxDevices - maximum number of matches (0 or negative for all possible)
-	 * @return
+	 * @deprecated
+	 * use {@link SmartHomeDevice#getMatchingDevices(Map, String, String, int)}
 	 */
 	public static List<SmartHomeDevice> getMatchingDevices(Map<String, SmartHomeDevice> devices, String deviceType, String roomType, int maxDevices){
-		List<SmartHomeDevice> matchingDevices = new ArrayList<>();
-		//get all devices with right type and optionally room
-		int found = 0;
-		for (Map.Entry<String, SmartHomeDevice> entry : devices.entrySet()){
-			//check type
-			SmartHomeDevice data = entry.getValue();
-			String thisType = data.getType();
-			if (!thisType.equals(deviceType)){
-				continue;
-			}
-			//check room?
-			if (!roomType.isEmpty()){
-				String thisRoom = data.getRoom();
-				if (!thisRoom.equals(roomType)){
-					continue;
-				}else{
-					matchingDevices.add(data);
-					found++;
-				}
-			}else{
-				matchingDevices.add(data);
-				found++;
-			}
-			//max results reached?
-			if (maxDevices > 0 && found >= maxDevices){
-				break;
-			}
-			//TODO: we should do a device name check too, but this is not taken into account in SmartDevice parameter yet :-( 
-			//e.g. "Light 1", "Lamp A" or "Desk-Lamp" ...
-			//I suggest to create an additional parameter called SMART_DEVICE_NAME
-		}
-		return matchingDevices;
+		return SmartHomeDevice.getMatchingDevices(devices, deviceType, roomType, maxDevices);
+	}
+	/**
+	 * @deprecated
+	 * use {@link SmartHomeDevice#getStateLocal(String, String)}
+	 */
+	public static String getStateLocal(String state, String language){
+		return SmartHomeDevice.getStateLocal(state, language);
 	}
 }

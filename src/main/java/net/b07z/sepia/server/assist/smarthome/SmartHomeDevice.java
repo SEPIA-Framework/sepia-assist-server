@@ -1,9 +1,15 @@
 package net.b07z.sepia.server.assist.smarthome;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.json.simple.JSONObject;
 
+import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.parameters.Room;
 import net.b07z.sepia.server.assist.parameters.SmartDevice;
+import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.JSON;
 
 public class SmartHomeDevice {
@@ -22,6 +28,53 @@ public class SmartHomeDevice {
 	public static final String SEPIA_TAG_ROOM = "sepia-room";
 	public static final String SEPIA_TAG_DATA = "sepia-data";
 	public static final String SEPIA_TAG_MEM_STATE = "sepia-mem-state";
+	
+	//device states
+	public static final String LIGHT_ON = "ON";
+	public static final String LIGHT_OFF = "OFF";
+	public static final String LIGHT_INCREASE = "INCREASE";
+	public static final String LIGHT_DECREASE = "DECREASE";
+	
+	//locals
+	private static HashMap<String, String> states_de = new HashMap<>();
+	private static HashMap<String, String> states_en = new HashMap<>();
+	static {
+		states_de.put("on", "an");
+		states_de.put("off", "aus");
+		states_de.put("open", "offen");
+		states_de.put("close", "geschlossen");
+		states_de.put("unreachable", "nicht erreichbar");
+		
+		states_en.put("on", "on");
+		states_en.put("off", "off");
+		states_en.put("open", "open");
+		states_en.put("close", "close");
+		states_en.put("unreachable", "unreachable");
+	}
+	/**
+	 * Translate state value.
+	 * If state is unknown returns original string.
+	 * @param state - generalized state 
+	 * @param language - ISO language code
+	 */
+	public static String getStateLocal(String state, String language){
+		String localName = "";
+		state = state.toLowerCase();
+		if (language.equals(LANGUAGES.DE)){
+			localName = states_de.get(state);
+		}else if (language.equals(LANGUAGES.EN)){
+			localName = states_en.get(state);
+		}
+		if (localName == null){
+			if (!state.matches("\\d+")){
+				Debugger.println(SmartHomeDevice.class.getSimpleName() + 
+					" - getStateLocal() has no '" + language + "' version for '" + state + "'", 3);
+			}
+			return state;
+		}else{
+			return localName;
+		}
+	}
 	
 	/**
 	 * Create new generalized SEPIA smart home device object filled with data obtained by calling specific HUBs etc. 
@@ -213,5 +266,50 @@ public class SmartHomeDevice {
 		this.stateMemory = JSON.getString(deviceJson, "state-memory");
 		this.link = JSON.getString(deviceJson, "link");
 		this.meta = JSON.getJObject(deviceJson, "meta");
+	}
+	
+	//--------- static helper methods ----------
+	
+	/**
+	 * Get devices from the list that match type and room (optionally).
+	 * @param devices - map of devices taken e.g. from getDevices()
+	 * @param deviceType - type of device, see {@link SmartDevice.Types}
+	 * @param roomType - type of room or empty (not null!), see {@link Room.Types}
+	 * @param maxDevices - maximum number of matches (0 or negative for all possible)
+	 * @return
+	 */
+	public static List<SmartHomeDevice> getMatchingDevices(Map<String, SmartHomeDevice> devices, String deviceType, String roomType, int maxDevices){
+		List<SmartHomeDevice> matchingDevices = new ArrayList<>();
+		//get all devices with right type and optionally room
+		int found = 0;
+		for (Map.Entry<String, SmartHomeDevice> entry : devices.entrySet()){
+			//check type
+			SmartHomeDevice data = entry.getValue();
+			String thisType = data.getType();
+			if (!thisType.equals(deviceType)){
+				continue;
+			}
+			//check room?
+			if (!roomType.isEmpty()){
+				String thisRoom = data.getRoom();
+				if (!thisRoom.equals(roomType)){
+					continue;
+				}else{
+					matchingDevices.add(data);
+					found++;
+				}
+			}else{
+				matchingDevices.add(data);
+				found++;
+			}
+			//max results reached?
+			if (maxDevices > 0 && found >= maxDevices){
+				break;
+			}
+			//TODO: we should do a device name check too, but this is not taken into account in SmartDevice parameter yet :-( 
+			//e.g. "Light 1", "Lamp A" or "Desk-Lamp" ...
+			//I suggest to create an additional parameter called SMART_DEVICE_NAME
+		}
+		return matchingDevices;
 	}
 }

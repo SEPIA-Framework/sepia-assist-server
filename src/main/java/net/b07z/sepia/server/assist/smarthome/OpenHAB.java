@@ -33,7 +33,6 @@ public class OpenHAB implements SmartHomeHub {
 	public boolean registerSepiaFramework(){
 		//Currently no action required - just return true
 		return true;
-		//return SmartHomeHub.super.registerSepiaFramework();
 	}
 
 	@Override
@@ -49,7 +48,7 @@ public class OpenHAB implements SmartHomeHub {
 			}
 			if (devicesArray.isEmpty()){
 				//Fail with empty array
-				Debugger.println("Service:SmartOpenHAB - devices array was empty!", 1);
+				Debugger.println("Service:OpenHAB - devices array was empty!", 1);
 				return new HashMap<String, SmartHomeDevice>();
 			}
 			//Build devices map
@@ -68,29 +67,19 @@ public class OpenHAB implements SmartHomeHub {
 				
 			}catch (Exception e){
 				//Fail with faulty array
-				Debugger.println("Service:SmartOpenHAB - devices array seems to be broken!", 1);
+				Debugger.println("Service:OpenHAB - devices array seems to be broken!", 1);
 				return new HashMap<String, SmartHomeDevice>();
 			}
 			
 		}else{
 			//Fail with server contact error
-			Debugger.println("Service:SmartOpenHAB - failed to get devices from server!", 1);
+			Debugger.println("Service:OpenHAB - failed to get devices from server!", 1);
 			return null;
 		}
 	}
-
+	
 	@Override
-	public boolean setDeviceState(SmartHomeDevice device, String state) {
-		String deviceURL = device.getLink();
-		if (Is.nullOrEmpty(deviceURL)){
-			return false;
-		}else{
-			return setDeviceState(deviceURL, state);
-		}
-	}
-
-	@Override
-	public boolean setDeviceStateMemory(SmartHomeDevice device, String stateMemory) {
+	public boolean writeDeviceAttribute(SmartHomeDevice device, String attrName, String attrValue){
 		String deviceURL = device.getLink();
 		if (Is.nullOrEmpty(deviceURL)){
 			return false;
@@ -98,13 +87,13 @@ public class OpenHAB implements SmartHomeHub {
 		//get fresh data first
 		JSONObject response = Connectors.httpGET(deviceURL);
 		if (Connectors.httpSuccess(response)){
-			//clean up old tags first if needed (how annoying that we have to deal with arrays here)
-			String newTag = SmartHomeDevice.SEPIA_TAG_MEM_STATE + "=" + stateMemory;
+			//clean up old tags first if needed (how annoying that we have to deal with arrays here - other options?)
+			String newTag = attrName + "=" + attrValue;
 			JSONArray allTags = JSON.getJArray(response, "tags");
 			List<String> oldMemStateTags = new ArrayList<>();
 			for (Object tagObj : allTags){
 				String t = (String) tagObj;
-				if (t.startsWith(SmartHomeDevice.SEPIA_TAG_MEM_STATE + "=")){
+				if (t.startsWith(attrName + "=")){
 					oldMemStateTags.add(t);
 				}
 			}
@@ -123,7 +112,7 @@ public class OpenHAB implements SmartHomeHub {
 						}
 					}
 				} catch (Exception e) {
-					Debugger.println("Service:SmartOpenHAB - failed to delete item tag: " + delTag + "Msg: " + e.getMessage(), 1);
+					Debugger.println("Service:OpenHAB - failed to delete item tag: " + delTag + "Msg: " + e.getMessage(), 1);
 					return false;
 				}
 			}
@@ -131,7 +120,7 @@ public class OpenHAB implements SmartHomeHub {
 			try {
 				deviceURL += ("/tags/" + URLEncoder.encode(newTag, "UTF-8"));
 			} catch (UnsupportedEncodingException e) {
-				Debugger.println("Service:SmartOpenHAB - failed to set item tag: " + newTag + "Msg: " + e.getMessage(), 1);
+				Debugger.println("Service:OpenHAB - failed to set item tag: " + newTag + "Msg: " + e.getMessage(), 1);
 				return false;
 			}
 			//set tag
@@ -146,6 +135,21 @@ public class OpenHAB implements SmartHomeHub {
 		}else{
 			return false;
 		}
+	}
+
+	@Override
+	public boolean setDeviceState(SmartHomeDevice device, String state) {
+		String deviceURL = device.getLink();
+		if (Is.nullOrEmpty(deviceURL)){
+			return false;
+		}else{
+			return setDeviceState(deviceURL, state);
+		}
+	}
+
+	@Override
+	public boolean setDeviceStateMemory(SmartHomeDevice device, String stateMemory) {
+		return writeDeviceAttribute(device, SmartHomeDevice.SEPIA_TAG_MEM_STATE, stateMemory);
 	}
 
 	@Override
@@ -221,7 +225,7 @@ public class OpenHAB implements SmartHomeHub {
 	public static SmartHomeDevice loadDeviceData(String deviceURL) {
 		JSONObject response = Connectors.httpGET(deviceURL);
 		if (Connectors.httpSuccess(response)){
-			//add tags to meta
+			//build device from result
 			SmartHomeDevice shd = buildDeviceFromResponse(response);
 			return shd;
 		}else{
@@ -243,5 +247,4 @@ public class OpenHAB implements SmartHomeHub {
 		//System.out.println("RESPONSE: " + response); 		//this is usually empty if there was no error
 		return Connectors.httpSuccess(response);
 	}
-
 }

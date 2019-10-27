@@ -9,15 +9,22 @@ public interface SmartHomeHub {
 	 * inside the HUB to be able to use the SEPIA tags 'sepia-name', 'sepia-room', ... etc. (e.g. FHEM).
 	 * @return true if registration was successful, false if failed (print errors to log)
 	 */
-	public default boolean registerSepiaFramework(){
-		return true;
-	}
+	public boolean registerSepiaFramework();
 	
 	/**
 	 * Get devices from HUB and convert them to SEPIA compatible {@link SmartHomeDevice}.
 	 * @return devices, empty (no devices received) or null (request error)
 	 */
 	public Map<String, SmartHomeDevice> getDevices();
+	
+	/**
+	 * Write attribute of specific device. This is usually used to register the SEPIA Framework and to tag devices as SEPIA items.
+	 * @param device - generalized SEPIA smart home device
+	 * @param attrName - name of attribute, e.g. "sepia-name" (SmartHomeDevice.SEPIA_TAG_...)
+	 * @param attrValue - simple string as value
+	 * @return success/fail (due to any error, e.g. connection or missing data)
+	 */
+	public boolean writeDeviceAttribute(SmartHomeDevice device, String attrName, String attrValue);
 	
 	/**
 	 * Get device data via direct access.
