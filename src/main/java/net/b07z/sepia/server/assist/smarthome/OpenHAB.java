@@ -16,6 +16,12 @@ import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 
+/**
+ * OpenHAB integration for smart home HUB interface.
+ * 
+ * @author Florian Quirin
+ *
+ */
 public class OpenHAB implements SmartHomeHub {
 	
 	private String host;

@@ -22,12 +22,12 @@ import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 
 /**
- * This services uses a local openHAB server (same network as SEPIA server) to control smart home devices.
+ * This services uses a local smart home HUB server like openHAB or FHEM (same network as SEPIA server) to control smart home devices.
  * 
  * @author Florian Quirin
  *
  */
-public class SmartOpenHAB implements ServiceInterface {
+public class SmartHomeHubConnector implements ServiceInterface {
 	
 	@Override
 	public TreeSet<String> getSampleSentences(String lang){
@@ -114,7 +114,7 @@ public class SmartOpenHAB implements ServiceInterface {
 			return service.buildResult();
 		}
 		
-		//TODO: can we check if the user is in the same network?
+		//TODO: can we check if the user is in the same network? (proper proxy forwarding?)
 		
 		//get required parameters
 		Parameter device = nluResult.getRequiredParameter(PARAMETERS.SMART_DEVICE);
