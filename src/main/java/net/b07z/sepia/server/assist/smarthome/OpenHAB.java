@@ -27,6 +27,10 @@ public class OpenHAB implements SmartHomeHub {
 	private String host;
 	public static String NAME = "openhab";
 	
+	/**
+	 * Build OpenHAB connector with given host address.
+	 * @param host - e.g. http://localhost:8080
+	 */
 	public OpenHAB(String host){
 		if (Is.nullOrEmpty(host)){
 			throw new RuntimeException("No host address found for openHAB integration!");
@@ -36,13 +40,19 @@ public class OpenHAB implements SmartHomeHub {
 	}
 	
 	@Override
+	public void setHostAddress(String hostUrl){
+		this.host = hostUrl;
+	}
+	
+	@Override
 	public boolean registerSepiaFramework(){
 		//Currently no action required - just return true
 		return true;
 	}
 
 	@Override
-	public Map<String, SmartHomeDevice> getDevices() {
+	public Map<String, SmartHomeDevice> getDevices(String optionalNameFilter, String optionalTypeFilter, String optionalRoomFilter){
+		//TODO: we currently ignore result filtering
 		JSONObject response = Connectors.httpGET(this.host + "/rest/items");
 		//System.out.println("openHAB REST response: " + response); 									//DEBUG
 		if (Connectors.httpSuccess(response)){

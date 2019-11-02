@@ -2,7 +2,16 @@ package net.b07z.sepia.server.assist.smarthome;
 
 import java.util.Map;
 
+import net.b07z.sepia.server.assist.parameters.Room;
+import net.b07z.sepia.server.assist.parameters.SmartDevice;
+
 public interface SmartHomeHub {
+	
+	/**
+	 * Set or overwrite host address.
+	 * @param hostUrl - e.g. http://localhost:8080
+	 */
+	public void setHostAddress(String hostUrl);
 	
 	/**
 	 * Register SEPIA Framework in specific smart home HUB software. This can for example be the creation of new attributes 
@@ -12,10 +21,13 @@ public interface SmartHomeHub {
 	public boolean registerSepiaFramework();
 	
 	/**
-	 * Get devices from HUB and convert them to SEPIA compatible {@link SmartHomeDevice}.
+	 * Get devices from HUB and convert them to SEPIA compatible {@link SmartHomeDevice}. Apply optional filters to reduce results in advance.
+	 * @param optionalNameFilter - name of device (any string) as filter or null
+	 * @param optionalTypeFilter - type of device as filter or null, see {@link SmartDevice.Types}
+	 * @param optionalRoomFilter - type of room as filter or null, see {@link Room.Types}
 	 * @return devices, empty (no devices received) or null (request error)
 	 */
-	public Map<String, SmartHomeDevice> getDevices();
+	public Map<String, SmartHomeDevice> getDevices(String optionalNameFilter, String optionalTypeFilter, String optionalRoomFilter);
 	
 	/**
 	 * Write attribute of specific device. This is usually used to register the SEPIA Framework and to tag devices as SEPIA items.
@@ -36,7 +48,7 @@ public interface SmartHomeHub {
 	/**
 	 * Push new status to device (e.g. via direct access link (URL) given in object).
 	 * @param device - {@link SmartHomeDevice} taken from getDevices()
-	 * @param state - new status value
+	 * @param state - new status value (NOTE: the HUB implementation might have to translate the state value to its own format)
 	 * @return true IF no error was thrown after request
 	 */
 	public boolean setDeviceState(SmartHomeDevice device, String state);

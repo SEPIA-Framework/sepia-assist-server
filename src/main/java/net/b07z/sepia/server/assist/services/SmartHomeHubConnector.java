@@ -12,12 +12,14 @@ import net.b07z.sepia.server.assist.parameters.SmartDevice;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
+import net.b07z.sepia.server.assist.smarthome.Fhem;
 import net.b07z.sepia.server.assist.smarthome.OpenHAB;
 import net.b07z.sepia.server.assist.smarthome.SmartHomeDevice;
 import net.b07z.sepia.server.assist.smarthome.SmartHomeHub;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.data.Language;
 import net.b07z.sepia.server.core.data.Role;
+import net.b07z.sepia.server.core.tools.ClassBuilder;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 
@@ -100,13 +102,6 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		ServiceBuilder service = new ServiceBuilder(nluResult, 
 				getInfoFreshOrCache(nluResult.input, this.getClass().getCanonicalName()));
 		
-		//check if we know an OpenHAB server
-		if (Is.nullOrEmpty(Config.smarthome_hub_name) || !Config.smarthome_hub_name.trim().equalsIgnoreCase(OpenHAB.NAME)){
-			service.setStatusOkay(); 				//"soft"-fail (no error just missing info)
-			return service.buildResult();
-		}
-		SmartHomeHub smartHomeHUB = new OpenHAB(Config.smarthome_hub_host);
-				
 		//check user role 'smarthomeguest' for this skill (because it controls devices in the server's network)
 		if (!nluResult.input.user.hasRole(Role.smarthomeguest)){
 			service.setStatusOkay();
@@ -114,31 +109,55 @@ public class SmartHomeHubConnector implements ServiceInterface {
 			return service.buildResult();
 		}
 		
-		//TODO: can we check if the user is in the same network? (proper proxy forwarding?)
+		//TODO: can/should we check if the user is in the same network? (proper proxy forwarding?)
+		
+		//check if we know an OpenHAB server
+		SmartHomeHub smartHomeHUB;
+		if (Is.nullOrEmpty(Config.smarthome_hub_name)){
+			service.setStatusOkay(); 				//"soft"-fail (no error just missing info)
+			return service.buildResult();
+		}else if (Config.smarthome_hub_name.trim().equalsIgnoreCase(OpenHAB.NAME)){
+			smartHomeHUB = new OpenHAB(Config.smarthome_hub_host);
+		}else if (Config.smarthome_hub_name.trim().equalsIgnoreCase(Fhem.NAME)){
+			smartHomeHUB = new Fhem(Config.smarthome_hub_host);
+		}else{
+			try {
+				smartHomeHUB = (SmartHomeHub) ClassBuilder.construct(Config.smarthome_hub_name);
+				smartHomeHUB.setHostAddress(Config.smarthome_hub_host);
+			}catch (Exception e){
+				Debugger.println(SmartHomeHubConnector.class.getSimpleName() + " - Error trying to load smart home HUB data: " + Config.smarthome_hub_name, 1);
+				Debugger.printStackTrace(e, 3);
+				service.setStatusFail(); 				//"hard"-fail (faulty info data)
+				return service.buildResult();
+			}
+		}
 		
 		//get required parameters
 		Parameter device = nluResult.getRequiredParameter(PARAMETERS.SMART_DEVICE);
+		String deviceType = device.getValueAsString();
 		//get optional parameters
 		Parameter action = nluResult.getOptionalParameter(PARAMETERS.ACTION, "");
 		Parameter deviceValue = nluResult.getOptionalParameter(PARAMETERS.SMART_DEVICE_VALUE, "");
 		Parameter room = nluResult.getOptionalParameter(PARAMETERS.ROOM, "");
+		String roomType = room.getValueAsString();
+		
+		//TODO: implement in future:
+		String deviceName = null;
 		
 		//check if device is supported 						TODO: for the test phase we're currently doing lights only
-		String deviceType = device.getValueAsString();
 		if (!Is.typeEqual(deviceType, SmartDevice.Types.light)){
 			service.setStatusOkay();
 			service.setCustomAnswer(notYetControllable);	//"soft"-fail with "not yet controllable" answer
 			return service.buildResult();
 		}
 		
-		//find device - we always load a fresh list
-		Map<String, SmartHomeDevice> devices = smartHomeHUB.getDevices();
+		//find device - we always load a list of all devices (NOTE: the HUB implementation is responsible for caching the data)
+		Map<String, SmartHomeDevice> devices = smartHomeHUB.getDevices(deviceName, deviceType, roomType);
 		if (devices == null){
-			service.setStatusFail(); 						//"hard"-fail (probably openHAB connection error)
+			service.setStatusFail(); 						//"hard"-fail (probably HUB connection error)
 			return service.buildResult();
 		}
 		//get all devices with right type and optionally right room
-		String roomType = room.getValueAsString();
 		List<SmartHomeDevice> matchingDevices = SmartHomeDevice.getMatchingDevices(devices, deviceType, roomType, -1);
 		
 		//have found any?

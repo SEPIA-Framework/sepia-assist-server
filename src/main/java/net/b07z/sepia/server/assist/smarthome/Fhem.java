@@ -59,6 +59,11 @@ public class Fhem implements SmartHomeHub {
 	}
 	
 	@Override
+	public void setHostAddress(String hostUrl){
+		this.host = hostUrl;
+	}
+	
+	@Override
 	public boolean registerSepiaFramework(){
 		//Find attributes first
 		String foundAttributes = "";
@@ -108,7 +113,8 @@ public class Fhem implements SmartHomeHub {
 	}
 
 	@Override
-	public Map<String, SmartHomeDevice> getDevices(){
+	public Map<String, SmartHomeDevice> getDevices(String optionalNameFilter, String optionalTypeFilter, String optionalRoomFilter){
+		//TODO: we currently ignore result filtering
 		String url = URLBuilder.getString(this.host, 
 				"?cmd=", "jsonlist2",
 				"&XHR=", "1",
