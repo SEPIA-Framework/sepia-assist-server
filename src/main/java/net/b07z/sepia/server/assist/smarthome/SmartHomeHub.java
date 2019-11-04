@@ -4,8 +4,47 @@ import java.util.Map;
 
 import net.b07z.sepia.server.assist.parameters.Room;
 import net.b07z.sepia.server.assist.parameters.SmartDevice;
+import net.b07z.sepia.server.assist.server.Config;
+import net.b07z.sepia.server.assist.services.SmartHomeHubConnector;
+import net.b07z.sepia.server.core.tools.ClassBuilder;
+import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.Is;
 
 public interface SmartHomeHub {
+	
+	/**
+	 * Get HUB from server config (smarthome_hub_name, smarthome_hub_host).
+	 * @return HUB or null
+	 */
+	public static SmartHomeHub getHubFromSeverConfig(){
+		return getHub(Config.smarthome_hub_name, Config.smarthome_hub_host);
+	}
+	/**
+	 * Get HUB with custom data (name and host).
+	 * @param hubName - name like "openhab" or "fhem". A full class name is possible as well.
+	 * @param hubHist - address of HUB, e.g. http://localhost:8083/fhem
+	 * @return HUB or null
+	 */
+	public static SmartHomeHub getHub(String hubName, String hubHost){
+		SmartHomeHub smartHomeHUB;
+		if (Is.nullOrEmpty(hubName)){
+			return null;
+		}else if (hubName.trim().equalsIgnoreCase(OpenHAB.NAME)){
+			smartHomeHUB = new OpenHAB(hubHost);
+		}else if (hubName.trim().equalsIgnoreCase(Fhem.NAME)){
+			smartHomeHUB = new Fhem(hubHost);
+		}else{
+			try {
+				smartHomeHUB = (SmartHomeHub) ClassBuilder.construct(hubName);
+				smartHomeHUB.setHostAddress(hubHost);
+			}catch (Exception e){
+				Debugger.println(SmartHomeHubConnector.class.getSimpleName() + " - Error trying to load smart home HUB data: " + hubName, 1);
+				Debugger.printStackTrace(e, 3);
+				return null;
+			}
+		}
+		return smartHomeHUB;
+	}
 	
 	/**
 	 * Set or overwrite host address.
@@ -49,14 +88,15 @@ public interface SmartHomeHub {
 	 * Push new status to device (e.g. via direct access link (URL) given in object).
 	 * @param device - {@link SmartHomeDevice} taken from getDevices()
 	 * @param state - new status value (NOTE: the HUB implementation might have to translate the state value to its own format)
+	 * @param stateType - type of state variable, e.g. {@link SmartHomeDevice#STATE_TYPE_NUMBER_PERCENT} = number in percent
 	 * @return true IF no error was thrown after request
 	 */
-	public boolean setDeviceState(SmartHomeDevice device, String state);
+	public boolean setDeviceState(SmartHomeDevice device, String state, String stateType);
 	
 	/**
 	 * Set the state memory for a device (e.g. a brightness setting to remember as default).
 	 * @param device - {@link SmartHomeDevice} taken from getDevices()
-	 * @param stateMemory - any state as string
+	 * @param stateMemory - device state to remember (format can be HUB specific as defined by combining state and stateType info)
 	 * @return true IF no error was thrown after request
 	 */
 	public boolean setDeviceStateMemory(SmartHomeDevice device, String stateMemory);

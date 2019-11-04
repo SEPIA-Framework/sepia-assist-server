@@ -60,7 +60,14 @@ public class OpenHAB implements SmartHomeHub {
 			if (response.containsKey("JSONARRAY")){
 				devicesArray = JSON.getJArray(response, "JSONARRAY");		//this should usually be the one triggered
 			}else if (response.containsKey("STRING")){
-				devicesArray = JSON.parseStringToArrayOrFail(response.toJSONString());
+				String arrayAsString = JSON.getString(response, "STRING");
+				if (arrayAsString.trim().startsWith("[")){
+					devicesArray = JSON.parseStringToArrayOrFail(arrayAsString);
+				}
+			}
+			if (devicesArray == null){
+				//ERROR
+				return null;
 			}
 			if (devicesArray.isEmpty()){
 				//Fail with empty array
@@ -154,11 +161,13 @@ public class OpenHAB implements SmartHomeHub {
 	}
 
 	@Override
-	public boolean setDeviceState(SmartHomeDevice device, String state) {
+	public boolean setDeviceState(SmartHomeDevice device, String state, String stateType) {
 		String deviceURL = device.getLink();
 		if (Is.nullOrEmpty(deviceURL)){
 			return false;
 		}else{
+			//TODO: check stateType
+			//TODO: we could check mem-state here if state is e.g. SmartHomeDevice.STATE_ON
 			return setDeviceState(deviceURL, state);
 		}
 	}
@@ -224,11 +233,13 @@ public class OpenHAB implements SmartHomeHub {
 		}
 		//create common object
 		Object stateObj = hubDevice.get("state");
+		String stateType = null;
+		//TODO: clean up stateObj and set stateType according to special values or devices (e.g. plain number for lamps is usually percentage)
 		Object linkObj = hubDevice.get("link");
 		JSONObject meta = null;
 		//TODO: we could add some stuff to meta when we need other data from response.
 		SmartHomeDevice shd = new SmartHomeDevice(name, type, room, 
-				(stateObj != null)? stateObj.toString() : null, memoryState, 
+				(stateObj != null)? stateObj.toString() : null, stateType, memoryState, 
 				(linkObj != null)? linkObj.toString() : null, meta);
 		return shd;
 	}

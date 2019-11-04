@@ -4,24 +4,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
+import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
+import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.parameters.Action;
+import net.b07z.sepia.server.assist.parameters.Number;
 import net.b07z.sepia.server.assist.parameters.Room;
 import net.b07z.sepia.server.assist.parameters.SmartDevice;
-import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
-import net.b07z.sepia.server.assist.smarthome.Fhem;
-import net.b07z.sepia.server.assist.smarthome.OpenHAB;
 import net.b07z.sepia.server.assist.smarthome.SmartHomeDevice;
 import net.b07z.sepia.server.assist.smarthome.SmartHomeHub;
+import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.data.Language;
 import net.b07z.sepia.server.core.data.Role;
-import net.b07z.sepia.server.core.tools.ClassBuilder;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
+import net.b07z.sepia.server.core.tools.JSON;
 
 /**
  * This services uses a local smart home HUB server like openHAB or FHEM (same network as SEPIA server) to control smart home devices.
@@ -51,6 +52,23 @@ public class SmartHomeHubConnector implements ServiceInterface {
 	public ServiceInfo getInfo(String language){
 		//type
 		ServiceInfo info = new ServiceInfo(Type.REST, Content.apiInterface, false);
+		
+		//Command
+		String CMD_NAME = CMD.SMARTDEVICE;
+		info.setIntendedCommand(CMD_NAME);
+		
+		//Regular expression triggers:
+		info.setCustomTriggerRegX(""
+				+ "licht(er|es|)|lampe(n|)|beleuchtung|leuchte(n|)|helligkeit|"
+				+ "heiz(er|ungen|ung|koerper|luefter|strahler)|temperatur(regler|en|)|thermostat|"
+				+ "(smart( |)home|geraet(e|)|sensor(en|))( |)(control|kontrolle|steuer(ung|n)|status|zustand)"
+				+ "", LANGUAGES.DE);
+		info.setCustomTriggerRegX(""
+				+ "light(s|)|lighting|lamp(s|)|illumination|brightness|"
+				+ "heater(s|)|temperature(s|)|thermostat(s|)|"
+				+ "(smart( |)home|device|sensor) (control|stat(us|e))"
+				+ "", LANGUAGES.EN);
+		//info.setCustomTriggerRegXscoreBoost(2);		//boost service a bit to increase priority over similar ones
 		
 		//Parameters:
 		
@@ -112,32 +130,24 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		//TODO: can/should we check if the user is in the same network? (proper proxy forwarding?)
 		
 		//check if we know an OpenHAB server
-		SmartHomeHub smartHomeHUB;
-		if (Is.nullOrEmpty(Config.smarthome_hub_name)){
+		SmartHomeHub smartHomeHUB = SmartHomeHub.getHubFromSeverConfig();
+		if (smartHomeHUB == null){
 			service.setStatusOkay(); 				//"soft"-fail (no error just missing info)
 			return service.buildResult();
-		}else if (Config.smarthome_hub_name.trim().equalsIgnoreCase(OpenHAB.NAME)){
-			smartHomeHUB = new OpenHAB(Config.smarthome_hub_host);
-		}else if (Config.smarthome_hub_name.trim().equalsIgnoreCase(Fhem.NAME)){
-			smartHomeHUB = new Fhem(Config.smarthome_hub_host);
-		}else{
-			try {
-				smartHomeHUB = (SmartHomeHub) ClassBuilder.construct(Config.smarthome_hub_name);
-				smartHomeHUB.setHostAddress(Config.smarthome_hub_host);
-			}catch (Exception e){
-				Debugger.println(SmartHomeHubConnector.class.getSimpleName() + " - Error trying to load smart home HUB data: " + Config.smarthome_hub_name, 1);
-				Debugger.printStackTrace(e, 3);
-				service.setStatusFail(); 				//"hard"-fail (faulty info data)
-				return service.buildResult();
-			}
 		}
 		
-		//get required parameters
+		//get required parameters:
 		Parameter device = nluResult.getRequiredParameter(PARAMETERS.SMART_DEVICE);
 		String deviceType = device.getValueAsString();
-		//get optional parameters
+		
+		//get optional parameters:
 		Parameter action = nluResult.getOptionalParameter(PARAMETERS.ACTION, "");
-		Parameter deviceValue = nluResult.getOptionalParameter(PARAMETERS.SMART_DEVICE_VALUE, "");
+		
+		Parameter deviceValue = nluResult.getOptionalParameter(PARAMETERS.SMART_DEVICE_VALUE, "");	//a number of type plain, percent or temperature (more may be added later)
+		String targetSetValue = deviceValue.getValueAsString();
+		String targetValueType = JSON.getStringOrDefault(deviceValue.getData(), InterviewData.NUMBER_TYPE, Number.Types.plain.name());
+		String targetValueParameterName = PARAMETERS.SMART_DEVICE_VALUE;		//required to generalize type ... see below
+		
 		Parameter room = nluResult.getOptionalParameter(PARAMETERS.ROOM, "");
 		String roomType = room.getValueAsString();
 		
@@ -176,7 +186,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 			}
 		}
 		String state = selectedDevice.getState();
-		String targetSetValue = deviceValue.getValueAsString(); 		//NOTE: we have more options here than only "VALUE"
+		String stateType = selectedDevice.getStateType();
 		
 		//ACTIONS for LIGHTS
 		
@@ -192,12 +202,12 @@ public class SmartHomeHubConnector implements ServiceInterface {
 			service.resultInfoPut("room", "");
 		}
 		
-		//Convert TOGGLE and ON with value
+		//Convert TOGGLE and ON (with value) to specific action
 		if (!targetSetValue.isEmpty() && (actionIs(actionValue, Action.Type.toggle) || actionIs(actionValue, Action.Type.on))){
 			actionValue = Action.Type.set.name();
 		}
 		if (actionIs(actionValue, Action.Type.toggle)){
-			if (Is.notNullOrEmpty(state) && !state.equals("0") && (state.matches("\\d+") || state.toUpperCase().equals(SmartHomeDevice.LIGHT_ON))){
+			if (Is.notNullOrEmpty(state) && !state.equals("0") && (state.matches("\\d+") || state.toUpperCase().equals(SmartHomeDevice.STATE_ON))){
 				actionValue = Action.Type.off.name();
 			}else{
 				actionValue = Action.Type.on.name();
@@ -219,7 +229,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 			
 		//ON
 		}else if (actionIs(actionValue, Action.Type.on)){
-			String targetState = SmartHomeDevice.LIGHT_ON;
+			String targetState = SmartHomeDevice.STATE_ON;
 			
 			//already on?
 			if (Is.notNullOrEmpty(state) && !state.equals("0") && (state.matches("\\d+") || state.toUpperCase().equals(targetState))){
@@ -233,7 +243,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 				}
 			//request state
 			}else{
-				boolean setSuccess = smartHomeHUB.setDeviceState(selectedDevice, targetState);
+				boolean setSuccess = smartHomeHUB.setDeviceState(selectedDevice, targetState, SmartHomeDevice.STATE_TYPE_TEXT_BINARY);
 				if (setSuccess){
 					//response info
 					service.resultInfoPut("state", SmartHomeDevice.getStateLocal(targetState, service.language));
@@ -253,7 +263,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		
 		//OFF	
 		}else if (actionIs(actionValue, Action.Type.off)){
-			String targetState = SmartHomeDevice.LIGHT_OFF;
+			String targetState = SmartHomeDevice.STATE_OFF;
 			
 			//already off?
 			if (Is.notNullOrEmpty(state) && (state.matches("0") || state.toUpperCase().equals(targetState))){
@@ -267,7 +277,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 				}
 			//request state
 			}else{
-				boolean setSuccess = smartHomeHUB.setDeviceState(selectedDevice, targetState);
+				boolean setSuccess = smartHomeHUB.setDeviceState(selectedDevice, targetState, SmartHomeDevice.STATE_TYPE_TEXT_BINARY);
 				if (setSuccess){
 					//response info
 					service.resultInfoPut("state", SmartHomeDevice.getStateLocal(targetState, service.language));
@@ -306,7 +316,12 @@ public class SmartHomeHubConnector implements ServiceInterface {
 					}
 				//request state
 				}else{
-					boolean setSuccess = smartHomeHUB.setDeviceState(selectedDevice, targetSetValue);
+					String genStateType = SmartHomeDevice.convertStateType(targetValueParameterName, targetSetValue, targetValueType);
+					if (genStateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_PLAIN)){
+						genStateType = SmartHomeDevice.makeSmartTypeAssumptionForPlainNumber(SmartDevice.Types.valueOf(deviceType)); 
+					}
+					
+					boolean setSuccess = smartHomeHUB.setDeviceState(selectedDevice, targetSetValue, genStateType);
 					if (setSuccess){
 						//response info
 						service.resultInfoPut("state", SmartHomeDevice.getStateLocal(targetSetValue, service.language));

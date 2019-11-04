@@ -190,12 +190,18 @@ public class Fhem implements SmartHomeHub {
 	}
 
 	@Override
-	public boolean setDeviceState(SmartHomeDevice device, String state){
+	public boolean setDeviceState(SmartHomeDevice device, String state, String stateType){
 		String fhemId = device.getMetaValueAsString("fhem-id");
 		String deviceCmdLink = device.getLink(); 
 		if (Is.nullOrEmpty(fhemId) || Is.nullOrEmpty(deviceCmdLink)){
 			return false;
 		}else{
+			//check stateType
+			if (stateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_PERCENT)){
+				//percent
+				state = "pct " + state;
+			}
+			//TODO: we could check mem-state here if state is e.g. SmartHomeDevice.STATE_ON
 			String cmdUrl = URLBuilder.getString(
 					deviceCmdLink, "=", "set " + fhemId + " " + state,
 					"&XHR=", "1",
@@ -277,14 +283,16 @@ public class Fhem implements SmartHomeHub {
 		String fhemObjName = JSON.getStringOrDefault(hubDevice, "Name", null);
 		//JSONObject stateObj = JSON.getJObject(hubDevice, new String[]{"Readings", "state"});
 		//String state = (stateObj != null)? JSON.getString(stateObj, "Value") : null;
-		String state = JSON.getStringOrDefault(internals, "STATE", null);			//TODO: think about states like 'dim50%'
+		String state = JSON.getStringOrDefault(internals, "STATE", null);
+		String stateType = null;
+		//TODO: clean up state and set stateType according to values like 'dim50%'
 		Object linkObj = (fhemObjName != null)? (this.host + "?cmd." + fhemObjName) : null;
 		JSONObject meta = JSON.make(
 				"fhem-id", fhemObjName
 		);
 		//note: we need fhem-id for commands although it is basically already in 'link'
 		SmartHomeDevice shd = new SmartHomeDevice(name, type, room, 
-				state, memoryState, 
+				state, stateType, memoryState, 
 				(linkObj != null)? linkObj.toString() : null, meta);
 		return shd;
 	}

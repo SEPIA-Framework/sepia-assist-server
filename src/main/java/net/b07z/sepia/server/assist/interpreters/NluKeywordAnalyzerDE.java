@@ -131,6 +131,7 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 		}
 		
 		//smart device control
+		/* -- moved to service --
 		if (NluTools.stringContains(text, "licht(er|es|)|lampe(n|)|beleuchtung|leuchte(n|)|helligkeit|"
 				+ "heiz(er|ungen|ung|koerper|luefter|strahler)|temperatur(regler|en|)|thermostat|"
 				+ "(smart( |)home|geraet(e|)|sensor(en|))( |)(control|kontrolle|steuer(ung|n)|status|zustand)"
@@ -146,6 +147,7 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 			possibleScore.set(index, possibleScore.get(index) + aps.getScore());
 			possibleParameters.add(pv);
 		}
+		*/
 		
 		//directions
 		if (NluTools.stringContains(text, "die richtung|geht es richtung|navigation|zeig mir den weg|navigiere mich|(?<!(guenstigste|guenstigsten) )weg |"

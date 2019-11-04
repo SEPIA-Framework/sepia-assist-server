@@ -1,5 +1,7 @@
 package net.b07z.sepia.server.assist.parameters;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.json.simple.JSONObject;
@@ -8,6 +10,7 @@ import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
+import net.b07z.sepia.server.assist.smarthome.SmartHomeDevice;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Is;
@@ -19,7 +22,19 @@ import net.b07z.sepia.server.core.tools.JSON;
  * @author Florian Quirin
  *
  */
-public class SmartDeviceValue implements ParameterHandler{
+public class SmartDeviceValue implements ParameterHandler {
+	
+	//--- data ---
+	
+	//conversion map to generalized state from other parameter results
+	public static Map<String, String> numberTypeDeviceStateTypeMap = new HashMap<>();
+	static {
+		numberTypeDeviceStateTypeMap.put(Number.Types.plain.name(), SmartHomeDevice.STATE_TYPE_NUMBER_PLAIN);
+		numberTypeDeviceStateTypeMap.put(Number.Types.percent.name(), SmartHomeDevice.STATE_TYPE_NUMBER_PERCENT);
+		numberTypeDeviceStateTypeMap.put(Number.Types.temperature.name(), SmartHomeDevice.STATE_TYPE_NUMBER_TEMPERATURE_C); 	//default: celsius!
+	}
+		
+	//-----------
 
 	User user;
 	String language;
@@ -69,6 +84,8 @@ public class SmartDeviceValue implements ParameterHandler{
 		TypeAndNumber typeNum = checkTypeAndReturnNumber(input, number, null);
 		String type = typeNum.type;
 		number = typeNum.number;
+		
+		//TODO: convert temperature from farenheit to celsius?
 		
 		if (number.isEmpty()){
 			return "";
