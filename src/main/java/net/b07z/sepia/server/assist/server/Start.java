@@ -15,6 +15,7 @@ import net.b07z.sepia.server.assist.endpoints.AccountEndpoint;
 import net.b07z.sepia.server.assist.endpoints.AssistEndpoint;
 import net.b07z.sepia.server.assist.endpoints.AuthEndpoint;
 import net.b07z.sepia.server.assist.endpoints.ConfigServer;
+import net.b07z.sepia.server.assist.endpoints.IntegrationsEndpoint;
 import net.b07z.sepia.server.assist.endpoints.RemoteActionEndpoint;
 import net.b07z.sepia.server.assist.endpoints.SdkEndpoint;
 import net.b07z.sepia.server.assist.endpoints.TtsEndpoint;
@@ -315,6 +316,9 @@ public class Start {
 		
 		//Remote controls
 		post("/remote-action", (request, response) ->		RemoteActionEndpoint.remoteActionAPI(request, response));
+		
+		//Integrations
+		post("/integrations/*/*", (request, response) ->	IntegrationsEndpoint.handle(request, response));
 	}
 	
 	/**
