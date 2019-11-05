@@ -35,6 +35,8 @@ public class SmartDevice implements ParameterHandler{
 		fridge,
 		oven,
 		coffee_maker,
+		//TODO: jalousie, louver, louvre, (window) shutter, sun blind / Fensterladen, Rollladen, Markise
+		//TODO: (wall) socket, (power) outlet / Steckdose 
 		device;
 	}
 	/**
@@ -291,10 +293,12 @@ public class SmartDevice implements ParameterHandler{
 		
 		//expects a type!
 		String deviceName = "";
+		String deviceIndexStr = "";
 		if (input.contains(";;")){
 			String[] typeAndName = input.split(";;");
 			if (typeAndName.length == 2){
 				deviceName = typeAndName[1];
+				deviceIndexStr = NluTools.stringFindFirst(deviceName, "\\b\\d+\\b");
 				input = typeAndName[0];
 			}else{
 				input = typeAndName[0];
@@ -308,6 +312,11 @@ public class SmartDevice implements ParameterHandler{
 			JSON.add(itemResultJSON, InterviewData.VALUE, commonValue);
 			JSON.add(itemResultJSON, InterviewData.VALUE_LOCAL, localValue);
 			JSON.add(itemResultJSON, InterviewData.FOUND, deviceName); 		//Note: we can't use this.found here because it is not set in build
+		//add device index
+		if (!deviceIndexStr.isEmpty()){
+			int deviceIndex = Integer.parseInt(deviceIndexStr);
+			JSON.add(itemResultJSON, InterviewData.DEVICE_INDEX, deviceIndex);
+		}
 		
 		buildSuccess = true;
 		return itemResultJSON.toJSONString();

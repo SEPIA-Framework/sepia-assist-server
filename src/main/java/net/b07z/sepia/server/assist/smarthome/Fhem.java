@@ -98,7 +98,12 @@ public class Fhem implements SmartHomeHub {
 					"&fwcsrf=", this.csrfToken
 			);
 			JSONObject resultSet = Connectors.httpGET(setUrl);
-			if (Connectors.httpSuccess(resultSet)){
+			boolean gotErrorMessage = false;
+			if (resultSet != null && resultSet.containsKey("STRING")){
+				String msg = JSON.getString(resultSet, "STRING");
+				gotErrorMessage = !msg.isEmpty() && !msg.toLowerCase().contains("ok") && !msg.toLowerCase().contains("success");
+			}
+			if (Connectors.httpSuccess(resultSet) && !gotErrorMessage){
 				//all good
 				return true;
 			}else{
@@ -162,8 +167,16 @@ public class Fhem implements SmartHomeHub {
 					"&fwcsrf=", this.csrfToken
 			);
 			JSONObject response = Connectors.httpGET(cmdUrl);
+			boolean gotErrorMessage = false;
+			if (response != null && response.containsKey("STRING")){
+				String msg = JSON.getString(response, "STRING");
+				gotErrorMessage = (msg.toLowerCase().contains("unknown attribute"));
+				if (gotErrorMessage){
+					Debugger.println("FHEM interface error in 'writeDeviceAttribute': " + msg, 1);
+				}
+			}
 			//System.out.println("RESPONSE: " + response); 		//this is usually empty if there was no error
-			return Connectors.httpSuccess(response);
+			return (Connectors.httpSuccess(response) && !gotErrorMessage);
 		}
 	}
 
@@ -179,10 +192,23 @@ public class Fhem implements SmartHomeHub {
 					"&fwcsrf=", this.csrfToken
 			);
 			JSONObject response = Connectors.httpGET(deviceURL);
+			//System.out.println("RESPONSE: " + response); 		//this is usually empty if there was no error
 			if (Connectors.httpSuccess(response)){
-				//build shd from response
-				SmartHomeDevice shd = buildDeviceFromResponse(response);
-				return shd;
+				try {
+					JSONArray devicesArray = JSON.getJArray(response, "Results");
+					if (devicesArray.size() != 1){
+						throw new RuntimeException("Result was null or not unique! Result size: " + devicesArray.size());
+					}
+					JSONObject hubDevice = JSON.getJObject(devicesArray, 0);
+					//build shd from response
+					SmartHomeDevice shd = buildDeviceFromResponse(hubDevice);
+					return shd;
+					
+				}catch (Exception e){
+					Debugger.println("FHEM - loadDeviceData FAILED with msg.: " + e.getMessage(), 1);
+					Debugger.printStackTrace(e, 3);
+					return null;
+				}
 			}else{
 				return null;
 			}
@@ -197,9 +223,13 @@ public class Fhem implements SmartHomeHub {
 			return false;
 		}else{
 			//check stateType
-			if (stateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_PERCENT)){
-				//percent
-				state = "pct " + state;
+			if (stateType != null){
+				if (stateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_PERCENT)){
+					//percent
+					state = "pct " + state;
+				}else{
+					state = state.toLowerCase();	//on, off, etc is usually lower-case in FHEM
+				}
 			}
 			//TODO: we could check mem-state here if state is e.g. SmartHomeDevice.STATE_ON
 			String cmdUrl = URLBuilder.getString(
@@ -210,7 +240,16 @@ public class Fhem implements SmartHomeHub {
 			//System.out.println("URL: " + cmdUrl); 			//DEBUG
 			JSONObject response = Connectors.httpGET(cmdUrl);
 			//System.out.println("RESPONSE: " + response); 		//this is usually empty if there was no error
-			return Connectors.httpSuccess(response);
+			boolean gotErrorMessage = false;
+			if (response != null && response.containsKey("STRING")){
+				String msg = JSON.getString(response, "STRING");
+				gotErrorMessage = !msg.isEmpty() && !msg.toLowerCase().contains("ok") && !msg.toLowerCase().contains("success");
+				if (gotErrorMessage){
+					Debugger.println("FHEM interface error in 'setDeviceState': " + msg, 1);
+				}
+			}
+			
+			return (Connectors.httpSuccess(response) && !gotErrorMessage);
 		}
 	}
 

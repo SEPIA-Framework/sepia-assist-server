@@ -139,6 +139,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		//get required parameters:
 		Parameter device = nluResult.getRequiredParameter(PARAMETERS.SMART_DEVICE);
 		String deviceType = device.getValueAsString();
+		int deviceNumber = JSON.getIntegerOrDefault(device.getData(), InterviewData.DEVICE_INDEX, Integer.MIN_VALUE);
 		
 		//get optional parameters:
 		Parameter action = nluResult.getOptionalParameter(PARAMETERS.ACTION, "");
@@ -177,8 +178,19 @@ public class SmartHomeHubConnector implements ServiceInterface {
 			return service.buildResult();
 		}
 		
-		//keep only the first match for now - TODO: improve
-		SmartHomeDevice selectedDevice = matchingDevices.get(0);
+		//keep matching number or only the first match for now - TODO: improve
+		SmartHomeDevice selectedDevice;
+		if (deviceNumber != Integer.MIN_VALUE){
+			selectedDevice = SmartHomeDevice.findFirstDeviceWithNumberInNameOrDefault(matchingDevices, 1, -1);
+			if (selectedDevice == null){
+				//no device with number
+				service.setStatusOkay();
+				service.setCustomAnswer(noDeviceMatchesFound);	//"soft"-fail with "no matching devices found" answer
+				return service.buildResult();
+			}
+		}else{
+			selectedDevice = matchingDevices.get(0);
+		}
 		if (roomType.isEmpty()){
 			String selectedDeviceRoom = selectedDevice.getRoom();
 			if (Is.notNullOrEmpty(selectedDeviceRoom)){
@@ -374,18 +386,4 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		return actionValue.equals(actionType.name());
 	}
 	
-	/**
-	 * @deprecated
-	 * use {@link SmartHomeDevice#getMatchingDevices(Map, String, String, int)}
-	 */
-	public static List<SmartHomeDevice> getMatchingDevices(Map<String, SmartHomeDevice> devices, String deviceType, String roomType, int maxDevices){
-		return SmartHomeDevice.getMatchingDevices(devices, deviceType, roomType, maxDevices);
-	}
-	/**
-	 * @deprecated
-	 * use {@link SmartHomeDevice#getStateLocal(String, String)}
-	 */
-	public static String getStateLocal(String state, String language){
-		return SmartHomeDevice.getStateLocal(state, language);
-	}
 }

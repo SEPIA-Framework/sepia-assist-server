@@ -39,8 +39,10 @@ public class SmartHomeDevice {
 	public static final String STATE_OFF = "OFF";
 	public static final String STATE_OPEN = "OPEN";
 	public static final String STATE_CLOSED = "CLOSED";
+	public static final String STATE_CONNECTED = "CONNECTED";
+	public static final String STATE_DISCONNECTED = "DISCONNECTED";
 	//device state types
-	public static final String STATE_TYPE_TEXT_BINARY = "text_binary";	//ON, OFF, OPEN, CLOSED etc.
+	public static final String STATE_TYPE_TEXT_BINARY = "text_binary";	//ON, OFF, OPEN, CLOSED, ...
 	public static final String STATE_TYPE_NUMBER_PLAIN = "number_plain";
 	public static final String STATE_TYPE_NUMBER_PERCENT = "number_precent";
 	public static final String STATE_TYPE_NUMBER_TEMPERATURE_C = "number_temperature_c";
@@ -295,7 +297,7 @@ public class SmartHomeDevice {
 	 * Import device from JSON object.
 	 * @param deviceJson
 	 */
-	public void importJsonDevice(JSONObject deviceJson){
+	public SmartHomeDevice importJsonDevice(JSONObject deviceJson){
 		this.name = JSON.getString(deviceJson, "name");
 		this.type = JSON.getString(deviceJson, "type");
 		this.room = JSON.getString(deviceJson, "room");
@@ -304,6 +306,7 @@ public class SmartHomeDevice {
 		this.stateMemory = JSON.getString(deviceJson, "state-memory");
 		this.link = JSON.getString(deviceJson, "link");
 		this.meta = JSON.getJObject(deviceJson, "meta");
+		return this;
 	}
 	
 	//--------- static helper methods ----------
@@ -349,6 +352,28 @@ public class SmartHomeDevice {
 			//I suggest to create an additional parameter called SMART_DEVICE_NAME
 		}
 		return matchingDevices;
+	}
+	
+	/**
+	 * Search for a given number in device name and return first match. If match is not found return given index or null.
+	 * @param devicesList - list of devices, usually already filtered by device type and room
+	 * @param number - a number to look for in device name (e.g. 1 for "Light 1 in living-room") 
+	 * @param defaultIndex - list index to return when no match was found, typically 0 (first device as fallback) or -1 (return null, no fallback)
+	 * @return match, fallback or null
+	 */
+	public static SmartHomeDevice findFirstDeviceWithNumberInNameOrDefault(List<SmartHomeDevice> devicesList, int number, int defaultIndex){
+		String indexRegExp = ".*(^|\\b|\\D)" + number + "(\\b|\\D|$).*";
+		for (SmartHomeDevice shd : devicesList){
+			//System.out.println(shd.getName() + " - " + shd.getName().matches(indexRegExp));		//DEBUG
+			if (shd.getName().matches(indexRegExp)){
+				return shd;
+			}
+		}
+		if (defaultIndex == -1 || defaultIndex > (devicesList.size() - 1)){
+			return null;
+		}else{
+			return devicesList.get(defaultIndex);
+		}
 	}
 	
 	/**

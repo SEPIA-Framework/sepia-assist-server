@@ -40,6 +40,7 @@ public class Test_SmartHubIntegration {
 		//print all devices
 		System.out.println("Devices found: ");
 		Debugger.printMap(devicesMap);
+		System.out.println("");
 		
 		//search any light
 		List<SmartHomeDevice> deviceMatches = SmartHomeDevice.getMatchingDevices(devicesMap, SmartDevice.Types.light.name(), "", -1);
@@ -47,10 +48,16 @@ public class Test_SmartHubIntegration {
 		//show all
 		System.out.println("Found lights: ");
 		Debugger.printList(deviceMatches);
+		System.out.println("");
 		
-		//get first state
+		//get light with number "1" in name or first result
+		SmartHomeDevice firstDevice = SmartHomeDevice.findFirstDeviceWithNumberInNameOrDefault(deviceMatches, 1, 0);
+		System.out.println("First light (light 1 or first in array): " + firstDevice.getName() + "\n");
+		
+		//get device state (load again)
 		//String deviceLink = deviceMatches.get(0).getLink();
-		SmartHomeDevice device = smartHomeHub.loadDeviceData(deviceMatches.get(0));
+		SmartHomeDevice device = smartHomeHub.loadDeviceData(firstDevice);
+		System.out.println(device);
 		String orgState = device.getState();
 		String orStateType = device.getStateType();
 		System.out.println("First light state: " + orgState);
@@ -63,11 +70,11 @@ public class Test_SmartHubIntegration {
 		System.out.println("Took: " + Debugger.toc(tic) + "ms - waiting 3s");
 		Debugger.sleep(3000);
 		
-		//set device state 70
-		System.out.println("Setting state 70 and storing memory-state");
+		//set device state 50
+		System.out.println("Setting state 50 and storing memory-state");
 		tic = Debugger.tic();
-		smartHomeHub.setDeviceState(device, "70", SmartHomeDevice.STATE_TYPE_NUMBER_PERCENT);
-		smartHomeHub.setDeviceStateMemory(device, "70");
+		smartHomeHub.setDeviceState(device, "50", SmartHomeDevice.STATE_TYPE_NUMBER_PERCENT);
+		smartHomeHub.setDeviceStateMemory(device, "50");
 		System.out.println("Took: " + Debugger.toc(tic) + "ms - waiting 3s");
 		Debugger.sleep(3000);
 		

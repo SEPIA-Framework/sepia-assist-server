@@ -116,6 +116,7 @@ public class IntegrationsEndpoint {
 							"error", "missing or invalid HUB data"
 					).toJSONString(), 200);
 				}
+				//get devices
 				Map<String, SmartHomeDevice> devicesMap = shh.getDevices(null, null, null);
 				if (Is.nullOrEmptyMap(devicesMap)){
 					//FAIL
@@ -154,6 +155,7 @@ public class IntegrationsEndpoint {
 							"error", "missing or invalid HUB data"
 					).toJSONString(), 200);
 				}
+				//register
 				boolean wasRegistered = shh.registerSepiaFramework();
 				JSONObject msg;
 				if (wasRegistered){
@@ -172,14 +174,54 @@ public class IntegrationsEndpoint {
 			
 			//Attributes
 			}else if (fun.equalsIgnoreCase("setDeviceAttributes")){
-				JSONObject attributes = params.getJson("attributes");
-				
-				//respond
-				JSONObject msg = JSON.make(
-						"result", "success", 
-						"devices", ""
-				);
-				return SparkJavaFw.returnResult(request, response, msg.toJSONString(), 200);
+				JSONObject deviceJson = params.getJson("device");
+				JSONObject attributesJson = params.getJson("attributes");
+				if (Is.nullOrEmpty(deviceJson) || Is.nullOrEmpty(attributesJson)){
+					//FAIL
+					return SparkJavaFw.returnResult(request, response, JSON.make(
+							"result", "fail", 
+							"error", "missing 'device' or 'attributes' JSON object"
+					).toJSONString(), 200);
+				}
+				String hubName = params.getString("hubName");
+				String hubHost = params.getString("hubHost");
+				SmartHomeHub shh = null;
+				if (Is.notNullOrEmpty(hubHost) && Is.notNullOrEmpty(hubName)){
+					shh = SmartHomeHub.getHub(hubName, hubHost);
+				}
+				if (shh == null){
+					//FAIL
+					return SparkJavaFw.returnResult(request, response, JSON.make(
+							"result", "fail", 
+							"error", "missing or invalid HUB data"
+					).toJSONString(), 200);
+				}
+				//set attributes
+				SmartHomeDevice shd = new SmartHomeDevice().importJsonDevice(deviceJson);
+				/*/DEBUG
+				JSON.printJSONpretty(deviceJson);
+				JSON.printJSONpretty(attributesJson);
+				JSON.printJSONpretty(shd.getDeviceAsJson());
+				//-----*/
+				int goodN = 0;
+				for (Object k : attributesJson.keySet()){
+					if (shh.writeDeviceAttribute(shd, (String) k, (String) attributesJson.get(k))){
+						goodN++;
+					}
+				}
+				int expectedGood = attributesJson.size();
+				if (goodN != expectedGood){
+					return SparkJavaFw.returnResult(request, response,JSON.make(
+							"result", "fail", 
+							"error", ("one or more attributes could not be set! Set " + goodN + " of " + expectedGood)
+					).toJSONString(), 200);
+				}else{
+					//respond
+					return SparkJavaFw.returnResult(request, response,JSON.make(
+							"result", "success", 
+							"msg", ("successfully set " + goodN + " of " + expectedGood + " attributes")
+					).toJSONString(), 200);
+				}
 			
 			//FAIL
 			}else{
