@@ -37,7 +37,8 @@ public class SmartDevice implements ParameterHandler{
 		coffee_maker,
 		//TODO: jalousie, louver, louvre, (window) shutter, sun blind / Fensterladen, Rollladen, Markise
 		//TODO: (wall) socket, (power) outlet / Steckdose 
-		device;
+		device,
+		hidden
 	}
 	/**
 	 * Get generalized 'Types' value in format of extraction method.
@@ -58,6 +59,7 @@ public class SmartDevice implements ParameterHandler{
 		types_de.put("oven", "der Ofen");
 		types_de.put("coffee_maker", "die Kaffeemaschine");
 		types_de.put("device", "das Gerät");
+		types_de.put("hidden", "");
 		
 		types_en.put("light", "the light");
 		types_en.put("heater", "the heater");
@@ -67,6 +69,7 @@ public class SmartDevice implements ParameterHandler{
 		types_en.put("oven", "the oven");
 		types_en.put("coffee_maker", "the coffee maker");
 		types_en.put("device", "the device");
+		types_en.put("hidden", "");
 	}
 	
 	/**

@@ -213,7 +213,7 @@ public class IntegrationsEndpoint {
 				if (goodN != expectedGood){
 					return SparkJavaFw.returnResult(request, response,JSON.make(
 							"result", "fail", 
-							"error", ("one or more attributes could not be set! Set " + goodN + " of " + expectedGood)
+							"error", ("one or more attributes could not be set! Success: " + goodN + " of " + expectedGood + " - Did you 'register' SEPIA already?")
 					).toJSONString(), 200);
 				}else{
 					//respond

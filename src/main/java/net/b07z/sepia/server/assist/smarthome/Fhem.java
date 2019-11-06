@@ -324,6 +324,12 @@ public class Fhem implements SmartHomeHub {
 		//String state = (stateObj != null)? JSON.getString(stateObj, "Value") : null;
 		String state = JSON.getStringOrDefault(internals, "STATE", null);
 		String stateType = null;
+		if (state != null){
+			stateType = SmartHomeDevice.convertStateType(null, state, null);
+			if (stateType != null){
+				state = SmartHomeDevice.convertState(state, stateType);
+			}
+		}
 		//TODO: clean up state and set stateType according to values like 'dim50%'
 		Object linkObj = (fhemObjName != null)? (this.host + "?cmd." + fhemObjName) : null;
 		JSONObject meta = JSON.make(

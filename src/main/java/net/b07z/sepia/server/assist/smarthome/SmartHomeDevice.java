@@ -44,7 +44,7 @@ public class SmartHomeDevice {
 	//device state types
 	public static final String STATE_TYPE_TEXT_BINARY = "text_binary";	//ON, OFF, OPEN, CLOSED, ...
 	public static final String STATE_TYPE_NUMBER_PLAIN = "number_plain";
-	public static final String STATE_TYPE_NUMBER_PERCENT = "number_precent";
+	public static final String STATE_TYPE_NUMBER_PERCENT = "number_percent";
 	public static final String STATE_TYPE_NUMBER_TEMPERATURE_C = "number_temperature_c";
 	public static final String STATE_TYPE_NUMBER_TEMPERATURE_F = "number_temperature_f";
 	
@@ -391,10 +391,10 @@ public class SmartHomeDevice {
 			if (state.matches("\\d+")){
 				genStateType = STATE_TYPE_NUMBER_PLAIN;
 			//percent
-			}else if (state.matches(".*\\d+(\\+s|)%")){
+			}else if (state.matches(".*\\d+(\\+s|)%.*")){
 				genStateType = STATE_TYPE_NUMBER_PERCENT;
 			//ON/OFF
-			}else if (state.matches("(?i)(on|off|open|close(d|))")){
+			}else if (state.matches("(?i)(on|off|open|close(d|)|(dis|)connected|(in|)active)")){
 				genStateType = STATE_TYPE_TEXT_BINARY;
 			}
 		}else if (parameterName.equals(PARAMETERS.SMART_DEVICE_VALUE)){
@@ -403,6 +403,20 @@ public class SmartHomeDevice {
 			}
 		}
 		return genStateType;
+	}
+	/**
+	 * When state type is known try to convert state value itself to generalized SEPIA value.
+	 * @param state - found state (as seen by HUB)
+	 * @param stateType - predefined or interpreted state type
+	 * @return converted state or original if no conversion possible
+	 */
+	public static String convertState(String state, String stateType){
+		//TODO: add more
+		if (stateType.equals(STATE_TYPE_NUMBER_PERCENT)){
+			return state.replaceAll("\\D", "");
+		}else{
+			return state;
+		}
 	}
 	
 	/**
