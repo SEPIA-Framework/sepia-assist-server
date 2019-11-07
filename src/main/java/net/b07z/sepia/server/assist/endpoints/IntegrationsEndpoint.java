@@ -89,7 +89,7 @@ public class IntegrationsEndpoint {
 			Debugger.println("Unauthorized access attempt to integration: smart-home - User: " + user.getUserID(), 3);
 			return SparkJavaFw.returnNoAccess(request, response);
 		}else{
-			//GET:
+			//Basic info (no HUB data required):
 			
 			//Config
 			if (fun.equalsIgnoreCase("getConfiguration")){
@@ -100,22 +100,27 @@ public class IntegrationsEndpoint {
 						"hubHost", Config.smarthome_hub_host
 				);
 				return SparkJavaFw.returnResult(request, response, msg.toJSONString(), 200);
+			}
+			
+			//Build interface
+			String hubName = params.getString("hubName");
+			String hubHost = params.getString("hubHost");
+			SmartHomeHub shh = null;
+			if (Is.notNullOrEmpty(hubHost) && Is.notNullOrEmpty(hubName)){
+				shh = SmartHomeHub.getHub(hubName, hubHost);
+			}
+			if (shh == null){
+				//FAIL
+				return SparkJavaFw.returnResult(request, response, JSON.make(
+						"result", "fail", 
+						"error", "missing or invalid HUB data"
+				).toJSONString(), 200);
+			}
+			
+			//GET:
 			
 			//Devices
-			}else if (fun.equalsIgnoreCase("getDevices")){
-				String hubName = params.getString("hubName");
-				String hubHost = params.getString("hubHost");
-				SmartHomeHub shh = null;
-				if (Is.notNullOrEmpty(hubHost) && Is.notNullOrEmpty(hubName)){
-					shh = SmartHomeHub.getHub(hubName, hubHost);
-				}
-				if (shh == null){
-					//FAIL
-					return SparkJavaFw.returnResult(request, response, JSON.make(
-							"result", "fail", 
-							"error", "missing or invalid HUB data"
-					).toJSONString(), 200);
-				}
+			if (fun.equalsIgnoreCase("getDevices")){
 				//get devices
 				Map<String, SmartHomeDevice> devicesMap = shh.getDevices(null, null, null);
 				if (Is.nullOrEmptyMap(devicesMap)){
@@ -142,19 +147,6 @@ public class IntegrationsEndpoint {
 				
 			//Register
 			}else if (fun.equalsIgnoreCase("registerFramework")){
-				String hubName = params.getString("hubName");
-				String hubHost = params.getString("hubHost");
-				SmartHomeHub shh = null;
-				if (Is.notNullOrEmpty(hubHost) && Is.notNullOrEmpty(hubName)){
-					shh = SmartHomeHub.getHub(hubName, hubHost);
-				}
-				if (shh == null){
-					//FAIL
-					return SparkJavaFw.returnResult(request, response, JSON.make(
-							"result", "fail", 
-							"error", "missing or invalid HUB data"
-					).toJSONString(), 200);
-				}
 				//register
 				boolean wasRegistered = shh.registerSepiaFramework();
 				JSONObject msg;
@@ -183,25 +175,11 @@ public class IntegrationsEndpoint {
 							"error", "missing 'device' or 'attributes' JSON object"
 					).toJSONString(), 200);
 				}
-				String hubName = params.getString("hubName");
-				String hubHost = params.getString("hubHost");
-				SmartHomeHub shh = null;
-				if (Is.notNullOrEmpty(hubHost) && Is.notNullOrEmpty(hubName)){
-					shh = SmartHomeHub.getHub(hubName, hubHost);
-				}
-				if (shh == null){
-					//FAIL
-					return SparkJavaFw.returnResult(request, response, JSON.make(
-							"result", "fail", 
-							"error", "missing or invalid HUB data"
-					).toJSONString(), 200);
-				}
 				//set attributes
 				SmartHomeDevice shd = new SmartHomeDevice().importJsonDevice(deviceJson);
 				/*/DEBUG
 				JSON.printJSONpretty(deviceJson);
 				JSON.printJSONpretty(attributesJson);
-				JSON.printJSONpretty(shd.getDeviceAsJson());
 				//-----*/
 				int goodN = 0;
 				for (Object k : attributesJson.keySet()){
@@ -220,6 +198,46 @@ public class IntegrationsEndpoint {
 					return SparkJavaFw.returnResult(request, response,JSON.make(
 							"result", "success", 
 							"msg", ("successfully set " + goodN + " of " + expectedGood + " attributes")
+					).toJSONString(), 200);
+				}
+				
+			//State
+			}else if (fun.equalsIgnoreCase("setDeviceState")){
+				JSONObject deviceJson = params.getJson("device");
+				JSONObject stateJson = params.getJson("state");
+				if (Is.nullOrEmpty(deviceJson) || Is.nullOrEmpty(stateJson)){
+					//FAIL
+					return SparkJavaFw.returnResult(request, response, JSON.make(
+							"result", "fail", 
+							"error", "missing 'device' or 'state' JSON object"
+					).toJSONString(), 200);
+				}
+				//set attributes
+				String stateValue = JSON.getStringOrDefault(stateJson, "value", null);
+				String stateType = JSON.getStringOrDefault(stateJson, "type", null);
+				if (stateValue == null){
+					//FAIL
+					return SparkJavaFw.returnResult(request, response, JSON.make(
+							"result", "fail", 
+							"error", "invalid state data for key 'value'"
+					).toJSONString(), 200);
+				}
+				SmartHomeDevice shd = new SmartHomeDevice().importJsonDevice(deviceJson);
+				/*/DEBUG
+				JSON.printJSONpretty(deviceJson);
+				JSON.printJSONpretty(stateJson);
+				//-----*/
+				boolean setSuccess = shh.setDeviceState(shd, stateValue, stateType);
+				if (!setSuccess){
+					return SparkJavaFw.returnResult(request, response,JSON.make(
+							"result", "fail", 
+							"error", "could NOT set new state. Check server log for more info"
+					).toJSONString(), 200);
+				}else{
+					//respond
+					return SparkJavaFw.returnResult(request, response,JSON.make(
+							"result", "success", 
+							"msg", ("successfully set state: " + stateValue)
 					).toJSONString(), 200);
 				}
 			

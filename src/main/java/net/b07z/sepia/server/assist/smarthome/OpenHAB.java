@@ -215,8 +215,12 @@ public class OpenHAB implements SmartHomeHub {
 			}
 		}
 		//smart-guess if missing sepia-specific settings
-		if (name == null){
-			name = JSON.getString(hubDevice, "name");			//NOTE: has to be unique
+		String originalName = JSON.getStringOrDefault(hubDevice, "name", null);
+		if (name == null && originalName != null){
+			name = originalName;			//NOTE: has to be unique
+		}else{
+			//we only accept devices with name
+			return null;
 		}
 		if (type == null){
 			String openHabCategory = JSON.getString(hubDevice, "category").toLowerCase();	//NOTE: we check category, not type 
@@ -236,7 +240,10 @@ public class OpenHAB implements SmartHomeHub {
 		String stateType = null;
 		//TODO: clean up stateObj and set stateType according to special values or devices (e.g. plain number for lamps is usually percentage)
 		Object linkObj = hubDevice.get("link");
-		JSONObject meta = null;
+		JSONObject meta = JSON.make(
+				"id", originalName,
+				"origin", NAME
+		);
 		//TODO: we could add some stuff to meta when we need other data from response.
 		SmartHomeDevice shd = new SmartHomeDevice(name, type, room, 
 				(stateObj != null)? stateObj.toString() : null, stateType, memoryState, 

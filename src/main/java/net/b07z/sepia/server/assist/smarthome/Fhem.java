@@ -156,7 +156,7 @@ public class Fhem implements SmartHomeHub {
 	
 	@Override
 	public boolean writeDeviceAttribute(SmartHomeDevice device, String attrName, String attrValue){
-		String fhemId = device.getMetaValueAsString("fhem-id");
+		String fhemId = device.getMetaValueAsString("id");
 		String deviceCmdLink = device.getLink(); 
 		if (Is.nullOrEmpty(fhemId) || Is.nullOrEmpty(deviceCmdLink)){
 			return false;
@@ -182,7 +182,7 @@ public class Fhem implements SmartHomeHub {
 
 	@Override
 	public SmartHomeDevice loadDeviceData(SmartHomeDevice device){
-		String fhemId = device.getMetaValueAsString("fhem-id");
+		String fhemId = device.getMetaValueAsString("id");
 		if (Is.nullOrEmpty(fhemId)){
 			return null;
 		}else{
@@ -217,18 +217,35 @@ public class Fhem implements SmartHomeHub {
 
 	@Override
 	public boolean setDeviceState(SmartHomeDevice device, String state, String stateType){
-		String fhemId = device.getMetaValueAsString("fhem-id");
+		String fhemId = device.getMetaValueAsString("id");
 		String deviceCmdLink = device.getLink(); 
 		if (Is.nullOrEmpty(fhemId) || Is.nullOrEmpty(deviceCmdLink)){
 			return false;
 		}else{
-			//check stateType
-			if (stateType != null){
-				if (stateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_PERCENT)){
-					//percent
-					state = "pct " + state;
-				}else{
-					state = state.toLowerCase();	//on, off, etc is usually lower-case in FHEM
+			//check deviceType
+			//LIGHT
+			if (Is.typeEqual(device.getType(), SmartDevice.Types.light)){
+				//check stateType
+				if (stateType != null){
+					if (stateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_PERCENT)){
+						//percent via "dim"
+						//state = "dim " + state; //TODO: we can't use this! Why? Because e.g. 'dim 70' actually requires 'dim 68' and will fail :-(
+						//percent via "pct"
+						state = "pct " + state;
+					}else{
+						state = state.toLowerCase();	//on, off, etc is usually lower-case in FHEM
+					}
+				}
+			//ELSE
+			}else{
+				//check stateType
+				if (stateType != null){
+					if (stateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_PERCENT)){
+						//percent via "pct" - TODO: does that work?
+						state = "pct " + state;
+					}else{
+						state = state.toLowerCase();	//on, off, etc is usually lower-case in FHEM
+					}
 				}
 			}
 			//TODO: we could check mem-state here if state is e.g. SmartHomeDevice.STATE_ON
@@ -298,14 +315,22 @@ public class Fhem implements SmartHomeHub {
 		}
 		//smart-guess if missing sepia-specific settings
 		if (name == null && internals != null){
-			name = JSON.getStringOrDefault(internals, "name", null);		//NOTE: has to be unique!
+			name = JSON.getStringOrDefault(internals, "name", JSON.getStringOrDefault(internals, "NAME", null));		//NOTE: has to be unique!
 		}
 		if (name == null){
 			//we only accept devices with name
 			return null;
 		}
 		if (type == null && internals != null){
-			String fhemType = JSON.getString(internals, "type").toLowerCase(); 
+			String fhemType = JSON.getStringOrDefault(internals, "type", JSON.getStringOrDefault(internals, "TYPE", "")).toLowerCase();
+			//filter
+			if (fhemType.equalsIgnoreCase("FHEMWEB") 
+					|| fhemType.equalsIgnoreCase("Global") 
+					|| fhemType.equalsIgnoreCase("fileLog") 
+					|| fhemType.equalsIgnoreCase("eventTypes")
+					|| fhemType.equalsIgnoreCase("notify")){
+				return null;
+			}
 			if (fhemType.matches("(.*\\s|^|,)(light.*|lamp.*)")){
 				type = SmartDevice.Types.light.name();		//LIGHT
 			}else if (fhemType.matches("(.*\\s|^|,)(heat.*|thermo.*)")){
@@ -333,9 +358,10 @@ public class Fhem implements SmartHomeHub {
 		//TODO: clean up state and set stateType according to values like 'dim50%'
 		Object linkObj = (fhemObjName != null)? (this.host + "?cmd." + fhemObjName) : null;
 		JSONObject meta = JSON.make(
-				"fhem-id", fhemObjName
+				"id", fhemObjName,
+				"origin", NAME
 		);
-		//note: we need fhem-id for commands although it is basically already in 'link'
+		//note: we need 'id' for commands although it is basically already in 'link'
 		SmartHomeDevice shd = new SmartHomeDevice(name, type, room, 
 				state, stateType, memoryState, 
 				(linkObj != null)? linkObj.toString() : null, meta);
