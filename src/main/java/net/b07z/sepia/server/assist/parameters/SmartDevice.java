@@ -35,9 +35,12 @@ public class SmartDevice implements ParameterHandler{
 		fridge,
 		oven,
 		coffee_maker,
-		//TODO: jalousie, louver, louvre, (window) shutter, sun blind / Fensterladen, Rollladen, Markise
-		//TODO: (wall) socket, (power) outlet / Steckdose 
+		roller_shutter,
+		power_outlet,
+		sensor,
+		//TODO: window, door or use device?
 		device,
+		other,	//TODO: no extract method
 		hidden
 	}
 	/**
@@ -55,20 +58,28 @@ public class SmartDevice implements ParameterHandler{
 		types_de.put("heater", "die Heizung");
 		types_de.put("tv", "der Fernseher");
 		types_de.put("music_player", "die Musikanlage");
+		types_de.put("roller_shutter", "der Rollladen");
+		types_de.put("power_outlet", "die Steckdose");
+		types_de.put("sensor", "der Sensor");
 		types_de.put("fridge", "der Kühlschrank");
 		types_de.put("oven", "der Ofen");
 		types_de.put("coffee_maker", "die Kaffeemaschine");
 		types_de.put("device", "das Gerät");
+		types_de.put("other", "");
 		types_de.put("hidden", "");
 		
 		types_en.put("light", "the light");
 		types_en.put("heater", "the heater");
 		types_en.put("tv", "the TV");
 		types_en.put("music_player", "the music player");
+		types_en.put("roller_shutter", "the roller shutter");
+		types_en.put("power_outlet", "the outlet");
+		types_en.put("sensor", "the sensor");
 		types_en.put("fridge", "the fridge");
 		types_en.put("oven", "the oven");
 		types_en.put("coffee_maker", "the coffee maker");
 		types_en.put("device", "the device");
+		types_en.put("other", "");
 		types_en.put("hidden", "");
 	}
 	
@@ -100,6 +111,9 @@ public class SmartDevice implements ParameterHandler{
 	public static final String fridgeRegEx_en = "fridge|refrigerator";
 	public static final String ovenRegEx_en = "oven|stove";
 	public static final String coffeeMakerRegEx_en = "coffee (maker|brewer|machine)";
+	public static final String rollerShutterRegEx_en = "((roller|window|sun)( |-|)|)(shutter(s|)|blind(s|)|louver(s|))|jalousie(s|)";
+	public static final String powerOutletRegEx_en = "((wall|power)( |-|)|)(socket(s|)|outlet(s|))";
+	public static final String sensorRegEx_en = "sensor(s|)";
 	
 	public static final String lightRegEx_de = "licht(er|es|)|lampe(n|)|beleuchtung|leuchte(n|)|helligkeit";
 	public static final String heaterRegEx_de = "heiz(er|ungen|ung|koerper(s|)|luefter(s|)|strahler(s|))|thermostat(es|s|)|temperatur(regler(s|)|en|)";
@@ -108,6 +122,9 @@ public class SmartDevice implements ParameterHandler{
 	public static final String fridgeRegEx_de = "kuehlschrank(s|)";
 	public static final String ovenRegEx_de = "ofen(s|)|herd(es|s)";
 	public static final String coffeeMakerRegEx_de = "kaffeemaschine";
+	public static final String rollerShutterRegEx_de = "(fenster|rol(l|))(l(a|ae)den)|jalousie(n|)|rollo|markise";
+	public static final String powerOutletRegEx_de = "(steck|strom)( |-|)dose(n|)|stromanschluss";
+	public static final String sensorRegEx_de = "sensor(en|)";
 	//----------------
 	
 	User user;
@@ -140,6 +157,9 @@ public class SmartDevice implements ParameterHandler{
 					+ heaterRegEx_de + "|"
 					+ tvRegEx_de + "|"
 					+ musicPlayerRegEx_de + "|"
+					+ rollerShutterRegEx_de + "|"
+					+ powerOutletRegEx_de + "|"
+					+ sensorRegEx_de + "|"
 					+ fridgeRegEx_de + "|"
 					+ ovenRegEx_de + "|"
 					+ coffeeMakerRegEx_de
@@ -152,6 +172,9 @@ public class SmartDevice implements ParameterHandler{
 					+ heaterRegEx_en + "|"
 					+ tvRegEx_en + "|"
 					+ musicPlayerRegEx_en + "|"
+					+ rollerShutterRegEx_en + "|"
+					+ powerOutletRegEx_en + "|"
+					+ sensorRegEx_en + "|"
 					+ fridgeRegEx_en + "|"
 					+ ovenRegEx_en + "|"
 					+ coffeeMakerRegEx_en
@@ -214,6 +237,15 @@ public class SmartDevice implements ParameterHandler{
 			}else if (NluTools.stringContains(device, musicPlayerRegEx_de)){
 				deviceTypeTag = "<" + Types.music_player.name() + ">";
 				
+			}else if (NluTools.stringContains(device, rollerShutterRegEx_de)){
+				deviceTypeTag = "<" + Types.roller_shutter.name() + ">";
+				
+			}else if (NluTools.stringContains(device, powerOutletRegEx_de)){
+				deviceTypeTag = "<" + Types.power_outlet.name() + ">";
+				
+			}else if (NluTools.stringContains(device, sensorRegEx_de)){
+				deviceTypeTag = "<" + Types.sensor.name() + ">";
+				
 			}else if (NluTools.stringContains(device, fridgeRegEx_de)){
 				deviceTypeTag = "<" + Types.fridge.name() + ">";
 				
@@ -239,6 +271,15 @@ public class SmartDevice implements ParameterHandler{
 			}else if (NluTools.stringContains(device, musicPlayerRegEx_en)){
 				deviceTypeTag = "<" + Types.music_player.name() + ">";
 				
+			}else if (NluTools.stringContains(device, rollerShutterRegEx_en)){
+				deviceTypeTag = "<" + Types.roller_shutter.name() + ">";
+				
+			}else if (NluTools.stringContains(device, powerOutletRegEx_en)){
+				deviceTypeTag = "<" + Types.power_outlet.name() + ">";
+				
+			}else if (NluTools.stringContains(device, sensorRegEx_en)){
+				deviceTypeTag = "<" + Types.sensor.name() + ">";
+				
 			}else if (NluTools.stringContains(device, fridgeRegEx_en)){
 				deviceTypeTag = "<" + Types.fridge.name() + ">";
 				
@@ -247,7 +288,7 @@ public class SmartDevice implements ParameterHandler{
 				
 			}else if (NluTools.stringContains(device, coffeeMakerRegEx_en)){
 				deviceTypeTag = "<" + Types.coffee_maker.name() + ">";
-			
+				
 			}else{
 				deviceTypeTag = "<" + Types.device.name() + ">";
 			}

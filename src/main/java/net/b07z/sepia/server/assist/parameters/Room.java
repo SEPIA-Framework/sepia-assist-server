@@ -36,8 +36,11 @@ public class Room implements ParameterHandler{
 		study,
 		office,
 		garage,
-		shack;
-		//TODO: hallway, entrance/front door, basement, veranda(h)/patio/porch/lanai, garden
+		basement,
+		garden,
+		shack,
+		hallway
+		//TODO: entrance/front door, veranda(h)/patio/porch/lanai
 	}
 	
 	//Parameter local type names
@@ -52,7 +55,10 @@ public class Room implements ParameterHandler{
 		types_de.put("study", "im Arbeitszimmer");
 		types_de.put("office", "im Büro");
 		types_de.put("garage", "in der Garage");
+		types_de.put("basement", "im Keller");
+		types_de.put("garden", "im Garten");
 		types_de.put("shack", "im Schuppen");
+		types_de.put("hallway", "im Flur");
 		
 		types_en.put("livingroom", "in the living room");
 		types_en.put("diningroom", "in the dining room");
@@ -62,7 +68,10 @@ public class Room implements ParameterHandler{
 		types_en.put("study", "in the study room");
 		types_en.put("office", "in the office");
 		types_en.put("garage", "in the garage");
+		types_en.put("basement", "in the basement");
+		types_en.put("garden", "in the garden");
 		types_en.put("shack", "in the shack");
+		types_en.put("hallway", "in the hallway");
 	}
 	
 	/**
@@ -120,7 +129,10 @@ public class Room implements ParameterHandler{
 					+ "(arbeits|studier|herren)(zimmer|raum|raeumen)|"
 					+ "buero(s|)|office|"
 					+ "garage|auto(-| |)schuppen|"
-					+ "schuppen|gartenhaus"
+					+ "keller|"
+					+ "schuppen|gartenhaus|"
+					+ "garten|"
+					+ "hallway|corridor"
 				+ "");
 			
 		//English and other
@@ -133,7 +145,10 @@ public class Room implements ParameterHandler{
 					+ "(study|work)(-|)(room|chamber)(s|)|study|"
 					+ "office|"
 					+ "garage|carhouse|"
-					+ "shack(s|)|shed(s|)"
+					+ "basement|"
+					+ "shack(s|)|shed(s|)|"
+					+ "garden|"
+					+ "(haus|)flur|korridor|diele"
 				+ "");
 			
 		}
@@ -180,9 +195,21 @@ public class Room implements ParameterHandler{
 				+ "carhouse")){
 			return "<" + Types.garage.name() + ">";
 			
+		}else if (NluTools.stringContains(type, "keller|"
+				+ "basement")){
+			return "<" + Types.basement.name() + ">";
+			
 		}else if (NluTools.stringContains(type, "schuppen|gartenhaus|"
 				+ "shack(s|)|shed(s|)")){
 			return "<" + Types.shack.name() + ">";
+			
+		}else if (NluTools.stringContains(type, "garten|"
+				+ "garden")){
+			return "<" + Types.garden.name() + ">";
+			
+		}else if (NluTools.stringContains(type, "hallway|corridor|"
+				+ "(haus|)flur|korridor|diele")){
+			return "<" + Types.hallway.name() + ">";
 		
 		}else{
 			return "";
