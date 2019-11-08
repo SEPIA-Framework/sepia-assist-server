@@ -229,9 +229,9 @@ public class Fhem implements SmartHomeHub {
 				if (stateType != null){
 					if (stateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_PERCENT)){
 						//percent via "dim"
-						//state = "dim " + state; //TODO: we can't use this! Why? Because e.g. 'dim 70' actually requires 'dim 68' and will fail :-(
+						state = "dim " + state; //TODO: this can FAIL if device uses discrete states
 						//percent via "pct"
-						state = "pct " + state;
+						//state = "pct " + state;
 					}else{
 						state = state.toLowerCase();	//on, off, etc is usually lower-case in FHEM
 					}

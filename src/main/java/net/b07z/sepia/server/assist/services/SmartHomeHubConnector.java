@@ -59,13 +59,29 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		
 		//Regular expression triggers:
 		info.setCustomTriggerRegX(""
-				+ "licht(er|es|)|lampe(n|)|beleuchtung|leuchte(n|)|helligkeit|"
-				+ "heiz(er|ungen|ung|koerper|luefter|strahler)|temperatur(regler|en|)|thermostat|"
+				+ SmartDevice.lightRegEx_de + "|"
+				+ SmartDevice.heaterRegEx_de + "|"
+				+ SmartDevice.tvRegEx_de + "|"
+				+ SmartDevice.musicPlayerRegEx_de + "|"
+				+ SmartDevice.fridgeRegEx_de + "|"
+				+ SmartDevice.ovenRegEx_de + "|"
+				+ SmartDevice.coffeeMakerRegEx_de + "|"
+				+ SmartDevice.rollerShutterRegEx_de + "|"
+				+ SmartDevice.powerOutletRegEx_de + "|"
+				+ SmartDevice.sensorRegEx_de + "|"
 				+ "(smart( |)home|geraet(e|)|sensor(en|))( |)(control|kontrolle|steuer(ung|n)|status|zustand)"
 				+ "", LANGUAGES.DE);
 		info.setCustomTriggerRegX(""
-				+ "light(s|)|lighting|lamp(s|)|illumination|brightness|"
-				+ "heater(s|)|temperature(s|)|thermostat(s|)|"
+				+ SmartDevice.lightRegEx_en + "|"
+				+ SmartDevice.heaterRegEx_en + "|"
+				+ SmartDevice.tvRegEx_en + "|"
+				+ SmartDevice.musicPlayerRegEx_en + "|"
+				+ SmartDevice.fridgeRegEx_en + "|"
+				+ SmartDevice.ovenRegEx_en + "|"
+				+ SmartDevice.coffeeMakerRegEx_en + "|"
+				+ SmartDevice.rollerShutterRegEx_en + "|"
+				+ SmartDevice.powerOutletRegEx_en + "|"
+				+ SmartDevice.sensorRegEx_en + "|"
 				+ "(smart( |)home|device|sensor) (control|stat(us|e))"
 				+ "", LANGUAGES.EN);
 		//info.setCustomTriggerRegXscoreBoost(2);		//boost service a bit to increase priority over similar ones
@@ -112,6 +128,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 	private static final String noDeviceMatchesFound = "smartdevice_0f";
 	private static final String actionNotPossible = "default_not_possible_0a";
 	private static final String actionCurrentlyNotWorking = "error_0a";
+	private static final String askRoom = "smartdevice_1c";
 	private static final String askStateValue = "smartdevice_1d";
 	
 	@Override
@@ -139,6 +156,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		//get required parameters:
 		Parameter device = nluResult.getRequiredParameter(PARAMETERS.SMART_DEVICE);
 		String deviceType = device.getValueAsString();
+		String deviceTypeLocal = JSON.getStringOrDefault(device.getData(), InterviewData.VALUE_LOCAL, deviceType);
 		int deviceNumber = JSON.getIntegerOrDefault(device.getData(), InterviewData.DEVICE_INDEX, Integer.MIN_VALUE);
 		
 		//get optional parameters:
@@ -151,16 +169,17 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		
 		Parameter room = nluResult.getOptionalParameter(PARAMETERS.ROOM, "");
 		String roomType = room.getValueAsString();
+		String roomTypeLocal = JSON.getStringOrDefault(room.getData(), InterviewData.VALUE_LOCAL, roomType);
 		
 		//TODO: implement in future:
 		String deviceName = null;
 		
 		//check if device is supported 						TODO: for the test phase we're currently doing lights only
-		if (!Is.typeEqual(deviceType, SmartDevice.Types.light)){
+		/*if (!Is.typeEqual(deviceType, SmartDevice.Types.light)){
 			service.setStatusOkay();
 			service.setCustomAnswer(notYetControllable);	//"soft"-fail with "not yet controllable" answer
 			return service.buildResult();
-		}
+		}*/
 		
 		//find device - we always load a list of all devices (NOTE: the HUB implementation is responsible for caching the data)
 		Map<String, SmartHomeDevice> devices = smartHomeHUB.getDevices(deviceName, deviceType, roomType);
@@ -181,7 +200,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		//keep matching number or only the first match for now - TODO: improve
 		SmartHomeDevice selectedDevice;
 		if (deviceNumber != Integer.MIN_VALUE){
-			selectedDevice = SmartHomeDevice.findFirstDeviceWithNumberInNameOrDefault(matchingDevices, 1, -1);
+			selectedDevice = SmartHomeDevice.findFirstDeviceWithNumberInNameOrDefault(matchingDevices, deviceNumber, -1);
 			if (selectedDevice == null){
 				//no device with number
 				service.setStatusOkay();
@@ -189,27 +208,39 @@ public class SmartHomeHubConnector implements ServiceInterface {
 				return service.buildResult();
 			}
 		}else{
-			selectedDevice = matchingDevices.get(0);
+			//multiple results but no room?
+			if (roomType.isEmpty() && matchingDevices.size() > 1){
+				//RETURN with question
+				service.resultInfoPut("device", deviceTypeLocal);
+				service.setIncompleteAndAsk(PARAMETERS.ROOM, askRoom);
+				return service.buildResult();
+			//run through all?
+			}else{
+				//TODO: we simplify and take only first - let's run through all devices or we need to really check singular/plural
+				selectedDevice = matchingDevices.get(0);
+			}
 		}
+		//reassign roomType from device?
 		if (roomType.isEmpty()){
 			String selectedDeviceRoom = selectedDevice.getRoom();
 			if (Is.notNullOrEmpty(selectedDeviceRoom)){
 				roomType = selectedDeviceRoom;
+				roomTypeLocal = Room.getLocal(roomType, service.language);
 			}
 		}
 		String state = selectedDevice.getState();
 		String stateType = selectedDevice.getStateType();
 		
-		//ACTIONS for LIGHTS
+		//ACTIONS
 		
 		String actionValue = action.getValueAsString().replaceAll("^<|>$", "").trim(); 		//TODO: NOTE! There is an inconsistency in parameter format with device and room here
 		Debugger.println("cmd: smartdevice, action: " + actionValue + ", device: " + deviceType + ", room: " + roomType, 2);		//debug
 		
 		//response info
-		service.resultInfoPut("device", SmartDevice.getLocal(deviceType, service.language));
+		service.resultInfoPut("device", selectedDevice.getName().trim());		//TODO: or use deviceTypeLocal?
 		boolean hasRoom = !roomType.isEmpty();
 		if (hasRoom){
-			service.resultInfoPut("room", Room.getLocal(roomType, service.language));
+			service.resultInfoPut("room", roomTypeLocal);
 		}else{
 			service.resultInfoPut("room", "");
 		}
@@ -277,7 +308,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		}else if (actionIs(actionValue, Action.Type.off)){
 			String targetState = SmartHomeDevice.STATE_OFF;
 			
-			//already off?
+			//already off? - TODO: depending on device 0 might be ON
 			if (Is.notNullOrEmpty(state) && (state.matches("0") || state.toUpperCase().equals(targetState))){
 				//response info
 				service.resultInfoPut("state", SmartHomeDevice.getStateLocal(state, service.language));
@@ -329,7 +360,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 				//request state
 				}else{
 					String genStateType = SmartHomeDevice.convertStateType(targetValueParameterName, targetSetValue, targetValueType);
-					if (genStateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_PLAIN)){
+					if (genStateType != null && genStateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_PLAIN)){
 						genStateType = SmartHomeDevice.makeSmartTypeAssumptionForPlainNumber(SmartDevice.Types.valueOf(deviceType)); 
 					}
 					

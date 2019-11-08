@@ -266,7 +266,7 @@ smartdevice_1b;;		rep=2|mood=5;;		<user_name>, ich glaub da kann ich dir gerade 
 smartdevice_1c;;		rep=0|mood=5;;		Wo ist <1>? ;;char=neutral
 smartdevice_1c;;		rep=0|mood=5;;		In welchem Raum ist <1>? ;;char=neutral
 smartdevice_1c;;		rep=1|mood=5;;		Sag noch mal bitte <user_name>! ;;char=cool,neutral
-smartdevice_1c;;		rep=1|mood=5;;		Sag noch mal bitte! ;;char=cool,rude
+smartdevice_1c;;		rep=1|mood=5;;		Sag noch mal bitte, welcher Raum war das? ;;char=cool,rude
 smartdevice_1c;;		rep=2|mood=5;;		Sorry, ich glaub da kann ich dir gerade nicht weiterhelfen. ;;char=cool,polite,neutral
 smartdevice_1d;;		rep=0|mood=5;;		Sag mir einen Wert bitte. ;;char=neutral
 smartdevice_1d;;		rep=0|mood=5;;		Auf welchen Wert?. ;;char=cool,polite,neutral
