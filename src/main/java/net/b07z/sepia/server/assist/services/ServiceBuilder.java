@@ -189,7 +189,8 @@ public class ServiceBuilder {
 	}
 	
 	/**
-	 * Set status "incomplete" and add the missing "parameter" with it's "question". Finish after this by building and returning the result.
+	 * Set status "incomplete" and add the missing "parameter" with it's "question". Finish after this by building and returning the result.<br>
+	 * NOTE: The question can use answer wildcards ONLY IF resultInfo was set before!
 	 * @param parameter - PARAMETERS value
 	 * @param question - pool or direct question like "test_0a" or "&lt;direct&gt;what is this?"  
 	 */

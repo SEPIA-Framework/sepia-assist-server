@@ -104,26 +104,25 @@ public class Interview {
 	 * Aborts with a default answer like "I think we are stuck here somehow, can you try again later?".
 	 * @param parameter - a parameter from the pool PARAMETER. ...
 	 * @param question - reference to a question in the database, e.g. "flights_ask_start_0a" or direct question with tag &lt;direct&gt;.
-	 * @param failMsg - reference to an answer that will be given on the 3rd try, e.g. "Sorry I didn't get it! Try again later."
+	 * @param failMsg - reference to an answer that will be given on the 3rd try, e.g. "Sorry I didn't get it! Try again later." - Typical default: 'abort_0b'
+	 * @param wildcards - (optional) parameters given to the question to fill out wildcards
 	 * @return API_Result to send back to client
 	 */
-	public ServiceResult ask(String parameter, String question, String failMsg){
+	public ServiceResult ask(String parameter, String question, String failMsg, Object... wildcards){
 		if (nluResult.input.isRepeatedAnswerToParameter(parameter) < 2){
-			return AskClient.question(question, parameter, nluResult);
+			return AskClient.question(question, parameter, nluResult, wildcards);
 		}else{
 			return NoResult.get(nluResult, failMsg);
 		}
 	}
 	/**
-	 * Same as ask(String parameter, String question, String failMsg) but using "abort_0b" for failMsg.
+	 * Shortcut to "ask(String parameter, String question, String failMsg, Object... wildcards)" with default "failMsg". 
+	 * Automatically chooses custom or default question. 
+	 * @param parameter - parameter to ask for
+	 * @param wildcards - (optional) parameters given to the question to fill out wildcards
+	 * @return
 	 */
-	public ServiceResult ask(String parameter, String question){
-		return ask(parameter, question, "abort_0b");
-	}
-	/**
-	 * Shortcut to "ask(String parameter, String question, String failMsg)" with default "failMsg". Automatically chooses custom or default question. 
-	 */
-	public ServiceResult ask(Parameter parameter){
+	public ServiceResult ask(Parameter parameter, Object... wildcards){
 		String questionFail = parameter.getQuestionFailAnswer();
 		String question = parameter.getQuestion();
 		if (question.isEmpty()){
@@ -131,9 +130,9 @@ public class Interview {
 			Debugger.println("missing default question for '" + parameter.getName() + "'", 1);
 		}
 		if (!questionFail.isEmpty()){
-			return ask(parameter.getName(), question, questionFail);
+			return ask(parameter.getName(), question, questionFail, wildcards);
 		}else{
-			return ask(parameter.getName(), question);
+			return ask(parameter.getName(), question, "abort_0b", wildcards);
 		}
 	}
 	
