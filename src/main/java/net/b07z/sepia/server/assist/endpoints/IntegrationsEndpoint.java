@@ -122,7 +122,8 @@ public class IntegrationsEndpoint {
 			//Devices
 			if (fun.equalsIgnoreCase("getDevices")){
 				//get devices
-				Map<String, SmartHomeDevice> devicesMap = shh.getDevices(null, null, null);
+				String deviceTypeFilter = params.getString("deviceTypeFilter");
+				Map<String, SmartHomeDevice> devicesMap = shh.getDevices(null, deviceTypeFilter, null);
 				if (Is.nullOrEmptyMap(devicesMap)){
 					//FAIL
 					return SparkJavaFw.returnResult(request, response, JSON.make(
@@ -134,7 +135,13 @@ public class IntegrationsEndpoint {
 				JSONArray devicesArray = new JSONArray();
 				for (Map.Entry<String, SmartHomeDevice> entry : devicesMap.entrySet()){
 					SmartHomeDevice data = entry.getValue();
-					JSON.add(devicesArray, data.getDeviceAsJson());
+					if (deviceTypeFilter != null){
+						if (data.getType().equalsIgnoreCase(deviceTypeFilter)){
+							JSON.add(devicesArray, data.getDeviceAsJson());
+						}
+					}else{
+						JSON.add(devicesArray, data.getDeviceAsJson());
+					}
 				}
 				//respond
 				JSONObject msg = JSON.make(
