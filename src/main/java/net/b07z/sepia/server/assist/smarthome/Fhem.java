@@ -236,6 +236,21 @@ public class Fhem implements SmartHomeHub {
 						state = state.toLowerCase();	//on, off, etc is usually lower-case in FHEM
 					}
 				}
+			//ROLLER SHUTTER
+			}else if (Is.typeEqual(device.getType(), SmartDevice.Types.roller_shutter)){
+				//check stateType
+				if (stateType != null){
+					if (stateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_PERCENT)){
+						//percent via "pct" - TODO: does that work?
+						state = "pct " + state;
+					}else if (state.equalsIgnoreCase(SmartHomeDevice.STATE_OPEN)){
+						state = "up";
+					}else if (state.equalsIgnoreCase(SmartHomeDevice.STATE_CLOSED)){
+						state = "down";
+					}else{
+						state = state.toLowerCase();	//on, off, etc is usually lower-case in FHEM
+					}
+				}
 			//ELSE
 			}else{
 				//check stateType
@@ -248,6 +263,7 @@ public class Fhem implements SmartHomeHub {
 					}
 				}
 			}
+			//TODO: we should check PossibleStates to see if this command can be used
 			//TODO: we could check mem-state here if state is e.g. SmartHomeDevice.STATE_ON
 			String cmdUrl = URLBuilder.getString(
 					deviceCmdLink, "=", "set " + fhemId + " " + state,
@@ -352,7 +368,7 @@ public class Fhem implements SmartHomeHub {
 		if (state != null){
 			stateType = SmartHomeDevice.convertStateType(null, state, null);
 			if (stateType != null){
-				state = SmartHomeDevice.convertState(state, stateType);
+				state = SmartHomeDevice.convertState(state, stateType);		//TODO: this might require deviceType (see comment inside method)
 			}
 		}
 		//TODO: clean up state and set stateType according to values like 'dim50%'

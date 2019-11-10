@@ -237,7 +237,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		Debugger.println("cmd: smartdevice, action: " + actionValue + ", device: " + deviceType + ", room: " + roomType, 2);		//debug
 		
 		//response info
-		service.resultInfoPut("device", selectedDevice.getName().trim());		//TODO: or use deviceTypeLocal?
+		service.resultInfoPut("device", selectedDevice.getName().trim());		//TODO: or use deviceTypeLocal? - If the name is not the same language this might sound strange
 		boolean hasRoom = !roomType.isEmpty();
 		if (hasRoom){
 			service.resultInfoPut("room", roomTypeLocal);
@@ -256,6 +256,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 				actionValue = Action.Type.on.name();
 			}
 		}
+		//TODO: OPEN and CLOSE = ON and OFF ... this might be wrong for some devices (see roller shutter below)
 		
 		//SHOW
 		if (actionIs(actionValue, Action.Type.show)){
@@ -272,10 +273,18 @@ public class SmartHomeHubConnector implements ServiceInterface {
 			
 		//ON
 		}else if (actionIs(actionValue, Action.Type.on)){
-			String targetState = SmartHomeDevice.STATE_ON;
+			String targetState;
+			boolean hasStateAlready = false;
+			if (Is.typeEqual(deviceType, SmartDevice.Types.roller_shutter)){
+				targetState = SmartHomeDevice.STATE_OPEN;
+				hasStateAlready = Is.notNullOrEmpty(state) && state.toUpperCase().equals(targetState); 		//NOTE: we skip the 100 check here because HUBs don't agree if 100 is open or closed
+			}else{
+				targetState = SmartHomeDevice.STATE_ON;
+				hasStateAlready = Is.notNullOrEmpty(state) && (state.equals("100") || state.toUpperCase().equals(targetState));
+			}
 			
 			//already on?
-			if (Is.notNullOrEmpty(state) && !state.equals("0") && (state.matches("\\d+") || state.toUpperCase().equals(targetState))){
+			if (hasStateAlready){
 				//response info
 				service.resultInfoPut("state", SmartHomeDevice.getStateLocal(state, service.language));
 				//answer
@@ -306,10 +315,18 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		
 		//OFF	
 		}else if (actionIs(actionValue, Action.Type.off)){
-			String targetState = SmartHomeDevice.STATE_OFF;
+			String targetState;
+			boolean hasStateAlready = false;
+			if (Is.typeEqual(deviceType, SmartDevice.Types.roller_shutter)){
+				targetState = SmartHomeDevice.STATE_CLOSED;
+				hasStateAlready = Is.notNullOrEmpty(state) && state.toUpperCase().equals(targetState); 		//NOTE: we skip the 100 check here because HUBs don't agree if 100 is open or closed
+			}else{
+				targetState = SmartHomeDevice.STATE_OFF;	//TODO: depending on device 0 might be ON
+				hasStateAlready = Is.notNullOrEmpty(state) && (state.equals("0") || state.toUpperCase().equals(targetState));
+			}
 			
-			//already off? - TODO: depending on device 0 might be ON
-			if (Is.notNullOrEmpty(state) && (state.matches("0") || state.toUpperCase().equals(targetState))){
+			//already off?
+			if (hasStateAlready){
 				//response info
 				service.resultInfoPut("state", SmartHomeDevice.getStateLocal(state, service.language));
 				//answer

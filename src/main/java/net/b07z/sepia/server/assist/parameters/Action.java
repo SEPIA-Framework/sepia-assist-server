@@ -31,6 +31,7 @@ public class Action implements ParameterHandler{
 		remove,
 		create,
 		edit
+		//TODO: OPEN and CLOSE are currently included in ON and OFF, this might need to be updated at some point
 	}
 	/**
 	 * Get generalized action type value in format of extraction method.

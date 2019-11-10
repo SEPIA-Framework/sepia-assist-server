@@ -123,6 +123,9 @@ public class IntegrationsEndpoint {
 			if (fun.equalsIgnoreCase("getDevices")){
 				//get devices
 				String deviceTypeFilter = params.getString("deviceTypeFilter");
+				if (deviceTypeFilter != null && deviceTypeFilter.trim().isEmpty()){
+					deviceTypeFilter = null; 	//make sure this is null not empty
+				}
 				Map<String, SmartHomeDevice> devicesMap = shh.getDevices(null, deviceTypeFilter, null);
 				if (Is.nullOrEmptyMap(devicesMap)){
 					//FAIL

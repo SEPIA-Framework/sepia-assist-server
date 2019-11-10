@@ -41,6 +41,9 @@ public class SmartHomeDevice {
 	public static final String STATE_CLOSED = "CLOSED";
 	public static final String STATE_CONNECTED = "CONNECTED";
 	public static final String STATE_DISCONNECTED = "DISCONNECTED";
+	//public static final String STATE_UP = "up";
+	//public static final String STATE_DOWN = "down";
+	
 	//device state types
 	public static final String STATE_TYPE_TEXT_BINARY = "text_binary";	//ON, OFF, OPEN, CLOSED, ...
 	public static final String STATE_TYPE_NUMBER_PLAIN = "number_plain";
@@ -394,7 +397,7 @@ public class SmartHomeDevice {
 			}else if (state.matches(".*\\d+(\\+s|)%.*")){
 				genStateType = STATE_TYPE_NUMBER_PERCENT;
 			//ON/OFF
-			}else if (state.matches("(?i)(on|off|open|close(d|)|(dis|)connected|(in|)active)")){
+			}else if (state.matches("(?i)(on|off|open|close(d|)|up|down|(dis|)connected|(in|)active)")){
 				genStateType = STATE_TYPE_TEXT_BINARY;
 			}
 		}else if (parameterName.equals(PARAMETERS.SMART_DEVICE_VALUE)){
@@ -414,6 +417,14 @@ public class SmartHomeDevice {
 		//TODO: add more
 		if (stateType.equals(STATE_TYPE_NUMBER_PERCENT)){
 			return state.replaceAll("\\D", "");
+		}else if (stateType.equals(STATE_TYPE_TEXT_BINARY)){
+			if (state.equalsIgnoreCase("down")){		//NOTE: we assume a fixed state "down" is closed - TODO: we might need deviceType here
+				return STATE_CLOSED;
+			}else if (state.equalsIgnoreCase("up")){	//NOTE: we assume a fixed state "up" is open
+				return STATE_OPEN;
+			}else{
+				return state;
+			}
 		}else{
 			return state;
 		}
