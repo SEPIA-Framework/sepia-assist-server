@@ -8,6 +8,7 @@ import java.util.Map;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.parameters.SmartDevice;
 import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Debugger;
@@ -218,6 +219,11 @@ public class Fhem implements SmartHomeHub {
 	@Override
 	public boolean setDeviceState(SmartHomeDevice device, String state, String stateType){
 		String fhemId = device.getMetaValueAsString("id");
+		String setOptions = device.getMetaValueAsString("setOptions");
+		if (Is.nullOrEmpty(setOptions)){
+			//this is required info
+			return false;
+		}
 		String deviceCmdLink = device.getLink(); 
 		if (Is.nullOrEmpty(fhemId) || Is.nullOrEmpty(deviceCmdLink)){
 			return false;
@@ -228,10 +234,11 @@ public class Fhem implements SmartHomeHub {
 				//check stateType
 				if (stateType != null){
 					if (stateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_PERCENT)){
-						//percent via "dim"
-						state = "dim " + state; //TODO: this can FAIL if device uses discrete states
-						//percent via "pct"
-						//state = "pct " + state;
+						String cmd = NluTools.stringFindFirst(setOptions, "\\b(pct|dim|bri)(?=(\\b|\\d))");
+						//percent via pct, dim or bri
+						if (!cmd.isEmpty()){
+							state = cmd + " " + state;	//TODO: this can FAIL if device uses discrete states
+						}
 					}else{
 						state = state.toLowerCase();	//on, off, etc is usually lower-case in FHEM
 					}
@@ -263,7 +270,6 @@ public class Fhem implements SmartHomeHub {
 					}
 				}
 			}
-			//TODO: we should check PossibleStates to see if this command can be used
 			//TODO: we could check mem-state here if state is e.g. SmartHomeDevice.STATE_ON
 			String cmdUrl = URLBuilder.getString(
 					deviceCmdLink, "=", "set " + fhemId + " " + state,
@@ -375,7 +381,8 @@ public class Fhem implements SmartHomeHub {
 		Object linkObj = (fhemObjName != null)? (this.host + "?cmd." + fhemObjName) : null;
 		JSONObject meta = JSON.make(
 				"id", fhemObjName,
-				"origin", NAME
+				"origin", NAME,
+				"setOptions", JSON.getStringOrDefault(hubDevice, "PossibleSets", null)
 		);
 		//note: we need 'id' for commands although it is basically already in 'link'
 		SmartHomeDevice shd = new SmartHomeDevice(name, type, room, 

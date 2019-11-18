@@ -231,14 +231,18 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		String state = selectedDevice.getState();
 		String stateType = selectedDevice.getStateType();
 		
+		//assign selected device name - NOTE: we remove info in brackets
+		String selectedDeviceName = selectedDevice.getName().trim();	//cannot be null?
+		selectedDeviceName = selectedDeviceName.replaceFirst("\\(.*?\\)", " ").replaceAll("\\s+", " ").trim();
+		service.resultInfoPut("device", selectedDeviceName);		//TODO: or use deviceTypeLocal? - If the name is not the same language this might sound strange
+		
 		//ACTIONS
 		
 		String actionValue = action.getValueAsString().replaceAll("^<|>$", "").trim(); 		//TODO: NOTE! There is an inconsistency in parameter format with device and room here
 		Debugger.println("cmd: smartdevice, action: " + actionValue + ", device: " + deviceType + ", room: " + roomType, 2);		//debug
 		
 		//response info
-		service.resultInfoPut("device", selectedDevice.getName().trim());		//TODO: or use deviceTypeLocal? - If the name is not the same language this might sound strange
-		boolean hasRoom = !roomType.isEmpty();
+		boolean hasRoom = !roomTypeLocal.isEmpty();		//NOTE: to be precise this means "has a room with localized name?"
 		if (hasRoom){
 			service.resultInfoPut("room", roomTypeLocal);
 		}else{
@@ -262,14 +266,13 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		if (actionIs(actionValue, Action.Type.show)){
 			//response info
 			service.resultInfoPut("state", SmartHomeDevice.getStateLocal(state, service.language));
+			//System.out.println("type: " + stateType); 		//DEBUG
 			//answer
 			if (hasRoom){
 				service.setCustomAnswer(showDeviceStateWithRoom);
 			}else{
 				service.setCustomAnswer(showDeviceState);
 			}
-			//response info
-			service.resultInfoPut("state", SmartHomeDevice.getStateLocal(state, service.language));
 			
 		//ON
 		}else if (actionIs(actionValue, Action.Type.on)){

@@ -79,18 +79,22 @@ public class OpenHAB implements SmartHomeHub {
 			try{
 				for (Object o : devicesArray){
 					JSONObject hubDevice = (JSONObject) o;
+					//System.out.println("openHAB device JSON: " + hubDevice); 			//DEBUG
 					
 					//Build unified object for SEPIA
 					SmartHomeDevice shd = buildDeviceFromResponse(hubDevice);
 					
 					//devices
-					devices.put(shd.getName(), shd);
+					if (shd != null){
+						devices.put(shd.getName(), shd);
+					}
 				}
 				return devices;
 				
 			}catch (Exception e){
 				//Fail with faulty array
-				Debugger.println("Service:OpenHAB - devices array seems to be broken!", 1);
+				Debugger.println("Service:OpenHAB - devices array seems to be broken! Msg.: " + e.getMessage(), 1);
+				Debugger.printStackTrace(e, 3);
 				return new HashMap<String, SmartHomeDevice>();
 			}
 			
@@ -129,7 +133,7 @@ public class OpenHAB implements SmartHomeHub {
 				try {
 					for (String t : oldMemStateTags){
 						delTag = t;
-						String delURL =  deviceURL + ("/tags/" + URLEncoder.encode(delTag, "UTF-8"));
+						String delURL =  deviceURL + ("/tags/" + URLEncoder.encode(delTag, "UTF-8").replace("+", "%20"));
 						if (!Connectors.httpSuccess(Connectors.httpDELETE(delURL))){
 							throw new RuntimeException("Connection or response error.");
 						}
@@ -141,7 +145,7 @@ public class OpenHAB implements SmartHomeHub {
 			}
 			//build new tag
 			try {
-				deviceURL += ("/tags/" + URLEncoder.encode(newTag, "UTF-8"));
+				deviceURL += ("/tags/" + URLEncoder.encode(newTag, "UTF-8").replace("+", "%20"));
 			} catch (UnsupportedEncodingException e) {
 				Debugger.println("Service:OpenHAB - failed to set item tag: " + newTag + "Msg: " + e.getMessage(), 1);
 				return false;
@@ -166,9 +170,22 @@ public class OpenHAB implements SmartHomeHub {
 		if (Is.nullOrEmpty(deviceURL)){
 			return false;
 		}else{
-			//TODO: check stateType
+			//System.out.println("state: " + state); 				//DEBUG
+			//System.out.println("stateType: " + stateType); 		//DEBUG
 			//TODO: we could check mem-state here if state is e.g. SmartHomeDevice.STATE_ON
-			return setDeviceState(deviceURL, state);
+			if (stateType != null){
+				//TODO: improve stateType check
+				if (stateType.equals(SmartHomeDevice.STATE_TYPE_TEXT_BINARY)){
+					//all upper case text for openHAB
+					state = state.toUpperCase();
+				}
+			}
+			Map<String, String> headers = new HashMap<>();
+			headers.put("Content-Type", "text/plain");
+			headers.put("Accept", "application/json");
+			JSONObject response = Connectors.httpPOST(deviceURL, state, headers);
+			//System.out.println("RESPONSE: " + response); 		//this is usually empty if there was no error
+			return Connectors.httpSuccess(response);
 		}
 	}
 
@@ -183,7 +200,14 @@ public class OpenHAB implements SmartHomeHub {
 		if (Is.nullOrEmpty(deviceURL)){
 			return null;
 		}else{
-			return loadDeviceData(deviceURL);
+			JSONObject response = Connectors.httpGET(deviceURL);
+			if (Connectors.httpSuccess(response)){
+				//build device from result
+				SmartHomeDevice shd = buildDeviceFromResponse(response);
+				return shd;
+			}else{
+				return null;
+			}
 		}
 	}
 	
@@ -204,13 +228,13 @@ public class OpenHAB implements SmartHomeHub {
 			for (Object tagObj : tags){
 				String t = (String) tagObj;
 				if (t.startsWith(SmartHomeDevice.SEPIA_TAG_NAME + "=")){
-					name = t.split("=")[1];						//NOTE: has to be unique
+					name = t.split("=", 2)[1];						//NOTE: has to be unique
 				}else if (t.startsWith(SmartHomeDevice.SEPIA_TAG_TYPE + "=")){
-					type = t.split("=")[1];						//NOTE: as defined in device parameter
+					type = t.split("=", 2)[1];						//NOTE: as defined in device parameter
 				}else if (t.startsWith(SmartHomeDevice.SEPIA_TAG_ROOM + "=")){
-					room = t.split("=")[1];						//NOTE: as defined in room parameter
+					room = t.split("=", 2)[1];						//NOTE: as defined in room parameter
 				}else if (t.startsWith(SmartHomeDevice.SEPIA_TAG_MEM_STATE + "=")){
-					memoryState = t.split("=")[1];				//A state to remember like last non-zero brightness of a light 
+					memoryState = t.split("=", 2)[1];				//A state to remember like last non-zero brightness of a light 
 				} 
 			}
 		}
@@ -218,7 +242,8 @@ public class OpenHAB implements SmartHomeHub {
 		String originalName = JSON.getStringOrDefault(hubDevice, "name", null);
 		if (name == null && originalName != null){
 			name = originalName;			//NOTE: has to be unique
-		}else{
+		}
+		if (name == null){
 			//we only accept devices with name
 			return null;
 		}
@@ -237,8 +262,18 @@ public class OpenHAB implements SmartHomeHub {
 		}
 		//create common object
 		Object stateObj = hubDevice.get("state");
+		String state = null;
+		if (stateObj != null){
+			state = stateObj.toString();
+		}
 		String stateType = null;
-		//TODO: clean up stateObj and set stateType according to special values or devices (e.g. plain number for lamps is usually percentage)
+		if (state != null){
+			stateType = SmartHomeDevice.convertStateType(null, state, null);
+			if (stateType != null){
+				state = SmartHomeDevice.convertState(state, stateType);		//TODO: this might require deviceType (see comment inside method)
+			}
+		}
+		//TODO: clean up stateObj properly and check special format?
 		Object linkObj = hubDevice.get("link");
 		JSONObject meta = JSON.make(
 				"id", originalName,
@@ -246,39 +281,8 @@ public class OpenHAB implements SmartHomeHub {
 		);
 		//TODO: we could add some stuff to meta when we need other data from response.
 		SmartHomeDevice shd = new SmartHomeDevice(name, type, room, 
-				(stateObj != null)? stateObj.toString() : null, stateType, memoryState, 
+				state, stateType, memoryState, 
 				(linkObj != null)? linkObj.toString() : null, meta);
 		return shd;
-	}
-	
-	/**
-	 * Load data via device URL.
-	 * @param deviceURL
-	 * @return
-	 */
-	public static SmartHomeDevice loadDeviceData(String deviceURL) {
-		JSONObject response = Connectors.httpGET(deviceURL);
-		if (Connectors.httpSuccess(response)){
-			//build device from result
-			SmartHomeDevice shd = buildDeviceFromResponse(response);
-			return shd;
-		}else{
-			return null;
-		}
-	}
-	
-	/**
-	 * Push new status to device given by direct access URL.
-	 * @param deviceURL - link given in getDevices()
-	 * @param state - new status value
-	 * @return true IF no error was thrown after request
-	 */
-	public static boolean setDeviceState(String deviceURL, String state){
-		Map<String, String> headers = new HashMap<>();
-		headers.put("Content-Type", "text/plain");
-		headers.put("Accept", "application/json");
-		JSONObject response = Connectors.httpPOST(deviceURL, state, headers);
-		//System.out.println("RESPONSE: " + response); 		//this is usually empty if there was no error
-		return Connectors.httpSuccess(response);
 	}
 }

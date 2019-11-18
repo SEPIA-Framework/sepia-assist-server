@@ -122,9 +122,9 @@ public class SmartDevice implements ParameterHandler{
 	public static final String fridgeRegEx_de = "kuehlschrank(s|)";
 	public static final String ovenRegEx_de = "ofen(s|)|herd(es|s)";
 	public static final String coffeeMakerRegEx_de = "kaffeemaschine";
-	public static final String rollerShutterRegEx_de = "(fenster|rol(l|))(l(a|ae)den)|jalousie(n|)|rollo|markise";
-	public static final String powerOutletRegEx_de = "(steck|strom)( |-|)dose(n|)|stromanschluss";
-	public static final String sensorRegEx_de = "sensor(en|)";
+	public static final String rollerShutterRegEx_de = "(fenster|rol(l|))(l(a|ae)den)|jalousie(n|)|rollo(s|)|markise";
+	public static final String powerOutletRegEx_de = "(steck|strom)( |-|)dose(n|)|stromanschluss(es|)";
+	public static final String sensorRegEx_de = "sensor(en|s|)";
 	//----------------
 	
 	User user;
