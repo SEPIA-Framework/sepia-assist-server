@@ -132,7 +132,7 @@ public class Room implements ParameterHandler{
 					+ "keller|"
 					+ "schuppen|gartenhaus|"
 					+ "garten|"
-					+ "hallway|corridor"
+					+ "(haus|)flur|korridor|diele"
 				+ "");
 			
 		//English and other
@@ -148,7 +148,7 @@ public class Room implements ParameterHandler{
 					+ "basement|"
 					+ "shack(s|)|shed(s|)|"
 					+ "garden|"
-					+ "(haus|)flur|korridor|diele"
+					+ "hallway|corridor"
 				+ "");
 			
 		}
