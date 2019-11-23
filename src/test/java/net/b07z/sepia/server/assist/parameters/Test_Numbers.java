@@ -3,6 +3,7 @@ package net.b07z.sepia.server.assist.parameters;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.Normalizer;
 import net.b07z.sepia.server.assist.parameters.Test_Parameters.TestResult;
@@ -26,6 +27,7 @@ public class Test_Numbers {
 		texts.add("-305.14");
 		texts.add("1,75€ ist größr als 1.57$");
 		texts.add("Hausnummer 3b");
+		texts.add("Hausnummer 20F");
 		texts.add("-305.00 leer");
 		texts.add("Das kostet $5");
 		texts.add("Das kostet 5 Dollar");
@@ -39,6 +41,16 @@ public class Test_Numbers {
 		texts.add("Lampe 1 auf 50 Prozent");
 
 		printTestResults(texts, parametersToTest, language);
+		
+		System.out.println("\nNumber conversion test:\n");
+		System.out.println("20°C in C: " + Number.convertTemperature("20", "heizung auf 20 grad celsius", null, "C", LANGUAGES.DE));
+		System.out.println("20°C in F: " + Number.convertTemperature("20", "heizung auf 20 grad celsius", null, "F", LANGUAGES.DE));
+		System.out.println("20 (C) in C: " + Number.convertTemperature("20", "heizung auf 20 grad", "C", "C", LANGUAGES.DE));
+		System.out.println("20 (C) in F: " + Number.convertTemperature("20", "heizung auf 20 grad", "C", "F", LANGUAGES.DE));
+		System.out.println("68 (F) in F: " + Number.convertTemperature("68", "heizung auf 68 grad", "F", "F", LANGUAGES.DE));
+		System.out.println("68 (F) in C: " + Number.convertTemperature("68", "heizung auf 68 grad", "F", "C", LANGUAGES.DE));
+		System.out.println("80°F in F: " + Number.convertTemperature("80", "heater to 80°f", "F", "F", LANGUAGES.EN));
+		System.out.println("80°F in C: " + Number.convertTemperature("80", "heater to 80°f", "F", "C", LANGUAGES.EN));
 	}
 	
 	static void printTestResults(List<String> texts, String[] parametersToTest, String language){

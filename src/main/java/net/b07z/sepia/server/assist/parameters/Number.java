@@ -46,6 +46,9 @@ public class Number implements ParameterHandler{
 		//...
 		other;
 	}
+	//sub-types
+	public static final String SUBTYPE_TEMP_F = "F";
+	public static final String SUBTYPE_TEMP_C = "C";
 	
 	public static final String PLAIN_NBR_REGEXP = "(\\-|\\+|\\.|,|)\\d+(\\.|,|)\\d*";
 	
@@ -118,7 +121,7 @@ public class Number implements ParameterHandler{
 		}else if (NluTools.stringContains(input, "%|prozent|percent")){
 				return "<" + Types.percent.name() + ">";
 			
-		}else if (NluTools.stringContains(input, "(°|(grad|degree(s|)))( |)(celsius|c|fahrenheit|f|)|celsius|fahrenheit|f")){
+		}else if (NluTools.stringContains(input, "(\\d|)(°|(grad|degree(s|)))( |)(celsius|c|fahrenheit|f|)|celsius|fahrenheit|f")){
 			return "<" + Types.temperature.name() + ">";
 			
 		}else if (NluTools.stringContains(input, CURRENCY.TAGS_DE + "|" + CURRENCY.TAGS_EN)){
@@ -147,6 +150,66 @@ public class Number implements ParameterHandler{
 			return "<" + Types.other.name() + ">";
 		}
 	}
+	
+	/**
+	 * Convert a number found in user input to a preferred temperature unit (or simply return value as double if no conversion required).
+	 * Fails if source unit cannot be identified (either by input or preferred unit).
+	 * @param value - temperature number previously extracted (String)
+	 * @param userInput - normalized full text user input (to find temp. unit)
+	 * @param userPrefUnit - preferred user unit ("C" or "F")
+	 * @param targetUnit - convert to "C" or "F"
+	 * @param language - input text language code
+	 * @return temperature as double in target unit. Can throw exception if source or target are unclear.
+	 */
+	public static double convertTemperature(String value, String userInput, String userPrefUnit, String targetUnit, String language){
+		boolean isCelsius = false;
+		boolean isFarenheit = false;
+		double val = Double.parseDouble(value);
+		//German
+		if (language.matches(LANGUAGES.DE)){
+			if (NluTools.stringContains(userInput, "(\\d|)(°(?!f)|celsius|c)")){
+				isCelsius = true;
+			}else if (NluTools.stringContains(userInput, "(\\d|)(°f|fahrenheit|f)")){
+				isFarenheit = true;
+			}
+		//English and other
+		}else{
+			if (NluTools.stringContains(userInput, "(\\d|)(°(?!f)|celsius|c)")){
+				isCelsius = true;
+			}else if (NluTools.stringContains(userInput, "(\\d|)(°f|fahrenheit|f)")){
+				isFarenheit = true;
+			}
+		}
+		//use user preference
+		if (!isCelsius && !isFarenheit && userPrefUnit != null){
+			if (userPrefUnit.equals("C")){
+				isCelsius = true;
+			}else if (userPrefUnit.equals("F")){
+				isFarenheit = true;
+			}
+		}
+		//check current and target
+		if (targetUnit.equals("F")){
+			if (isFarenheit){
+				return val;
+			}else if (isCelsius){
+				double valF = Math.round(((val * 1.8d + 32.0d))*1000.0d)/1000.0d;
+				return valF;
+			}
+		}else if (targetUnit.equals("C")){
+			if (isFarenheit){
+				double valC = Math.round(((val - 32.0d)/1.8d)*1000.0d)/1000.0d;
+				return valC;
+			}else if (isCelsius){
+				return val;
+			}
+		}else{
+			throw new RuntimeException("Number.convertTemperature - invalid target unit (must be C or F)!");
+		}
+		throw new RuntimeException("Number.convertTemperature - result not clear! Missing source unit.");
+	}
+	
+	//-----------------------------------------------
 	
 	/**
 	 * Static version of extract method to be used in other variations of the number parameter.
