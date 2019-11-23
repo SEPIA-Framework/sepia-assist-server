@@ -61,6 +61,8 @@ public class SmartHomeDevice {
 		states_de.put("close", "geschlossen");
 		states_de.put("closed", "geschlossen");
 		states_de.put("unreachable", "nicht erreichbar");
+		states_de.put("home", "zu Hause");
+		states_de.put("gone", "weg");
 		
 		states_en.put("on", "on");
 		states_en.put("off", "off");
@@ -68,6 +70,8 @@ public class SmartHomeDevice {
 		states_en.put("close", "closed");
 		states_en.put("closed", "closed");
 		states_en.put("unreachable", "unreachable");
+		states_en.put("home", "home");
+		states_en.put("gone", "gone");
 	}
 	/**
 	 * Translate state value.

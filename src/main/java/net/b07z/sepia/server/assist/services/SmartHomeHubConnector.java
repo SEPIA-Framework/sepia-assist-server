@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
+import net.b07z.sepia.server.assist.answers.AnswerTools;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
@@ -171,6 +172,9 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		String roomType = room.getValueAsString();
 		String roomTypeLocal = JSON.getStringOrDefault(room.getData(), InterviewData.VALUE_LOCAL, roomType);
 		
+		//get background parameters
+		String reply = nluResult.getParameter(PARAMETERS.REPLY);	//a custom reply (defined via Teach-UI)
+		
 		//TODO: implement in future:
 		String deviceName = null;
 		
@@ -310,7 +314,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 					}
 				}else{
 					//fail answer
-					service.setStatusFail(); 						//"hard"-fail (probably openHAB connection error)
+					service.setStatusFail(); 						//"hard"-fail (probably HUB connection error)
 					service.setCustomAnswer(actionCurrentlyNotWorking);
 					return service.buildResult();
 				}
@@ -352,7 +356,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 					}
 				}else{
 					//fail answer
-					service.setStatusFail(); 						//"hard"-fail (probably openHAB connection error)
+					service.setStatusFail(); 						//"hard"-fail (probably HUB connection error)
 					service.setCustomAnswer(actionCurrentlyNotWorking);
 					return service.buildResult();
 				}
@@ -396,7 +400,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 						}
 					}else{
 						//fail answer
-						service.setStatusFail(); 						//"hard"-fail (probably openHAB connection error)
+						service.setStatusFail(); 						//"hard"-fail (probably HUB connection error)
 						service.setCustomAnswer(actionCurrentlyNotWorking);
 						return service.buildResult();
 					}
@@ -419,6 +423,12 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		
 		//in theory the service can't fail here anymore ^^
 		service.setStatusSuccess();
+		
+		//custom reply?
+		if (!reply.isEmpty()){
+			reply = AnswerTools.handleUserAnswerSets(reply);
+			service.setCustomAnswer(reply);
+		}
 		
 		//build the API_Result
 		ServiceResult result = service.buildResult();
