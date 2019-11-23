@@ -562,7 +562,7 @@ public class AuthenticationElasticsearch implements AuthenticationInterface{
 				//Commons
 				ACCOUNT.USER_NAME, ACCOUNT.USER_PREFERRED_LANGUAGE,
 				//Rare
-				ACCOUNT.USER_BIRTH,	ACCOUNT.BOT_CHARACTER
+				ACCOUNT.USER_BIRTH,	ACCOUNT.BOT_CHARACTER, ACCOUNT.USER_PREFERRED_UNIT_TEMP
 			};
 		JSONObject item = readUserIndex(userId, idType, basics);
 		//System.out.println("Auth. req: " + userId + ", " + idType + ", " + password); 		//debug
@@ -690,6 +690,7 @@ public class AuthenticationElasticsearch implements AuthenticationInterface{
 						basicInfo.put(Authenticator.USER_BIRTH, foundInfos.get("birth"));
 						basicInfo.put(Authenticator.USER_LANGUAGE, foundInfos.get("lang_code"));
 						basicInfo.put(Authenticator.BOT_CHARACTER, foundInfos.get("bot_char"));
+						basicInfo.put(Authenticator.USER_PREFERRED_UNIT_TEMP, foundInfos.get("unit_pref_temp"));
 					}
 					
 					//-----------------------------------------

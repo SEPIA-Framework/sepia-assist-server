@@ -619,7 +619,8 @@ public class AuthenticationDynamoDB implements AuthenticationInterface{
 				ACCOUNT.GUUID, ACCOUNT.PASSWORD, ACCOUNT.PWD_SALT, ACCOUNT.PWD_ITERATIONS, ACCOUNT.TOKENS, 
 				ACCOUNT.EMAIL, ACCOUNT.PHONE, ACCOUNT.ROLES,
 				ACCOUNT.USER_NAME, ACCOUNT.USER_PREFERRED_LANGUAGE, ACCOUNT.USER_BIRTH,
-				ACCOUNT.BOT_CHARACTER
+				ACCOUNT.BOT_CHARACTER,
+				ACCOUNT.USER_PREFERRED_UNIT_TEMP
 			};
 		JSONObject result = read_basics(username, idType, basics);
 		//System.out.println("Auth. req: " + username + ", " + idType + ", " + password); 		//debug
@@ -763,6 +764,7 @@ public class AuthenticationDynamoDB implements AuthenticationInterface{
 							basicInfo.put(Authenticator.USER_BIRTH, infos.get("birth"));
 							basicInfo.put(Authenticator.USER_LANGUAGE, infos.get("lang_code"));
 							basicInfo.put(Authenticator.BOT_CHARACTER, infos.get("bot_char"));
+							basicInfo.put(Authenticator.USER_PREFERRED_UNIT_TEMP, infos.get("unit_pref_temp"));
 						}
 					}
 					

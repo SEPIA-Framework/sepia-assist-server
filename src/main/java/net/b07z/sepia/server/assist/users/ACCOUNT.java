@@ -62,6 +62,8 @@ public class ACCOUNT {
 	public static final String USER_BIRTH = INFOS + ".birth";						//birthday - CAREFUL! Its hard coded inside account load basics
 	public static final String USER_PREFERRED_LANGUAGE = INFOS + ".lang_code";		//preferred language ISO code - CAREFUL! Its hard coded inside account load basics
 	public static final String USER_GENDER = INFOS + ".gender";						//gender - not (yet?) in basics
+	public static final String USER_PREFERRED_UNIT_TEMP = INFOS + ".unit_pref_temp";	//preferred unit for temperature
+	public static final String USER_APP_SETTINGS = INFOS + ".app_settings";				//user settings for different apps - NOTE: followed by ".deviceId"
 	//infos - bot
 	public static final String BOT_CHARACTER = INFOS + ".bot_char";					//preset assistant character
 	//infos - app settings
