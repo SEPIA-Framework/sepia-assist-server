@@ -10,6 +10,7 @@ import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.users.User;
+import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
@@ -129,6 +130,7 @@ public class SmartDevice implements ParameterHandler{
 	
 	User user;
 	String language;
+	NluInput nluInput;
 	boolean buildSuccess = false;
 	
 	//keep that in mind
@@ -138,11 +140,13 @@ public class SmartDevice implements ParameterHandler{
 	public void setup(NluInput nluInput) {
 		this.user = nluInput.user;
 		this.language = nluInput.language;
+		this.nluInput = nluInput;
 	}
 	@Override
 	public void setup(NluResult nluResult) {
 		this.user = nluResult.input.user;
 		this.language = nluResult.language;
+		this.nluInput = nluResult.input;
 	}
 	
 	/**
@@ -187,6 +191,17 @@ public class SmartDevice implements ParameterHandler{
 
 	@Override
 	public String extract(String input) {
+		String tagAndFound;
+		
+		//check storage first
+		ParameterResult pr = nluInput.getStoredParameterResult(PARAMETERS.SMART_DEVICE);
+		if (pr != null){
+			tagAndFound = pr.getExtracted();
+			this.found = pr.getFound();
+			
+			return tagAndFound;
+		}
+				
 		String device = getType(input, language);
 		if (device.isEmpty()){
 			//no known type so let's check some general constructions
@@ -293,7 +308,13 @@ public class SmartDevice implements ParameterHandler{
 				deviceTypeTag = "<" + Types.device.name() + ">";
 			}
 		}
-		return (deviceTypeTag + ";;" + this.found);
+		tagAndFound = deviceTypeTag + ";;" + this.found;
+		
+		//store it
+		pr = new ParameterResult(PARAMETERS.SMART_DEVICE, tagAndFound, this.found);
+		nluInput.addToParameterResultStorage(pr);
+		
+		return tagAndFound;
 	}
 	
 	@Override

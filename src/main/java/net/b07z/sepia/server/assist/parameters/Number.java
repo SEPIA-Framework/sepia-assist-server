@@ -44,7 +44,8 @@ public class Number implements ParameterHandler{
 		letterend,
 		//letterstart,
 		//...
-		other;
+		other,
+		custom		//this is usually only used in predefined sentences/results (e.g. via Teach-UI)
 	}
 	//sub-types
 	public static final String SUBTYPE_TEMP_F = "F";
@@ -281,7 +282,7 @@ public class Number implements ParameterHandler{
 		//System.out.println("PARAMETER-NUMBER - found: " + this.found);					//DEBUG
 		
 		//store it
-		pr = new ParameterResult(PARAMETERS.NUMBER, found, this.found);
+		pr = new ParameterResult(PARAMETERS.NUMBER, number, this.found);
 		nluInput.addToParameterResultStorage(pr);
 		
 		return found;
@@ -322,7 +323,7 @@ public class Number implements ParameterHandler{
 		//build default result
 		JSONObject itemResultJSON = new JSONObject();
 			JSON.add(itemResultJSON, InterviewData.INPUT, input);
-			JSON.add(itemResultJSON, InterviewData.VALUE, value.replaceAll(",", "."));
+			JSON.add(itemResultJSON, InterviewData.VALUE, value.replaceAll(",", "."));	//default decimal format is "1.00"
 			JSON.add(itemResultJSON, InterviewData.NUMBER_TYPE, type);
 		
 		buildSuccess = true;

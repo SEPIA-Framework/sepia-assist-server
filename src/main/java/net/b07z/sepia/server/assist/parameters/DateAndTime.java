@@ -286,7 +286,7 @@ public class DateAndTime implements ParameterHandler{
 				date = "<" + dateType + ">&&" + date;
 			} 
 		}
-		date = date.replaceFirst("&&(\\s+$|$)", "").trim();
+		date = date.replaceFirst("&&\\s*$", "").trim();
 		
 		//store it
 		pr = new ParameterResult(PARAMETERS.TIME, date, found);
