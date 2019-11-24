@@ -167,6 +167,15 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		String targetSetValue = deviceValue.getValueAsString();
 		String targetValueType = JSON.getStringOrDefault(deviceValue.getData(), InterviewData.NUMBER_TYPE, Number.Types.plain.name());
 		String targetValueParameterName = PARAMETERS.SMART_DEVICE_VALUE;		//required to generalize type ... see below
+		//Default user temperature unit
+		String userPrefTempUnit = null;
+		if (Is.typeEqual(targetValueType, Number.Types.temperature)){
+			Object prefTempUnit = nluResult.input.getCustomDataObject("prefTempUnit");		//NOTE: this info is available in the user account as well (in case the client is not giving it)
+			if (prefTempUnit != null){
+				userPrefTempUnit = (String) prefTempUnit;
+			}
+			//System.out.println("userPrefTempUnit: " + userPrefTempUnit);		//DEBUG
+		}
 		
 		Parameter room = nluResult.getOptionalParameter(PARAMETERS.ROOM, "");
 		String roomType = room.getValueAsString();
