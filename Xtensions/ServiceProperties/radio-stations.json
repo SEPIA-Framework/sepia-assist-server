@@ -89,32 +89,37 @@
 			"ego_fm_riff", 
 			"ego_fm_flash", 
 			"ego_fm_soul", 
-			"ego_fm_rap", 
+			"ego_fm_rap",
+			"ego_fm_sun",
 			"ego_fm_snow"
 		],
 		"ego_fm_pure": [{
-            "streamURL": "https://egofm-live.cast.addradio.de/egofm/pure/mp3/high/stream.mp3",
+            "streamURL": "https://egofm-pure.cast.addradio.de/egofm/pure/mp3/high/stream.mp3",
             "name": "egoFM Pure"
         }],
 		"ego_fm_riff": [{
-            "streamURL": "https://egofm-live.cast.addradio.de/egofm/riff/mp3/high/stream.mp3",
+            "streamURL": "https://egofm-riff.cast.addradio.de/egofm/riff/mp3/high/stream.mp3",
             "name": "egoFM Riff"
         }],
 		"ego_fm_flash": [{
-            "streamURL": "https://egofm-live.cast.addradio.de/egofm/flash/mp3/high/stream.mp3",
+            "streamURL": "https://egofm-flash.cast.addradio.de/egofm/flash/mp3/high/stream.mp3",
             "name": "egoFM Flash"
         }],
 		"ego_fm_soul": [{
-            "streamURL": "https://egofm-live.cast.addradio.de/egofm/soul/mp3/high/stream.mp3",
+            "streamURL": "https://egofm-soul.cast.addradio.de/egofm/soul/mp3/high/stream.mp3",
             "name": "egoFM Soul"
         }],
 		"ego_fm_rap": [{
-            "streamURL": "https://egofm-live.cast.addradio.de/egofm/rap/mp3/high/stream.mp3",
+            "streamURL": "https://egofm-rap.cast.addradio.de/egofm/rap/mp3/high/stream.mp3",
             "name": "egoFM Rap"
         }],
 		"ego_fm_snow": [{
-            "streamURL": "https://egofm-live.cast.addradio.de/egofm/snow/mp3/high/stream.mp3",
+            "streamURL": "https://egofm-snow.cast.addradio.de/egofm/snow/mp3/high/stream.mp3",	
             "name": "egoFM Snow"
+        }],
+		"ego_fm_sun": [{
+            "streamURL": "https://egofm-sun.cast.addradio.de/egofm/sun/mp3/high/stream.mp3",
+            "name": "egoFM Sun"
         }],
 		"deluxe_lounge": [{
             "streamURL": "https://audiostreams.deluxemusic.tv/lounge/mp3-192/radio_de",
