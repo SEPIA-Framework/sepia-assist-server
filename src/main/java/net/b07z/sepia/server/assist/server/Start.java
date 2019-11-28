@@ -40,6 +40,7 @@ import net.b07z.sepia.server.core.server.SparkJavaFw;
 import net.b07z.sepia.server.core.server.Validate;
 import net.b07z.sepia.server.core.tools.DateTime;
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 import net.b07z.sepia.server.core.tools.SandboxSecurityPolicy;
 import net.b07z.sepia.server.core.tools.Security;
@@ -148,6 +149,15 @@ public class Start {
 		if (Config.hostFiles){
 			staticFiles.externalLocation(Config.webServerFolder);
 			Debugger.println("Web-server is active and uses folder: " + Config.webServerFolder, 3);
+			if (Is.notNullOrEmpty(Config.fileMimeTypes)){
+				for (String ft : Config.fileMimeTypes.split(",")){
+					String[] fileAndType = ft.split("=", 2);
+					String f = fileAndType[0].trim();
+					String t = fileAndType[1].trim();
+					staticFiles.registerMimeType(f, t);
+					Debugger.println("Web-server MIME type overwrite: " + f + "=" + t, 3);
+				}
+			}
 		}
 		
 		//SETUP CORE-TOOLS
@@ -295,6 +305,10 @@ public class Start {
 		post("/hello", (request, response) -> 				helloWorld(request, response));
 		post("/cluster", (request, response) ->				clusterData(request, response));
 		post("/config", (request, response) -> 				ConfigServer.run(request, response));
+		
+		//Web-server content
+		get("/web-content-index/*", (request, response) ->	CoreEndpoints.getWebContentIndex(request, response, 
+																Config.webServerFolder, "/web-content-index/", Config.allowFileIndex));
 		
 		//Accounts and assistant
 		post("/user-management", (request, response) ->		UserManagementEndpoint.userManagementAPI(request, response));

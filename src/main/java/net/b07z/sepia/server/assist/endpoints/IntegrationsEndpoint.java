@@ -35,10 +35,6 @@ public class IntegrationsEndpoint {
 	private interface IntegrationEndpointInterface {
 		public String request(Request request, Response response, String fun, User user, RequestParameters params);
 	}
-	private static JSONObject pathNotFoundMsg = JSON.make(
-			"result", "fail",
-			"error", "path invalid"
-	);
 	private static Map<String, IntegrationEndpointInterface> integrationsMap = new HashMap<>();
 	static {
 		//Integrations
@@ -54,7 +50,7 @@ public class IntegrationsEndpoint {
 		String[] path = request.splat();
 		if (path == null || path.length != 2){
 			//Not found
-			return SparkJavaFw.returnResult(request, response, pathNotFoundMsg.toJSONString(), 404);
+			return SparkJavaFw.returnPathNotFound(request, response);
 		}
 		String integration = path[0];
 		String fun = path[1];
@@ -77,7 +73,7 @@ public class IntegrationsEndpoint {
 			//integration request
 			return integrationsMap.getOrDefault(integration, (req, res, f, u, p) -> {
 				//Not found
-				return SparkJavaFw.returnResult(request, response, pathNotFoundMsg.toJSONString(), 404);
+				return SparkJavaFw.returnPathNotFound(request, response);
 			}).request(request, response, fun, user, params);
 		}
 	}

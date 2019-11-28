@@ -73,6 +73,8 @@ public class Config {
 	public static String dbSetupFolder = xtensionsFolder + "Database/";		//folder for database stuff
 	public static String webServerFolder = xtensionsFolder + "WebContent";	//folder for web-server
 	public static boolean hostFiles = true;									//use web-server?
+	public static boolean allowFileIndex = true;							//allow web-server index
+	public static String fileMimeTypes = "mp4=video/mp4, mp3=audio/mpeg";	//MIME Types for files when loaded from static web server
 	public static String localName = "sepia-assist-server-1";				//**user defined local server name - should be unique inside cluster because it might be used as serverId
 	public static String localSecret = "123456";							//**user defined secret to validate local server
 	public static int serverPort = 20721;									//**server port
@@ -479,7 +481,7 @@ public class Config {
 			ConfigElasticSearch.endpoint_custom = settings.getProperty("db_elastic_endpoint_custom", "");
 			ConfigElasticSearch.endpoint_eu1 = settings.getProperty("db_elastic_endpoint_eu1");
 			ConfigElasticSearch.endpoint_us1 = settings.getProperty("db_elastic_endpoint_us1");
-			checkElasticsearchMappingsOnStart = Boolean.valueOf(settings.getProperty("checkElasticsearchMappingsOnStart", "true"));
+			checkElasticsearchMappingsOnStart = Boolean.valueOf(settings.getProperty("check_elasticsearch_mappings_on_start", "true")); 	//TODO: not yet in properties file
 			//chat
 			connectToWebSocket = Boolean.valueOf(settings.getProperty("connect_to_websocket"));
 			//NLU chain
@@ -499,6 +501,11 @@ public class Config {
 			urlWebFiles = settings.getProperty("url_web_files"); 		
 			urlDashboard = settings.getProperty("url_dashboard");
 			hostFiles = Boolean.valueOf(settings.getProperty("host_files"));
+			allowFileIndex = Boolean.valueOf(settings.getProperty("allow_file_index", "true")); 	//TODO: not yet in properties file
+			String fileMimeTypesList = settings.getProperty("file_mime_types");
+			if (Is.notNullOrEmpty(fileMimeTypesList)){
+				fileMimeTypes = fileMimeTypesList;
+			}
 			//email account
 			emailHost = settings.getProperty("email_host");
 			emailAccount = settings.getProperty("email_account");
