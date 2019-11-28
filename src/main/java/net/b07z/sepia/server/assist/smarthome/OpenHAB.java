@@ -157,7 +157,11 @@ public class OpenHAB implements SmartHomeHub {
 			String body = ""; 		//request body is empty, value set via URL (strange btw. this could be done via GET)
 			JSONObject responseWrite = Connectors.httpPUT(deviceURL, body, headers);
 			//System.out.println("RESPONSE: " + response); 		//this is usually empty if there was no error
-			return Connectors.httpSuccess(responseWrite);
+			boolean success = Connectors.httpSuccess(responseWrite); 
+			if (!success){
+				Debugger.println("OpenHAB interface error in 'writeDeviceAttribute' - Device: " + device.getName() + " - Response: " + responseWrite, 1);
+			}
+			return success;
 			
 		}else{
 			return false;
@@ -172,20 +176,40 @@ public class OpenHAB implements SmartHomeHub {
 		}else{
 			//System.out.println("state: " + state); 				//DEBUG
 			//System.out.println("stateType: " + stateType); 		//DEBUG
-			//TODO: we could check mem-state here if state is e.g. SmartHomeDevice.STATE_ON
-			if (stateType != null){
-				//TODO: improve stateType check
-				if (stateType.equals(SmartHomeDevice.STATE_TYPE_TEXT_BINARY)){
-					//all upper case text for openHAB
-					state = state.toUpperCase();
+
+			//ROLLER SHUTTER
+			if (Is.typeEqual(device.getType(), SmartDevice.Types.roller_shutter)){
+				//check stateType
+				if (stateType != null){
+					if (state.equalsIgnoreCase(SmartHomeDevice.STATE_OPEN)){
+						state = "UP";
+					}else if (state.equalsIgnoreCase(SmartHomeDevice.STATE_CLOSED)){
+						state = "DOWN";
+					}
+				}
+			//ELSE
+			}else{
+				//check stateType
+				if (stateType != null){
+					if (stateType.equals(SmartHomeDevice.STATE_TYPE_TEXT_BINARY)){
+						//all upper case text for openHAB
+						state = state.toUpperCase();
+					}
 				}
 			}
+			//TODO: we could check mem-state here if state is e.g. SmartHomeDevice.STATE_ON
+			//TODO: improve stateType check (temp. etc)
+			
 			Map<String, String> headers = new HashMap<>();
 			headers.put("Content-Type", "text/plain");
 			headers.put("Accept", "application/json");
 			JSONObject response = Connectors.httpPOST(deviceURL, state, headers);
 			//System.out.println("RESPONSE: " + response); 		//this is usually empty if there was no error
-			return Connectors.httpSuccess(response);
+			boolean success = Connectors.httpSuccess(response); 
+			if (!success){
+				Debugger.println("OpenHAB interface error in 'setDeviceState' - Sent '" + state + "' got response: " + response, 1);
+			}
+			return success;
 		}
 	}
 
@@ -248,13 +272,22 @@ public class OpenHAB implements SmartHomeHub {
 			return null;
 		}
 		if (type == null){
-			String openHabCategory = JSON.getString(hubDevice, "category").toLowerCase();	//NOTE: we check category, not type 
-			if (openHabCategory.matches("(.*\\s|^|,)(light.*|lamp.*)")){
-				type = SmartDevice.Types.light.name();		//LIGHT
-			}else if (openHabCategory.matches("(.*\\s|^|,)(heat.*|thermo.*)")){
-				type = SmartDevice.Types.heater.name();		//HEATER
-			}else{
-				type = openHabCategory;		//take this if we don't have a specific type yet
+			String openHabCategory = JSON.getString(hubDevice, "category").toLowerCase();	//NOTE: we prefer category, not type
+			String openHabType = JSON.getString(hubDevice, "type").toLowerCase();
+			//TODO: category might not be defined
+			//TODO: 'type' can give possible set options
+			if (Is.notNullOrEmpty(openHabCategory)){
+				if (openHabCategory.matches("(.*\\s|^|,)(light.*|lamp.*)")){
+					type = SmartDevice.Types.light.name();		//LIGHT
+				}else if (openHabCategory.matches("(.*\\s|^|,)(heat.*|thermo.*)")){
+					type = SmartDevice.Types.heater.name();		//HEATER
+				}else{
+					type = openHabCategory;		//take this if we don't have a specific type yet
+				}
+			}else if (Is.notNullOrEmpty(openHabType)){
+				if (openHabType.equals("rollershutter")){
+					type = SmartDevice.Types.roller_shutter.name();		//ROLLER SHUTTER
+				}
 			}
 		}
 		if (room == null){
@@ -273,6 +306,7 @@ public class OpenHAB implements SmartHomeHub {
 				state = SmartHomeDevice.convertState(state, stateType);		//TODO: this might require deviceType (see comment inside method)
 			}
 		}
+		//TODO: for temperature we need to check more info (temp. unit? percent? etc...)
 		//TODO: clean up stateObj properly and check special format?
 		Object linkObj = hubDevice.get("link");
 		JSONObject meta = JSON.make(

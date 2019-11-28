@@ -135,7 +135,8 @@ public class IntegrationsEndpoint {
 				for (Map.Entry<String, SmartHomeDevice> entry : devicesMap.entrySet()){
 					SmartHomeDevice data = entry.getValue();
 					if (deviceTypeFilter != null){
-						if (data.getType().equalsIgnoreCase(deviceTypeFilter)){
+						String shdType = data.getType();
+						if (shdType != null && shdType.equalsIgnoreCase(deviceTypeFilter)){
 							JSON.add(devicesArray, data.getDeviceAsJson());
 						}
 					}else{

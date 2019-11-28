@@ -157,7 +157,7 @@ public class Action implements ParameterHandler{
 					+ "^lautstaerke (von .* |)(auf )|"
 					+ "^wert(e|) (von .* |)(auf )";
 			toggle = "umschalten|schalten|schalte";
-			show = "anzeigen|zeig|zeigen|check|checken|was sagt|wieviel|"
+			show = "anzeigen|zeig|zeigen|check|checken|was sagt|sag mir|wie( |)viel|wie ist|"
 					+ "(\\w+|)status(?! .* (" + set + "|(an|aus)$))|"
 					+ "welche(n|r) wert(e|) (hat|haben)|"
 					+ "wert (von|der)(?! .* (" + set + "))";
@@ -192,7 +192,7 @@ public class Action implements ParameterHandler{
 					+ "^volume (of .* |)(to )|"
 					+ "^value (of .* |)(to )";
 			toggle = "toggle|switch";
-			show = "show|shows|display|check|what does .* say|how much|"
+			show = "show|shows|display|check|what does .* say|how much|what is the|tell me|"
 					+ "status|state of|"
 					+ "what value(s|) ((do|does) .* | )(has|have)|value(s|) of";
 			add = "add|enter|"

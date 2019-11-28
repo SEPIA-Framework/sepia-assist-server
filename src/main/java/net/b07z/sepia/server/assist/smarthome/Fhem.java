@@ -263,14 +263,19 @@ public class Fhem implements SmartHomeHub {
 				//check stateType
 				if (stateType != null){
 					if (stateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_PERCENT)){
-						//percent via "pct" - TODO: does that work?
-						state = "pct " + state;
+						String cmd = NluTools.stringFindFirst(setOptions, "\\b(pct|dim)(?=(\\b|\\d))");
+						//percent via pct or dim - TODO: does that work?
+						if (!cmd.isEmpty()){
+							state = cmd + " " + state;	//TODO: this can FAIL if device uses discrete states
+						}
 					}else{
 						state = state.toLowerCase();	//on, off, etc is usually lower-case in FHEM
 					}
 				}
 			}
+			//TODO: add temperature
 			//TODO: we could check mem-state here if state is e.g. SmartHomeDevice.STATE_ON
+			
 			String cmdUrl = URLBuilder.getString(
 					deviceCmdLink, "=", "set " + fhemId + " " + state,
 					"&XHR=", "1",
@@ -377,6 +382,7 @@ public class Fhem implements SmartHomeHub {
 				state = SmartHomeDevice.convertState(state, stateType);		//TODO: this might require deviceType (see comment inside method)
 			}
 		}
+		//TODO: for temperature we need to check more info (temp. unit? percent? etc...)
 		//TODO: clean up state and set stateType according to values like 'dim50%'
 		Object linkObj = (fhemObjName != null)? (this.host + "?cmd." + fhemObjName) : null;
 		JSONObject meta = JSON.make(
