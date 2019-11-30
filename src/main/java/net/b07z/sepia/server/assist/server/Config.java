@@ -481,6 +481,8 @@ public class Config {
 			ConfigElasticSearch.endpoint_custom = settings.getProperty("db_elastic_endpoint_custom", "");
 			ConfigElasticSearch.endpoint_eu1 = settings.getProperty("db_elastic_endpoint_eu1");
 			ConfigElasticSearch.endpoint_us1 = settings.getProperty("db_elastic_endpoint_us1");
+			ConfigElasticSearch.auth_type = settings.getProperty("db_elastic_auth_type", null);
+			ConfigElasticSearch.auth_data = settings.getProperty("db_elastic_auth_data", null);
 			checkElasticsearchMappingsOnStart = Boolean.valueOf(settings.getProperty("check_elasticsearch_mappings_on_start", "true")); 	//TODO: not yet in properties file
 			//chat
 			connectToWebSocket = Boolean.valueOf(settings.getProperty("connect_to_websocket"));
