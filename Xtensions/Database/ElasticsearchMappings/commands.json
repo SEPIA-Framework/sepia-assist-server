@@ -38,6 +38,7 @@
 			"old_text": { "type" : "string"},
             "source" : { "type" : "string", "analyzer": "whitelower" },
             "user" : { "type" : "string", "analyzer": "keylower" },
+			"device_id" : { "type" : "string", "analyzer": "keylower" },
             "user_location" : { "type" : "string", "analyzer": "keylower" },
             "data" : { "type" : "object" },
             "replies" : { "type" : "string" },

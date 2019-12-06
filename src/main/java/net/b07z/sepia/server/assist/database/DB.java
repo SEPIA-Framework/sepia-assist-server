@@ -393,6 +393,8 @@ public class DB {
 	 * @return JSONArray of commands as saved in db
 	 */
 	public static JSONArray getCommands(Map<String, Object> filters){
+		//TODO: this method is mostly identical to: net.b07z.sepia.server.teach.database.Elasticsearch#getPersonalCommands - we should merge it ...
+		
 		long tic = Debugger.tic();
 		
 		String userIds = (filters.containsKey("userIds"))? (String) filters.get("userIds") : "";
@@ -416,9 +418,9 @@ public class DB {
 		StringWriter sw = new StringWriter();
 		try {
 			try (JsonGenerator g = new JsonFactory().createGenerator(sw)){
-				startNestedQuery(g, 0);
-
-				//TODO: add info about the "size" of results somewhere here?
+				int from = 0;
+				int size = 10;
+				startNestedQuery(g, from, size);
 
 				// match at least one of the users:
 				g.writeArrayFieldStart("should");
@@ -457,9 +459,9 @@ public class DB {
 							g.writeStringField("query", searchText);
 							g.writeStringField("analyzer", "standard"); 		//use: asciifolding filter?
 							if (matchExactText){
-								g.writeStringField("operator", "and");
+								g.writeStringField("operator", "and");			//every word must match
 							}else{
-								g.writeStringField("operator", "or");
+								g.writeStringField("operator", "or");			//at least one word must match
 							}
 							g.writeArrayFieldStart("fields");
 								g.writeString("sentences.text");
@@ -586,6 +588,7 @@ public class DB {
 			}
 		}
 		String environment = (filters.containsKey("environment"))? (String) filters.get("environment") : "all";
+		String deviceId = (String) filters.get("device_id");
 		String userLocation = (String) filters.get("user_location");
 		String[] repliesArr = (String[]) filters.get("reply");
 		List<String> replies = repliesArr == null ? new ArrayList<>() : Arrays.asList(repliesArr);
@@ -607,6 +610,7 @@ public class DB {
 				.setLocal(isLocal)
 				.setExplicit(isExplicit)
 				.setEnvironment(environment)
+				.setDeviceId(deviceId)
 				.setUserLocation(userLocation)
 				.setData(dataJson)
 				//TODO: keep it or remove it? The general answers should be stored in an index called "answers"
@@ -1211,9 +1215,10 @@ public class DB {
 	
 	//JSON string writer helpers for ElasticSearch queries
 	//- nested sentences:
-	private static void startNestedQuery(JsonGenerator g, int from) throws IOException {
+	private static void startNestedQuery(JsonGenerator g, int from, int size) throws IOException {
 		g.writeStartObject();
 		g.writeNumberField("from", from);
+		g.writeNumberField("size", size);
 		g.writeObjectFieldStart("query");
 		g.writeObjectFieldStart("nested");
 		g.writeStringField("path", "sentences");
