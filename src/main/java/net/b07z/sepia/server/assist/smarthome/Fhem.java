@@ -24,6 +24,8 @@ import net.b07z.sepia.server.core.tools.URLBuilder;
 public class Fhem implements SmartHomeHub {
 	
 	private String host;
+	private String authType;
+	private String authData;
 	private String csrfToken = "";
 	public static final String NAME = "fhem";
 	
@@ -59,9 +61,29 @@ public class Fhem implements SmartHomeHub {
 		}
 	}
 	
+	//HTTP call methods for HUB
+	private Map<String, String> addAuthHeader(Map<String, String> headers){
+		return Connectors.addAuthHeader(headers, this.authType, this.authData);
+	}
+	private JSONObject httpGET(String url){
+		if (Is.notNullOrEmpty(this.authData)){
+			return Connectors.httpGET(url, null, addAuthHeader(null));
+		}else{
+			return Connectors.httpGET(url);
+		}
+	}
+	
+	//-------INTERFACE IMPLEMENTATIONS---------
+	
 	@Override
 	public void setHostAddress(String hostUrl){
 		this.host = hostUrl;
+	}
+	
+	@Override
+	public void setAuthenticationInfo(String authType, String authData){
+		this.authType = authType;
+		this.authData = authData;
 	}
 	
 	@Override
@@ -75,7 +97,7 @@ public class Fhem implements SmartHomeHub {
 		);
 		try {
 			//Call and check
-			JSONObject resultGet = Connectors.httpGET(getUrl);
+			JSONObject resultGet = httpGET(getUrl);
 			if (Connectors.httpSuccess(resultGet) && JSON.getIntegerOrDefault(resultGet, "totalResultsReturned", 0) == 1){
 				foundAttributes = (String) JSON.getJObject((JSONObject) JSON.getJArray(resultGet, "Results").get(0), "Attributes").get("userattr");
 				if (Is.nullOrEmpty(foundAttributes)){
@@ -98,7 +120,7 @@ public class Fhem implements SmartHomeHub {
 					"&XHR=", "1",
 					"&fwcsrf=", this.csrfToken
 			);
-			JSONObject resultSet = Connectors.httpGET(setUrl);
+			JSONObject resultSet = httpGET(setUrl);
 			boolean gotErrorMessage = false;
 			if (resultSet != null && resultSet.containsKey("STRING")){
 				String msg = JSON.getString(resultSet, "STRING");
@@ -126,7 +148,7 @@ public class Fhem implements SmartHomeHub {
 				"&XHR=", "1",
 				"&fwcsrf=", this.csrfToken
 		);
-		JSONObject result = Connectors.httpGET(url);
+		JSONObject result = httpGET(url);
 		if (Connectors.httpSuccess(result)){
 			try {
 				Map<String, SmartHomeDevice> devices = new HashMap<>();
@@ -167,7 +189,7 @@ public class Fhem implements SmartHomeHub {
 					"&XHR=", "1",
 					"&fwcsrf=", this.csrfToken
 			);
-			JSONObject response = Connectors.httpGET(cmdUrl);
+			JSONObject response = httpGET(cmdUrl);
 			boolean gotErrorMessage = false;
 			if (response != null && response.containsKey("STRING")){
 				String msg = JSON.getString(response, "STRING");
@@ -192,7 +214,7 @@ public class Fhem implements SmartHomeHub {
 					"&XHR=", "1",
 					"&fwcsrf=", this.csrfToken
 			);
-			JSONObject response = Connectors.httpGET(deviceURL);
+			JSONObject response = httpGET(deviceURL);
 			//System.out.println("RESPONSE: " + response); 		//this is usually empty if there was no error
 			if (Connectors.httpSuccess(response)){
 				try {
@@ -282,7 +304,7 @@ public class Fhem implements SmartHomeHub {
 					"&fwcsrf=", this.csrfToken
 			);
 			//System.out.println("URL: " + cmdUrl); 			//DEBUG
-			JSONObject response = Connectors.httpGET(cmdUrl);
+			JSONObject response = httpGET(cmdUrl);
 			//System.out.println("RESPONSE: " + response); 		//this is usually empty if there was no error
 			boolean gotErrorMessage = false;
 			if (response != null && response.containsKey("STRING")){

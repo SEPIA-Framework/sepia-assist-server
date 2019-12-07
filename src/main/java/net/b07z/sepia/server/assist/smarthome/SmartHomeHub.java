@@ -17,7 +17,11 @@ public interface SmartHomeHub {
 	 * @return HUB or null
 	 */
 	public static SmartHomeHub getHubFromSeverConfig(){
-		return getHub(Config.smarthome_hub_name, Config.smarthome_hub_host);
+		SmartHomeHub shh = getHub(Config.smarthome_hub_name, Config.smarthome_hub_host);
+		if (Is.notNullOrEmpty(Config.smarthome_hub_auth_data)){
+			shh.setAuthenticationInfo(Config.smarthome_hub_auth_type, Config.smarthome_hub_auth_data);
+		}
+		return shh;
 	}
 	/**
 	 * Get HUB with custom data (name and host).
@@ -51,6 +55,15 @@ public interface SmartHomeHub {
 	 * @param hostUrl - e.g. http://localhost:8080
 	 */
 	public void setHostAddress(String hostUrl);
+	
+	/**
+	 * Set authentication info e.g. to do Basic-Authorization against a proxy via request header etc.. 
+	 * Different HUBs can have additional layers of security and this
+	 * is usually the first. It can be independent of the HUB itself.
+	 * @param authType - type of auth. e.g. 'Basic'
+	 * @param authData - data for auth. type e.g. a base64 encoded user:password combination 
+	 */
+	public void setAuthenticationInfo(String authType, String authData);
 	
 	/**
 	 * Register SEPIA Framework in specific smart home HUB software. This can for example be the creation of new attributes 

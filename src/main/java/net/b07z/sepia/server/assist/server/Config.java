@@ -334,6 +334,8 @@ public class Config {
 	//API URLs - loaded from config file
 	public static String smarthome_hub_host = "";
 	public static String smarthome_hub_name = "";
+	public static String smarthome_hub_auth_type = "";
+	public static String smarthome_hub_auth_data = "";
 	
 	//------Database loading and default interpreters------
 	
@@ -565,6 +567,8 @@ public class Config {
 					smarthome_hub_name = OpenHAB.NAME;
 				}
 			}
+			smarthome_hub_auth_type = settings.getProperty("smarthome_hub_auth_type", null);
+			smarthome_hub_auth_data = settings.getProperty("smarthome_hub_auth_data", null);
 			
 			Debugger.println("loading settings from " + confFile + "... done." , 3);
 		}catch (Exception e){

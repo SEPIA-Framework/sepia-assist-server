@@ -25,6 +25,8 @@ import net.b07z.sepia.server.core.tools.JSON;
 public class OpenHAB implements SmartHomeHub {
 	
 	private String host;
+	private String authType;
+	private String authData;
 	public static String NAME = "openhab";
 	
 	/**
@@ -39,9 +41,48 @@ public class OpenHAB implements SmartHomeHub {
 		}
 	}
 	
+	//HTTP call methods for HUB
+	private Map<String, String> addAuthHeader(Map<String, String> headers){
+		return Connectors.addAuthHeader(headers, this.authType, this.authData);
+	}
+	private JSONObject httpGET(String url){
+		if (Is.notNullOrEmpty(this.authData)){
+			return Connectors.httpGET(url, null, addAuthHeader(null));
+		}else{
+			return Connectors.httpGET(url);
+		}
+	}
+	private JSONObject httpPOST(String url, String queryJson, Map<String, String> headers){
+		if (Is.notNullOrEmpty(this.authData)){
+			headers = addAuthHeader(headers);
+		}
+		return Connectors.httpPOST(url, queryJson, headers);
+	}
+	private JSONObject httpPUT(String url, String queryJson, Map<String, String> headers){
+		if (Is.notNullOrEmpty(this.authData)){
+			headers = addAuthHeader(headers);
+		}
+		return Connectors.httpPUT(url, queryJson, headers);
+	}
+	private JSONObject httpDELETE(String url){
+		if (Is.notNullOrEmpty(this.authData)){
+			return Connectors.httpDELETE(url, addAuthHeader(null));
+		}else{
+			return Connectors.httpDELETE(url);
+		}
+	}
+	
+	//-------INTERFACE IMPLEMENTATIONS---------
+	
 	@Override
 	public void setHostAddress(String hostUrl){
 		this.host = hostUrl;
+	}
+	
+	@Override
+	public void setAuthenticationInfo(String authType, String authData){
+		this.authType = authType;
+		this.authData = authData;
 	}
 	
 	@Override
@@ -53,7 +94,7 @@ public class OpenHAB implements SmartHomeHub {
 	@Override
 	public Map<String, SmartHomeDevice> getDevices(String optionalNameFilter, String optionalTypeFilter, String optionalRoomFilter){
 		//TODO: we currently ignore result filtering
-		JSONObject response = Connectors.httpGET(this.host + "/rest/items");
+		JSONObject response = httpGET(this.host + "/rest/items");
 		//System.out.println("openHAB REST response: " + response); 									//DEBUG
 		if (Connectors.httpSuccess(response)){
 			JSONArray devicesArray = null;
@@ -112,7 +153,7 @@ public class OpenHAB implements SmartHomeHub {
 			return false;
 		}
 		//get fresh data first
-		JSONObject response = Connectors.httpGET(deviceURL);
+		JSONObject response = httpGET(deviceURL);
 		if (Connectors.httpSuccess(response)){
 			//clean up old tags first if needed (how annoying that we have to deal with arrays here - other options?)
 			String newTag = attrName + "=" + attrValue;
@@ -134,7 +175,7 @@ public class OpenHAB implements SmartHomeHub {
 					for (String t : oldMemStateTags){
 						delTag = t;
 						String delURL =  deviceURL + ("/tags/" + URLEncoder.encode(delTag, "UTF-8").replace("+", "%20"));
-						if (!Connectors.httpSuccess(Connectors.httpDELETE(delURL))){
+						if (!Connectors.httpSuccess(httpDELETE(delURL))){
 							throw new RuntimeException("Connection or response error.");
 						}
 					}
@@ -155,7 +196,7 @@ public class OpenHAB implements SmartHomeHub {
 			headers.put("Content-Type", "text/plain");
 			headers.put("Accept", "application/json");
 			String body = ""; 		//request body is empty, value set via URL (strange btw. this could be done via GET)
-			JSONObject responseWrite = Connectors.httpPUT(deviceURL, body, headers);
+			JSONObject responseWrite = httpPUT(deviceURL, body, headers);
 			//System.out.println("RESPONSE: " + response); 		//this is usually empty if there was no error
 			boolean success = Connectors.httpSuccess(responseWrite); 
 			if (!success){
@@ -203,7 +244,7 @@ public class OpenHAB implements SmartHomeHub {
 			Map<String, String> headers = new HashMap<>();
 			headers.put("Content-Type", "text/plain");
 			headers.put("Accept", "application/json");
-			JSONObject response = Connectors.httpPOST(deviceURL, state, headers);
+			JSONObject response = httpPOST(deviceURL, state, headers);
 			//System.out.println("RESPONSE: " + response); 		//this is usually empty if there was no error
 			boolean success = Connectors.httpSuccess(response); 
 			if (!success){
@@ -224,7 +265,7 @@ public class OpenHAB implements SmartHomeHub {
 		if (Is.nullOrEmpty(deviceURL)){
 			return null;
 		}else{
-			JSONObject response = Connectors.httpGET(deviceURL);
+			JSONObject response = httpGET(deviceURL);
 			if (Connectors.httpSuccess(response)){
 				//build device from result
 				SmartHomeDevice shd = buildDeviceFromResponse(response);
