@@ -1,9 +1,8 @@
 package net.b07z.sepia.server.assist.endpoints;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -113,18 +112,13 @@ public class ConfigServer {
 				String key = (getConfig != null)? getConfig : (lastSetKey != null)? lastSetKey : ""; 
 				try{
 					List<String> configFile = FilesAndStreams.readFileAsList(Config.configFile);
-					List<String> configFileClean = configFile.stream().filter(line -> {
-						return (
-							//some filters and quasi "blacklist"
-							!line.startsWith("#") && ((
-									showAll && 
-									!line.contains("_pwd") &&
-									!line.contains("_local_secret")
-							) || (
-									line.startsWith(key)
-							))
-						);
-					}).collect(Collectors.toList());
+					List<String> configFileClean = new ArrayList<>();
+					for (String l : configFile){
+						//some filters and hide passwords/keys
+						if (!l.startsWith("#") && (showAll || l.startsWith(key))){
+							configFileClean.add(l.replaceFirst("(.*?)(_pwd|_secret|_auth_data|_key)(.*?=)(.+)", "$1$2$3[HIDDEN]"));
+						}
+					}
 					JSONObject msg = JSON.make(
 							"config", configFileClean,
 							"serverType", Start.serverType,
