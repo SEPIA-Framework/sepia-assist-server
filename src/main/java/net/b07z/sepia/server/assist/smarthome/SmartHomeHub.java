@@ -24,7 +24,7 @@ public interface SmartHomeHub {
 		return shh;
 	}
 	/**
-	 * Get HUB with custom data (name and host).
+	 * Get HUB with custom data (name and host). Use 'setAuthenticationInfo' later if you need to add auth. data.
 	 * @param hubName - name like "openhab" or "fhem". A full class name is possible as well.
 	 * @param hubHist - address of HUB, e.g. http://localhost:8083/fhem
 	 * @return HUB or null

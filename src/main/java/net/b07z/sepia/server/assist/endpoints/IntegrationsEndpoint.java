@@ -103,12 +103,16 @@ public class IntegrationsEndpoint {
 			String hubHost = params.getString("hubHost");
 			SmartHomeHub shh = null;
 			if (Is.notNullOrEmpty(hubHost) && Is.notNullOrEmpty(hubName)){
-				if (Config.smarthome_hub_host.equalsIgnoreCase(hubHost) && Config.smarthome_hub_name.equalsIgnoreCase(hubName)){
+				if (Config.smarthome_hub_host.equalsIgnoreCase(hubHost)){
 					//use server data including auth. etc. if its the system HUB
 					shh = SmartHomeHub.getHubFromSeverConfig();
 				}else{
-					//NOTE: we might add 'shh.setAuthenticationInfo' here at some point
-					shh = SmartHomeHub.getHub(hubName, hubHost);
+					//TODO: how can we validate if this is a correct address BEFORE calling it? - FOR NOW: we prevent this call
+					//shh = SmartHomeHub.getHub(hubName, hubHost);	//NOTE: we might add 'shh.setAuthenticationInfo' here at some point
+					return SparkJavaFw.returnResult(request, response, JSON.make(
+							"result", "fail", 
+							"error", "host address is unknown to server and call has been blocked! Please set 'smarthome_hub_host' in your server settings first."
+					).toJSONString(), 200);
 				}
 			}
 			if (shh == null){
