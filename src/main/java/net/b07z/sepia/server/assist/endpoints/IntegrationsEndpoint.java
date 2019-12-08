@@ -103,7 +103,13 @@ public class IntegrationsEndpoint {
 			String hubHost = params.getString("hubHost");
 			SmartHomeHub shh = null;
 			if (Is.notNullOrEmpty(hubHost) && Is.notNullOrEmpty(hubName)){
-				shh = SmartHomeHub.getHub(hubName, hubHost);
+				if (Config.smarthome_hub_host.equalsIgnoreCase(hubHost) && Config.smarthome_hub_name.equalsIgnoreCase(hubName)){
+					//use server data including auth. etc. if its the system HUB
+					shh = SmartHomeHub.getHubFromSeverConfig();
+				}else{
+					//NOTE: we might add 'shh.setAuthenticationInfo' here at some point
+					shh = SmartHomeHub.getHub(hubName, hubHost);
+				}
 			}
 			if (shh == null){
 				//FAIL
