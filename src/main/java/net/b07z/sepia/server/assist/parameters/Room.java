@@ -35,11 +35,13 @@ public class Room implements ParameterHandler{
 		bath,
 		study,
 		office,
+		childsroom,
 		garage,
 		basement,
 		garden,
 		shack,
-		hallway
+		hallway,
+		other
 		//TODO: entrance/front door, veranda(h)/patio/porch/lanai
 	}
 	
@@ -54,11 +56,13 @@ public class Room implements ParameterHandler{
 		types_de.put("bath", "im Badezimmer");
 		types_de.put("study", "im Arbeitszimmer");
 		types_de.put("office", "im Büro");
+		types_de.put("childsroom", "im Kinderzimmer");
 		types_de.put("garage", "in der Garage");
 		types_de.put("basement", "im Keller");
 		types_de.put("garden", "im Garten");
 		types_de.put("shack", "im Schuppen");
 		types_de.put("hallway", "im Flur");
+		types_de.put("other", "im anderen Zimmer");
 		
 		types_en.put("livingroom", "in the living room");
 		types_en.put("diningroom", "in the dining room");
@@ -67,11 +71,13 @@ public class Room implements ParameterHandler{
 		types_en.put("bath", "in the bath");
 		types_en.put("study", "in the study room");
 		types_en.put("office", "in the office");
+		types_en.put("childsroom", "in the child's room");
 		types_en.put("garage", "in the garage");
 		types_en.put("basement", "in the basement");
 		types_en.put("garden", "in the garden");
 		types_en.put("shack", "in the shack");
 		types_en.put("hallway", "in the hallway");
+		types_en.put("other", "in the other room");
 	}
 	
 	/**
@@ -121,34 +127,40 @@ public class Room implements ParameterHandler{
 		String type = "";
 		//German
 		if (language.matches(LANGUAGES.DE)){
-			type = NluTools.stringFindFirst(input, "wohnzimmer(n|)|"
+			type = NluTools.stringFindFirst(input, 
+					"wohn( |-|)zimmer(n|)|"
 					+ "esszimmer(n|)|"
 					+ "kueche(n|)|"
 					+ "badezimmer(n|)|bad|"
-					+ "schlafzimmer(n|)|"
-					+ "(arbeits|studier|herren)(zimmer|raum|raeumen)|"
+					+ "schlaf( |-|)zimmer(n|)|"
+					+ "(arbeits|studier|herren)( |-|)(zimmer|raum|raeumen)|"
 					+ "buero(s|)|office|"
+					+ "(kinder|baby|wickel)( |-|)(zimmer|stube)(n|)|"
 					+ "garage|auto(-| |)schuppen|"
 					+ "keller|"
 					+ "schuppen|gartenhaus|"
 					+ "garten|"
-					+ "(haus|)flur|korridor|diele"
+					+ "(haus|)flur|korridor|diele|"
+					+ "andere(n|es|r|)( |-|)(zimmer|raum|raeumen)"
 				+ "");
 			
 		//English and other
 		}else{
-			type = NluTools.stringFindFirst(input, "living( |-|)room(s|)|parlo(u|)r(s|)|lounge(s|)|family(-| )room(s|)|"
+			type = NluTools.stringFindFirst(input, 
+					"living( |-|)room(s|)|parlo(u|)r(s|)|lounge(s|)|family(-| )room(s|)|"
 					+ "dining( |-|)room(s|)|"
 					+ "kitchen(s|)|"
 					+ "bath(ing|)( |-|)room(s|)|bath|powder(-|)room(s|)|"
 					+ "bed(-|)(room|chamber)(s|)|"
 					+ "(study|work)(-|)(room|chamber)(s|)|study|"
 					+ "office|"
+					+ "(child(s|)|children(s|)|baby)( |-|)room(s|)|nursery|"
 					+ "garage|carhouse|"
 					+ "basement|"
 					+ "shack(s|)|shed(s|)|"
 					+ "garden|"
-					+ "hallway|corridor"
+					+ "hallway|corridor|"
+					+ "other room(s|)"
 				+ "");
 			
 		}
@@ -163,7 +175,7 @@ public class Room implements ParameterHandler{
 		
 		//classify into types:
 		
-		if (NluTools.stringContains(type, "wohnzimmer(n|)|"
+		if (NluTools.stringContains(type, "wohn( |-|)zimmer(n|)|"
 				+ "living( |-|)room(s|)|parlo(u|)r(s|)|lounge(s|)|family(-| )room")){
 			return "<" + Types.livingroom.name() + ">";
 			
@@ -179,17 +191,21 @@ public class Room implements ParameterHandler{
 				+ "bath(ing|)( |-|)room(s|)|bath|powder(-|)room(s|)")){
 			return "<" + Types.bath.name() + ">";
 			
-		}else if (NluTools.stringContains(type, "schlafzimmer(n|)|"
+		}else if (NluTools.stringContains(type, "schlaf( |-|)zimmer(n|)|"
 				+ "bed(-|)(room|chamber)(s|)")){
 			return "<" + Types.bedroom.name() + ">";
 			
-		}else if (NluTools.stringContains(type, "(arbeits|studier|herren)(zimmer|raum|raeumen)|"
+		}else if (NluTools.stringContains(type, "(arbeits|studier|herren)( |-|)(zimmer(n|)|raum|raeumen)|"
 				+ "(study|work)(-|)(room|chamber)(s|)|study")){
 			return "<" + Types.study.name() + ">";
 			
 		}else if (NluTools.stringContains(type, "buero(s|)|"
 				+ "office")){
 			return "<" + Types.office.name() + ">";
+			
+		}else if (NluTools.stringContains(type, "(kinder|baby|wickel)( |-|)(zimmer|stube)|"
+				+ "(child(s|)|children(s|)|baby)( |-|)room(s|)|nursery")){
+			return "<" + Types.childsroom.name() + ">";
 			
 		}else if (NluTools.stringContains(type, "garage|auto(-| |)schuppen|"
 				+ "carhouse")){
@@ -207,10 +223,14 @@ public class Room implements ParameterHandler{
 				+ "garden")){
 			return "<" + Types.garden.name() + ">";
 			
-		}else if (NluTools.stringContains(type, "hallway|corridor|"
-				+ "(haus|)flur|korridor|diele")){
+		}else if (NluTools.stringContains(type, "(haus|)flur|korridor|diele|"
+				+ "hallway|corridor")){
 			return "<" + Types.hallway.name() + ">";
-		
+			
+		}else if (NluTools.stringContains(type, "andere(n|es|r|)( |-|)(zimmer|raum|raeumen)|"
+				+ "other room(s|)")){
+			return "<" + Types.other.name() + ">";
+
 		}else{
 			return "";
 		}
