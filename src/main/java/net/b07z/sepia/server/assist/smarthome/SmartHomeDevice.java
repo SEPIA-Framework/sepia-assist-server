@@ -334,13 +334,13 @@ public class SmartHomeDevice {
 			//check type
 			SmartHomeDevice data = entry.getValue();
 			String thisType = data.getType();
-			if (!thisType.equals(deviceType)){
+			if (thisType == null || !thisType.equals(deviceType)){
 				continue;
 			}
 			//check room?
 			if (!roomType.isEmpty()){
 				String thisRoom = data.getRoom();
-				if (!thisRoom.equals(roomType)){
+				if (thisRoom == null || !thisRoom.equals(roomType)){
 					continue;
 				}else{
 					matchingDevices.add(data);

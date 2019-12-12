@@ -41,7 +41,7 @@ public class SmartDevice implements ParameterHandler{
 		sensor,
 		//TODO: window, door or use device?
 		device,
-		other,	//TODO: no extract method
+		other,	//no extract method
 		hidden
 	}
 	/**

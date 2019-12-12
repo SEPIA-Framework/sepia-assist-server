@@ -251,10 +251,11 @@ public class Fhem implements SmartHomeHub {
 			return false;
 		}else{
 			//check deviceType
-			//LIGHT
-			if (Is.typeEqual(device.getType(), SmartDevice.Types.light)){
-				//check stateType
-				if (stateType != null){
+			String givenType = device.getType();
+			if (stateType != null){
+				//LIGHT
+				if (givenType != null && Is.typeEqual(givenType, SmartDevice.Types.light)){
+					//check stateType
 					if (stateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_PERCENT)){
 						String cmd = NluTools.stringFindFirst(setOptions, "\\b(pct|dim|bri)(?=(\\b|\\d))");
 						//percent via pct, dim or bri
@@ -264,11 +265,9 @@ public class Fhem implements SmartHomeHub {
 					}else{
 						state = state.toLowerCase();	//on, off, etc is usually lower-case in FHEM
 					}
-				}
-			//ROLLER SHUTTER
-			}else if (Is.typeEqual(device.getType(), SmartDevice.Types.roller_shutter)){
-				//check stateType
-				if (stateType != null){
+				//ROLLER SHUTTER
+				}else if (givenType != null && Is.typeEqual(givenType, SmartDevice.Types.roller_shutter)){
+					//check stateType
 					if (stateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_PERCENT)){
 						//percent via "pct" - TODO: does that work?
 						state = "pct " + state;
@@ -279,11 +278,9 @@ public class Fhem implements SmartHomeHub {
 					}else{
 						state = state.toLowerCase();	//on, off, etc is usually lower-case in FHEM
 					}
-				}
-			//ELSE
-			}else{
-				//check stateType
-				if (stateType != null){
+				//ELSE
+				}else{
+					//check stateType
 					if (stateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_PERCENT)){
 						String cmd = NluTools.stringFindFirst(setOptions, "\\b(pct|dim)(?=(\\b|\\d))");
 						//percent via pct or dim - TODO: does that work?

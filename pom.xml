@@ -112,7 +112,7 @@
 		<dependency>
 			<groupId>net.b07z.sepia.server.core</groupId>
 			<artifactId>sepia-core-tools</artifactId>
-			<version>2.2.0</version>
+			<version></version>
 		</dependency>
 		 -->
 		<dependency>

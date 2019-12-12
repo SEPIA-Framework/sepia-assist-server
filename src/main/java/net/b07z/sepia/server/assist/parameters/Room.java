@@ -41,7 +41,8 @@ public class Room implements ParameterHandler{
 		garden,
 		shack,
 		hallway,
-		other
+		other,
+		unassigned	//must be assigned directly
 		//TODO: entrance/front door, veranda(h)/patio/porch/lanai
 	}
 	
@@ -63,6 +64,7 @@ public class Room implements ParameterHandler{
 		types_de.put("shack", "im Schuppen");
 		types_de.put("hallway", "im Flur");
 		types_de.put("other", "im anderen Zimmer");
+		types_de.put("unassigned", "");
 		
 		types_en.put("livingroom", "in the living room");
 		types_en.put("diningroom", "in the dining room");
@@ -78,6 +80,7 @@ public class Room implements ParameterHandler{
 		types_en.put("shack", "in the shack");
 		types_en.put("hallway", "in the hallway");
 		types_en.put("other", "in the other room");
+		types_en.put("unassigned", "");
 	}
 	
 	/**
