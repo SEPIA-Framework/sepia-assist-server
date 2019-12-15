@@ -180,7 +180,7 @@ public class OpenHAB implements SmartHomeHub {
 						}
 					}
 				} catch (Exception e) {
-					Debugger.println("Service:OpenHAB - failed to delete item tag: " + delTag + "Msg: " + e.getMessage(), 1);
+					Debugger.println("Service:OpenHAB - failed to delete item tag: " + delTag + " - Msg: " + e.getMessage(), 1);
 					return false;
 				}
 			}
@@ -188,7 +188,7 @@ public class OpenHAB implements SmartHomeHub {
 			try {
 				deviceURL += ("/tags/" + URLEncoder.encode(newTag, "UTF-8").replace("+", "%20"));
 			} catch (UnsupportedEncodingException e) {
-				Debugger.println("Service:OpenHAB - failed to set item tag: " + newTag + "Msg: " + e.getMessage(), 1);
+				Debugger.println("Service:OpenHAB - failed to set item tag: " + newTag + " - Msg: " + e.getMessage(), 1);
 				return false;
 			}
 			//set tag

@@ -116,7 +116,7 @@ public class Number implements ParameterHandler{
 	 */
 	public static String getTypeClass(String input, String language){
 		
-		if (input.matches(PLAIN_NBR_REGEXP)){
+		if (input.matches(PLAIN_NBR_REGEXP)){		//matches exactly just a number, e.g. 3.14156
 			return "<" + Types.plain.name() + ">";
 			
 		}else if (NluTools.stringContains(input, "%|prozent|percent")){
@@ -231,9 +231,11 @@ public class Number implements ParameterHandler{
 		
 		//ends with number?
 		if (number.matches(".*?\\d+$")){
-			relevantTypeSearchString = NluTools.getStringAndNextWords(input, number, 3);
+			//we check result + 3 (1 for safety)
+			relevantTypeSearchString = NluTools.getStringAndNextWords(input, number, 3); 	//20 degrees celsius, 20 dollar
 		}else{
-			relevantTypeSearchString = NluTools.getStringAndNextWords(input, number, 2);
+			//we check result + 2 (1 for safety)
+			relevantTypeSearchString = NluTools.getStringAndNextWords(input, number, 2);	//20° celsius, 20$
 		}
 		//System.out.println("PARAMETER-NUMBER - relevantTypeSearchString: " + relevantTypeSearchString); 		//DEBUG
 		
@@ -248,7 +250,11 @@ public class Number implements ParameterHandler{
 			found = number.trim();
 		}else{
 			number = NluTools.stringFindFirst(number, PLAIN_NBR_REGEXP).trim();
-			found = NluTools.stringFindFirst(input, Pattern.quote((number + type).trim()) + "|" + Pattern.quote((type + number).trim())); 
+			found = NluTools.stringFindFirst(input, Pattern.quote((number + type).trim()) + "|" + Pattern.quote((type + number).trim()));
+			if (found.isEmpty()){
+				//this can happen when number and type don't belong together, e.g. "light 1 to 50%" will find 1 and % but its not 1%
+				found = number;
+			}
 		}		
 		return found;
 	}

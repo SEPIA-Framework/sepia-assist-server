@@ -357,13 +357,13 @@ public class SmartDevice implements ParameterHandler{
 		}
 		
 		//expects a type!
-		String deviceName = "";
+		String deviceNameFound = "";
 		String deviceIndexStr = "";
 		if (input.contains(";;")){
 			String[] typeAndName = input.split(";;");
 			if (typeAndName.length == 2){
-				deviceName = typeAndName[1];
-				deviceIndexStr = NluTools.stringFindFirst(deviceName, "\\b\\d+\\b");
+				deviceNameFound = typeAndName[1];
+				deviceIndexStr = NluTools.stringFindFirst(deviceNameFound, "\\b\\d+\\b");
 				input = typeAndName[0];
 			}else{
 				input = typeAndName[0];
@@ -376,11 +376,11 @@ public class SmartDevice implements ParameterHandler{
 		JSONObject itemResultJSON = new JSONObject();
 			JSON.add(itemResultJSON, InterviewData.VALUE, commonValue);
 			JSON.add(itemResultJSON, InterviewData.VALUE_LOCAL, localValue);
-			JSON.add(itemResultJSON, InterviewData.FOUND, deviceName); 		//Note: we can't use this.found here because it is not set in build
+			JSON.add(itemResultJSON, InterviewData.FOUND, deviceNameFound); 		//Note: we can't use this.found here because it is not set in build
 		//add device index
 		if (!deviceIndexStr.isEmpty()){
 			int deviceIndex = Integer.parseInt(deviceIndexStr);
-			JSON.add(itemResultJSON, InterviewData.DEVICE_INDEX, deviceIndex);
+			JSON.add(itemResultJSON, InterviewData.ITEM_INDEX, deviceIndex);
 		}
 		
 		buildSuccess = true;

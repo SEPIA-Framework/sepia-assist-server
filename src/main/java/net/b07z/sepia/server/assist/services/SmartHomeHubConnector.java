@@ -158,7 +158,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		Parameter device = nluResult.getRequiredParameter(PARAMETERS.SMART_DEVICE);
 		String deviceType = device.getValueAsString();
 		String deviceTypeLocal = JSON.getStringOrDefault(device.getData(), InterviewData.VALUE_LOCAL, deviceType);
-		int deviceNumber = JSON.getIntegerOrDefault(device.getData(), InterviewData.DEVICE_INDEX, Integer.MIN_VALUE);
+		int deviceNumber = JSON.getIntegerOrDefault(device.getData(), InterviewData.ITEM_INDEX, Integer.MIN_VALUE);
 		
 		//get optional parameters:
 		Parameter action = nluResult.getOptionalParameter(PARAMETERS.ACTION, "");
@@ -170,16 +170,19 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		//Default user temperature unit
 		String userPrefTempUnit = null;
 		if (Is.typeEqual(targetValueType, Number.Types.temperature)){
-			Object prefTempUnit = nluResult.input.getCustomDataObject("prefTempUnit");		//NOTE: this info is available in the user account as well (in case the client is not giving it)
-			if (prefTempUnit != null){
-				userPrefTempUnit = (String) prefTempUnit;
-			}
+			userPrefTempUnit = (String) nluResult.input.getCustomDataObject("prefTempUnit");		//NOTE: this info is available in the user account as well (in case the client is not giving it);
 			//System.out.println("userPrefTempUnit: " + userPrefTempUnit);		//DEBUG
 		}
 		
 		Parameter room = nluResult.getOptionalParameter(PARAMETERS.ROOM, "");
 		String roomType = room.getValueAsString();
 		String roomTypeLocal = JSON.getStringOrDefault(room.getData(), InterviewData.VALUE_LOCAL, roomType);
+		int roomNumber = JSON.getIntegerOrDefault(room.getData(), InterviewData.ITEM_INDEX, Integer.MIN_VALUE);
+		//Client local site/position/room
+		Object deviceLocalSite = nluResult.input.getCustomDataObject("deviceLocalSite");
+		if (deviceLocalSite != null){
+			System.out.println("deviceLocalSite: " + deviceLocalSite); 		//DEBUG
+		}
 		
 		//get background parameters
 		String reply = nluResult.getParameter(PARAMETERS.REPLY);	//a custom reply (defined via Teach-UI)

@@ -98,8 +98,8 @@ public class SmartDeviceValue implements ParameterHandler {
 			}
 		}
 		
-		//check if number type fits to smart devices and exclude things like "Lamp 1"
-		TypeAndNumber typeNum = checkTypeAndReturnNumber(input, number, null);
+		//check if number type fits to smart devices and exclude things like "Lamp 1" or "Room 212"
+		TypeAndNumber typeNum = checkTypeAndReturnNumber(input, number);
 		String type = typeNum.type;
 		number = typeNum.number;
 		
@@ -120,37 +120,46 @@ public class SmartDeviceValue implements ParameterHandler {
 	/**
 	 * Recursively run type check again until we got a valid number for smart device or no matches anymore.
 	 * If a new match is found "this.found" will be updated as well.
-	 * @param input
-	 * @param number
-	 * @param deviceStringFound
+	 * @param input - original input number was extracted from (e.g. set heater 1 in room 2 to 10°C)
+	 * @param number - number string found in input (e.g. 1, 2 or 10°C)
 	 * @return
 	 */
-	private TypeAndNumber checkTypeAndReturnNumber(String input, String number, String deviceStringFound){
+	private TypeAndNumber checkTypeAndReturnNumber(String input, String number){
 		//get number type
 		String type = Number.getTypeClass(number, language).replaceAll("^<|>$", "").trim();
 		
-		//check plain type first because it could be a device tag like "light 1"
+		//check plain type first because it could be a device tag like "light 1" or "room 212"
 		if (NluTools.stringContains(type, 
 				Number.Types.plain.name())){
 			
-			//load device to better evaluate plain numbers - Note: usually this is already extracted before so we don't store it
-			if (Is.nullOrEmpty(deviceStringFound)){
-				ParameterResult devicePr = ParameterResult.getResult(nluInput, PARAMETERS.SMART_DEVICE, input);
-				deviceStringFound = devicePr.getFound();
-			}
+			//load device and room to better evaluate plain numbers - Note: usually this is already extracted before so we don't store it
+			ParameterResult devicePr = ParameterResult.getResult(this.nluInput, PARAMETERS.SMART_DEVICE, input);
+			String deviceStringFound = devicePr.getFound();
+			ParameterResult roomPr = ParameterResult.getResult(this.nluInput, PARAMETERS.ROOM, input);
+			String roomStringFound = roomPr.getFound();
+			String filteredInput = input;
+			boolean needToSearchDeeper = false;
 			
 			//The device string can be something like "lamp 1" ...
 			if (Is.notNullOrEmpty(deviceStringFound) && NluTools.stringContains(deviceStringFound, number)){
-				//In this case we need to search again
-				String filteredInput = NluTools.stringRemoveFirst(input, Pattern.quote(deviceStringFound));
+				filteredInput = NluTools.stringRemoveFirst(filteredInput, Pattern.quote(deviceStringFound));
+				needToSearchDeeper = true;
+			
+			//The room string can be something like "room 212" ...
+			}else if (Is.notNullOrEmpty(roomStringFound) && NluTools.stringContains(roomStringFound, number)){
+				filteredInput = NluTools.stringRemoveFirst(filteredInput, Pattern.quote(roomStringFound));
+				needToSearchDeeper = true;
+			}
+			
+			//Do we need to search again?
+			if (needToSearchDeeper){
 				number = Number.extract(filteredInput, this.nluInput);
 				if (Is.notNullOrEmpty(number)){
 					this.found = number;
-					return checkTypeAndReturnNumber(filteredInput, number, null);
+					return checkTypeAndReturnNumber(filteredInput, number);
 				}else{
 					return new TypeAndNumber(type, "");
 				}
-				
 			}else{
 				return new TypeAndNumber(type, number);
 			}

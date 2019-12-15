@@ -10,6 +10,7 @@ import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.users.User;
+import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
@@ -45,6 +46,7 @@ public class Room implements ParameterHandler{
 		unassigned	//must be assigned directly
 		//TODO: entrance/front door, veranda(h)/patio/porch/lanai
 	}
+	//TODO: expose this to an endpoint to client and control HUB can download it
 	
 	//Parameter local type names
 	public static HashMap<String, String> types_de = new HashMap<>();
@@ -63,7 +65,7 @@ public class Room implements ParameterHandler{
 		types_de.put("garden", "im Garten");
 		types_de.put("shack", "im Schuppen");
 		types_de.put("hallway", "im Flur");
-		types_de.put("other", "im anderen Zimmer");
+		types_de.put("other", "am erwähnten Ort");
 		types_de.put("unassigned", "");
 		
 		types_en.put("livingroom", "in the living room");
@@ -79,7 +81,7 @@ public class Room implements ParameterHandler{
 		types_en.put("garden", "in the garden");
 		types_en.put("shack", "in the shack");
 		types_en.put("hallway", "in the hallway");
-		types_en.put("other", "in the other room");
+		types_en.put("other", "in the mentioned location");
 		types_en.put("unassigned", "");
 	}
 	
@@ -107,6 +109,7 @@ public class Room implements ParameterHandler{
 	
 	User user;
 	String language;
+	NluInput nluInput;
 	boolean buildSuccess = false;
 	
 	//keep that in mind
@@ -116,11 +119,13 @@ public class Room implements ParameterHandler{
 	public void setup(NluInput nluInput) {
 		this.user = nluInput.user;
 		this.language = nluInput.language;
+		this.nluInput = nluInput;
 	}
 	@Override
 	public void setup(NluResult nluResult) {
 		this.user = nluResult.input.user;
 		this.language = nluResult.language;
+		this.nluInput = nluResult.input;
 	}
 	
 	/**
@@ -136,7 +141,7 @@ public class Room implements ParameterHandler{
 					+ "kueche(n|)|"
 					+ "badezimmer(n|)|bad|"
 					+ "schlaf( |-|)zimmer(n|)|"
-					+ "(arbeits|studier|herren)( |-|)(zimmer|raum|raeumen)|"
+					+ "(arbeits|studier|herren)( |-|)(zimmer(n|)|raum|raeumen)|"
 					+ "buero(s|)|office|"
 					+ "(kinder|baby|wickel)( |-|)(zimmer|stube)(n|)|"
 					+ "garage|auto(-| |)schuppen|"
@@ -144,7 +149,8 @@ public class Room implements ParameterHandler{
 					+ "schuppen|gartenhaus|"
 					+ "garten|"
 					+ "(haus|)flur|korridor|diele|"
-					+ "andere(n|es|r|)( |-|)(zimmer|raum|raeumen)"
+					//+ "andere(n|es|r|)( |-|)(zimmer|raum|raeumen)"
+					+ "(zimmer(n|)|raum|raeumen|kammer(n|))"
 				+ "");
 			
 		//English and other
@@ -163,7 +169,8 @@ public class Room implements ParameterHandler{
 					+ "shack(s|)|shed(s|)|"
 					+ "garden|"
 					+ "hallway|corridor|"
-					+ "other room(s|)"
+					//+ "other (room|chamber)(s|)|"
+					+ "(room|chamber)(s|)"
 				+ "");
 			
 		}
@@ -173,70 +180,105 @@ public class Room implements ParameterHandler{
 
 	@Override
 	public String extract(String input) {
-		String type = getType(input, language);
-		this.found = type;
+		String tagAndFound;
+		
+		//check storage first
+		ParameterResult pr = nluInput.getStoredParameterResult(PARAMETERS.ROOM);
+		if (pr != null){
+			tagAndFound = pr.getExtracted();
+			this.found = pr.getFound();
+			
+			return tagAndFound;
+		}
+				
+		String room = getType(input, language);
+		if (room.isEmpty()){
+			return "";
+		}else{
+			//check for room number
+			String roomWithNumber = NluTools.stringFindFirst(input, room + " \\d+");
+			if (!roomWithNumber.isEmpty()){
+				this.found = roomWithNumber;
+			}else{
+				this.found = room;
+			}
+		}
 		
 		//classify into types:
 		
-		if (NluTools.stringContains(type, "wohn( |-|)zimmer(n|)|"
+		String roomTypeTag = null;
+		
+		if (NluTools.stringContains(room, "wohn( |-|)zimmer(n|)|"
 				+ "living( |-|)room(s|)|parlo(u|)r(s|)|lounge(s|)|family(-| )room")){
-			return "<" + Types.livingroom.name() + ">";
+			roomTypeTag = "<" + Types.livingroom.name() + ">";
 			
-		}else if (NluTools.stringContains(type, "esszimmer(n|)|"
+		}else if (NluTools.stringContains(room, "esszimmer(n|)|"
 				+ "dining( |-|)room(s|)")){
-			return "<" + Types.diningroom.name() + ">";
+			roomTypeTag =  "<" + Types.diningroom.name() + ">";
 			
-		}else if (NluTools.stringContains(type, "kueche(n|)|"
+		}else if (NluTools.stringContains(room, "kueche(n|)|"
 				+ "kitchen(s|)")){
-			return "<" + Types.kitchen.name() + ">";
+			roomTypeTag =  "<" + Types.kitchen.name() + ">";
 			
-		}else if (NluTools.stringContains(type, "badezimmer(n|)|bad|"
+		}else if (NluTools.stringContains(room, "badezimmer(n|)|bad|"
 				+ "bath(ing|)( |-|)room(s|)|bath|powder(-|)room(s|)")){
-			return "<" + Types.bath.name() + ">";
+			roomTypeTag =  "<" + Types.bath.name() + ">";
 			
-		}else if (NluTools.stringContains(type, "schlaf( |-|)zimmer(n|)|"
+		}else if (NluTools.stringContains(room, "schlaf( |-|)zimmer(n|)|"
 				+ "bed(-|)(room|chamber)(s|)")){
-			return "<" + Types.bedroom.name() + ">";
+			roomTypeTag =  "<" + Types.bedroom.name() + ">";
 			
-		}else if (NluTools.stringContains(type, "(arbeits|studier|herren)( |-|)(zimmer(n|)|raum|raeumen)|"
+		}else if (NluTools.stringContains(room, "(arbeits|studier|herren)( |-|)(zimmer(n|)|raum|raeumen)|"
 				+ "(study|work)(-|)(room|chamber)(s|)|study")){
-			return "<" + Types.study.name() + ">";
+			roomTypeTag =  "<" + Types.study.name() + ">";
 			
-		}else if (NluTools.stringContains(type, "buero(s|)|"
+		}else if (NluTools.stringContains(room, "buero(s|)|"
 				+ "office")){
-			return "<" + Types.office.name() + ">";
+			roomTypeTag =  "<" + Types.office.name() + ">";
 			
-		}else if (NluTools.stringContains(type, "(kinder|baby|wickel)( |-|)(zimmer|stube)|"
-				+ "(child(s|)|children(s|)|baby)( |-|)room(s|)|nursery")){
-			return "<" + Types.childsroom.name() + ">";
+		}else if (NluTools.stringContains(room, "(kinder|baby|wickel)( |-|)(zimmer|stube)(n|)|"
+				+ "(child(s|)|children(s|)|baby)( |-|)room(s|)|nursery(s|)")){
+			roomTypeTag =  "<" + Types.childsroom.name() + ">";
 			
-		}else if (NluTools.stringContains(type, "garage|auto(-| |)schuppen|"
+		}else if (NluTools.stringContains(room, "garage|auto(-| |)schuppen|"
 				+ "carhouse")){
-			return "<" + Types.garage.name() + ">";
+			roomTypeTag =  "<" + Types.garage.name() + ">";
 			
-		}else if (NluTools.stringContains(type, "keller|"
+		}else if (NluTools.stringContains(room, "keller|"
 				+ "basement")){
-			return "<" + Types.basement.name() + ">";
+			roomTypeTag =  "<" + Types.basement.name() + ">";
 			
-		}else if (NluTools.stringContains(type, "schuppen|gartenhaus|"
+		}else if (NluTools.stringContains(room, "schuppen|gartenhaus|"
 				+ "shack(s|)|shed(s|)")){
-			return "<" + Types.shack.name() + ">";
+			roomTypeTag =  "<" + Types.shack.name() + ">";
 			
-		}else if (NluTools.stringContains(type, "garten|"
+		}else if (NluTools.stringContains(room, "garten|"
 				+ "garden")){
-			return "<" + Types.garden.name() + ">";
+			roomTypeTag =  "<" + Types.garden.name() + ">";
 			
-		}else if (NluTools.stringContains(type, "(haus|)flur|korridor|diele|"
+		}else if (NluTools.stringContains(room, "(haus|)flur|korridor|diele|"
 				+ "hallway|corridor")){
-			return "<" + Types.hallway.name() + ">";
+			roomTypeTag =  "<" + Types.hallway.name() + ">";
 			
-		}else if (NluTools.stringContains(type, "andere(n|es|r|)( |-|)(zimmer|raum|raeumen)|"
+		/*}else if (NluTools.stringContains(room, "andere(n|es|r|)( |-|)(zimmer(n|)|raum|raeumen)|"
 				+ "other room(s|)")){
-			return "<" + Types.other.name() + ">";
+			return "<" + Types.other.name() + ">";*/
+			
+		/*}else if (NluTools.stringContains(room, "(zimmer(n|)|raum|raeumen|kammer(n|))|"
+				+ "(room|chamber)(s|)")){
+			roomTypeTag =  "<" + Types.other.name() + ">";*/
 
 		}else{
-			return "";
+			roomTypeTag =  "<" + Types.other.name() + ">";
 		}
+		
+		tagAndFound = roomTypeTag + ";;" + this.found;
+		
+		//store it
+		pr = new ParameterResult(PARAMETERS.ROOM, tagAndFound, this.found);
+		nluInput.addToParameterResultStorage(pr);
+		
+		return tagAndFound;
 	}
 	
 	@Override
@@ -273,6 +315,23 @@ public class Room implements ParameterHandler{
 		//extract again/first? - this should only happen via predefined parameters (e.g. from direct triggers)
 		if (Is.notNullOrEmpty(input) && !input.startsWith("<")){
 			input = extract(input);
+			if (Is.nullOrEmpty(input)){
+				return "";
+			}
+		}
+		
+		//expects a type!
+		String roomFound = "";
+		String roomIndexStr = "";
+		if (input.contains(";;")){
+			String[] typeAndInfo = input.split(";;");
+			if (typeAndInfo.length == 2){
+				roomFound = typeAndInfo[1];
+				roomIndexStr = NluTools.stringFindFirst(roomFound, "\\b\\d+\\b");
+				input = typeAndInfo[0];
+			}else{
+				input = typeAndInfo[0];
+			}
 		}
 		
 		//expects a type
@@ -283,6 +342,12 @@ public class Room implements ParameterHandler{
 		JSONObject itemResultJSON = new JSONObject();
 			JSON.add(itemResultJSON, InterviewData.VALUE, commonValue);
 			JSON.add(itemResultJSON, InterviewData.VALUE_LOCAL, localValue);
+			JSON.add(itemResultJSON, InterviewData.FOUND, roomFound); 		//Note: we can't use this.found here because it is not set in build
+		//add device index
+		if (!roomIndexStr.isEmpty()){
+			int roomIndex = Integer.parseInt(roomIndexStr);
+			JSON.add(itemResultJSON, InterviewData.ITEM_INDEX, roomIndex);
+		}
 		
 		buildSuccess = true;
 		return itemResultJSON.toJSONString();
