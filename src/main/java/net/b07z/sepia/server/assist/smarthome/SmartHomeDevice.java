@@ -21,6 +21,7 @@ public class SmartHomeDevice {
 	private String name;
 	private String type; 		//see: net.b07z.sepia.server.assist.parameters.SmartDevice.Types
 	private String room;		//see: net.b07z.sepia.server.assist.parameters.Room.Types
+	private String roomIndex;	//e.g. 1, 212, etc. ... maybe "1st floor" ... thats why its a string
 	private String state;		//e.g.: ON, OFF, 1-100, etc.
 	private String stateType;	//e.g.: STATE_TYPE_NUMBER_PERCENT
 	private String stateMemory;		//state storage for e.g. default values after restart etc.
@@ -31,8 +32,10 @@ public class SmartHomeDevice {
 	public static final String SEPIA_TAG_NAME = "sepia-name";
 	public static final String SEPIA_TAG_TYPE = "sepia-type";
 	public static final String SEPIA_TAG_ROOM = "sepia-room";
+	public static final String SEPIA_TAG_ROOM_INDEX = "sepia-room-index";
 	public static final String SEPIA_TAG_DATA = "sepia-data";
 	public static final String SEPIA_TAG_MEM_STATE = "sepia-mem-state";
+	public static final String SEPIA_TAG_STATE_TYPE = "sepia-state-type";
 	
 	//generalized device states
 	public static final String STATE_ON = "ON";
@@ -172,6 +175,19 @@ public class SmartHomeDevice {
 	public void setRoom(String room) {
 		this.room = room;
 	}
+	/**
+	 * Device room index
+	 * @return
+	 */
+	public String getRoomIndex() {
+		return roomIndex;
+	}
+	/**
+	 * Set object variable (no write to HUB!)
+	 */
+	public void setRoomIndex(String roomIndex) {
+		this.roomIndex = roomIndex;
+	}
 	
 	/**
 	 * Device state
@@ -295,6 +311,7 @@ public class SmartHomeDevice {
 				"state", state,
 				"link", link
 		);
+		JSON.put(newDeviceObject, "room-index", roomIndex);
 		JSON.put(newDeviceObject, "state-type", stateType);
 		JSON.put(newDeviceObject, "state-memory", stateMemory);		//NOTE: this CAN BE smart HUB specific (not identical to generalized state value)
 		JSON.put(newDeviceObject, "meta", meta);
@@ -308,6 +325,7 @@ public class SmartHomeDevice {
 		this.name = JSON.getString(deviceJson, "name");
 		this.type = JSON.getString(deviceJson, "type");
 		this.room = JSON.getString(deviceJson, "room");
+		this.roomIndex = JSON.getString(deviceJson, "room-index");
 		this.state = JSON.getString(deviceJson, "state");
 		this.stateType = JSON.getString(deviceJson, "state-type");
 		this.stateMemory = JSON.getString(deviceJson, "state-memory");
@@ -321,12 +339,14 @@ public class SmartHomeDevice {
 	/**
 	 * Get devices from the list that match type and room (optionally).
 	 * @param devices - map of devices taken e.g. from getDevices()
-	 * @param deviceType - type of device, see {@link SmartDevice.Types}
-	 * @param roomType - type of room or empty (not null!), see {@link Room.Types}
+	 * @param deviceType - type of device (or null), see {@link SmartDevice.Types}
+	 * @param roomType - type of room (or null), see {@link Room.Types}
+	 * @param roomIndex - e.g. a number (as string) or null
 	 * @param maxDevices - maximum number of matches (0 or negative for all possible)
-	 * @return
+	 * @return list of devices (can be empty)
 	 */
-	public static List<SmartHomeDevice> getMatchingDevices(Map<String, SmartHomeDevice> devices, String deviceType, String roomType, int maxDevices){
+	public static List<SmartHomeDevice> getMatchingDevices(Map<String, SmartHomeDevice> devices, 
+				String deviceType, String roomType, String roomIndex, int maxDevices){
 		List<SmartHomeDevice> matchingDevices = new ArrayList<>();
 		//get all devices with right type and optionally room
 		int found = 0;
@@ -334,17 +354,35 @@ public class SmartHomeDevice {
 			//check type
 			SmartHomeDevice data = entry.getValue();
 			String thisType = data.getType();
-			if (thisType == null || !thisType.equals(deviceType)){
+			if (Is.nullOrEmpty(thisType)){
+				continue;
+			}
+			if (Is.notNullOrEmpty(deviceType) && !thisType.equals(deviceType)){
 				continue;
 			}
 			//check room?
-			if (!roomType.isEmpty()){
+			if (Is.notNullOrEmpty(roomType)){
 				String thisRoom = data.getRoom();
 				if (thisRoom == null || !thisRoom.equals(roomType)){
 					continue;
 				}else{
-					matchingDevices.add(data);
-					found++;
+					//check room index
+					if (Is.notNullOrEmpty(roomIndex)){
+						String thisRoomIndex = data.getRoomIndex();
+						if (thisRoomIndex == null && roomIndex.equals("1")){	
+							//if no room index is defined and user looks for room 1 this is still ok
+							matchingDevices.add(data);
+							found++;
+						}else if (thisRoomIndex == null || !thisRoomIndex.equals(roomIndex)){
+							continue;
+						}else{
+							matchingDevices.add(data);
+							found++;
+						}
+					}else{
+						matchingDevices.add(data);
+						found++;
+					}
 				}
 			}else{
 				matchingDevices.add(data);

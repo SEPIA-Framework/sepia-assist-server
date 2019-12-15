@@ -35,7 +35,7 @@ public class Test_SmartHubIntegration {
 		
 		//get devices
 		long tic = Debugger.tic();
-		Map<String, SmartHomeDevice> devicesMap = smartHomeHub.getDevices(null, null, null);
+		Map<String, SmartHomeDevice> devicesMap = smartHomeHub.getDevices();
 		
 		//print all devices
 		System.out.println("Devices found: ");
@@ -43,7 +43,7 @@ public class Test_SmartHubIntegration {
 		System.out.println("");
 		
 		//search any light
-		List<SmartHomeDevice> deviceMatches = SmartHomeDevice.getMatchingDevices(devicesMap, SmartDevice.Types.light.name(), "", -1);
+		List<SmartHomeDevice> deviceMatches = SmartHomeDevice.getMatchingDevices(devicesMap, SmartDevice.Types.light.name(), "", "", -1);
 		
 		//show all
 		System.out.println("Found lights: ");

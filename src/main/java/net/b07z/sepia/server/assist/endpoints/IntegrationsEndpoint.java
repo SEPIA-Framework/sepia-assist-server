@@ -132,7 +132,7 @@ public class IntegrationsEndpoint {
 				if (deviceTypeFilter != null && deviceTypeFilter.trim().isEmpty()){
 					deviceTypeFilter = null; 	//make sure this is null not empty
 				}
-				Map<String, SmartHomeDevice> devicesMap = shh.getDevices(null, deviceTypeFilter, null);
+				Map<String, SmartHomeDevice> devicesMap = shh.getDevices();		//TODO: we can optimize here by using 'getFilteredDevicesList'
 				if (Is.nullOrEmptyMap(devicesMap)){
 					//FAIL
 					return SparkJavaFw.returnResult(request, response, JSON.make(
@@ -140,7 +140,7 @@ public class IntegrationsEndpoint {
 							"error", "no devices found or failed to contact HUB"
 					).toJSONString(), 200);
 				}
-				//convert to JSONArray
+				//filter and convert to JSONArray
 				JSONArray devicesArray = new JSONArray();
 				for (Map.Entry<String, SmartHomeDevice> entry : devicesMap.entrySet()){
 					SmartHomeDevice data = entry.getValue();

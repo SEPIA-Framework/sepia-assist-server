@@ -3,6 +3,7 @@ package net.b07z.sepia.server.assist.smarthome;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONArray;
@@ -32,8 +33,10 @@ public class Fhem implements SmartHomeHub {
 	private static final String TAG_NAME = SmartHomeDevice.SEPIA_TAG_NAME;
 	private static final String TAG_TYPE = SmartHomeDevice.SEPIA_TAG_TYPE;
 	private static final String TAG_ROOM = SmartHomeDevice.SEPIA_TAG_ROOM;
+	private static final String TAG_ROOM_INDEX = SmartHomeDevice.SEPIA_TAG_ROOM_INDEX;
 	private static final String TAG_DATA = SmartHomeDevice.SEPIA_TAG_DATA;
 	private static final String TAG_MEM_STATE = SmartHomeDevice.SEPIA_TAG_MEM_STATE;
+	private static final String TAG_STATE_TYPE = SmartHomeDevice.SEPIA_TAG_STATE_TYPE;
 	
 	/**
 	 * Create new FHEM instance and automatically get CSRF token.
@@ -116,7 +119,10 @@ public class Fhem implements SmartHomeHub {
 			}
 			//Register FHEM means adding the SEPIA tags to global attributes
 			String setUrl = URLBuilder.getString(this.host, 
-					"?cmd=", "attr global userattr " + foundAttributes + " " + TAG_NAME + " " + TAG_TYPE + " " + TAG_ROOM + " " + TAG_DATA + " " + TAG_MEM_STATE,
+					"?cmd=", "attr global userattr " + foundAttributes + " " 
+							+ TAG_NAME + " " + TAG_TYPE + " " + TAG_ROOM + " " + TAG_ROOM_INDEX + " " 
+							+ TAG_DATA + " " 
+							+ TAG_MEM_STATE + " " + TAG_STATE_TYPE,
 					"&XHR=", "1",
 					"&fwcsrf=", this.csrfToken
 			);
@@ -141,8 +147,7 @@ public class Fhem implements SmartHomeHub {
 	}
 
 	@Override
-	public Map<String, SmartHomeDevice> getDevices(String optionalNameFilter, String optionalTypeFilter, String optionalRoomFilter){
-		//TODO: we currently ignore result filtering
+	public Map<String, SmartHomeDevice> getDevices(){
 		String url = URLBuilder.getString(this.host, 
 				"?cmd=", "jsonlist2",
 				"&XHR=", "1",
@@ -174,6 +179,28 @@ public class Fhem implements SmartHomeHub {
 		}else{
 			Debugger.println("FHEM - getDevices FAILED with msg.: " + result.toJSONString(), 1);
 			return null;
+		}
+	}
+	
+	@Override
+	public List<SmartHomeDevice> getFilteredDevicesList(Map<String, Object> filters){
+		//TODO: make this more effective by filtering before instead of loading all devices first
+		Map<String, SmartHomeDevice> devices = getDevices();
+		if (devices == null){
+			return null;
+		}else{
+			//filters
+			String deviceType = (String) filters.get("type");
+			String roomType = (String) filters.get("room");
+			String roomIndex = (String) filters.get("roomIndex");
+			Object limitObj = filters.get("limit");
+			int limit = -1;
+			if (limitObj != null){
+				limit = (int) limitObj;
+			}
+			//get all devices with right type and optionally right room
+			List<SmartHomeDevice> matchingDevices = SmartHomeDevice.getMatchingDevices(devices, deviceType, roomType, roomIndex, limit);
+			return matchingDevices;
 		}
 	}
 	
@@ -351,13 +378,18 @@ public class Fhem implements SmartHomeHub {
 		String name = null;
 		String type = null;
 		String room = null;
+		String roomIndex = null;
 		String memoryState = "";
+		String stateType = null;
+		boolean typeGuessed = false;
 		if (attributes != null){
 			//try to find self-defined SEPIA tags first
-			name = JSON.getStringOrDefault(attributes, SmartHomeDevice.SEPIA_TAG_NAME, null);
-			type = JSON.getStringOrDefault(attributes, SmartHomeDevice.SEPIA_TAG_TYPE, null);
-			room = JSON.getStringOrDefault(attributes, SmartHomeDevice.SEPIA_TAG_ROOM, null);
-			memoryState = JSON.getStringOrDefault(attributes, SmartHomeDevice.SEPIA_TAG_MEM_STATE, null);
+			name = JSON.getStringOrDefault(attributes, TAG_NAME, null);
+			type = JSON.getStringOrDefault(attributes, TAG_TYPE, null);
+			room = JSON.getStringOrDefault(attributes, TAG_ROOM, null);
+			roomIndex = JSON.getStringOrDefault(attributes, TAG_ROOM_INDEX, null);
+			memoryState = JSON.getStringOrDefault(attributes, TAG_MEM_STATE, null);
+			stateType = JSON.getStringOrDefault(attributes, TAG_STATE_TYPE, null);
 		}
 		//smart-guess if missing sepia-specific settings
 		if (name == null && internals != null){
@@ -384,6 +416,7 @@ public class Fhem implements SmartHomeHub {
 			}else{
 				type = fhemType;		//take this if we don't have a specific type yet
 			}
+			typeGuessed = true;
 		}
 		if (room == null && attributes != null){
 			String fhemRoom = JSON.getString(attributes, "room").toLowerCase();
@@ -394,9 +427,11 @@ public class Fhem implements SmartHomeHub {
 		//JSONObject stateObj = JSON.getJObject(hubDevice, new String[]{"Readings", "state"});
 		//String state = (stateObj != null)? JSON.getString(stateObj, "Value") : null;
 		String state = JSON.getStringOrDefault(internals, "STATE", null);
-		String stateType = null;
-		if (state != null){
+		//try to deduce state type if not given
+		if (Is.nullOrEmpty(stateType) && state != null){
 			stateType = SmartHomeDevice.convertStateType(null, state, null);
+		}
+		if (state != null){
 			if (stateType != null){
 				state = SmartHomeDevice.convertState(state, stateType);		//TODO: this might require deviceType (see comment inside method)
 			}
@@ -407,12 +442,17 @@ public class Fhem implements SmartHomeHub {
 		JSONObject meta = JSON.make(
 				"id", fhemObjName,
 				"origin", NAME,
-				"setOptions", JSON.getStringOrDefault(hubDevice, "PossibleSets", null)
+				"setOptions", JSON.getStringOrDefault(hubDevice, "PossibleSets", null),
+				"typeGuessed", typeGuessed
 		);
 		//note: we need 'id' for commands although it is basically already in 'link'
 		SmartHomeDevice shd = new SmartHomeDevice(name, type, room, 
 				state, stateType, memoryState, 
 				(linkObj != null)? linkObj.toString() : null, meta);
+		//specify more
+		if (Is.notNullOrEmpty(roomIndex)){
+			shd.setRoomIndex(roomIndex);
+		}
 		return shd;
 	}
 }

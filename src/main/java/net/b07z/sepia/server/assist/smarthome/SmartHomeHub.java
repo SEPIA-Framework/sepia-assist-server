@@ -1,5 +1,6 @@
 package net.b07z.sepia.server.assist.smarthome;
 
+import java.util.List;
 import java.util.Map;
 
 import net.b07z.sepia.server.assist.parameters.Room;
@@ -74,12 +75,21 @@ public interface SmartHomeHub {
 	
 	/**
 	 * Get devices from HUB and convert them to SEPIA compatible {@link SmartHomeDevice}. Apply optional filters to reduce results in advance.
-	 * @param optionalNameFilter - name of device (any string) as filter or null
-	 * @param optionalTypeFilter - type of device as filter or null, see {@link SmartDevice.Types}
-	 * @param optionalRoomFilter - type of room as filter or null, see {@link Room.Types}
 	 * @return devices, empty (no devices received) or null (request error)
 	 */
-	public Map<String, SmartHomeDevice> getDevices(String optionalNameFilter, String optionalTypeFilter, String optionalRoomFilter);
+	public Map<String, SmartHomeDevice> getDevices();
+	
+	/**
+	 * Get a list of devices with optional filters:<br>
+	 * <li>name</li>
+	 * <li>type as seen in {@link SmartDevice.Types}</li>
+	 * <li>room as seen in {@link Room.Types}</li>
+	 * <li>roomIndex</li>
+	 * <li>limit</li>
+	 * @param filters - map with optional filters as seen above (or null)
+	 * @return devices, empty (no devices received) or null (request error)
+	 */
+	public List<SmartHomeDevice> getFilteredDevicesList(Map<String, Object> filters);
 	
 	/**
 	 * Write attribute of specific device. This is usually used to register the SEPIA Framework and to tag devices as SEPIA items.

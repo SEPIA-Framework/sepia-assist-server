@@ -1,5 +1,6 @@
 package net.b07z.sepia.server.assist.services;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
@@ -197,14 +198,20 @@ public class SmartHomeHubConnector implements ServiceInterface {
 			return service.buildResult();
 		}*/
 		
-		//find device - we always load a list of all devices (NOTE: the HUB implementation is responsible for caching the data)
-		Map<String, SmartHomeDevice> devices = smartHomeHUB.getDevices(deviceName, deviceType, roomType);
-		if (devices == null){
+		//find device - NOTE: the HUB implementation is responsible for caching the data
+		Map<String, Object> filters = new HashMap<>();
+		//filters.put("name", deviceName);
+		filters.put("type", deviceType);
+		filters.put("room", roomType);
+		if (roomNumber != Integer.MIN_VALUE){
+			filters.put("roomIndex", roomNumber);
+		}
+		filters.put("limit", -1);
+		List<SmartHomeDevice> matchingDevices = smartHomeHUB.getFilteredDevicesList(filters);
+		if (matchingDevices == null){
 			service.setStatusFail(); 						//"hard"-fail (probably HUB connection error)
 			return service.buildResult();
 		}
-		//get all devices with right type and optionally right room
-		List<SmartHomeDevice> matchingDevices = SmartHomeDevice.getMatchingDevices(devices, deviceType, roomType, -1);
 		
 		//have found any?
 		if (matchingDevices.isEmpty()){

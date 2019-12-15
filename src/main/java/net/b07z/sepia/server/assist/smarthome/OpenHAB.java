@@ -12,6 +12,7 @@ import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.parameters.SmartDevice;
 import net.b07z.sepia.server.core.tools.Connectors;
+import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
@@ -92,8 +93,7 @@ public class OpenHAB implements SmartHomeHub {
 	}
 
 	@Override
-	public Map<String, SmartHomeDevice> getDevices(String optionalNameFilter, String optionalTypeFilter, String optionalRoomFilter){
-		//TODO: we currently ignore result filtering
+	public Map<String, SmartHomeDevice> getDevices(){
 		JSONObject response = httpGET(this.host + "/rest/items");
 		//System.out.println("openHAB REST response: " + response); 									//DEBUG
 		if (Connectors.httpSuccess(response)){
@@ -143,6 +143,28 @@ public class OpenHAB implements SmartHomeHub {
 			//Fail with server contact error
 			Debugger.println("Service:OpenHAB - failed to get devices from server!", 1);
 			return null;
+		}
+	}
+	
+	@Override
+	public List<SmartHomeDevice> getFilteredDevicesList(Map<String, Object> filters){
+		//TODO: make this more effective by filtering before instead of loading all devices first
+		Map<String, SmartHomeDevice> devices = getDevices();
+		if (devices == null){
+			return null;
+		}else{
+			//filters
+			String deviceType = (String) filters.get("type");
+			String roomType = (String) filters.get("room");
+			String roomIndex = Converters.obj2StringOrDefault(filters.get("roomIndex"), null);
+			Object limitObj = filters.get("limit");
+			int limit = -1;
+			if (limitObj != null){
+				limit = (int) limitObj;
+			}
+			//get all devices with right type and optionally right room
+			List<SmartHomeDevice> matchingDevices = SmartHomeDevice.getMatchingDevices(devices, deviceType, roomType, roomIndex, limit);
+			return matchingDevices;
 		}
 	}
 	
@@ -288,20 +310,27 @@ public class OpenHAB implements SmartHomeHub {
 		String name = null;
 		String type = null;
 		String room = null;
+		String roomIndex = null;
 		String memoryState = "";
+		String stateType = null;
+		boolean typeGuessed = false;
 		if (tags != null){
 			//try to find self-defined SEPIA tags first
 			for (Object tagObj : tags){
 				String t = (String) tagObj;
 				if (t.startsWith(SmartHomeDevice.SEPIA_TAG_NAME + "=")){
-					name = t.split("=", 2)[1];						//NOTE: has to be unique
+					name = t.split("=", 2)[1];
 				}else if (t.startsWith(SmartHomeDevice.SEPIA_TAG_TYPE + "=")){
-					type = t.split("=", 2)[1];						//NOTE: as defined in device parameter
+					type = t.split("=", 2)[1];
 				}else if (t.startsWith(SmartHomeDevice.SEPIA_TAG_ROOM + "=")){
-					room = t.split("=", 2)[1];						//NOTE: as defined in room parameter
+					room = t.split("=", 2)[1];
+				}else if (t.startsWith(SmartHomeDevice.SEPIA_TAG_ROOM_INDEX + "=")){
+					roomIndex = t.split("=", 2)[1];
 				}else if (t.startsWith(SmartHomeDevice.SEPIA_TAG_MEM_STATE + "=")){
 					memoryState = t.split("=", 2)[1];				//A state to remember like last non-zero brightness of a light 
-				} 
+				}else if (t.startsWith(SmartHomeDevice.SEPIA_TAG_STATE_TYPE + "=")){
+					stateType = t.split("=", 2)[1];
+				}
 			}
 		}
 		//smart-guess if missing sepia-specific settings
@@ -331,6 +360,7 @@ public class OpenHAB implements SmartHomeHub {
 					type = SmartDevice.Types.roller_shutter.name();		//ROLLER SHUTTER
 				}
 			}
+			typeGuessed = true;
 		}
 		if (room == null){
 			room = "";
@@ -341,9 +371,11 @@ public class OpenHAB implements SmartHomeHub {
 		if (stateObj != null){
 			state = stateObj.toString();
 		}
-		String stateType = null;
-		if (state != null){
+		//try to deduce state type if not given
+		if (Is.nullOrEmpty(stateType) && state != null){
 			stateType = SmartHomeDevice.convertStateType(null, state, null);
+		}
+		if (state != null){
 			if (stateType != null){
 				state = SmartHomeDevice.convertState(state, stateType);		//TODO: this might require deviceType (see comment inside method)
 			}
@@ -353,12 +385,17 @@ public class OpenHAB implements SmartHomeHub {
 		Object linkObj = hubDevice.get("link");
 		JSONObject meta = JSON.make(
 				"id", originalName,
-				"origin", NAME
+				"origin", NAME,
+				"typeGuessed", typeGuessed
 		);
 		//TODO: we could add some stuff to meta when we need other data from response.
 		SmartHomeDevice shd = new SmartHomeDevice(name, type, room, 
 				state, stateType, memoryState, 
 				(linkObj != null)? linkObj.toString() : null, meta);
+		//specify more
+		if (Is.notNullOrEmpty(roomIndex)){
+			shd.setRoomIndex(roomIndex);
+		}
 		return shd;
 	}
 }
