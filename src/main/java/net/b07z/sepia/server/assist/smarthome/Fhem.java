@@ -12,6 +12,7 @@ import org.json.simple.JSONObject;
 import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.parameters.SmartDevice;
 import net.b07z.sepia.server.core.tools.Connectors;
+import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
@@ -192,7 +193,7 @@ public class Fhem implements SmartHomeHub {
 			//filters
 			String deviceType = (String) filters.get("type");
 			String roomType = (String) filters.get("room");
-			String roomIndex = (String) filters.get("roomIndex");
+			String roomIndex = Converters.obj2StringOrDefault(filters.get("roomIndex"), null);
 			Object limitObj = filters.get("limit");
 			int limit = -1;
 			if (limitObj != null){
