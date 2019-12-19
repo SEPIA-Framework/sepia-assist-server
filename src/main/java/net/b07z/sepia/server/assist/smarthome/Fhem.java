@@ -31,6 +31,7 @@ public class Fhem implements SmartHomeHub {
 	private String csrfToken = "";
 	public static final String NAME = "fhem";
 	
+	private static final String TAG_REGEX = "\\bsepia-.*\\b";
 	private static final String TAG_NAME = SmartHomeDevice.SEPIA_TAG_NAME;
 	private static final String TAG_TYPE = SmartHomeDevice.SEPIA_TAG_TYPE;
 	private static final String TAG_ROOM = SmartHomeDevice.SEPIA_TAG_ROOM;
@@ -38,6 +39,7 @@ public class Fhem implements SmartHomeHub {
 	private static final String TAG_DATA = SmartHomeDevice.SEPIA_TAG_DATA;
 	private static final String TAG_MEM_STATE = SmartHomeDevice.SEPIA_TAG_MEM_STATE;
 	private static final String TAG_STATE_TYPE = SmartHomeDevice.SEPIA_TAG_STATE_TYPE;
+	private static final String TAG_SET_CMD = SmartHomeDevice.SEPIA_TAG_SET_CMD;
 	
 	/**
 	 * Create new FHEM instance and automatically get CSRF token.
@@ -109,9 +111,9 @@ public class Fhem implements SmartHomeHub {
 					return false;
 				}else{
 					//System.out.println("foundAttributes: " + foundAttributes); 			//DEBUG
-					//check if attributes are already there (if one is there all should be there ...)
-					if (foundAttributes.matches(".*\\b" + TAG_NAME + "\\b.*")){
-						return true;
+					//check if attributes are already there and remove so we can overwrite again
+					if (foundAttributes.matches(".*" + TAG_REGEX + ".*")){
+						foundAttributes = foundAttributes.replaceAll(TAG_REGEX, "").replaceAll("\\s+", " ").trim();
 					}
 				}
 			}else{
@@ -122,8 +124,7 @@ public class Fhem implements SmartHomeHub {
 			String setUrl = URLBuilder.getString(this.host, 
 					"?cmd=", "attr global userattr " + foundAttributes + " " 
 							+ TAG_NAME + " " + TAG_TYPE + " " + TAG_ROOM + " " + TAG_ROOM_INDEX + " " 
-							+ TAG_DATA + " " 
-							+ TAG_MEM_STATE + " " + TAG_STATE_TYPE,
+							+ TAG_DATA + " " + TAG_MEM_STATE + " " + TAG_STATE_TYPE + " " + TAG_SET_CMD,
 					"&XHR=", "1",
 					"&fwcsrf=", this.csrfToken
 			);
@@ -315,6 +316,14 @@ public class Fhem implements SmartHomeHub {
 						if (!cmd.isEmpty()){
 							state = cmd + " " + state;	//TODO: this can FAIL if device uses discrete states
 						}
+					}else if(stateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_TEMPERATURE_C) || stateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_TEMPERATURE_F)){
+						String cmd = NluTools.stringFindFirst(setOptions, "\\b(desired-temp|temperature|desiredTemp|desired-temperature)(?=(\\b|\\d))");
+						//temp. via desired-temp, temperature, desiredTemp, desired-temperature 
+						if (!cmd.isEmpty()){
+							state = cmd + " " + state;
+						}else{
+							state = "desired-temp" + " " + state;
+						}
 					}else{
 						state = state.toLowerCase();	//on, off, etc is usually lower-case in FHEM
 					}
@@ -382,6 +391,7 @@ public class Fhem implements SmartHomeHub {
 		String roomIndex = null;
 		String memoryState = "";
 		String stateType = null;
+		String setCmd = null;
 		boolean typeGuessed = false;
 		if (attributes != null){
 			//try to find self-defined SEPIA tags first
@@ -391,6 +401,7 @@ public class Fhem implements SmartHomeHub {
 			roomIndex = JSON.getStringOrDefault(attributes, TAG_ROOM_INDEX, null);
 			memoryState = JSON.getStringOrDefault(attributes, TAG_MEM_STATE, null);
 			stateType = JSON.getStringOrDefault(attributes, TAG_STATE_TYPE, null);
+			setCmd = JSON.getStringOrDefault(attributes, TAG_SET_CMD, null);
 		}
 		//smart-guess if missing sepia-specific settings
 		if (name == null && internals != null){
@@ -412,12 +423,13 @@ public class Fhem implements SmartHomeHub {
 			}
 			if (fhemType.matches("(.*\\s|^|,)(light.*|lamp.*)")){
 				type = SmartDevice.Types.light.name();		//LIGHT
+				typeGuessed = true;
 			}else if (fhemType.matches("(.*\\s|^|,)(heat.*|thermo.*)")){
 				type = SmartDevice.Types.heater.name();		//HEATER
+				typeGuessed = true;
 			}else{
 				type = fhemType;		//take this if we don't have a specific type yet
 			}
-			typeGuessed = true;
 		}
 		if (room == null && attributes != null){
 			String fhemRoom = JSON.getString(attributes, "room").toLowerCase();
@@ -444,6 +456,7 @@ public class Fhem implements SmartHomeHub {
 				"id", fhemObjName,
 				"origin", NAME,
 				"setOptions", JSON.getStringOrDefault(hubDevice, "PossibleSets", null),
+				"setCmd", setCmd,
 				"typeGuessed", typeGuessed
 		);
 		//note: we need 'id' for commands although it is basically already in 'link'

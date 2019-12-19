@@ -267,7 +267,12 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		//response info
 		boolean hasRoom = !roomTypeLocal.isEmpty();		//NOTE: to be precise this means "has a room with localized name?"
 		if (hasRoom){
-			service.resultInfoPut("room", roomTypeLocal);
+			String roomIndex = selectedDevice.getRoomIndex();
+			if (Is.notNullOrEmpty(roomIndex)){
+				service.resultInfoPut("room", roomTypeLocal + " " + roomIndex);
+			}else{
+				service.resultInfoPut("room", roomTypeLocal);
+			}
 		}else{
 			service.resultInfoPut("room", "");
 		}
@@ -403,7 +408,9 @@ public class SmartHomeHubConnector implements ServiceInterface {
 				//request state
 				}else{
 					String genStateType = SmartHomeDevice.convertStateType(targetValueParameterName, targetSetValue, targetValueType);
+					//TODO: after this type can be STATE_TYPE_NUMBER_TEMPERATURE_C and state value MUST be converted
 					if (genStateType != null && genStateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_PLAIN)){
+						//TODO: here we should take selectedDevice stateType into account, it could be set by user ...
 						genStateType = SmartHomeDevice.makeSmartTypeAssumptionForPlainNumber(SmartDevice.Types.valueOf(deviceType)); 
 					}
 					

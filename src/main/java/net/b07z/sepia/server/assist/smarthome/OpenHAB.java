@@ -313,6 +313,7 @@ public class OpenHAB implements SmartHomeHub {
 		String roomIndex = null;
 		String memoryState = "";
 		String stateType = null;
+		String setCmd = null;
 		boolean typeGuessed = false;
 		if (tags != null){
 			//try to find self-defined SEPIA tags first
@@ -330,6 +331,8 @@ public class OpenHAB implements SmartHomeHub {
 					memoryState = t.split("=", 2)[1];				//A state to remember like last non-zero brightness of a light 
 				}else if (t.startsWith(SmartHomeDevice.SEPIA_TAG_STATE_TYPE + "=")){
 					stateType = t.split("=", 2)[1];
+				}else if (t.startsWith(SmartHomeDevice.SEPIA_TAG_SET_CMD + "=")){
+					setCmd = t.split("=", 2)[1];
 				}
 			}
 		}
@@ -350,17 +353,19 @@ public class OpenHAB implements SmartHomeHub {
 			if (Is.notNullOrEmpty(openHabCategory)){
 				if (openHabCategory.matches("(.*\\s|^|,)(light.*|lamp.*)")){
 					type = SmartDevice.Types.light.name();		//LIGHT
+					typeGuessed = true;
 				}else if (openHabCategory.matches("(.*\\s|^|,)(heat.*|thermo.*)")){
 					type = SmartDevice.Types.heater.name();		//HEATER
+					typeGuessed = true;
 				}else{
 					type = openHabCategory;		//take this if we don't have a specific type yet
 				}
 			}else if (Is.notNullOrEmpty(openHabType)){
 				if (openHabType.equals("rollershutter")){
 					type = SmartDevice.Types.roller_shutter.name();		//ROLLER SHUTTER
+					typeGuessed = true;
 				}
 			}
-			typeGuessed = true;
 		}
 		if (room == null){
 			room = "";
@@ -386,7 +391,8 @@ public class OpenHAB implements SmartHomeHub {
 		JSONObject meta = JSON.make(
 				"id", originalName,
 				"origin", NAME,
-				"typeGuessed", typeGuessed
+				"typeGuessed", typeGuessed,
+				"setCmd", setCmd
 		);
 		//TODO: we could add some stuff to meta when we need other data from response.
 		SmartHomeDevice shd = new SmartHomeDevice(name, type, room, 

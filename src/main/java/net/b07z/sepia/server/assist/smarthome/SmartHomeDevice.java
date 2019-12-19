@@ -36,6 +36,7 @@ public class SmartHomeDevice {
 	public static final String SEPIA_TAG_DATA = "sepia-data";
 	public static final String SEPIA_TAG_MEM_STATE = "sepia-mem-state";
 	public static final String SEPIA_TAG_STATE_TYPE = "sepia-state-type";
+	public static final String SEPIA_TAG_SET_CMD = "sepia-set-cmd";
 	
 	//generalized device states
 	public static final String STATE_ON = "ON";
@@ -49,10 +50,12 @@ public class SmartHomeDevice {
 	
 	//device state types
 	public static final String STATE_TYPE_TEXT_BINARY = "text_binary";	//ON, OFF, OPEN, CLOSED, ...
+	public static final String STATE_TYPE_TEXT_RAW = "text_raw";		//just text as given by device
 	public static final String STATE_TYPE_NUMBER_PLAIN = "number_plain";
 	public static final String STATE_TYPE_NUMBER_PERCENT = "number_percent";
 	public static final String STATE_TYPE_NUMBER_TEMPERATURE_C = "number_temperature_c";
 	public static final String STATE_TYPE_NUMBER_TEMPERATURE_F = "number_temperature_f";
+	public static final String REGEX_STATE_TYPE_NUMBER = "^number_.*";
 	
 	//locals
 	private static HashMap<String, String> states_de = new HashMap<>();
@@ -367,8 +370,8 @@ public class SmartHomeDevice {
 					continue;
 				}else{
 					//check room index
+					String thisRoomIndex = data.getRoomIndex();
 					if (Is.notNullOrEmpty(roomIndex)){
-						String thisRoomIndex = data.getRoomIndex();
 						if (thisRoomIndex == null && roomIndex.equals("1")){	
 							//if no room index is defined and user looks for room 1 this is still ok
 							matchingDevices.add(data);
@@ -380,8 +383,13 @@ public class SmartHomeDevice {
 							found++;
 						}
 					}else{
-						matchingDevices.add(data);
-						found++;
+						if (thisRoomIndex == null || thisRoomIndex.equals("1")){
+							//if room index is not in search this must be null or 1 (1 is OK because it basically is the default room)
+							matchingDevices.add(data);
+							found++;
+						}else{
+							continue;
+						}
 					}
 				}
 			}else{
@@ -433,10 +441,10 @@ public class SmartHomeDevice {
 		String genStateType = null;
 		if (Is.nullOrEmpty(parameterName)){
 			//plain
-			if (state.matches("\\d+")){
+			if (state.matches("[\\d.,]+")){
 				genStateType = STATE_TYPE_NUMBER_PLAIN;
 			//percent
-			}else if (state.matches(".*\\d+(\\+s|)%.*")){
+			}else if (state.matches(".*[\\d.,]+(\\+s|)%.*")){
 				genStateType = STATE_TYPE_NUMBER_PERCENT;
 			//ON/OFF
 			}else if (state.matches("(?i)(on|off|open|close(d|)|up|down|(dis|)connected|(in|)active)")){
@@ -452,13 +460,20 @@ public class SmartHomeDevice {
 	/**
 	 * When state type is known try to convert state value itself to generalized SEPIA value.
 	 * @param state - found state (as seen by HUB)
-	 * @param stateType - predefined or interpreted state type
+	 * @param stateType - predefined or interpreted state type, e.g. STATE_TYPE_NUMBER_PERCENT
 	 * @return converted state or original if no conversion possible
 	 */
 	public static String convertState(String state, String stateType){
 		//TODO: add more
-		if (stateType.equals(STATE_TYPE_NUMBER_PERCENT)){
-			return state.replaceAll("\\D", "");
+		if (stateType.matches(REGEX_STATE_TYPE_NUMBER) && state.matches(".*\\d.*")){
+			//return first number including "," and "." and replace ","
+			return state.replaceAll(".*?([\\d.,]+).*", "$1").replaceAll(",", ".").trim();
+		/*if (stateType.equals(STATE_TYPE_NUMBER_PLAIN)){
+			return state.replaceAll(".*?([\\d.,]+).*", "$1").replaceAll(",", ".").trim();
+		}else if (stateType.equals(STATE_TYPE_NUMBER_PERCENT)){
+			return state.replaceAll(".*?([\\d.,]+).*", "$1").replaceAll(",", ".").trim();
+		}else if (stateType.equals(STATE_TYPE_NUMBER_TEMPERATURE_C)){
+			return state.replaceAll(".*?([\\d.,]+).*", "$1").replaceAll(",", ".").trim();*/
 		}else if (stateType.equals(STATE_TYPE_TEXT_BINARY)){
 			if (state.equalsIgnoreCase("down")){		//NOTE: we assume a fixed state "down" is closed - TODO: we might need deviceType here
 				return STATE_CLOSED;
