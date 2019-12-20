@@ -35,6 +35,18 @@ public class SmartDeviceValue implements ParameterHandler {
 		numberTypeDeviceStateTypeMap.put(Number.Types.percent.name(), SmartHomeDevice.StateType.number_percent);
 		numberTypeDeviceStateTypeMap.put(Number.Types.temperature.name(), SmartHomeDevice.StateType.number_temperature); 	//default is unitless
 	}
+	
+	/**
+	 * Helper class for passing through type and number at the same time in method above. (NOTE: we could use SimpleEntry here)
+	 */
+	private static class TypeAndNumber {
+		String type;
+		String number;
+		public TypeAndNumber(String type, String number){
+			this.type = type;
+			this.number = number;
+		}
+	}
 		
 	//-----------
 
@@ -182,17 +194,6 @@ public class SmartDeviceValue implements ParameterHandler {
 		//no type fits
 		}else{
 			return new TypeAndNumber(type, "");
-		}
-	}
-	/**
-	 * Helper class for passing through type and number at the same time in method above.
-	 */
-	private static class TypeAndNumber {
-		String type;
-		String number;
-		public TypeAndNumber(String type, String number){
-			this.type = type;
-			this.number = number;
 		}
 	}
 	

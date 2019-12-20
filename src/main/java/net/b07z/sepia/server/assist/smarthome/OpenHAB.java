@@ -407,7 +407,8 @@ public class OpenHAB implements SmartHomeHub {
 		}
 		if (state != null){
 			if (stateType != null){
-				state = SmartHomeDevice.convertState(state, stateType);		//TODO: this might require deviceType (see comment inside method)
+				state = SmartHomeDevice.convertAnyStateToGeneralizedState(state, stateType);		
+				//TODO: this might require deviceType (see comment inside method)
 			}
 		}
 		//TODO: for temperature we need to check more info (temp. unit? percent? etc...)

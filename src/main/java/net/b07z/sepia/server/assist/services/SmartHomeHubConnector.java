@@ -1,5 +1,6 @@
 package net.b07z.sepia.server.assist.services;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -163,25 +164,16 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		//get optional parameters:
 		Parameter action = nluResult.getOptionalParameter(PARAMETERS.ACTION, "");
 		
-		Parameter deviceValue = nluResult.getOptionalParameter(PARAMETERS.SMART_DEVICE_VALUE, "");	//a number of type plain, percent or temperature (more may be added later)
+		Parameter deviceValue = nluResult.getOptionalParameter(PARAMETERS.SMART_DEVICE_VALUE, "");	//a number of type plain, percent, temperature, ...
 		String targetSetValue = deviceValue.getValueAsString();
 		String targetValueType = JSON.getStringOrDefault(deviceValue.getData(), 
 				InterviewData.SMART_DEVICE_VALUE_TYPE, SmartHomeDevice.StateType.number_plain.name());
 		
-		if (Is.typeEqual(targetValueType, SmartHomeDevice.StateType.number_plain)){
-			//TODO: here we should take selectedDevice stateType into account, it could be set by user ...
-			targetValueType = SmartHomeDevice.makeSmartTypeAssumptionForPlainNumber(SmartDevice.Types.valueOf(deviceType)); 
-		}
-		//TODO: after this type can be STATE_TYPE_NUMBER_TEMPERATURE(_C|_F) and state value MUST be converted
-		//Number.convertTemperature("20", "heizung auf 20 grad", "C", "C", LANGUAGES.DE));
-		
 		//Default user temperature unit
-		String userPrefTempUnit = null;
-		if (Is.typeEqual(targetValueType, SmartHomeDevice.StateType.number_temperature)){
-			userPrefTempUnit = (String) nluResult.input.getCustomDataObject("prefTempUnit");		//NOTE: this info is available in the user account as well (in case the client is not giving it);
-			//System.out.println("userPrefTempUnit: " + userPrefTempUnit);		//DEBUG
-		}
-		
+		String userPrefTempUnit = (String) nluResult.input.getCustomDataObject("prefTempUnit");
+		//NOTE: this info is available in the user account as well (in case the client is not giving it);
+		//System.out.println("userPrefTempUnit: " + userPrefTempUnit);		//DEBUG
+				
 		Parameter room = nluResult.getOptionalParameter(PARAMETERS.ROOM, "");
 		String roomType = room.getValueAsString();
 		String roomTypeLocal = JSON.getStringOrDefault(room.getData(), InterviewData.VALUE_LOCAL, roomType);
@@ -258,8 +250,8 @@ public class SmartHomeHubConnector implements ServiceInterface {
 				roomTypeLocal = Room.getLocal(roomType, service.language);
 			}
 		}
-		String state = selectedDevice.getState();
-		String stateType = selectedDevice.getStateType();
+		String selectedDeviceState = selectedDevice.getState();
+		String selectedDeviceStateType = selectedDevice.getStateType();
 		
 		//assign selected device name - NOTE: we remove info in brackets
 		String selectedDeviceName = selectedDevice.getName().trim();	//cannot be null?
@@ -289,8 +281,8 @@ public class SmartHomeHubConnector implements ServiceInterface {
 			actionValue = Action.Type.set.name();
 		}
 		if (actionIs(actionValue, Action.Type.toggle)){
-			if (Is.notNullOrEmpty(state) && !state.equals("0") && (state.matches("\\d+") 
-					|| Is.typeEqualIgnoreCase(state, SmartHomeDevice.State.on))){
+			if (Is.notNullOrEmpty(selectedDeviceState) && !selectedDeviceState.equals("0") && (selectedDeviceState.matches("\\d+") 
+					|| Is.typeEqualIgnoreCase(selectedDeviceState, SmartHomeDevice.State.on))){
 				actionValue = Action.Type.off.name();
 			}else{
 				actionValue = Action.Type.on.name();
@@ -301,7 +293,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		//SHOW
 		if (actionIs(actionValue, Action.Type.show)){
 			//response info
-			service.resultInfoPut("state", SmartHomeDevice.getStateLocal(state, service.language));
+			service.resultInfoPut("state", SmartHomeDevice.getStateLocal(selectedDeviceState, service.language));
 			//System.out.println("type: " + stateType); 		//DEBUG
 			//answer
 			if (hasRoom){
@@ -316,16 +308,16 @@ public class SmartHomeHubConnector implements ServiceInterface {
 			boolean hasStateAlready = false;
 			if (Is.typeEqual(deviceType, SmartDevice.Types.roller_shutter)){
 				targetState = SmartHomeDevice.State.open.name();
-				hasStateAlready = Is.notNullOrEmpty(state) && state.equalsIgnoreCase(targetState); 		//NOTE: we skip the 100 check here because HUBs don't agree if 100 is open or closed
+				hasStateAlready = Is.notNullOrEmpty(selectedDeviceState) && selectedDeviceState.equalsIgnoreCase(targetState); 		//NOTE: we skip the 100 check here because HUBs don't agree if 100 is open or closed
 			}else{
 				targetState = SmartHomeDevice.State.on.name();
-				hasStateAlready = Is.notNullOrEmpty(state) && (state.equals("100") || state.equalsIgnoreCase(targetState));
+				hasStateAlready = Is.notNullOrEmpty(selectedDeviceState) && (selectedDeviceState.equals("100") || selectedDeviceState.equalsIgnoreCase(targetState));
 			}
 			
 			//already on?
 			if (hasStateAlready){
 				//response info
-				service.resultInfoPut("state", SmartHomeDevice.getStateLocal(state, service.language));
+				service.resultInfoPut("state", SmartHomeDevice.getStateLocal(selectedDeviceState, service.language));
 				//answer
 				if (hasRoom){
 					service.setCustomAnswer(showDeviceStateWithRoom);
@@ -358,16 +350,16 @@ public class SmartHomeHubConnector implements ServiceInterface {
 			boolean hasStateAlready = false;
 			if (Is.typeEqual(deviceType, SmartDevice.Types.roller_shutter)){
 				targetState = SmartHomeDevice.State.closed.name();
-				hasStateAlready = Is.notNullOrEmpty(state) && state.equalsIgnoreCase(targetState); 		//NOTE: we skip the 100 check here because HUBs don't agree if 100 is open or closed
+				hasStateAlready = Is.notNullOrEmpty(selectedDeviceState) && selectedDeviceState.equalsIgnoreCase(targetState); 		//NOTE: we skip the 100 check here because HUBs don't agree if 100 is open or closed
 			}else{
 				targetState = SmartHomeDevice.State.off.name();	//TODO: depending on device 0 might be ON
-				hasStateAlready = Is.notNullOrEmpty(state) && (state.equals("0") || state.equalsIgnoreCase(targetState));
+				hasStateAlready = Is.notNullOrEmpty(selectedDeviceState) && (selectedDeviceState.equals("0") || selectedDeviceState.equalsIgnoreCase(targetState));
 			}
 			
 			//already off?
 			if (hasStateAlready){
 				//response info
-				service.resultInfoPut("state", SmartHomeDevice.getStateLocal(state, service.language));
+				service.resultInfoPut("state", SmartHomeDevice.getStateLocal(selectedDeviceState, service.language));
 				//answer
 				if (hasRoom){
 					service.setCustomAnswer(showDeviceStateWithRoom);
@@ -404,9 +396,9 @@ public class SmartHomeHubConnector implements ServiceInterface {
 			//set
 			}else{
 				//already set?
-				if (Is.notNullOrEmpty(state) && state.equalsIgnoreCase(targetSetValue)){
+				if (Is.notNullOrEmpty(selectedDeviceState) && selectedDeviceState.equalsIgnoreCase(targetSetValue)){
 					//response info
-					service.resultInfoPut("state", SmartHomeDevice.getStateLocal(state, service.language));
+					service.resultInfoPut("state", SmartHomeDevice.getStateLocal(selectedDeviceState, service.language));
 					//answer
 					if (hasRoom){
 						service.setCustomAnswer(showDeviceStateWithRoom);
@@ -415,6 +407,9 @@ public class SmartHomeHubConnector implements ServiceInterface {
 					}
 				//request state
 				}else{
+					SimpleEntry<String, String> adaptedStateAndType = 
+							SmartHomeDevice.adaptToDeviceStateTypeOrFail(targetSetValue, selectedDeviceStateType, targetValueType);
+					//TODO: use					
 					boolean setSuccess = smartHomeHUB.setDeviceState(selectedDevice, targetSetValue, targetValueType);
 					if (setSuccess){
 						//response info
@@ -437,7 +432,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		//NOT POSSIBLE
 		}else{
 			//response info
-			service.resultInfoPut("state", SmartHomeDevice.getStateLocal(state, service.language));
+			service.resultInfoPut("state", SmartHomeDevice.getStateLocal(selectedDeviceState, service.language));
 			
 			//action not supported or makes no sense
 			service.setStatusOkay();

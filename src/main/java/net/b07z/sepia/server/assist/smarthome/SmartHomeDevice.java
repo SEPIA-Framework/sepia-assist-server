@@ -1,5 +1,6 @@
 package net.b07z.sepia.server.assist.smarthome;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -463,10 +464,10 @@ public class SmartHomeDevice {
 	/**
 	 * When state type is known try to convert state value itself to generalized SEPIA value.
 	 * @param state - found state (as seen by HUB)
-	 * @param stateType - predefined or interpreted state type, e.g. STATE_TYPE_NUMBER_PERCENT
+	 * @param stateType - predefined or interpreted state type, e.g. StateType.number_precent
 	 * @return converted state or original if no conversion possible
 	 */
-	public static String convertState(String state, String stateType){
+	public static String convertAnyStateToGeneralizedState(String state, String stateType){
 		//all numbers
 		if (stateType.matches(REGEX_STATE_TYPE_NUMBER) && state.matches(".*\\d.*")){
 			//return first number including "," and "." and replace ","
@@ -490,7 +491,7 @@ public class SmartHomeDevice {
 	/**
 	 * If state type is a plain number make smart assumption about the intended type using device type info.
 	 * E.g.: In "set lights to 50" the 50 is most likely intended to be "50 percent".
-	 * If no assumption can be made just return STATE_TYPE_NUMBER_PLAIN again. 
+	 * If no assumption can be made just return StateType.number_plain again. 
 	 * @param deviceType - {@link SmartDevice.Types}
 	 * @return
 	 */
@@ -502,5 +503,28 @@ public class SmartHomeDevice {
 		}else{
 			return StateType.number_plain.name();
 		}
+	}
+	
+	public static SimpleEntry<String, String> adaptToDeviceStateTypeOrFail(String state, String deviceStateType, String inputStateType){
+		/*
+		if (selectedDeviceStateType.startsWith(SmartHomeDevice.StateType.number_temperature.name())){
+			//devices with state value type temp. only accept plain number or temp. number
+			if (targetValueType.startsWith(SmartHomeDevice.StateType.number_temperature.name())){
+				//TODO: check if unit is correct
+			}else if (Is.typeEqual(targetValueType, SmartHomeDevice.StateType.number_plain)){
+				//TODO: convert to temp.
+			}else{
+				//TODO: fail
+			}
+		}else{
+			if (Is.typeEqual(targetValueType, SmartHomeDevice.StateType.number_plain)){
+				//TODO: here we should take selectedDevice stateType into account, it could be set by user ...
+				targetValueType = SmartHomeDevice.makeSmartTypeAssumptionForPlainNumber(SmartDevice.Types.valueOf(deviceType)); 
+			}
+		}
+		*/
+		//TODO: after this type can be STATE_TYPE_NUMBER_TEMPERATURE(_C|_F) and state value MUST be converted
+		//Number.convertTemperature("20", "heizung auf 20 grad", "C", "C", LANGUAGES.DE));
+		return new SimpleEntry<>("stateType", "state");
 	}
 }
