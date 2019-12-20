@@ -12,6 +12,7 @@ import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.smarthome.SmartHomeDevice;
+import net.b07z.sepia.server.assist.smarthome.SmartHomeDevice.StateType;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Is;
@@ -28,11 +29,11 @@ public class SmartDeviceValue implements ParameterHandler {
 	//--- data ---
 	
 	//conversion map to generalized state from other parameter results
-	public static Map<String, String> numberTypeDeviceStateTypeMap = new HashMap<>();
+	public static Map<String, SmartHomeDevice.StateType> numberTypeDeviceStateTypeMap = new HashMap<>();
 	static {
-		numberTypeDeviceStateTypeMap.put(Number.Types.plain.name(), SmartHomeDevice.STATE_TYPE_NUMBER_PLAIN);
-		numberTypeDeviceStateTypeMap.put(Number.Types.percent.name(), SmartHomeDevice.STATE_TYPE_NUMBER_PERCENT);
-		numberTypeDeviceStateTypeMap.put(Number.Types.temperature.name(), SmartHomeDevice.STATE_TYPE_NUMBER_TEMPERATURE); 	//default is temp with undefined unit
+		numberTypeDeviceStateTypeMap.put(Number.Types.plain.name(), SmartHomeDevice.StateType.number_plain);
+		numberTypeDeviceStateTypeMap.put(Number.Types.percent.name(), SmartHomeDevice.StateType.number_percent);
+		numberTypeDeviceStateTypeMap.put(Number.Types.temperature.name(), SmartHomeDevice.StateType.number_temperature); 	//default is unitless
 	}
 		
 	//-----------
@@ -247,17 +248,18 @@ public class SmartDeviceValue implements ParameterHandler {
 			value = value.replaceAll(",", ".");
 		}
 		
-		//convert Number.Types to device state types
+		//convert Number.Types to device SmartHomeDevice.StateType
 		if (Is.notNullOrEmpty(type)){
-			type = numberTypeDeviceStateTypeMap.get(type);
-			if (type.equals(SmartHomeDevice.STATE_TYPE_NUMBER_TEMPERATURE)){
+			StateType stateType = numberTypeDeviceStateTypeMap.get(type);
+			if (stateType.equals(StateType.number_temperature)){
 				String foundUnit = Number.getTemperatureUnit(input, language);
 				if (foundUnit.equals("C")){
-					type = SmartHomeDevice.STATE_TYPE_NUMBER_TEMPERATURE_C;
+					stateType = StateType.number_temperature_c;
 				}else if (foundUnit.equals("F")){
-					type = SmartHomeDevice.STATE_TYPE_NUMBER_TEMPERATURE_F;
+					stateType = StateType.number_temperature_f;
 				}
 			}
+			type = stateType.name();
 			//TODO: convert temperature from fahrenheit to celsius? I think we leave this to any service
 		}
 		

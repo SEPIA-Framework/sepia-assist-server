@@ -269,14 +269,14 @@ public class OpenHAB implements SmartHomeHub {
 				if (stateType != null){
 					//ROLLER SHUTTER
 					if (givenType != null && Is.typeEqual(givenType, SmartDevice.Types.roller_shutter)){
-						if (state.equalsIgnoreCase(SmartHomeDevice.STATE_OPEN)){
+						if (Is.typeEqualIgnoreCase(state, SmartHomeDevice.State.open)){
 							state = "UP";
-						}else if (state.equalsIgnoreCase(SmartHomeDevice.STATE_CLOSED)){
+						}else if (Is.typeEqualIgnoreCase(state, SmartHomeDevice.State.closed)){
 							state = "DOWN";
 						}
 					//ELSE
 					}else{
-						if (stateType.equals(SmartHomeDevice.STATE_TYPE_TEXT_BINARY)){
+						if (stateType.equals(SmartHomeDevice.StateType.text_binary.name())){
 							//all upper case text for openHAB
 							state = state.toUpperCase();
 						}

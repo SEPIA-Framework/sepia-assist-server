@@ -36,27 +36,31 @@ public class SmartHomeDevice {
 	public static final String SEPIA_TAG_SET_CMDS = "sepia-set-cmds";
 	
 	//generalized device states
-	public static final String STATE_ON = "ON";
-	public static final String STATE_OFF = "OFF";
-	public static final String STATE_OPEN = "OPEN";
-	public static final String STATE_CLOSED = "CLOSED";
-	public static final String STATE_CONNECTED = "CONNECTED";
-	public static final String STATE_DISCONNECTED = "DISCONNECTED";
-	//public static final String STATE_UP = "up";
-	//public static final String STATE_DOWN = "down";
-	public static final String REGEX_STATE_ENABLE = "ON|OPEN|CONNECTED|UP|ENABLED";
-	public static final String REGEX_STATE_DISABLE = "OFF|CLOSED|DISCONNECTED|DOWN|DISABLED";
+	public static enum State {
+		on,
+		off,
+		open,
+		closed,
+		//up,
+		//down,
+		connected,
+		disconnected
+	}
+	public static final String REGEX_STATE_ENABLE = "(?i)on|open|connected|up|enabled";
+	public static final String REGEX_STATE_DISABLE = "(?i)off|closed|disconnected|down|disabled";
 	
 	//device state types
-	public static final String STATE_TYPE_TEXT_BINARY = "text_binary";	//ON, OFF, OPEN, CLOSED, ...
-	public static final String STATE_TYPE_TEXT_RAW = "text_raw";		//just text as given by device
-	public static final String STATE_TYPE_NUMBER_PLAIN = "number_plain";
-	public static final String STATE_TYPE_NUMBER_PERCENT = "number_percent";
-	public static final String STATE_TYPE_NUMBER_TEMPERATURE = "number_temperature";
-	public static final String STATE_TYPE_NUMBER_TEMPERATURE_C = "number_temperature_c";
-	public static final String STATE_TYPE_NUMBER_TEMPERATURE_F = "number_temperature_f";
-	public static final String REGEX_STATE_TYPE_NUMBER = "^number_.*";
+	public static enum StateType {
+		text_binary,			//ON, OFF, OPEN, CLOSED, ...
+		text_raw,				//just raw text as given by device/request
+		number_plain,
+		number_percent,
+		number_temperature,
+		number_temperature_c,
+		number_temperature_f
+	}
 	public static final String REGEX_STATE_TYPE_TEXT = "^text_.*";
+	public static final String REGEX_STATE_TYPE_NUMBER = "^number_.*";
 	
 	//locals
 	private static HashMap<String, String> states_de = new HashMap<>();
@@ -439,20 +443,20 @@ public class SmartHomeDevice {
 		String genStateType = null;
 		//plain
 		if (state.matches("[\\d.,]+")){
-			genStateType = STATE_TYPE_NUMBER_PLAIN;
+			genStateType = StateType.number_plain.name();
 		//percent
 		}else if (state.matches(".*[\\d.,]+(\\+s|)(%|pct)\\b.*")){
-			genStateType = STATE_TYPE_NUMBER_PERCENT;
+			genStateType = StateType.number_percent.name();
 		//temperature
 		}else if (state.matches(".*[\\d.,]+(\\+s|)(°|deg|)C\\b.*")){
-			genStateType = STATE_TYPE_NUMBER_TEMPERATURE_C;
+			genStateType = StateType.number_temperature_c.name();
 		}else if (state.matches(".*[\\d.,]+(\\+s|)(°|deg|)F\\b.*")){
-			genStateType = STATE_TYPE_NUMBER_TEMPERATURE_F;
+			genStateType = StateType.number_temperature_f.name();
 		}else if (state.matches(".*[\\d.,]+(\\+s|)(°|deg)\\b.*")){
-			genStateType = STATE_TYPE_NUMBER_TEMPERATURE;
+			genStateType = StateType.number_temperature.name();
 		//ON/OFF
 		}else if (state.matches("(?i)(on|off|open|close(d|)|up|down|(dis|)connected|(in|)active)")){
-			genStateType = STATE_TYPE_TEXT_BINARY;
+			genStateType = StateType.text_binary.name();
 		}
 		return genStateType;
 	}
@@ -468,11 +472,11 @@ public class SmartHomeDevice {
 			//return first number including "," and "." and replace ","
 			return state.replaceAll(".*?([\\d.,]+).*", "$1").replaceAll(",", ".").trim();
 		//certain texts
-		}else if (stateType.equals(STATE_TYPE_TEXT_BINARY)){
+		}else if (stateType.equals(StateType.text_binary.name())){
 			if (state.equalsIgnoreCase("down")){		//NOTE: we assume a fixed state "down" is closed - TODO: we might need deviceType here
-				return STATE_CLOSED;
+				return State.closed.name();
 			}else if (state.equalsIgnoreCase("up")){	//NOTE: we assume a fixed state "up" is open
-				return STATE_OPEN;
+				return State.open.name();
 			}else{
 				return state;
 			}
@@ -492,11 +496,11 @@ public class SmartHomeDevice {
 	 */
 	public static String makeSmartTypeAssumptionForPlainNumber(SmartDevice.Types deviceType){
 		if (deviceType.equals(SmartDevice.Types.light) || deviceType.equals(SmartDevice.Types.roller_shutter)){
-			return STATE_TYPE_NUMBER_PERCENT;
+			return StateType.number_percent.name();
 		}else if (deviceType.equals(SmartDevice.Types.heater)){
-			return STATE_TYPE_NUMBER_TEMPERATURE;
+			return StateType.number_temperature.name();
 		}else{
-			return STATE_TYPE_NUMBER_PLAIN;
+			return StateType.number_plain.name();
 		}
 	}
 }

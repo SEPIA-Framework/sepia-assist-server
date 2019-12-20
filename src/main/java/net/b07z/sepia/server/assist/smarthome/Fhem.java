@@ -310,7 +310,7 @@ public class Fhem implements SmartHomeHub {
 					//LIGHT
 					if (givenType != null && Is.typeEqual(givenType, SmartDevice.Types.light)){
 						//check stateType
-						if (stateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_PERCENT)){
+						if (stateType.equals(SmartHomeDevice.StateType.number_percent.name())){
 							String cmd = NluTools.stringFindFirst(setOptions, "\\b(pct|dim|bri)(?=(\\b|\\d))");
 							//percent via pct, dim or bri
 							if (!cmd.isEmpty()){
@@ -322,12 +322,12 @@ public class Fhem implements SmartHomeHub {
 					//ROLLER SHUTTER
 					}else if (givenType != null && Is.typeEqual(givenType, SmartDevice.Types.roller_shutter)){
 						//check stateType
-						if (stateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_PERCENT)){
+						if (stateType.equals(SmartHomeDevice.StateType.number_percent.name())){
 							//percent via "pct" - TODO: does that work?
 							state = "pct " + state;
-						}else if (state.equalsIgnoreCase(SmartHomeDevice.STATE_OPEN)){
+						}else if (Is.typeEqualIgnoreCase(state, SmartHomeDevice.State.open)){
 							state = "up";
-						}else if (state.equalsIgnoreCase(SmartHomeDevice.STATE_CLOSED)){
+						}else if (Is.typeEqualIgnoreCase(state, SmartHomeDevice.State.closed)){
 							state = "down";
 						}else{
 							state = state.toLowerCase();	//on, off, etc is usually lower-case in FHEM
@@ -335,13 +335,14 @@ public class Fhem implements SmartHomeHub {
 					//ELSE
 					}else{
 						//check stateType
-						if (stateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_PERCENT)){
+						if (stateType.equals(SmartHomeDevice.StateType.number_percent.name())){
 							String cmd = NluTools.stringFindFirst(setOptions, "\\b(pct|dim)(?=(\\b|\\d))");
 							//percent via pct or dim - TODO: does that work?
 							if (!cmd.isEmpty()){
 								state = cmd + " " + state;	//TODO: this can FAIL if device uses discrete states
 							}
-						}else if(stateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_TEMPERATURE_C) || stateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_TEMPERATURE_F)){
+						}else if(stateType.equals(SmartHomeDevice.StateType.number_temperature_c.name()) 
+								|| stateType.equals(SmartHomeDevice.StateType.number_temperature_f.name())){
 							String cmd = NluTools.stringFindFirst(setOptions, "\\b(desired-temp|temperature|desiredTemp|desired-temperature)(?=(\\b|\\d))");
 							//temp. via desired-temp, temperature, desiredTemp, desired-temperature 
 							if (!cmd.isEmpty()){

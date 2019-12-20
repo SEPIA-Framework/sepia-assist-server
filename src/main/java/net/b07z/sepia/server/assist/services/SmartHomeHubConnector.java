@@ -11,7 +11,6 @@ import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.parameters.Action;
-import net.b07z.sepia.server.assist.parameters.Number;
 import net.b07z.sepia.server.assist.parameters.Room;
 import net.b07z.sepia.server.assist.parameters.SmartDevice;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
@@ -167,9 +166,9 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		Parameter deviceValue = nluResult.getOptionalParameter(PARAMETERS.SMART_DEVICE_VALUE, "");	//a number of type plain, percent or temperature (more may be added later)
 		String targetSetValue = deviceValue.getValueAsString();
 		String targetValueType = JSON.getStringOrDefault(deviceValue.getData(), 
-				InterviewData.SMART_DEVICE_VALUE_TYPE, SmartHomeDevice.STATE_TYPE_NUMBER_PLAIN);
+				InterviewData.SMART_DEVICE_VALUE_TYPE, SmartHomeDevice.StateType.number_plain.name());
 		
-		if (targetValueType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_PLAIN)){
+		if (Is.typeEqual(targetValueType, SmartHomeDevice.StateType.number_plain)){
 			//TODO: here we should take selectedDevice stateType into account, it could be set by user ...
 			targetValueType = SmartHomeDevice.makeSmartTypeAssumptionForPlainNumber(SmartDevice.Types.valueOf(deviceType)); 
 		}
@@ -178,7 +177,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		
 		//Default user temperature unit
 		String userPrefTempUnit = null;
-		if (Is.typeEqual(targetValueType, Number.Types.temperature)){
+		if (Is.typeEqual(targetValueType, SmartHomeDevice.StateType.number_temperature)){
 			userPrefTempUnit = (String) nluResult.input.getCustomDataObject("prefTempUnit");		//NOTE: this info is available in the user account as well (in case the client is not giving it);
 			//System.out.println("userPrefTempUnit: " + userPrefTempUnit);		//DEBUG
 		}
@@ -290,7 +289,8 @@ public class SmartHomeHubConnector implements ServiceInterface {
 			actionValue = Action.Type.set.name();
 		}
 		if (actionIs(actionValue, Action.Type.toggle)){
-			if (Is.notNullOrEmpty(state) && !state.equals("0") && (state.matches("\\d+") || state.toUpperCase().equals(SmartHomeDevice.STATE_ON))){
+			if (Is.notNullOrEmpty(state) && !state.equals("0") && (state.matches("\\d+") 
+					|| Is.typeEqualIgnoreCase(state, SmartHomeDevice.State.on))){
 				actionValue = Action.Type.off.name();
 			}else{
 				actionValue = Action.Type.on.name();
@@ -315,11 +315,11 @@ public class SmartHomeHubConnector implements ServiceInterface {
 			String targetState;
 			boolean hasStateAlready = false;
 			if (Is.typeEqual(deviceType, SmartDevice.Types.roller_shutter)){
-				targetState = SmartHomeDevice.STATE_OPEN;
-				hasStateAlready = Is.notNullOrEmpty(state) && state.toUpperCase().equals(targetState); 		//NOTE: we skip the 100 check here because HUBs don't agree if 100 is open or closed
+				targetState = SmartHomeDevice.State.open.name();
+				hasStateAlready = Is.notNullOrEmpty(state) && state.equalsIgnoreCase(targetState); 		//NOTE: we skip the 100 check here because HUBs don't agree if 100 is open or closed
 			}else{
-				targetState = SmartHomeDevice.STATE_ON;
-				hasStateAlready = Is.notNullOrEmpty(state) && (state.equals("100") || state.toUpperCase().equals(targetState));
+				targetState = SmartHomeDevice.State.on.name();
+				hasStateAlready = Is.notNullOrEmpty(state) && (state.equals("100") || state.equalsIgnoreCase(targetState));
 			}
 			
 			//already on?
@@ -334,7 +334,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 				}
 			//request state
 			}else{
-				boolean setSuccess = smartHomeHUB.setDeviceState(selectedDevice, targetState, SmartHomeDevice.STATE_TYPE_TEXT_BINARY);
+				boolean setSuccess = smartHomeHUB.setDeviceState(selectedDevice, targetState, SmartHomeDevice.StateType.text_binary.name());
 				if (setSuccess){
 					//response info
 					service.resultInfoPut("state", SmartHomeDevice.getStateLocal(targetState, service.language));
@@ -357,11 +357,11 @@ public class SmartHomeHubConnector implements ServiceInterface {
 			String targetState;
 			boolean hasStateAlready = false;
 			if (Is.typeEqual(deviceType, SmartDevice.Types.roller_shutter)){
-				targetState = SmartHomeDevice.STATE_CLOSED;
-				hasStateAlready = Is.notNullOrEmpty(state) && state.toUpperCase().equals(targetState); 		//NOTE: we skip the 100 check here because HUBs don't agree if 100 is open or closed
+				targetState = SmartHomeDevice.State.closed.name();
+				hasStateAlready = Is.notNullOrEmpty(state) && state.equalsIgnoreCase(targetState); 		//NOTE: we skip the 100 check here because HUBs don't agree if 100 is open or closed
 			}else{
-				targetState = SmartHomeDevice.STATE_OFF;	//TODO: depending on device 0 might be ON
-				hasStateAlready = Is.notNullOrEmpty(state) && (state.equals("0") || state.toUpperCase().equals(targetState));
+				targetState = SmartHomeDevice.State.off.name();	//TODO: depending on device 0 might be ON
+				hasStateAlready = Is.notNullOrEmpty(state) && (state.equals("0") || state.equalsIgnoreCase(targetState));
 			}
 			
 			//already off?
@@ -376,7 +376,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 				}
 			//request state
 			}else{
-				boolean setSuccess = smartHomeHUB.setDeviceState(selectedDevice, targetState, SmartHomeDevice.STATE_TYPE_TEXT_BINARY);
+				boolean setSuccess = smartHomeHUB.setDeviceState(selectedDevice, targetState, SmartHomeDevice.StateType.text_binary.name());
 				if (setSuccess){
 					//response info
 					service.resultInfoPut("state", SmartHomeDevice.getStateLocal(targetState, service.language));
@@ -404,7 +404,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 			//set
 			}else{
 				//already set?
-				if (Is.notNullOrEmpty(state) && state.toUpperCase().equals(targetSetValue.toUpperCase())){
+				if (Is.notNullOrEmpty(state) && state.equalsIgnoreCase(targetSetValue)){
 					//response info
 					service.resultInfoPut("state", SmartHomeDevice.getStateLocal(state, service.language));
 					//answer

@@ -66,14 +66,14 @@ public class Test_SmartHubIntegration {
 		//set device state 0
 		System.out.println("Setting state 0");
 		tic = Debugger.tic();
-		smartHomeHub.setDeviceState(device, "0", SmartHomeDevice.STATE_TYPE_NUMBER_PERCENT);
+		smartHomeHub.setDeviceState(device, "0", SmartHomeDevice.StateType.number_percent.name());
 		System.out.println("Took: " + Debugger.toc(tic) + "ms - waiting 3s");
 		Debugger.sleep(3000);
 		
 		//set device state 50
 		System.out.println("Setting state 50 and storing memory-state");
 		tic = Debugger.tic();
-		smartHomeHub.setDeviceState(device, "50", SmartHomeDevice.STATE_TYPE_NUMBER_PERCENT);
+		smartHomeHub.setDeviceState(device, "50", SmartHomeDevice.StateType.number_percent.name());
 		smartHomeHub.setDeviceStateMemory(device, "50");
 		System.out.println("Took: " + Debugger.toc(tic) + "ms - waiting 3s");
 		Debugger.sleep(3000);

@@ -39,10 +39,11 @@ public class SmartDevice implements ParameterHandler{
 		roller_shutter,
 		power_outlet,
 		sensor,
-		//TODO: window, door or use device?
 		device,
-		other,	//no extract method
+		//no extract methods:
+		other,
 		hidden
+		//TODO: window, door or use device?
 	}
 	/**
 	 * Get generalized 'Types' value in format of extraction method.
