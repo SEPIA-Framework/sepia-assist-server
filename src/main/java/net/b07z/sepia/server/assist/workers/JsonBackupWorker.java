@@ -147,7 +147,6 @@ public class JsonBackupWorker implements WorkerInterface {
 			    	lastUpdated = System.currentTimeMillis();
 			    	long thisRefreshTime = (System.currentTimeMillis()-tic); 
 			    	totalRefreshTime += thisRefreshTime;
-			    	executedRefreshs++;
 			    	averageRefreshTime = (long)((double)totalRefreshTime/(double)executedRefreshs);
 			    	Statistics.addOtherApiHit("Worker: " + name);
 					Statistics.addOtherApiTime("Worker: "  + name, tic);
@@ -188,6 +187,7 @@ public class JsonBackupWorker implements WorkerInterface {
     	
     	boolean success = (backupOpenLigaSuccess && backupRssFeedsSuccess);
     	if (success){
+    		executedRefreshs++;
     		Debugger.println(name + ": Data has been stored! (" + executedRefreshs + " time(s)) It took (ms): " 
     				+ (System.currentTimeMillis()-tic) + ", average (ms): " + averageRefreshTime, 3);
     	}else{

@@ -166,7 +166,6 @@ public class DuckDnsWorker implements WorkerInterface {
 			    	lastUpdated = System.currentTimeMillis();
 			    	long thisRefreshTime = (System.currentTimeMillis()-tic); 
 			    	totalRefreshTime += thisRefreshTime;
-			    	executedRefreshs++;
 			    	averageRefreshTime = (long)((double)totalRefreshTime/(double)executedRefreshs);
 			    	Statistics.addOtherApiHit("Worker: " + name);
 					Statistics.addOtherApiTime("Worker: "  + name, tic);
@@ -247,6 +246,7 @@ public class DuckDnsWorker implements WorkerInterface {
     		error = "DuckDNS server NOT reached.";
     	}
     	if (ipUpdated){
+    		executedRefreshs++;
     		if ((System.currentTimeMillis() - lastLog) > minTimeToLog){
     			lastLog = System.currentTimeMillis();
     			Debugger.println(name + ": IP has been updated! (" + executedRefreshs + " time(s)) It took (ms): " 
