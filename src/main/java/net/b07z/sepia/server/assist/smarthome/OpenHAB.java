@@ -234,35 +234,57 @@ public class OpenHAB implements SmartHomeHub {
 	@Override
 	public boolean setDeviceState(SmartHomeDevice device, String state, String stateType) {
 		String deviceURL = device.getLink();
+		//System.out.println("state: " + state); 				//DEBUG
+		//System.out.println("stateType: " + stateType); 		//DEBUG
 		if (Is.nullOrEmpty(deviceURL)){
 			return false;
 		}else{
-			//System.out.println("state: " + state); 				//DEBUG
-			//System.out.println("stateType: " + stateType); 		//DEBUG
-			String givenType = device.getType();
-
-			//ROLLER SHUTTER
-			if (givenType != null && Is.typeEqual(givenType, SmartDevice.Types.roller_shutter)){
-				//check stateType
+			//set command overwrite?
+			JSONObject setCmds = (JSONObject) device.getMeta().get("setCmds");
+			if (Is.notNullOrEmpty(setCmds)){
 				if (stateType != null){
-					if (state.equalsIgnoreCase(SmartHomeDevice.STATE_OPEN)){
-						state = "UP";
-					}else if (state.equalsIgnoreCase(SmartHomeDevice.STATE_CLOSED)){
-						state = "DOWN";
+					if (stateType.matches(SmartHomeDevice.REGEX_STATE_TYPE_NUMBER)){
+						String cmd = (String) setCmds.get("number");
+						if (Is.notNullOrEmpty(cmd)){
+							state = cmd.replaceAll("<val>", state);
+						}
+					}else if (stateType.matches(SmartHomeDevice.REGEX_STATE_TYPE_TEXT)){
+						if (state.matches(SmartHomeDevice.REGEX_STATE_ENABLE)){
+							String cmd = (String) setCmds.get("enable");
+							if (Is.notNullOrEmpty(cmd)){
+								state = cmd;
+							}
+						}else if (state.matches(SmartHomeDevice.REGEX_STATE_ENABLE)){
+							String cmd = (String) setCmds.get("disable");
+							if (Is.notNullOrEmpty(cmd)){
+								state = cmd;
+							}
+						}
 					}
 				}
-			//ELSE
+				
+			//check deviceType to find correct set command
 			}else{
-				//check stateType
+				String givenType = device.getType();
 				if (stateType != null){
-					if (stateType.equals(SmartHomeDevice.STATE_TYPE_TEXT_BINARY)){
-						//all upper case text for openHAB
-						state = state.toUpperCase();
+					//ROLLER SHUTTER
+					if (givenType != null && Is.typeEqual(givenType, SmartDevice.Types.roller_shutter)){
+						if (state.equalsIgnoreCase(SmartHomeDevice.STATE_OPEN)){
+							state = "UP";
+						}else if (state.equalsIgnoreCase(SmartHomeDevice.STATE_CLOSED)){
+							state = "DOWN";
+						}
+					//ELSE
+					}else{
+						if (stateType.equals(SmartHomeDevice.STATE_TYPE_TEXT_BINARY)){
+							//all upper case text for openHAB
+							state = state.toUpperCase();
+						}
 					}
+					//TODO: improve stateType check (temp. etc)
 				}
 			}
 			//TODO: we could check mem-state here if state is e.g. SmartHomeDevice.STATE_ON
-			//TODO: improve stateType check (temp. etc)
 			
 			Map<String, String> headers = new HashMap<>();
 			headers.put("Content-Type", "text/plain");
@@ -313,7 +335,7 @@ public class OpenHAB implements SmartHomeHub {
 		String roomIndex = null;
 		String memoryState = "";
 		String stateType = null;
-		String setCmd = null;
+		JSONObject setCmds = null;
 		boolean typeGuessed = false;
 		if (tags != null){
 			//try to find self-defined SEPIA tags first
@@ -331,8 +353,11 @@ public class OpenHAB implements SmartHomeHub {
 					memoryState = t.split("=", 2)[1];				//A state to remember like last non-zero brightness of a light 
 				}else if (t.startsWith(SmartHomeDevice.SEPIA_TAG_STATE_TYPE + "=")){
 					stateType = t.split("=", 2)[1];
-				}else if (t.startsWith(SmartHomeDevice.SEPIA_TAG_SET_CMD + "=")){
-					setCmd = t.split("=", 2)[1];
+				}else if (t.startsWith(SmartHomeDevice.SEPIA_TAG_SET_CMDS + "=")){
+					String setCmdsStr = t.split("=", 2)[1];
+					if (setCmdsStr != null && setCmdsStr.trim().startsWith("{")){
+						setCmds = JSON.parseString(setCmdsStr);
+					}
 				}
 			}
 		}
@@ -378,7 +403,7 @@ public class OpenHAB implements SmartHomeHub {
 		}
 		//try to deduce state type if not given
 		if (Is.nullOrEmpty(stateType) && state != null){
-			stateType = SmartHomeDevice.convertStateType(null, state, null);
+			stateType = SmartHomeDevice.findStateType(state);
 		}
 		if (state != null){
 			if (stateType != null){
@@ -392,7 +417,7 @@ public class OpenHAB implements SmartHomeHub {
 				"id", originalName,
 				"origin", NAME,
 				"typeGuessed", typeGuessed,
-				"setCmd", setCmd
+				"setCmds", setCmds
 		);
 		//TODO: we could add some stuff to meta when we need other data from response.
 		SmartHomeDevice shd = new SmartHomeDevice(name, type, room, 

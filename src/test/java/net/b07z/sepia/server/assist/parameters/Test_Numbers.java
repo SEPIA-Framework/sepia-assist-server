@@ -43,6 +43,7 @@ public class Test_Numbers {
 		texts.add("Setze 50 Prozent für Lampe 1 in Zimmer 2");
 		texts.add("Lampe 1 in Zimmer 2 auf 50%");
 		texts.add("Laser in Kammer 1 einschalten");
+		texts.add("Heizung auf 20.5F bitte");
 
 		printTestResults(texts, parametersToTest, language);
 		
@@ -53,8 +54,10 @@ public class Test_Numbers {
 		System.out.println("20 (C) in F: " + Number.convertTemperature("20", "heizung auf 20 grad", "C", "F", LANGUAGES.DE));
 		System.out.println("68 (F) in F: " + Number.convertTemperature("68", "heizung auf 68 grad", "F", "F", LANGUAGES.DE));
 		System.out.println("68 (F) in C: " + Number.convertTemperature("68", "heizung auf 68 grad", "F", "C", LANGUAGES.DE));
+		System.out.println("68f in C: " + Number.convertTemperature("68", "heizung auf 68f", "F", "C", LANGUAGES.DE));
 		System.out.println("80°F in F: " + Number.convertTemperature("80", "heater to 80°f", "F", "F", LANGUAGES.EN));
 		System.out.println("80°F in C: " + Number.convertTemperature("80", "heater to 80°f", "F", "C", LANGUAGES.EN));
+		System.out.println("80f in C: " + Number.convertTemperature("80", "heater to 80f", "F", "C", LANGUAGES.EN));
 	}
 	
 	static void printTestResults(List<String> texts, String[] parametersToTest, String language){

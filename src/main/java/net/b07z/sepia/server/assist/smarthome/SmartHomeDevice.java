@@ -7,11 +7,8 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
-import net.b07z.sepia.server.assist.parameters.Number;
 import net.b07z.sepia.server.assist.parameters.Room;
 import net.b07z.sepia.server.assist.parameters.SmartDevice;
-import net.b07z.sepia.server.assist.parameters.SmartDeviceValue;
-import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
@@ -36,7 +33,7 @@ public class SmartHomeDevice {
 	public static final String SEPIA_TAG_DATA = "sepia-data";
 	public static final String SEPIA_TAG_MEM_STATE = "sepia-mem-state";
 	public static final String SEPIA_TAG_STATE_TYPE = "sepia-state-type";
-	public static final String SEPIA_TAG_SET_CMD = "sepia-set-cmd";
+	public static final String SEPIA_TAG_SET_CMDS = "sepia-set-cmds";
 	
 	//generalized device states
 	public static final String STATE_ON = "ON";
@@ -47,15 +44,19 @@ public class SmartHomeDevice {
 	public static final String STATE_DISCONNECTED = "DISCONNECTED";
 	//public static final String STATE_UP = "up";
 	//public static final String STATE_DOWN = "down";
+	public static final String REGEX_STATE_ENABLE = "ON|OPEN|CONNECTED|UP|ENABLED";
+	public static final String REGEX_STATE_DISABLE = "OFF|CLOSED|DISCONNECTED|DOWN|DISABLED";
 	
 	//device state types
 	public static final String STATE_TYPE_TEXT_BINARY = "text_binary";	//ON, OFF, OPEN, CLOSED, ...
 	public static final String STATE_TYPE_TEXT_RAW = "text_raw";		//just text as given by device
 	public static final String STATE_TYPE_NUMBER_PLAIN = "number_plain";
 	public static final String STATE_TYPE_NUMBER_PERCENT = "number_percent";
+	public static final String STATE_TYPE_NUMBER_TEMPERATURE = "number_temperature";
 	public static final String STATE_TYPE_NUMBER_TEMPERATURE_C = "number_temperature_c";
 	public static final String STATE_TYPE_NUMBER_TEMPERATURE_F = "number_temperature_f";
 	public static final String REGEX_STATE_TYPE_NUMBER = "^number_.*";
+	public static final String REGEX_STATE_TYPE_TEXT = "^text_.*";
 	
 	//locals
 	private static HashMap<String, String> states_de = new HashMap<>();
@@ -430,30 +431,28 @@ public class SmartHomeDevice {
 	}
 	
 	/**
-	 * Find correct, generalized stateType for given parameter/state/stateType or try to extract it from state only if parameter unknown.
-	 * E.g.: convert {@link Number.Types#percent} to {@link SmartHomeDevice#STATE_TYPE_NUMBER_PERCENT}.
-	 * @param parameterName - name of parameter as seen in {@link PARAMETERS} (can be null)
+	 * Find correct, generalized stateType from given state.
 	 * @param state - state as given by parameter
-	 * @param givenStateType - type of state as given by parameter (can be null)
-	 * @return
+	 * @return found state type or null
 	 */
-	public static String convertStateType(String parameterName, String state, String givenStateType){
+	public static String findStateType(String state){
 		String genStateType = null;
-		if (Is.nullOrEmpty(parameterName)){
-			//plain
-			if (state.matches("[\\d.,]+")){
-				genStateType = STATE_TYPE_NUMBER_PLAIN;
-			//percent
-			}else if (state.matches(".*[\\d.,]+(\\+s|)%.*")){
-				genStateType = STATE_TYPE_NUMBER_PERCENT;
-			//ON/OFF
-			}else if (state.matches("(?i)(on|off|open|close(d|)|up|down|(dis|)connected|(in|)active)")){
-				genStateType = STATE_TYPE_TEXT_BINARY;
-			}
-		}else if (parameterName.equals(PARAMETERS.SMART_DEVICE_VALUE)){
-			if (Is.notNullOrEmpty(givenStateType)){
-				genStateType = SmartDeviceValue.numberTypeDeviceStateTypeMap.get(givenStateType);
-			}
+		//plain
+		if (state.matches("[\\d.,]+")){
+			genStateType = STATE_TYPE_NUMBER_PLAIN;
+		//percent
+		}else if (state.matches(".*[\\d.,]+(\\+s|)(%|pct)\\b.*")){
+			genStateType = STATE_TYPE_NUMBER_PERCENT;
+		//temperature
+		}else if (state.matches(".*[\\d.,]+(\\+s|)(°|deg|)C\\b.*")){
+			genStateType = STATE_TYPE_NUMBER_TEMPERATURE_C;
+		}else if (state.matches(".*[\\d.,]+(\\+s|)(°|deg|)F\\b.*")){
+			genStateType = STATE_TYPE_NUMBER_TEMPERATURE_F;
+		}else if (state.matches(".*[\\d.,]+(\\+s|)(°|deg)\\b.*")){
+			genStateType = STATE_TYPE_NUMBER_TEMPERATURE;
+		//ON/OFF
+		}else if (state.matches("(?i)(on|off|open|close(d|)|up|down|(dis|)connected|(in|)active)")){
+			genStateType = STATE_TYPE_TEXT_BINARY;
 		}
 		return genStateType;
 	}
@@ -464,16 +463,11 @@ public class SmartHomeDevice {
 	 * @return converted state or original if no conversion possible
 	 */
 	public static String convertState(String state, String stateType){
-		//TODO: add more
+		//all numbers
 		if (stateType.matches(REGEX_STATE_TYPE_NUMBER) && state.matches(".*\\d.*")){
 			//return first number including "," and "." and replace ","
 			return state.replaceAll(".*?([\\d.,]+).*", "$1").replaceAll(",", ".").trim();
-		/*if (stateType.equals(STATE_TYPE_NUMBER_PLAIN)){
-			return state.replaceAll(".*?([\\d.,]+).*", "$1").replaceAll(",", ".").trim();
-		}else if (stateType.equals(STATE_TYPE_NUMBER_PERCENT)){
-			return state.replaceAll(".*?([\\d.,]+).*", "$1").replaceAll(",", ".").trim();
-		}else if (stateType.equals(STATE_TYPE_NUMBER_TEMPERATURE_C)){
-			return state.replaceAll(".*?([\\d.,]+).*", "$1").replaceAll(",", ".").trim();*/
+		//certain texts
 		}else if (stateType.equals(STATE_TYPE_TEXT_BINARY)){
 			if (state.equalsIgnoreCase("down")){		//NOTE: we assume a fixed state "down" is closed - TODO: we might need deviceType here
 				return STATE_CLOSED;
@@ -482,9 +476,11 @@ public class SmartHomeDevice {
 			}else{
 				return state;
 			}
+		//other
 		}else{
 			return state;
 		}
+		//TODO: add more?
 	}
 	
 	/**
@@ -495,8 +491,10 @@ public class SmartHomeDevice {
 	 * @return
 	 */
 	public static String makeSmartTypeAssumptionForPlainNumber(SmartDevice.Types deviceType){
-		if (deviceType.equals(SmartDevice.Types.light)){
+		if (deviceType.equals(SmartDevice.Types.light) || deviceType.equals(SmartDevice.Types.roller_shutter)){
 			return STATE_TYPE_NUMBER_PERCENT;
+		}else if (deviceType.equals(SmartDevice.Types.heater)){
+			return STATE_TYPE_NUMBER_TEMPERATURE;
 		}else{
 			return STATE_TYPE_NUMBER_PLAIN;
 		}

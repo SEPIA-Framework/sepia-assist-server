@@ -39,7 +39,7 @@ public class Fhem implements SmartHomeHub {
 	private static final String TAG_DATA = SmartHomeDevice.SEPIA_TAG_DATA;
 	private static final String TAG_MEM_STATE = SmartHomeDevice.SEPIA_TAG_MEM_STATE;
 	private static final String TAG_STATE_TYPE = SmartHomeDevice.SEPIA_TAG_STATE_TYPE;
-	private static final String TAG_SET_CMD = SmartHomeDevice.SEPIA_TAG_SET_CMD;
+	private static final String TAG_SET_CMDS = SmartHomeDevice.SEPIA_TAG_SET_CMDS;
 	
 	/**
 	 * Create new FHEM instance and automatically get CSRF token.
@@ -124,7 +124,7 @@ public class Fhem implements SmartHomeHub {
 			String setUrl = URLBuilder.getString(this.host, 
 					"?cmd=", "attr global userattr " + foundAttributes + " " 
 							+ TAG_NAME + " " + TAG_TYPE + " " + TAG_ROOM + " " + TAG_ROOM_INDEX + " " 
-							+ TAG_DATA + " " + TAG_MEM_STATE + " " + TAG_STATE_TYPE + " " + TAG_SET_CMD,
+							+ TAG_DATA + " " + TAG_MEM_STATE + " " + TAG_STATE_TYPE + " " + TAG_SET_CMDS,
 					"&XHR=", "1",
 					"&fwcsrf=", this.csrfToken
 			);
@@ -279,57 +279,82 @@ public class Fhem implements SmartHomeHub {
 		if (Is.nullOrEmpty(fhemId) || Is.nullOrEmpty(deviceCmdLink)){
 			return false;
 		}else{
-			//check deviceType
-			String givenType = device.getType();
-			if (stateType != null){
-				//LIGHT
-				if (givenType != null && Is.typeEqual(givenType, SmartDevice.Types.light)){
-					//check stateType
-					if (stateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_PERCENT)){
-						String cmd = NluTools.stringFindFirst(setOptions, "\\b(pct|dim|bri)(?=(\\b|\\d))");
-						//percent via pct, dim or bri
-						if (!cmd.isEmpty()){
-							state = cmd + " " + state;	//TODO: this can FAIL if device uses discrete states
+			//set command overwrite?
+			JSONObject setCmds = (JSONObject) device.getMeta().get("setCmds");
+			if (Is.notNullOrEmpty(setCmds)){
+				if (stateType != null){
+					if (stateType.matches(SmartHomeDevice.REGEX_STATE_TYPE_NUMBER)){
+						String cmd = (String) setCmds.get("number");
+						if (Is.notNullOrEmpty(cmd)){
+							state = cmd.replaceAll("<val>", state);
 						}
-					}else{
-						state = state.toLowerCase();	//on, off, etc is usually lower-case in FHEM
-					}
-				//ROLLER SHUTTER
-				}else if (givenType != null && Is.typeEqual(givenType, SmartDevice.Types.roller_shutter)){
-					//check stateType
-					if (stateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_PERCENT)){
-						//percent via "pct" - TODO: does that work?
-						state = "pct " + state;
-					}else if (state.equalsIgnoreCase(SmartHomeDevice.STATE_OPEN)){
-						state = "up";
-					}else if (state.equalsIgnoreCase(SmartHomeDevice.STATE_CLOSED)){
-						state = "down";
-					}else{
-						state = state.toLowerCase();	//on, off, etc is usually lower-case in FHEM
-					}
-				//ELSE
-				}else{
-					//check stateType
-					if (stateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_PERCENT)){
-						String cmd = NluTools.stringFindFirst(setOptions, "\\b(pct|dim)(?=(\\b|\\d))");
-						//percent via pct or dim - TODO: does that work?
-						if (!cmd.isEmpty()){
-							state = cmd + " " + state;	//TODO: this can FAIL if device uses discrete states
+					}else if (stateType.matches(SmartHomeDevice.REGEX_STATE_TYPE_TEXT)){
+						if (state.matches(SmartHomeDevice.REGEX_STATE_ENABLE)){
+							String cmd = (String) setCmds.get("enable");
+							if (Is.notNullOrEmpty(cmd)){
+								state = cmd;
+							}
+						}else if (state.matches(SmartHomeDevice.REGEX_STATE_ENABLE)){
+							String cmd = (String) setCmds.get("disable");
+							if (Is.notNullOrEmpty(cmd)){
+								state = cmd;
+							}
 						}
-					}else if(stateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_TEMPERATURE_C) || stateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_TEMPERATURE_F)){
-						String cmd = NluTools.stringFindFirst(setOptions, "\\b(desired-temp|temperature|desiredTemp|desired-temperature)(?=(\\b|\\d))");
-						//temp. via desired-temp, temperature, desiredTemp, desired-temperature 
-						if (!cmd.isEmpty()){
-							state = cmd + " " + state;
+					}
+				}
+				
+			//check deviceType to find correct set command
+			}else{
+				String givenType = device.getType();
+				if (stateType != null){
+					//LIGHT
+					if (givenType != null && Is.typeEqual(givenType, SmartDevice.Types.light)){
+						//check stateType
+						if (stateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_PERCENT)){
+							String cmd = NluTools.stringFindFirst(setOptions, "\\b(pct|dim|bri)(?=(\\b|\\d))");
+							//percent via pct, dim or bri
+							if (!cmd.isEmpty()){
+								state = cmd + " " + state;	//TODO: this can FAIL if device uses discrete states
+							}
 						}else{
-							state = "desired-temp" + " " + state;
+							state = state.toLowerCase();	//on, off, etc is usually lower-case in FHEM
 						}
+					//ROLLER SHUTTER
+					}else if (givenType != null && Is.typeEqual(givenType, SmartDevice.Types.roller_shutter)){
+						//check stateType
+						if (stateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_PERCENT)){
+							//percent via "pct" - TODO: does that work?
+							state = "pct " + state;
+						}else if (state.equalsIgnoreCase(SmartHomeDevice.STATE_OPEN)){
+							state = "up";
+						}else if (state.equalsIgnoreCase(SmartHomeDevice.STATE_CLOSED)){
+							state = "down";
+						}else{
+							state = state.toLowerCase();	//on, off, etc is usually lower-case in FHEM
+						}
+					//ELSE
 					}else{
-						state = state.toLowerCase();	//on, off, etc is usually lower-case in FHEM
+						//check stateType
+						if (stateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_PERCENT)){
+							String cmd = NluTools.stringFindFirst(setOptions, "\\b(pct|dim)(?=(\\b|\\d))");
+							//percent via pct or dim - TODO: does that work?
+							if (!cmd.isEmpty()){
+								state = cmd + " " + state;	//TODO: this can FAIL if device uses discrete states
+							}
+						}else if(stateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_TEMPERATURE_C) || stateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_TEMPERATURE_F)){
+							String cmd = NluTools.stringFindFirst(setOptions, "\\b(desired-temp|temperature|desiredTemp|desired-temperature)(?=(\\b|\\d))");
+							//temp. via desired-temp, temperature, desiredTemp, desired-temperature 
+							if (!cmd.isEmpty()){
+								state = cmd + " " + state;
+							}else{
+								state = "desired-temp" + " " + state;
+							}
+						}else{
+							state = state.toLowerCase();	//on, off, etc is usually lower-case in FHEM
+						}
 					}
 				}
 			}
-			//TODO: add temperature
 			//TODO: we could check mem-state here if state is e.g. SmartHomeDevice.STATE_ON
 			
 			String cmdUrl = URLBuilder.getString(
@@ -391,7 +416,7 @@ public class Fhem implements SmartHomeHub {
 		String roomIndex = null;
 		String memoryState = "";
 		String stateType = null;
-		String setCmd = null;
+		JSONObject setCmds = null;
 		boolean typeGuessed = false;
 		if (attributes != null){
 			//try to find self-defined SEPIA tags first
@@ -401,7 +426,10 @@ public class Fhem implements SmartHomeHub {
 			roomIndex = JSON.getStringOrDefault(attributes, TAG_ROOM_INDEX, null);
 			memoryState = JSON.getStringOrDefault(attributes, TAG_MEM_STATE, null);
 			stateType = JSON.getStringOrDefault(attributes, TAG_STATE_TYPE, null);
-			setCmd = JSON.getStringOrDefault(attributes, TAG_SET_CMD, null);
+			String setCmdsStr = JSON.getStringOrDefault(attributes, TAG_SET_CMDS, null);
+			if (setCmdsStr != null && setCmdsStr.trim().startsWith("{")){
+				setCmds = JSON.parseString(setCmdsStr);
+			}
 		}
 		//smart-guess if missing sepia-specific settings
 		if (name == null && internals != null){
@@ -442,7 +470,7 @@ public class Fhem implements SmartHomeHub {
 		String state = JSON.getStringOrDefault(internals, "STATE", null);
 		//try to deduce state type if not given
 		if (Is.nullOrEmpty(stateType) && state != null){
-			stateType = SmartHomeDevice.convertStateType(null, state, null);
+			stateType = SmartHomeDevice.findStateType(state);
 		}
 		if (state != null){
 			if (stateType != null){
@@ -456,7 +484,7 @@ public class Fhem implements SmartHomeHub {
 				"id", fhemObjName,
 				"origin", NAME,
 				"setOptions", JSON.getStringOrDefault(hubDevice, "PossibleSets", null),
-				"setCmd", setCmd,
+				"setCmds", setCmds,
 				"typeGuessed", typeGuessed
 		);
 		//note: we need 'id' for commands although it is basically already in 'link'

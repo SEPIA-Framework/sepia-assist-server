@@ -32,7 +32,7 @@ public class SmartDeviceValue implements ParameterHandler {
 	static {
 		numberTypeDeviceStateTypeMap.put(Number.Types.plain.name(), SmartHomeDevice.STATE_TYPE_NUMBER_PLAIN);
 		numberTypeDeviceStateTypeMap.put(Number.Types.percent.name(), SmartHomeDevice.STATE_TYPE_NUMBER_PERCENT);
-		numberTypeDeviceStateTypeMap.put(Number.Types.temperature.name(), SmartHomeDevice.STATE_TYPE_NUMBER_TEMPERATURE_C); 	//default: celsius!
+		numberTypeDeviceStateTypeMap.put(Number.Types.temperature.name(), SmartHomeDevice.STATE_TYPE_NUMBER_TEMPERATURE); 	//default is temp with undefined unit
 	}
 		
 	//-----------
@@ -245,15 +245,27 @@ public class SmartDeviceValue implements ParameterHandler {
 		//default decimal format is "1.00"
 		if (!Is.typeEqual(type, Number.Types.custom)){
 			value = value.replaceAll(",", ".");
-			
-			//TODO: convert temperature from fahrenheit to celsius?
+		}
+		
+		//convert Number.Types to device state types
+		if (Is.notNullOrEmpty(type)){
+			type = numberTypeDeviceStateTypeMap.get(type);
+			if (type.equals(SmartHomeDevice.STATE_TYPE_NUMBER_TEMPERATURE)){
+				String foundUnit = Number.getTemperatureUnit(input, language);
+				if (foundUnit.equals("C")){
+					type = SmartHomeDevice.STATE_TYPE_NUMBER_TEMPERATURE_C;
+				}else if (foundUnit.equals("F")){
+					type = SmartHomeDevice.STATE_TYPE_NUMBER_TEMPERATURE_F;
+				}
+			}
+			//TODO: convert temperature from fahrenheit to celsius? I think we leave this to any service
 		}
 		
 		//build default result
 		JSONObject itemResultJSON = new JSONObject();
 			JSON.add(itemResultJSON, InterviewData.INPUT, input);
 			JSON.add(itemResultJSON, InterviewData.VALUE, value);
-			JSON.add(itemResultJSON, InterviewData.NUMBER_TYPE, type);
+			JSON.add(itemResultJSON, InterviewData.SMART_DEVICE_VALUE_TYPE, type);
 		
 		buildSuccess = true;
 		return itemResultJSON.toJSONString();

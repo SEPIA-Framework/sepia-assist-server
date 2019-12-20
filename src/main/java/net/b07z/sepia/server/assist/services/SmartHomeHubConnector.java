@@ -166,8 +166,16 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		
 		Parameter deviceValue = nluResult.getOptionalParameter(PARAMETERS.SMART_DEVICE_VALUE, "");	//a number of type plain, percent or temperature (more may be added later)
 		String targetSetValue = deviceValue.getValueAsString();
-		String targetValueType = JSON.getStringOrDefault(deviceValue.getData(), InterviewData.NUMBER_TYPE, Number.Types.plain.name());
-		String targetValueParameterName = PARAMETERS.SMART_DEVICE_VALUE;		//required to generalize type ... see below
+		String targetValueType = JSON.getStringOrDefault(deviceValue.getData(), 
+				InterviewData.SMART_DEVICE_VALUE_TYPE, SmartHomeDevice.STATE_TYPE_NUMBER_PLAIN);
+		
+		if (targetValueType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_PLAIN)){
+			//TODO: here we should take selectedDevice stateType into account, it could be set by user ...
+			targetValueType = SmartHomeDevice.makeSmartTypeAssumptionForPlainNumber(SmartDevice.Types.valueOf(deviceType)); 
+		}
+		//TODO: after this type can be STATE_TYPE_NUMBER_TEMPERATURE(_C|_F) and state value MUST be converted
+		//Number.convertTemperature("20", "heizung auf 20 grad", "C", "C", LANGUAGES.DE));
+		
 		//Default user temperature unit
 		String userPrefTempUnit = null;
 		if (Is.typeEqual(targetValueType, Number.Types.temperature)){
@@ -407,14 +415,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 					}
 				//request state
 				}else{
-					String genStateType = SmartHomeDevice.convertStateType(targetValueParameterName, targetSetValue, targetValueType);
-					//TODO: after this type can be STATE_TYPE_NUMBER_TEMPERATURE_C and state value MUST be converted
-					if (genStateType != null && genStateType.equals(SmartHomeDevice.STATE_TYPE_NUMBER_PLAIN)){
-						//TODO: here we should take selectedDevice stateType into account, it could be set by user ...
-						genStateType = SmartHomeDevice.makeSmartTypeAssumptionForPlainNumber(SmartDevice.Types.valueOf(deviceType)); 
-					}
-					
-					boolean setSuccess = smartHomeHUB.setDeviceState(selectedDevice, targetSetValue, genStateType);
+					boolean setSuccess = smartHomeHUB.setDeviceState(selectedDevice, targetSetValue, targetValueType);
 					if (setSuccess){
 						//response info
 						service.resultInfoPut("state", SmartHomeDevice.getStateLocal(targetSetValue, service.language));

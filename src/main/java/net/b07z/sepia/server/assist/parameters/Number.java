@@ -153,6 +153,39 @@ public class Number implements ParameterHandler{
 	}
 	
 	/**
+	 * Search input for temperature unit.
+	 * @param userInput - input to search
+	 * @param language - code for search language
+	 * @return "C", "F" or empty string
+	 */
+	public static String getTemperatureUnit(String userInput, String language){
+		boolean isCelsius = false;
+		boolean isFarenheit = false;
+		//German
+		if (language.matches(LANGUAGES.DE)){
+			if (NluTools.stringContains(userInput, "(\\d+|)(°(?!f)|celsius|c)")){
+				isCelsius = true;
+			}else if (NluTools.stringContains(userInput, "(\\d+|)(°f|fahrenheit|f)")){
+				isFarenheit = true;
+			}
+		//English and other
+		}else{
+			if (NluTools.stringContains(userInput, "(\\d+|)(°(?!f)|celsius|c)")){
+				isCelsius = true;
+			}else if (NluTools.stringContains(userInput, "(\\d+|)(°f|fahrenheit|f)")){
+				isFarenheit = true;
+			}
+		}
+		if (isCelsius){
+			return "C";
+		}else if (isFarenheit){
+			return "F";
+		}else{
+			return "";
+		}
+	}
+	
+	/**
 	 * Convert a number found in user input to a preferred temperature unit (or simply return value as double if no conversion required).
 	 * Fails if source unit cannot be identified (either by input or preferred unit).
 	 * @param value - temperature number previously extracted (String)
@@ -166,20 +199,11 @@ public class Number implements ParameterHandler{
 		boolean isCelsius = false;
 		boolean isFarenheit = false;
 		double val = Double.parseDouble(value);
-		//German
-		if (language.matches(LANGUAGES.DE)){
-			if (NluTools.stringContains(userInput, "(\\d|)(°(?!f)|celsius|c)")){
-				isCelsius = true;
-			}else if (NluTools.stringContains(userInput, "(\\d|)(°f|fahrenheit|f)")){
-				isFarenheit = true;
-			}
-		//English and other
-		}else{
-			if (NluTools.stringContains(userInput, "(\\d|)(°(?!f)|celsius|c)")){
-				isCelsius = true;
-			}else if (NluTools.stringContains(userInput, "(\\d|)(°f|fahrenheit|f)")){
-				isFarenheit = true;
-			}
+		String foundUnit = getTemperatureUnit(userInput, language);
+		if (foundUnit.equals("C")){
+			isCelsius = true;
+		}else if (foundUnit.equals("F")){
+			isFarenheit = true;
 		}
 		//use user preference
 		if (!isCelsius && !isFarenheit && userPrefUnit != null){
