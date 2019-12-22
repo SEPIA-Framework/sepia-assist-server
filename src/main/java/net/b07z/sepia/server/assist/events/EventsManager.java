@@ -114,7 +114,7 @@ public class EventsManager {
 		//random messages to entertain the user
 		if (localTimeIsKnown){
 			//check if the client sent a list of recently triggered events
-			Object recentPaeObj = input.getCustomDataObject("recentPAE");
+			Object recentPaeObj = input.getCustomDataObject(NluInput.DATA_RECENT_PRO_ACTIVE_EVENTS);
 			JSONObject recentPAE = null;
 			if (recentPaeObj != null){
 				try{

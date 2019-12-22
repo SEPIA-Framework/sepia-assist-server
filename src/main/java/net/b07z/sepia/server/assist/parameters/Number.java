@@ -154,7 +154,7 @@ public class Number implements ParameterHandler{
 	
 	/**
 	 * Search input for temperature unit.
-	 * @param userInput - input to search
+	 * @param userInput - normalized full text user input (to find temp. unit)
 	 * @param language - code for search language
 	 * @return "C", "F" or empty string
 	 */
@@ -189,20 +189,18 @@ public class Number implements ParameterHandler{
 	 * Convert a number found in user input to a preferred temperature unit (or simply return value as double if no conversion required).
 	 * Fails if source unit cannot be identified (either by input or preferred unit).
 	 * @param value - temperature number previously extracted (String)
-	 * @param userInput - normalized full text user input (to find temp. unit)
+	 * @param givenUnit - unit given e.g. by device or input ("C" or "F"). If not known you can use {@link Number#getTemperatureUnit}.
 	 * @param userPrefUnit - preferred user unit ("C" or "F")
 	 * @param targetUnit - convert to "C" or "F"
-	 * @param language - input text language code
 	 * @return temperature as double in target unit. Can throw exception if source or target are unclear.
 	 */
-	public static double convertTemperature(String value, String userInput, String userPrefUnit, String targetUnit, String language){
+	public static double convertTemperature(String value, String givenUnit, String userPrefUnit, String targetUnit) throws Exception {
 		boolean isCelsius = false;
 		boolean isFarenheit = false;
 		double val = Double.parseDouble(value);
-		String foundUnit = getTemperatureUnit(userInput, language);
-		if (foundUnit.equals("C")){
+		if (givenUnit.equals("C")){
 			isCelsius = true;
-		}else if (foundUnit.equals("F")){
+		}else if (givenUnit.equals("F")){
 			isFarenheit = true;
 		}
 		//use user preference

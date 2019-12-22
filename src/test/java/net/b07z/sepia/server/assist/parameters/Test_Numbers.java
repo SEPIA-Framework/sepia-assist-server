@@ -15,7 +15,7 @@ import net.b07z.sepia.server.core.tools.Debugger;
 
 public class Test_Numbers {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		
 		Start.setupServicesAndParameters();
 		String[] parametersToTest = new String[]{ PARAMETERS.NUMBER, PARAMETERS.SMART_DEVICE, PARAMETERS.ROOM, PARAMETERS.SMART_DEVICE_VALUE };
@@ -48,16 +48,16 @@ public class Test_Numbers {
 		printTestResults(texts, parametersToTest, language);
 		
 		System.out.println("\nNumber conversion test:\n");
-		System.out.println("20°C in C: " + Number.convertTemperature("20", "heizung auf 20 grad celsius", null, "C", LANGUAGES.DE));
-		System.out.println("20°C in F: " + Number.convertTemperature("20", "heizung auf 20 grad celsius", null, "F", LANGUAGES.DE));
-		System.out.println("20 (C) in C: " + Number.convertTemperature("20", "heizung auf 20 grad", "C", "C", LANGUAGES.DE));
-		System.out.println("20 (C) in F: " + Number.convertTemperature("20", "heizung auf 20 grad", "C", "F", LANGUAGES.DE));
-		System.out.println("68 (F) in F: " + Number.convertTemperature("68", "heizung auf 68 grad", "F", "F", LANGUAGES.DE));
-		System.out.println("68 (F) in C: " + Number.convertTemperature("68", "heizung auf 68 grad", "F", "C", LANGUAGES.DE));
-		System.out.println("68f in C: " + Number.convertTemperature("68", "heizung auf 68f", "F", "C", LANGUAGES.DE));
-		System.out.println("80°F in F: " + Number.convertTemperature("80", "heater to 80°f", "F", "F", LANGUAGES.EN));
-		System.out.println("80°F in C: " + Number.convertTemperature("80", "heater to 80°f", "F", "C", LANGUAGES.EN));
-		System.out.println("80f in C: " + Number.convertTemperature("80", "heater to 80f", "F", "C", LANGUAGES.EN));
+		System.out.println("20°C in C: " + Number.convertTemperature("20", Number.getTemperatureUnit("heizung auf 20 grad celsius", LANGUAGES.DE), null, "C"));
+		System.out.println("20°C in F: " + Number.convertTemperature("20", Number.getTemperatureUnit("heizung auf 20 grad celsius", LANGUAGES.DE), null, "F"));
+		System.out.println("20 (C) in C: " + Number.convertTemperature("20", Number.getTemperatureUnit("heizung auf 20 grad", LANGUAGES.DE), "C", "C"));
+		System.out.println("20 (C) in F: " + Number.convertTemperature("20", Number.getTemperatureUnit("heizung auf 20 grad", LANGUAGES.DE), "C", "F"));
+		System.out.println("68 (F) in F: " + Number.convertTemperature("68", Number.getTemperatureUnit("heizung auf 68 grad", LANGUAGES.DE), "F", "F"));
+		System.out.println("68 (F) in C: " + Number.convertTemperature("68", Number.getTemperatureUnit("heizung auf 68 grad", LANGUAGES.DE), "F", "C"));
+		System.out.println("68f in C: " + Number.convertTemperature("68", Number.getTemperatureUnit("heizung auf 68f", LANGUAGES.DE), "F", "C"));
+		System.out.println("80°F in F: " + Number.convertTemperature("80", Number.getTemperatureUnit("heater to 80°f", LANGUAGES.EN), "F", "F"));
+		System.out.println("80°F in C: " + Number.convertTemperature("80", Number.getTemperatureUnit("heater to 80°f", LANGUAGES.EN), "F", "C"));
+		System.out.println("80f in C: " + Number.convertTemperature("80", Number.getTemperatureUnit("heater to 80f", LANGUAGES.EN), "F", "C"));
 	}
 	
 	static void printTestResults(List<String> texts, String[] parametersToTest, String language){
