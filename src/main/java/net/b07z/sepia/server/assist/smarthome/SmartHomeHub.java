@@ -38,6 +38,8 @@ public interface SmartHomeHub {
 			smartHomeHUB = new OpenHAB(hubHost);
 		}else if (hubName.trim().equalsIgnoreCase(Fhem.NAME)){
 			smartHomeHUB = new Fhem(hubHost);
+		}else if (hubName.trim().equalsIgnoreCase(TestHub.NAME)){
+			smartHomeHUB = new TestHub(hubHost);
 		}else{
 			try {
 				smartHomeHUB = (SmartHomeHub) ClassBuilder.construct(hubName);
