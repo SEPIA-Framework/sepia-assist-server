@@ -8,8 +8,11 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
+import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.parameters.Room;
 import net.b07z.sepia.server.assist.parameters.SmartDevice;
+import net.b07z.sepia.server.assist.parameters.Number;
+import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
@@ -505,26 +508,63 @@ public class SmartHomeDevice {
 		}
 	}
 	
-	public static SimpleEntry<String, String> adaptToDeviceStateTypeOrFail(String state, String deviceStateType, String inputStateType){
-		/*
-		if (selectedDeviceStateType.startsWith(SmartHomeDevice.StateType.number_temperature.name())){
-			//devices with state value type temp. only accept plain number or temp. number
-			if (targetValueType.startsWith(SmartHomeDevice.StateType.number_temperature.name())){
-				//TODO: check if unit is correct
-			}else if (Is.typeEqual(targetValueType, SmartHomeDevice.StateType.number_plain)){
-				//TODO: convert to temp.
+	/**
+	 * Compare the input state type (e.g. what the user said) and device state type (e.g. what is configured for the device)
+	 * and adapt the input state and state type if necessary/possible using device type, state and NLU-input (e.g. user preferences).<br>
+	 * An example: "set lights to 50" is of input state type number_plain, but the device will probably expect number_precent. In this
+	 * case a trivial adaptation can be made. If the user says "set lights to 20 degrees celsius" adaptation is not possible and the method
+	 * will throw an exception.
+	 * @param inputState - state to set, typically a number (as string)
+	 * @param deviceType - type of smart device that might be used to make smart assumptions, e.g. {@link SmartDevice.Types#light}
+	 * @param deviceStateType - expected state type of device, e.g. {@link StateType#number_temperature_c} (string)
+	 * @param inputStateType - state type given as input, e.g. {@link StateType#number_plain} (string)
+	 * @param nluInput - {@link NluInput} that can be used to add user/client specific preferences like a temperature unit. Ignored if null.
+	 * @return {@link SimpleEntry} with new stateType as key and new state as value.
+	 * @throws Exception thrown when adaptation not possible
+	 */
+	public static SimpleEntry<String, String> adaptToDeviceStateTypeOrFail(String inputState, String inputStateType, 
+			String deviceType, String deviceStateType, NluInput nluInput) throws Exception {
+		String newInputState = inputState;
+		String newInputStateType = inputStateType;
+		//identical?
+		if (deviceStateType.equals(newInputStateType)){
+			//no adaptation required
+			return new SimpleEntry<>(newInputStateType, newInputState);
+		}
+		//make some assumptions for plain input
+		if (Is.typeEqual(newInputStateType, StateType.number_plain)){
+			//we take selectedDevice stateType since this is definitely defined at this point
+			newInputStateType = deviceStateType;
+			//TODO: need to properly convert state to newInputState?
+		}
+		//devices with state value type temp. only accept plain number or temp. number
+		if (deviceStateType.startsWith(StateType.number_temperature.name())){	
+			//NOTE: this has to be either C or F (unknown unit not allowed as device state type)
+			if (newInputStateType.startsWith(StateType.number_temperature.name())){
+				//check if temp. unit is given. If not try to get it from client
+				if (Is.typeEqual(newInputStateType, StateType.number_temperature)){
+					//Try to use default user temperature unit - NOTE: is available in the user account too (if client is not submitting it)
+					String userPrefTempUnit = (nluInput != null)? (String) nluInput.getCustomDataObject(NluInput.DATA_PREFERRED_TEMPERATURE_UNIT) : null;
+					if (Is.notNullOrEmpty(userPrefTempUnit)){
+						if (userPrefTempUnit.equals("C")){
+							newInputStateType = StateType.number_temperature_c.name();
+						}else if (userPrefTempUnit.equals("F")){
+							newInputStateType = StateType.number_temperature_f.name();
+						}
+					}
+					System.out.println("userPrefTempUnit: " + userPrefTempUnit);		//DEBUG
+				}
+				//check if temp. unit is equal now - if not convert it
+				if (!deviceStateType.equals(newInputStateType)){
+					String deviceUnit = deviceStateType.substring(deviceStateType.length() - 1).toUpperCase();
+					String inputUnit = newInputStateType.substring(newInputStateType.length() - 1).toUpperCase();
+					double newTemp = Number.convertTemperature(newInputState, inputUnit, null, deviceUnit);
+					newInputState = Converters.numberToString(newTemp, "#.#");
+				}
 			}else{
-				//TODO: fail
-			}
-		}else{
-			if (Is.typeEqual(targetValueType, SmartHomeDevice.StateType.number_plain)){
-				//TODO: here we should take selectedDevice stateType into account, it could be set by user ...
-				targetValueType = SmartHomeDevice.makeSmartTypeAssumptionForPlainNumber(SmartDevice.Types.valueOf(deviceType)); 
+				throw new RuntimeException("SmartHomeDevice.adaptToDeviceStateTypeOrFail: could not adapt to device state type!");
 			}
 		}
-		*/
-		//TODO: after this type can be STATE_TYPE_NUMBER_TEMPERATURE(_C|_F) and state value MUST be converted
-		//Number.convertTemperature("20", "heizung auf 20 grad", "C", "C", LANGUAGES.DE));
-		return new SimpleEntry<>("stateType", "state");
+		return new SimpleEntry<>(newInputStateType, newInputState);
 	}
 }

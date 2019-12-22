@@ -9,6 +9,7 @@ import java.util.TreeSet;
 import net.b07z.sepia.server.assist.answers.AnswerTools;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.data.Parameter;
+import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.parameters.Action;
@@ -169,19 +170,18 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		String targetValueType = JSON.getStringOrDefault(deviceValue.getData(), 
 				InterviewData.SMART_DEVICE_VALUE_TYPE, SmartHomeDevice.StateType.number_plain.name());
 		
-		//Default user temperature unit
-		String userPrefTempUnit = (String) nluResult.input.getCustomDataObject("prefTempUnit");
-		//NOTE: this info is available in the user account as well (in case the client is not giving it);
-		//System.out.println("userPrefTempUnit: " + userPrefTempUnit);		//DEBUG
+		//Default user temperature unit - used during state adaptation in set
+		//String userPrefTempUnit = (String) nluResult.input.getCustomDataObject("prefTempUnit");
 				
 		Parameter room = nluResult.getOptionalParameter(PARAMETERS.ROOM, "");
 		String roomType = room.getValueAsString();
 		String roomTypeLocal = JSON.getStringOrDefault(room.getData(), InterviewData.VALUE_LOCAL, roomType);
 		int roomNumber = JSON.getIntegerOrDefault(room.getData(), InterviewData.ITEM_INDEX, Integer.MIN_VALUE);
 		//Client local site/position/room
-		Object deviceLocalSite = nluResult.input.getCustomDataObject("deviceLocalSite");
+		Object deviceLocalSite = nluResult.input.getCustomDataObject(NluInput.DATA_DEVICE_LOCAL_SITE);
 		if (deviceLocalSite != null){
 			System.out.println("deviceLocalSite: " + deviceLocalSite); 		//DEBUG
+			//TODO: use
 		}
 		
 		//get background parameters
@@ -407,9 +407,30 @@ public class SmartHomeHubConnector implements ServiceInterface {
 					}
 				//request state
 				}else{
-					SimpleEntry<String, String> adaptedStateAndType = 
-							SmartHomeDevice.adaptToDeviceStateTypeOrFail(targetSetValue, selectedDeviceStateType, targetValueType);
-					//TODO: use					
+					//adapt state and type
+					if (Is.notNullOrEmpty(selectedDeviceStateType)){
+						try{
+							SimpleEntry<String, String> adaptedStateAndType = SmartHomeDevice.adaptToDeviceStateTypeOrFail(
+									targetSetValue, targetValueType, 
+									deviceType, selectedDeviceStateType, 
+									nluResult.input
+							);
+							targetSetValue = adaptedStateAndType.getValue();
+							targetValueType = adaptedStateAndType.getKey();
+						}catch (Exception e){
+							Debugger.printStackTrace(e, 3);
+							//action not supported or makes no sense
+							service.setStatusOkay();
+							service.setCustomAnswer(actionNotPossible);			//"soft"-fail with "action not possible" answer
+							return service.buildResult();
+						}
+					}else{
+						if (Is.typeEqual(targetValueType, SmartHomeDevice.StateType.number_plain)){
+							targetValueType = SmartHomeDevice.makeSmartTypeAssumptionForPlainNumber(SmartDevice.Types.valueOf(deviceType));
+						}
+					}
+					//send
+					//System.out.println("send to device: " + targetSetValue + " - " + targetValueType);		//DEBUG
 					boolean setSuccess = smartHomeHUB.setDeviceState(selectedDevice, targetSetValue, targetValueType);
 					if (setSuccess){
 						//response info
