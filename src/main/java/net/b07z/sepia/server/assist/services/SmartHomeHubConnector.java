@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
+import org.json.simple.JSONObject;
+
 import net.b07z.sepia.server.assist.answers.AnswerTools;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.data.Parameter;
@@ -179,19 +181,26 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		int roomNumber = JSON.getIntegerOrDefault(room.getData(), InterviewData.ITEM_INDEX, Integer.MIN_VALUE);
 		//Client local site/position/room
 		Object deviceLocalSite = nluResult.input.getCustomDataObject(NluInput.DATA_DEVICE_LOCAL_SITE);
-		if (deviceLocalSite != null){
-			System.out.println("deviceLocalSite: " + deviceLocalSite); 		//DEBUG
-			//TODO: use
+		if (deviceLocalSite != null && deviceLocalSite.getClass().equals(JSONObject.class)){
+			//{"name":"livingroom","index":"","location":"home","type":"room","updates":"off"}
+			JSONObject dlsJson = (JSONObject) deviceLocalSite;
+			if (JSON.getString(dlsJson, "location").equals("home") && JSON.getString(dlsJson, "type").equals("room")){
+				roomType = JSON.getStringOrDefault(dlsJson, "name", "");
+				roomNumber = JSON.getIntegerOrDefault(dlsJson, "index", Integer.MIN_VALUE);
+				if (Is.notNullOrEmpty(roomType)){
+					roomTypeLocal = Room.getLocal(roomType, nluResult.language);
+				}
+			}
 		}
 		
 		//get background parameters
 		String reply = nluResult.getParameter(PARAMETERS.REPLY);	//a custom reply (defined via Teach-UI)
 		
 		//TODO: implement in future:
-		String deviceName = null;
+		//String deviceName = null;
 		
-		//check if device is supported 						TODO: for the test phase we're currently doing lights only
-		/*if (!Is.typeEqual(deviceType, SmartDevice.Types.light)){
+		//check if device is supported
+		/*if (Is.typeEqual(deviceType, SmartDevice.Types....)){
 			service.setStatusOkay();
 			service.setCustomAnswer(notYetControllable);	//"soft"-fail with "not yet controllable" answer
 			return service.buildResult();
