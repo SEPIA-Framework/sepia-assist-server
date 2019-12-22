@@ -181,7 +181,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		int roomNumber = JSON.getIntegerOrDefault(room.getData(), InterviewData.ITEM_INDEX, Integer.MIN_VALUE);
 		//Client local site/position/room
 		Object deviceLocalSite = nluResult.input.getCustomDataObject(NluInput.DATA_DEVICE_LOCAL_SITE);
-		if (deviceLocalSite != null && deviceLocalSite.getClass().equals(JSONObject.class)){
+		if (Is.nullOrEmpty(roomType) && deviceLocalSite != null && deviceLocalSite.getClass().equals(JSONObject.class)){
 			//{"name":"livingroom","index":"","location":"home","type":"room","updates":"off"}
 			JSONObject dlsJson = (JSONObject) deviceLocalSite;
 			if (JSON.getString(dlsJson, "location").equals("home") && JSON.getString(dlsJson, "type").equals("room")){
