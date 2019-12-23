@@ -154,19 +154,23 @@ public class SmartDeviceValue implements ParameterHandler {
 			boolean needToSearchDeeper = false;
 			
 			//The device string can be something like "lamp 1" ...
-			if (Is.notNullOrEmpty(deviceStringFound) && NluTools.stringContains(deviceStringFound, number)){
+			if (Is.notNullOrEmpty(deviceStringFound) && filteredInput.contains(deviceStringFound) && NluTools.stringContains(deviceStringFound, number)){
 				filteredInput = NluTools.stringRemoveFirst(filteredInput, Pattern.quote(deviceStringFound));
+				//if (!filteredInput.equals(input)){
 				needToSearchDeeper = true;
+				//}
 			
 			//The room string can be something like "room 212" ...
-			}else if (Is.notNullOrEmpty(roomStringFound) && NluTools.stringContains(roomStringFound, number)){
+			}else if (Is.notNullOrEmpty(roomStringFound) && filteredInput.contains(roomStringFound) && NluTools.stringContains(roomStringFound, number)){
 				filteredInput = NluTools.stringRemoveFirst(filteredInput, Pattern.quote(roomStringFound));
+				//if (!filteredInput.equals(input)){
 				needToSearchDeeper = true;
+				//}
 			}
 			
 			//Do we need to search again?
 			if (needToSearchDeeper){
-				number = Number.extract(filteredInput, this.nluInput);
+				number = Number.extract(filteredInput, this.nluInput);	//Note: this is the static version and will not restore cached result
 				if (Is.notNullOrEmpty(number)){
 					this.found = number;
 					return checkTypeAndReturnNumber(filteredInput, number);

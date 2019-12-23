@@ -44,6 +44,8 @@ public class Test_Numbers {
 		texts.add("Lampe 1 in Zimmer 2 auf 50%");
 		texts.add("Laser in Kammer 1 einschalten");
 		texts.add("Heizung auf 20.5F bitte");
+		texts.add("Heizung 1 in Bad 2");
+		texts.add("Heizung 2 in Bad 2");
 
 		printTestResults(texts, parametersToTest, language);
 		
