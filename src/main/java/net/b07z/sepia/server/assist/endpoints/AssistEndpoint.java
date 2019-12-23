@@ -1,9 +1,10 @@
 package net.b07z.sepia.server.assist.endpoints;
 
+import java.util.ArrayList;
 import java.util.List;
-
 import org.json.simple.JSONObject;
 
+import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.database.CollectStuff;
 import net.b07z.sepia.server.assist.events.EventsManager;
 import net.b07z.sepia.server.assist.interpreters.InterpretationChain;
@@ -11,10 +12,13 @@ import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interviews.Abort;
 import net.b07z.sepia.server.assist.interviews.AbstractInterview;
+import net.b07z.sepia.server.assist.interviews.Interview;
+import net.b07z.sepia.server.assist.interviews.InterviewInfo;
 import net.b07z.sepia.server.assist.interviews.InterviewResult;
 import net.b07z.sepia.server.assist.interviews.InterviewInterface;
 import net.b07z.sepia.server.assist.interviews.NoResult;
 import net.b07z.sepia.server.assist.interviews.RepeatLast;
+import net.b07z.sepia.server.assist.parameters.ParameterHandler;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.ConfigServices;
 import net.b07z.sepia.server.assist.server.Start;
@@ -30,6 +34,8 @@ import net.b07z.sepia.server.core.server.RequestGetOrFormParameters;
 import net.b07z.sepia.server.core.server.RequestParameters;
 import net.b07z.sepia.server.core.server.SparkJavaFw;
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.Is;
+import net.b07z.sepia.server.core.tools.JSON;
 import spark.Request;
 import spark.Response;
 
@@ -111,6 +117,157 @@ public class AssistEndpoint {
 		//return answer in requested format
 		String msg = result.getBestResultJSON().toJSONString();
 		return SparkJavaFw.returnResult(request, response, msg, 200);
+	}
+	/**---INTERPRETER API V2---<br>
+	 * End-point that interprets a user text input searching for commands and parameters and returns a JSON object describing the best result.
+	 * Compared to V1 this version will build parameters (e.g. for location this means it will actually look-up geolocation etc.) and deliver 
+	 * a better structured JSON response.
+	 */
+	public static String interpreterV2(Request request, Response response) {
+		
+		Statistics.add_NLP_hit();					//hit counter
+		long tic = System.currentTimeMillis();
+		
+		//prepare parameters
+		RequestParameters params = new RequestGetOrFormParameters(request);
+		
+		//authenticate
+		Authenticator token = Start.authenticate(params, request);
+		if (!token.authenticated()){
+			return SparkJavaFw.returnNoAccess(request, response, token.getErrorCode());
+		}
+		
+		Statistics.add_NLP_hit_authenticated();		//authorized hit counter
+		Statistics.save_Auth_total_time(tic);		//time it took
+				
+		tic = System.currentTimeMillis();			//track interpreter time
+		
+		//get input
+		NluInput input = AssistEndpoint.getInput(params);
+		
+		//create user
+		input.user = new User(input, token);
+		
+		//decide how to proceed - interpret input
+		InterpretationChain nluChain = new InterpretationChain()
+				.setSteps(Config.nluInterpretationSteps);
+		NluResult result = nluChain.getResult(input);
+		
+		JSONObject resultJson = result.getJsonForWebApi();
+		if (resultJson.containsKey("parameters")){
+			JSONObject extractedParams = JSON.getJObject(resultJson, "parameters");
+		
+			String cmd = result.getCommand();
+			List<ServiceInterface> services = ConfigServices.getCustomOrSystemServices(input, input.user, cmd);
+			if (Is.nullOrEmpty(cmd) || Is.nullOrEmpty(services)){
+				//TODO: abort with some useful message
+			}
+			InterviewInterface interview = new AbstractInterview();
+			interview.setCommand(cmd);
+			interview.setServices(services);
+			InterviewInfo iInfo = interview.getInfo(input);
+			
+			List<Parameter> allServiceParams = new ArrayList<>();
+			allServiceParams.addAll(iInfo.requiredParameters);
+			allServiceParams.addAll(iInfo.optionalParameters);
+			//build parameters
+			for (Parameter p : allServiceParams){
+				String pName = p.getName();
+				String in = JSON.getStringOrDefault(extractedParams, pName, "").trim();
+				//System.out.println("name: " + pName + " - val: " + in);		//DEBUG
+				if (Is.notNullOrEmpty(in)){
+					p.setInput(in);
+					ParameterHandler handler = p.getHandler();
+					handler.setup(result);
+					
+					//check if the parameter is already valid
+					boolean wasBuilt = false;
+					if (!handler.validate(in)){
+						//check for special tags like <i_raw>, <i_norm>, etc. ..., extract if required
+						in = Interview.handleInputBeforeBuild(in, handler, result);
+						//handle it now
+						in = (Is.notNullOrEmpty(in))? handler.build(in) : "";
+						//System.out.println("after build: " + in);		//DEBUG
+						if (handler.buildSuccess()){
+							wasBuilt = true;
+						}
+					}else{
+						wasBuilt = true;
+					}
+					if (wasBuilt){
+						JSON.put(extractedParams, pName, JSON.parseString(in));
+					}
+				}
+			}
+		}
+		
+		Statistics.save_NLP_total_time(tic);		//store NLP time
+		
+		//write basic statistics for user
+		input.user.saveStatistics();
+		
+		//return answer in requested format
+		return SparkJavaFw.returnResult(request, response, resultJson.toJSONString(), 200);
+	}
+	
+	/**---INTERVIEW API (BETA)---<br>
+	 * End-point that interprets the input text and returns an updated NluResult or answer with missing input and question.
+	 */
+	public static String interview(Request request, Response response) {
+		
+		Statistics.add_NLP_hit();					//hit counter
+		long tic = System.currentTimeMillis();
+		
+		//prepare parameters
+		RequestParameters params = new RequestGetOrFormParameters(request);
+		
+		//authenticate
+		Authenticator token = Start.authenticate(params, request);
+		if (!token.authenticated()){
+			return SparkJavaFw.returnNoAccess(request, response, token.getErrorCode());
+		}
+		
+		Statistics.add_NLP_hit_authenticated();		//authorized hit counter
+		Statistics.save_Auth_total_time(tic);		//time it took
+				
+		tic = System.currentTimeMillis();			//track interpreter time
+		
+		//get input
+		NluInput input = AssistEndpoint.getInput(params);
+		
+		//create user
+		input.user = new User(input, token);
+		
+		//decide how to proceed - interpret input
+		InterpretationChain nluChain = new InterpretationChain()
+				.setSteps(Config.nluInterpretationSteps);
+		NluResult result = nluChain.getResult(input);
+		
+		//interview module with services
+		String cmd = result.getCommand();
+		List<ServiceInterface> services = ConfigServices.getCustomOrSystemServices(input, input.user, cmd);
+		JSONObject returnMsg;
+		if (!services.isEmpty()){
+			InterviewInterface interview = new AbstractInterview();
+			interview.setCommand(cmd);
+			interview.setServices(services);
+			InterviewResult iResult = interview.getMissingParameters(result);
+			if (iResult.isComplete()){
+				returnMsg = iResult.getUpdatedNLU().getJsonForWebApi();
+			}else{
+				returnMsg = iResult.getApiComment().getResultJSONObject();
+			}
+		}else{
+			returnMsg = result.getJsonForWebApi();
+		}
+		
+		Statistics.save_NLP_total_time(tic);		//store NLP time
+		
+		//write basic statistics for user
+		input.user.saveStatistics();
+		
+		//return answer in requested format
+		return SparkJavaFw.returnResult(request, response, returnMsg.toJSONString(), 200);
 	}
 
 	/**---ANSWER API---<br>

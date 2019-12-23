@@ -316,6 +316,8 @@ public class Start {
 		post("/account", (request, response) ->				AccountEndpoint.accountAPI(request, response));
 		post("/userdata", (request, response) ->			UserDataEndpoint.userdataAPI(request, response));
 		post("/interpret", (request, response) -> 			AssistEndpoint.interpreterAPI(request, response));
+		post("/interpretV2", (request, response) ->			AssistEndpoint.interpreterV2(request, response));
+		post("/interview", (request, response) ->			AssistEndpoint.interview(request, response));
 		post("/answer", (request, response) -> 				AssistEndpoint.answerAPI(request, response));
 		post("/events", (request, response) -> 				AssistEndpoint.events(request, response));
 		
