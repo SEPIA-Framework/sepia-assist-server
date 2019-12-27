@@ -118,7 +118,7 @@ public class AssistEndpoint {
 		String msg = result.getBestResultJSON().toJSONString();
 		return SparkJavaFw.returnResult(request, response, msg, 200);
 	}
-	/**---INTERPRETER API V2---<br>
+	/**---INTERPRETER API V2 (also known as 'understand')---<br>
 	 * End-point that interprets a user text input searching for commands and parameters and returns a JSON object describing the best result.
 	 * Compared to V1 this version will build parameters (e.g. for location this means it will actually look-up geolocation etc.) and deliver 
 	 * a better structured JSON response.
@@ -253,9 +253,11 @@ public class AssistEndpoint {
 			interview.setServices(services);
 			InterviewResult iResult = interview.getMissingParameters(result);
 			if (iResult.isComplete()){
-				returnMsg = iResult.getUpdatedNLU().getJsonForWebApi();
+				//result
+				returnMsg =  JSON.make("interview_summary", iResult.getUpdatedNLU().getJsonForWebApi());
 			}else{
-				returnMsg = iResult.getApiComment().getResultJSONObject();
+				//comment
+				returnMsg = JSON.make("interview_response", iResult.getApiComment().getResultJSONObject());
 			}
 		}else{
 			returnMsg = result.getJsonForWebApi();
