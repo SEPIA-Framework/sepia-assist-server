@@ -573,4 +573,35 @@ public class SmartHomeDevice {
 		}
 		return new SimpleEntry<>(newInputStateType, newInputState);
 	}
+	
+	/**
+	 * Get state set command from custom object, e.g. defined in control HUB for specific device.
+	 * @param state - state as given by NLU, e.g. on, off, 50%
+	 * @param stateType - type of state to set, e.g. text (on,off) or number (50%), as seen in {@link StateType}
+	 * @param setCmds - JSONObject usually taken from device meta data
+	 * @return new set command or null
+	 */
+	public static String getStateFromCustomSetCommands(String state, String stateType, JSONObject setCmds){
+		if (stateType != null){
+			if (stateType.matches(REGEX_STATE_TYPE_NUMBER)){
+				String cmd = (String) setCmds.get("number");
+				if (Is.notNullOrEmpty(cmd)){
+					return cmd.replaceAll("<val>|<value>", state);
+				}
+			}else if (stateType.matches(REGEX_STATE_TYPE_TEXT)){
+				if (state.matches(REGEX_STATE_ENABLE)){
+					String cmd = (String) setCmds.get("enable");
+					if (Is.notNullOrEmpty(cmd)){
+						return cmd;
+					}
+				}else if (state.matches(REGEX_STATE_DISABLE)){
+					String cmd = (String) setCmds.get("disable");
+					if (Is.notNullOrEmpty(cmd)){
+						return cmd;
+					}
+				}
+			}
+		}
+		return null;
+	}
 }

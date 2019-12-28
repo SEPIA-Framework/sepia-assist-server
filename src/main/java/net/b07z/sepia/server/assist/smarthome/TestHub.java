@@ -5,10 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONObject;
+
 import net.b07z.sepia.server.assist.parameters.Room;
 import net.b07z.sepia.server.assist.parameters.SmartDevice;
 import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 
 /**
@@ -102,12 +105,17 @@ public class TestHub implements SmartHomeHub {
 				deviceFound.setName(attrValue);
 			}else if (attrName.equals(SmartHomeDevice.SEPIA_TAG_TYPE)){
 				deviceFound.setType(attrValue);
+				JSON.put(deviceFound.getMeta(), "typeGuessed", false);
 			}else if (attrName.equals(SmartHomeDevice.SEPIA_TAG_ROOM)){
 				deviceFound.setRoom(attrValue);
 			}else if (attrName.equals(SmartHomeDevice.SEPIA_TAG_ROOM_INDEX)){
 				deviceFound.setRoomIndex(attrValue);
 			}else if (attrName.equals(SmartHomeDevice.SEPIA_TAG_SET_CMDS)){
-				JSON.put(deviceFound.getMeta(), "setCmds", attrValue);
+				if (attrValue != null && attrValue.trim().startsWith("{")){
+					JSON.put(deviceFound.getMeta(), "setCmds", JSON.parseString(attrValue));
+				}else{
+					JSON.put(deviceFound.getMeta(), "setCmds", attrValue);
+				}
 			}else if (attrName.equals(SmartHomeDevice.SEPIA_TAG_STATE_TYPE)){
 				deviceFound.setStateType(attrValue);
 			}else{
@@ -155,6 +163,18 @@ public class TestHub implements SmartHomeHub {
 		Debugger.println(TestHub.class.getSimpleName() + " - setDeviceState - name: " 
 				+ device.getName() + ", stateType: " + stateType + ", state: " + state, 3);
 		if (deviceFound != null){
+			//set command overwrite?
+			JSONObject setCmds = (JSONObject) device.getMeta().get("setCmds");
+			if (Is.notNullOrEmpty(setCmds)){
+				String newState = SmartHomeDevice.getStateFromCustomSetCommands(state, stateType, setCmds);
+				if (newState != null){
+					state = newState;
+					Debugger.println(TestHub.class.getSimpleName() + " - setDeviceState - using custom state: " + state, 3);
+				}
+			//check deviceType to find correct set command
+			}else{
+				//not necessary for Test-HUB since it uses the generalized SEPIA states directly
+			}
 			deviceFound.setState(state);
 			return true;
 		}else{

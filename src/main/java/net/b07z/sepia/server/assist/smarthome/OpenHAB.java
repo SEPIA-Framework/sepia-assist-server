@@ -242,25 +242,9 @@ public class OpenHAB implements SmartHomeHub {
 			//set command overwrite?
 			JSONObject setCmds = (JSONObject) device.getMeta().get("setCmds");
 			if (Is.notNullOrEmpty(setCmds)){
-				if (stateType != null){
-					if (stateType.matches(SmartHomeDevice.REGEX_STATE_TYPE_NUMBER)){
-						String cmd = (String) setCmds.get("number");
-						if (Is.notNullOrEmpty(cmd)){
-							state = cmd.replaceAll("<val>|<value>", state);
-						}
-					}else if (stateType.matches(SmartHomeDevice.REGEX_STATE_TYPE_TEXT)){
-						if (state.matches(SmartHomeDevice.REGEX_STATE_ENABLE)){
-							String cmd = (String) setCmds.get("enable");
-							if (Is.notNullOrEmpty(cmd)){
-								state = cmd;
-							}
-						}else if (state.matches(SmartHomeDevice.REGEX_STATE_ENABLE)){
-							String cmd = (String) setCmds.get("disable");
-							if (Is.notNullOrEmpty(cmd)){
-								state = cmd;
-							}
-						}
-					}
+				String newState = SmartHomeDevice.getStateFromCustomSetCommands(state, stateType, setCmds);
+				if (newState != null){
+					state = newState;
 				}
 				
 			//check deviceType to find correct set command
