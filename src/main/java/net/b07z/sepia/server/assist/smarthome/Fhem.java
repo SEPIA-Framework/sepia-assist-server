@@ -31,7 +31,7 @@ public class Fhem implements SmartHomeHub {
 	private String csrfToken = "";
 	public static final String NAME = "fhem";
 	
-	private static final String TAG_REGEX = "\\bsepia-.*\\b";
+	private static final String TAG_REGEX = "\\bsepia-.*?\\s";
 	private static final String TAG_NAME = SmartHomeDevice.SEPIA_TAG_NAME;
 	private static final String TAG_TYPE = SmartHomeDevice.SEPIA_TAG_TYPE;
 	private static final String TAG_ROOM = SmartHomeDevice.SEPIA_TAG_ROOM;
@@ -281,12 +281,13 @@ public class Fhem implements SmartHomeHub {
 		}else{
 			//set command overwrite?
 			JSONObject setCmds = (JSONObject) device.getMeta().get("setCmds");
+			//System.out.println("setCmds: " + setCmds);		//DEBUG
 			if (Is.notNullOrEmpty(setCmds)){
 				if (stateType != null){
 					if (stateType.matches(SmartHomeDevice.REGEX_STATE_TYPE_NUMBER)){
 						String cmd = (String) setCmds.get("number");
 						if (Is.notNullOrEmpty(cmd)){
-							state = cmd.replaceAll("<val>", state);
+							state = cmd.replaceAll("<val>|<value>", state);
 						}
 					}else if (stateType.matches(SmartHomeDevice.REGEX_STATE_TYPE_TEXT)){
 						if (state.matches(SmartHomeDevice.REGEX_STATE_ENABLE)){
@@ -302,6 +303,7 @@ public class Fhem implements SmartHomeHub {
 						}
 					}
 				}
+				//System.out.println("state: " + state);		//DEBUG
 				
 			//check deviceType to find correct set command
 			}else{
@@ -343,7 +345,7 @@ public class Fhem implements SmartHomeHub {
 							}
 						}else if(stateType.equals(SmartHomeDevice.StateType.number_temperature_c.name()) 
 								|| stateType.equals(SmartHomeDevice.StateType.number_temperature_f.name())){
-							String cmd = NluTools.stringFindFirst(setOptions, "\\b(desired-temp|temperature|desiredTemp|desired-temperature)(?=(\\b|\\d))");
+							String cmd = NluTools.stringFindFirst(setOptions, "\\b(desired-temperature|desired-temp|desiredTemperature|desiredTemp|temperature)(?=(\\b|\\d))");
 							//temp. via desired-temp, temperature, desiredTemp, desired-temperature 
 							if (!cmd.isEmpty()){
 								state = cmd + " " + state;

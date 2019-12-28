@@ -246,7 +246,7 @@ public class OpenHAB implements SmartHomeHub {
 					if (stateType.matches(SmartHomeDevice.REGEX_STATE_TYPE_NUMBER)){
 						String cmd = (String) setCmds.get("number");
 						if (Is.notNullOrEmpty(cmd)){
-							state = cmd.replaceAll("<val>", state);
+							state = cmd.replaceAll("<val>|<value>", state);
 						}
 					}else if (stateType.matches(SmartHomeDevice.REGEX_STATE_TYPE_TEXT)){
 						if (state.matches(SmartHomeDevice.REGEX_STATE_ENABLE)){

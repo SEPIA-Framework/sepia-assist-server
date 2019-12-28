@@ -551,13 +551,19 @@ public class SmartHomeDevice {
 						}else if (userPrefTempUnit.equals("F")){
 							newInputStateType = StateType.number_temperature_f.name();
 						}
+					//Use device type (note: might still have no C or F unit but user can set it in HUB)
+					}else{
+						newInputStateType = deviceStateType;
+						java.lang.Number newTemp = Converters.stringToNumber(newInputState);
+						newInputState = Converters.numberToString(newTemp, "#.#");
 					}
-					System.out.println("userPrefTempUnit: " + userPrefTempUnit);		//DEBUG
 				}
 				//check if temp. unit is equal now - if not convert it
 				if (!deviceStateType.equals(newInputStateType)){
-					String deviceUnit = deviceStateType.substring(deviceStateType.length() - 1).toUpperCase();
-					String inputUnit = newInputStateType.substring(newInputStateType.length() - 1).toUpperCase();
+					String deviceUnit = (deviceStateType.matches(".*_(c|f)$"))? 
+							deviceStateType.substring(deviceStateType.length() - 1).toUpperCase() : "";
+					String inputUnit = (newInputStateType.matches(".*_(c|f)$"))?
+							newInputStateType.substring(newInputStateType.length() - 1).toUpperCase() : "";
 					double newTemp = Number.convertTemperature(newInputState, inputUnit, null, deviceUnit);
 					newInputState = Converters.numberToString(newTemp, "#.#");
 				}
