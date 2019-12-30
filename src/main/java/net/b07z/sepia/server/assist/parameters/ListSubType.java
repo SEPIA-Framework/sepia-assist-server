@@ -17,7 +17,7 @@ import net.b07z.sepia.server.core.data.UserDataList;
 import net.b07z.sepia.server.core.tools.JSON;
 
 /**
- * Handler that is supposed to find a sub-type aka. "name" of a list like my ->BEST<- shopping list
+ * Handler that is supposed to find a sub-type aka. "name" of a list like my -&gt;BEST&lt;- shopping list
  * 
  * @author Florian Quirin
  *
@@ -133,7 +133,7 @@ public class ListSubType implements ParameterHandler{
 		
 		return subType;
 	}
-	/**
+	/*
 	 * Get a sub-type of a known list type ... or at least try to ;-)
 	 * @param input - full input
 	 * @param typeExtracted - extracted known type

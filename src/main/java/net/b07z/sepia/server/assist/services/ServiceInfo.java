@@ -231,7 +231,7 @@ public class ServiceInfo {
 	 * Add the answer parameters in the same order as they are used inside the "custom" or "default" answer.
 	 * You can add more parameters than actually required if you have answers with different requirements just choose the right
 	 * ones in your answer by using the proper references, e.g. "this is &lt1&gt for &lt3&gt" (skipping 2 knowing that it is empty).<br>
-	 * Use {@Link API#resultInfoPut(String, Object)} to set the values as soon as you got them. Use empty strings to fill up the ones not needed. 
+	 * Use {@link ServiceBuilder#resultInfoPut(String, Object)} to set the values as soon as you got them. Use empty strings to fill up the ones not needed. 
 	 * @param parameters - names of the parameters (keys) their values inside resultInfo should be used for the answer
 	 */
 	public ServiceInfo addAnswerParameters(String... parameters){

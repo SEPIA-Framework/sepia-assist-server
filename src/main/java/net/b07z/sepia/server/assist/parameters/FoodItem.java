@@ -45,7 +45,7 @@ public class FoodItem implements ParameterHandler{
 	}
 	*/
 	/**
-	 * Translate generalized news value (e.g. &ltscience&gt) to local name (e.g. Wissenschaft).
+	 * Translate generalized news value (e.g. &lt;science&gt;) to local name (e.g. Wissenschaft).
 	 * If generalized value is unknown returns empty string
 	 * @param newsValue - generalized value 
 	 * @param language - ISO language code

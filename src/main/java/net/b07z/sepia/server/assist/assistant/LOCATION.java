@@ -118,7 +118,7 @@ public class LOCATION {
 	/**
 	 * Get partial address of specific user location with a chosen delimiter ("," or ";" or " " ...) and chosen LOCATIONs as you need.  
 	 * @param user - user you are looking for 
-	 * @param user_param - parameter found during "inputContainsUserLocation(..)" like &#60user_home&#62.
+	 * @param user_param - parameter found during "inputContainsUserLocation(..)" like &#60;user_home&#62;.
 	 * @param delimiter - column, point, empty string ... whatever you need
 	 * @param keys... - LOCATIONs to put into string in the order they appear
 	 * @return address or empty string
@@ -146,8 +146,8 @@ public class LOCATION {
 	}
 	
 	/**
-	 * Check if this location parameter can be added to the user account. Typically things like &#60user_home&#62 etc. can.
-	 * @param user_param - user specific location parameter (like &#60user_home&#62 ...)
+	 * Check if this location parameter can be added to the user account. Typically things like &#60;user_home&#62; etc. can.
+	 * @param user_param - user specific location parameter (like &#60;user_home&#62; ...)
 	 * @return true/false
 	 */
 	public static boolean canBeAddedToAccount(String user_param){
@@ -161,7 +161,7 @@ public class LOCATION {
 	/**
 	 * Get more info about an address by searching the database (aka a geocoder API).
 	 * @param searchTerm - hint of the address in any form
-	 * @param language - language code
+	 * @param nluInput - {@link NluInput} object
 	 */
 	public static JSONObject getInfoBySearch(String searchTerm, NluInput nluInput){
 		if (GeoCoding.isSupported()){
@@ -182,12 +182,12 @@ public class LOCATION {
 	}
 	
 	/**
-	 * Check for a user specific location like &#60user_home&#62, if there is one get the location's longitude, latitude.
+	 * Check for a user specific location like &#60;user_home&#62;, if there is one get the location's longitude, latitude.
 	 * If they are not available get the full address (COUNTRY, CITY, STREET, ...) and load partial address (CITY, STREET, STREET_NBR)
 	 * as "location to say" (we don't want to speak coordinates or too long addresses). Parameter, location and location_to_say are packed in a string array (0,1,2).
 	 * @param user - user to check
 	 * @param input - input to search for user location parameter
-	 * @return String array, 0-parameter (&#60user_home&#62, ...), 1-location (to search for, delimiter: comma), 2-location_to_say (speak that one) 
+	 * @return String array, 0-parameter (&#60;user_home&#62;, ...), 1-location (to search for, delimiter: comma), 2-location_to_say (speak that one) 
 	 */
 	public static String[] getUserSpecificLocation_4_Maps(User user, String input){
 		String user_param = User.containsUserSpecificLocation(input, user);
@@ -209,12 +209,12 @@ public class LOCATION {
 		return new String[]{user_param, location, location_to_say};
 	}
 	/**
-	 * Check for a user specific location like &#60user_home&#62, if there is one get the location's street, city and country.
+	 * Check for a user specific location like &#60;user_home&#62;, if there is one get the location's street, city and country.
 	 * Get the partial address (CITY, STREET) as "location to say". Please add the POI to strings manually.
 	 * Parameter, location and location_to_say are packed in a string array (0,1,2).
 	 * @param user - user to check
 	 * @param input - input to search for user location parameter
-	 * @return String array, 0-parameter (&#60user_home&#62, ...), 1-location (to search for, delimiter: comma), 2-location_to_say (speak that one) 
+	 * @return String array, 0-parameter (&#60;user_home&#62;, ...), 1-location (to search for, delimiter: comma), 2-location_to_say (speak that one) 
 	 */
 	public static String[] getUserSpecificLocation_4_Maps_with_POI(User user, String input){
 		String user_param = User.containsUserSpecificLocation(input, user);
@@ -232,11 +232,11 @@ public class LOCATION {
 		return new String[]{user_param, location, location_to_say};
 	}
 	/**
-	 * Check for a user specific location like &#60user_home&#62, if there is one get a partial address (CITY, STREET, STREET_NBR) and load partial address (CITY, STREET, STREET_NBR)
+	 * Check for a user specific location like &#60;user_home&#62;, if there is one get a partial address (CITY, STREET, STREET_NBR) and load partial address (CITY, STREET, STREET_NBR)
 	 * as "location to say" (we don't want to speak too long addresses). Parameter, location and location_to_say are packed in a string array (0,1,2).
 	 * @param user - user to check
 	 * @param input - input to search for user location parameter
-	 * @return String array, 0-parameter (&#60user_home&#62, ...), 1-location (to search for, delimiter: comma), 2-location_to_say (speak that one) 
+	 * @return String array, 0-parameter (&#60;user_home&#62;, ...), 1-location (to search for, delimiter: comma), 2-location_to_say (speak that one) 
 	 */
 	public static String[] getUserSpecificLocation_4_Mobility(User user, String input){
 		String user_param = User.containsUserSpecificLocation(input, user);
@@ -255,12 +255,12 @@ public class LOCATION {
 		return new String[]{user_param, location, location_to_say};
 	}
 	/**
-	 * Check for a user specific location like &#60user_home&#62, if there is one get the location's longitude, latitude.
+	 * Check for a user specific location like &#60;user_home&#62;, if there is one get the location's longitude, latitude.
 	 * Load partial address (CITY) as "location to say" (we don't want to speak coordinates or too long addresses).
 	 * Parameter, location and location_to_say are packed in a string array (0,1,2).
 	 * @param user - user to check
 	 * @param input - input to search for user location parameter
-	 * @return String array, 0-parameter (&#60user_home&#62, ...), 1-location (to search for, delimiter: comma), 2-location_to_say (speak that one) 
+	 * @return String array, 0-parameter (&#60;user_home&#62;, ...), 1-location (to search for, delimiter: comma), 2-location_to_say (speak that one) 
 	 */
 	public static String[] getUserSpecificLocation_4_Weather(User user, String input){
 		String user_param = User.containsUserSpecificLocation(input, user);
@@ -278,12 +278,12 @@ public class LOCATION {
 		return new String[]{user_param, location, location_to_say};
 	}
 	/**
-	 * Check for a user specific location like &#60user_home&#62, if there is one get the location's city.
+	 * Check for a user specific location like &#60;user_home&#62;, if there is one get the location's city.
 	 * Load partial address (CITY) as "location to say" as well.
 	 * Parameter, location and location_to_say are packed in a string array (0,1,2).
 	 * @param user - user to check
 	 * @param input - input to search for user location parameter
-	 * @return String array, 0-parameter (&#60user_home&#62, ...), 1-location (to search for, delimiter: comma), 2-location_to_say (speak that one) 
+	 * @return String array, 0-parameter (&#60;user_home&#62;, ...), 1-location (to search for, delimiter: comma), 2-location_to_say (speak that one) 
 	 */
 	public static String[] getUserSpecificLocation_4_Flights(User user, String input){
 		String user_param = User.containsUserSpecificLocation(input, user);

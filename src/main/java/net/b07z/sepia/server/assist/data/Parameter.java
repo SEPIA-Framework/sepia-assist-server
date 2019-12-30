@@ -20,7 +20,7 @@ import net.b07z.sepia.server.core.tools.Is;
 public class Parameter {
 	
 	/**
-	 * A number of default values. These values are usually put into brackets &lt...&gt when used.
+	 * A number of default values. These values are usually put into brackets &lt;...&gt; when used.
 	 */
 	public enum Defaults {
 		on, off, toggle,
@@ -73,7 +73,7 @@ public class Parameter {
 	}
 	/**
 	 * Create parameter with name given in PARAMETERS and assign a default value (.name() of any enum).<br>
-	 * Note: enumerator values are put between brackets &lt...&gt automatically and will be set BEFORE the build() method.
+	 * Note: enumerator values are put between brackets &lt;...&gt; automatically and will be set BEFORE the build() method.
 	 */
 	public Parameter(String name, Enum<?> defaultValue){
 		this.name = name;
@@ -234,7 +234,7 @@ public class Parameter {
 	}
 	/**
 	 * Set a default value (from enumerator) that is used when no other value could be extracted from input.
-	 * Enumerator values are put between brackets &lt...&gt automatically.
+	 * Enumerator values are put between brackets &lt;...&gt; automatically.
 	 */
 	public Parameter setDefaultValue(Defaults value){
 		this.defaultValue = "<" + value.name() + ">";
@@ -242,7 +242,7 @@ public class Parameter {
 	}
 	/**
 	 * Set a default value (unknown) that is used when no other value could be extracted from input. <br>
-	 * Note: compared to the version using an enumerator this value is NOT put between brackets &lt...&gt automatically. 
+	 * Note: compared to the version using an enumerator this value is NOT put between brackets &lt;...&gt; automatically. 
 	 */
 	public Parameter setDefaultValue(Object value){
 		this.defaultValue = value; 
@@ -262,7 +262,7 @@ public class Parameter {
 	}
 	
 	/**
-	 * Define a question for this parameter (pool or direct question) like "test_0a" or "&ltdirect&gtwhat is this?". 
+	 * Define a question for this parameter (pool or direct question) like "test_0a" or "&lt;direct&gt;what is this?". 
 	 */
 	public Parameter setQuestion(String question){
 		this.question = question;

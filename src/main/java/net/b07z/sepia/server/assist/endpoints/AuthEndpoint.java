@@ -64,7 +64,6 @@ public class AuthEndpoint {
 		 * Get the expected temporary token (from the submitted parameters and the server specific secrets)
 		 * and compare its 'tKey' to the submitted data.
 		 * @param params - server input parameters (e.g. from POST request)
-		 * @return
 		 * @throws Exception
 		 */
 		public TemporaryToken(RequestParameters params) throws Exception{
@@ -88,7 +87,6 @@ public class AuthEndpoint {
 		 * given the rights temporary by the server. Usually the token is valid for ~5 minutes. The token can
 		 * only be validated with server specific secret info.
 		 * @param user - user data
-		 * @return
 		 * @throws Exception
 		 */
 		public TemporaryToken(User user) throws Exception{

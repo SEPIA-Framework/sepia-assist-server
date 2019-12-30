@@ -184,7 +184,7 @@ public class MusicGenre implements ParameterHandler{
 		return itemResultJSON.toJSONString();
 	}
 	/**
-	 * Convert a genre name to normalized format (e.g. Heavy-Metal -> heavy_metal).
+	 * Convert a genre name to normalized format (e.g. Heavy-Metal -&gt; heavy_metal).
 	 */
 	public static String normalizeGenreName(String genreIn){
 		//optimize stations

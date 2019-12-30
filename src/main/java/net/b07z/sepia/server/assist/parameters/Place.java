@@ -334,7 +334,7 @@ public class Place implements ParameterHandler{
 		return searchPlace;
 	}
 	/**
-	 * Translate generalized POI type value (e.g. &ltfood&gt) to local name (e.g. was zu Essen).
+	 * Translate generalized POI type value (e.g. &lt;food&gt;) to local name (e.g. was zu Essen).
 	 * If generalized value is unknown returns empty string.
 	 * @param value - generalized value 
 	 * @param language - ISO language code

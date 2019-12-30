@@ -39,7 +39,7 @@ public class SearchSection implements ParameterHandler{
 		sections_en.put("<books>", "books");
 	}
 	/**
-	 * Translate generalized value (e.g. &ltscience&gt) to local name (e.g. Wissenschaft).
+	 * Translate generalized value (e.g. &lt;science&gt;) to local name (e.g. Wissenschaft).
 	 * If generalized value is unknown returns empty string
 	 * @param value - generalized value 
 	 * @param language - ISO language code

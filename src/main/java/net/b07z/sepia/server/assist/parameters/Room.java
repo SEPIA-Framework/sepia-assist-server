@@ -86,7 +86,7 @@ public class Room implements ParameterHandler{
 	}
 	
 	/**
-	 * Translate generalized value (e.g. &kitchen&gt) to a context based, useful local name (e.g. in der Küche).
+	 * Translate generalized value (e.g. &lt;kitchen&gt;) to a context based, useful local name (e.g. in der Küche).
 	 * If generalized value is unknown returns empty string
 	 * @param type - generalized type value 
 	 * @param language - ISO language code

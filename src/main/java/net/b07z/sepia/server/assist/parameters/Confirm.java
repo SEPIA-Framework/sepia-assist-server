@@ -37,9 +37,9 @@ public class Confirm implements ParameterHandler{
 		confirm_en.put("<cancel>", "cancel");
 	}
 	/**
-	 * Translate generalized value (e.g. &ltyes&gt) to local speakable name (e.g. "Ja").
+	 * Translate generalized value (e.g. &lt;yes&gt;) to local speakable name (e.g. "Ja").
 	 * If generalized value is unknown returns empty string.
-	 * @param value - generalized value 
+	 * @param input - generalized value 
 	 * @param language - ISO language code
 	 */
 	public static String getLocal(String input, String language){

@@ -17,6 +17,13 @@ import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 
+/**
+ * Class that represents a smart home device with e.g.: name, type, room, state, etc..<br>
+ * Includes several helper functions as well to search and filter devices or convert states etc..
+ * 
+ * @author Florian Quirin
+ *
+ */
 public class SmartHomeDevice {
 	
 	private String name;

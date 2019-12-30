@@ -522,7 +522,7 @@ public class DynamoDB {
 	/**
 	 * Get the real type of the object and make a dynamoDB element like "{"S":"some string"}".
 	 * Note that this does a lot of unchecked class casting, so please test it thoroughly before using it!
-	 * @param obj - object to cast, supported: (hashMap&#60String, Object&#62, ArrayList&#60Object&#62, String, Double, Integer, Boolean, Short, Float, Long)
+	 * @param obj - object to cast, supported: (hashMap&#60;String, Object&#62;, ArrayList&#60;Object&#62;, String, Double, Integer, Boolean, Short, Float, Long)
 	 * @return JSONObject in dynamoDB style (object can be empty)
 	 */
 	@SuppressWarnings("unchecked")
@@ -557,7 +557,7 @@ public class DynamoDB {
 	}
 	
 	/**
-	 * Convert dynamoDB JSONObject map to java hashMap&#60String, Object&#62.
+	 * Convert dynamoDB JSONObject map to java hashMap&#60;String, Object&#62;.
 	 * @param item - map in JSONObject format to convert
 	 * @return
 	 */
@@ -575,9 +575,9 @@ public class DynamoDB {
 		return map;
 	}
 	/**
-	 * Convert a hashMap&#60String, Object&#62 to dynamoDB JSON map string. Note that this does a lot of unchecked 
+	 * Convert a hashMap&#60;String, Object&#62; to dynamoDB JSON map string. Note that this does a lot of unchecked 
 	 * class casting, so please test it thoroughly before using it!
-	 * @param map - hashMap&#60String, Object&#62 to convert
+	 * @param map - hashMap&#60;String, Object&#62; to convert
 	 * @return string compatible to dynamoDB map
 	 */
 	public static JSONObject mapToJSON(HashMap<String, Object> map){
@@ -597,9 +597,9 @@ public class DynamoDB {
 	}
 	
 	/**
-	 * Convert an ArrayList&#60Object&#62 to dynamoDB JSON list string. Note that this does a lot of unchecked 
+	 * Convert an ArrayList&#60;Object&#62; to dynamoDB JSON list string. Note that this does a lot of unchecked 
 	 * class casting, so please test it thoroughly before using it!
-	 * @param list - ArrayList&#60Object&#62 to convert
+	 * @param list - ArrayList&#60;Object&#62; to convert
 	 * @return string compatible to dynamoDB list
 	 */
 	public static JSONObject listToJSON(ArrayList<Object> list){
@@ -631,7 +631,7 @@ public class DynamoDB {
 		return result;
 	}
 	/**
-	 * Convert dynamoDB JSONObject list to java ArrayList&#60Object&#62.
+	 * Convert dynamoDB JSONObject list to java ArrayList&#60;Object&#62;.
 	 * @param item - map in JSONObject format to convert
 	 * @return
 	 */

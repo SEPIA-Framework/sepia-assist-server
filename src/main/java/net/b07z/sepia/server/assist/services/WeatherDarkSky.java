@@ -106,7 +106,7 @@ public class WeatherDarkSky implements ServiceInterface{
 		return (name == null)? "" : name;
 	}
 	/**
-	 * Get a localized name for a specific place name (&lthere&gt, &ltthere&gt, &ltcoordinates&gt, ...)
+	 * Get a localized name for a specific place name (&lt;here&gt;, &lt;there&gt;, &lt;coordinates&gt;, ...)
 	 */
 	public static String getPlaceName(String tag, String language){
 		String name = "";

@@ -12,7 +12,7 @@ import net.b07z.sepia.server.core.tools.JSON;
  * It stores at least a short answer in a specific language. Optimally it also comes with additional HTML info
  * and a compact info element for a "cards" or individual style representation of the answer.<br>
  * Preferred constructor is:<br> ServiceResult(status, answer, answer_clean, htmlInfo, cardInfo, hasInfo, hasCard, result_JSON)
- * <br>More parameters can be stored in the "more" Map<String, String><br>
+ * <br>More parameters can be stored in the "more" Map&lt;String, String&gt;<br>
  * A JSON string representation can be obtained using getResultJSON().<br>
  * Most variables are assigned during {@link ServiceBuilder#buildResult()}.
  *   
@@ -84,7 +84,6 @@ public class ServiceResult {
 	 * @param cardInfo - compact "cards" info stored as JSON Array (usually with up to 3 items)
 	 * @param hasInfo - indicates if extended HTML is available (true/false)
 	 * @param hasCard - is compact "cards" info available (true/false)
-	 * @param resultJson - result as JSON object to send to client
 	 */
 	@SuppressWarnings("unchecked")
 	public ServiceResult (String status, String answer, String answer_clean, String htmlInfo, JSONArray cardInfo, boolean hasInfo, boolean hasCard){
@@ -117,8 +116,7 @@ public class ServiceResult {
 	 * @param actionInfo - JSON object that can include additional info about actions send to the client (action type, info ...)
 	 * @param hasInfo - indicates if extended HTML is available (true/false)
 	 * @param hasCard - is compact "cards" info available (true/false)
-	 * @param hasAction - is there an "action" request to the client like "open an app" etc.? 
-	 * @param resultJson - result as JSON object to send to client
+	 * @param hasAction - is there an "action" request to the client like "open an app" etc.?
 	 */
 	@SuppressWarnings("unchecked")
 	public ServiceResult (String status, String answer, String answer_clean, String htmlInfo, JSONArray cardInfo, JSONArray actionInfo, boolean hasInfo, boolean hasCard, boolean hasAction){

@@ -286,7 +286,6 @@ public class ServiceBuilder {
 	 * Note: the order in which actions are created can matter because clients would usually execute them one after another. 
 	 * E.g.: addAction(ACTIONS.OPEN_URL) or addAction(ACTIONS.OPEN_INFO).<br>
 	 * See also: {@link net.b07z.sepia.server.assist.assistant.ActionBuilder}
-	 * @param key
 	 * @param value
 	 */
 	@SuppressWarnings("unchecked")

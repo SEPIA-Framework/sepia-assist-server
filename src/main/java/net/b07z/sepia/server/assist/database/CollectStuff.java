@@ -44,7 +44,7 @@ public class CollectStuff {
 	
 	/**
 	 * Store useful data submitted by user in asynchronous way (without blocking the main).
-	 * @param user - User
+	 * @param nluResult - {@link NluResult} object
 	 */
 	public static void saveAsync(NluResult nluResult){
 		//asynchronous

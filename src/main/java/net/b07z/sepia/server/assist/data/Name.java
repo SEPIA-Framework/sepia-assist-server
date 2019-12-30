@@ -35,9 +35,6 @@ public class Name {
 	}
 	/**
 	 * Create default Name object.
-	 * @param first - first name
-	 * @param last - last name
-	 * @param nick - nick name
 	 */
 	public Name(){}
 	/**

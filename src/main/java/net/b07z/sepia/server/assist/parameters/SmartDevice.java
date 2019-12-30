@@ -86,7 +86,7 @@ public class SmartDevice implements ParameterHandler{
 	}
 	
 	/**
-	 * Translate generalized value (e.g. &ltlight&gt) to a context based, useful local name (e.g. das Licht).
+	 * Translate generalized value (e.g. &lt;light&gt;) to a context based, useful local name (e.g. das Licht).
 	 * If generalized value is unknown returns empty string
 	 * @param type - generalized type value 
 	 * @param language - ISO language code

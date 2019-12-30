@@ -93,7 +93,7 @@ public class DB {
 	 * Get account info for id. Respects account access restrictions.
 	 * @param account_id - user id aka email
 	 * @param keys - account info to load
-	 * @return HashMap<String, Object> with key values (user.info)
+	 * @return HashMap&lt;String, Object&gt; with key values (user.info)
 	 */
 	public static Map<String, Object> getAccountInfos(String account_id, String... keys) {
 		Map<String, Object> info = new HashMap<String, Object>();
@@ -371,7 +371,7 @@ public class DB {
 		return code;
 	}
 	/**
-	 * Clear all command->services mappings for a user.
+	 * Clear all command-&gt;services mappings for a user.
 	 * @return error code (0=all good)
 	 */
 	public static int clearCommandMappings(String userId){
