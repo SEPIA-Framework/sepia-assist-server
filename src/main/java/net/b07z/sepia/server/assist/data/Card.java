@@ -142,7 +142,7 @@ public class Card {
 	 * @param text - text info of elements
 	 * @param url_link - link to element (e.g. to wikipedia, to homepage, etc.)
 	 * @param url_image - image to element
-	 * @param action - JSON array with actions (see assistant.ACTIONS)
+	 * @param action_info - JSON array with actions (see assistant.ACTIONS)
 	 * @return the JSONObject that has been added to cards
 	 */
 	@SuppressWarnings("unchecked")

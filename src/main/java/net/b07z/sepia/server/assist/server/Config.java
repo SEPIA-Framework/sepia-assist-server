@@ -58,7 +58,7 @@ import net.b07z.sepia.server.core.tools.Is;
  */
 public class Config {
 	public static final String SERVERNAME = "SEPIA-Assist-API"; 		//public server name
-	public static final String apiVersion = "v2.3.1";					//API version
+	public static final String apiVersion = "v2.4.0";					//API version
 	public static String privacyPolicyLink = "";						//Link to privacy policy
 	
 	//helper for dynamic class creation (e.g. from strings in config-file) - TODO: reduce dependencies further 
@@ -73,6 +73,8 @@ public class Config {
 	public static String dbSetupFolder = xtensionsFolder + "Database/";		//folder for database stuff
 	public static String webServerFolder = xtensionsFolder + "WebContent";	//folder for web-server
 	public static boolean hostFiles = true;									//use web-server?
+	public static boolean allowFileIndex = true;							//allow web-server index
+	public static String fileMimeTypes = "mp4=video/mp4, mp3=audio/mpeg";	//MIME Types for files when loaded from static web server
 	public static String localName = "sepia-assist-server-1";				//**user defined local server name - should be unique inside cluster because it might be used as serverId
 	public static String localSecret = "123456";							//**user defined secret to validate local server
 	public static int serverPort = 20721;									//**server port
@@ -332,6 +334,8 @@ public class Config {
 	//API URLs - loaded from config file
 	public static String smarthome_hub_host = "";
 	public static String smarthome_hub_name = "";
+	public static String smarthome_hub_auth_type = "";
+	public static String smarthome_hub_auth_data = "";
 	
 	//------Database loading and default interpreters------
 	
@@ -479,7 +483,9 @@ public class Config {
 			ConfigElasticSearch.endpoint_custom = settings.getProperty("db_elastic_endpoint_custom", "");
 			ConfigElasticSearch.endpoint_eu1 = settings.getProperty("db_elastic_endpoint_eu1");
 			ConfigElasticSearch.endpoint_us1 = settings.getProperty("db_elastic_endpoint_us1");
-			checkElasticsearchMappingsOnStart = Boolean.valueOf(settings.getProperty("checkElasticsearchMappingsOnStart", "true"));
+			ConfigElasticSearch.auth_type = settings.getProperty("db_elastic_auth_type", null);
+			ConfigElasticSearch.auth_data = settings.getProperty("db_elastic_auth_data", null);
+			checkElasticsearchMappingsOnStart = Boolean.valueOf(settings.getProperty("check_elasticsearch_mappings_on_start", "true")); 	//TODO: not yet in properties file
 			//chat
 			connectToWebSocket = Boolean.valueOf(settings.getProperty("connect_to_websocket"));
 			//NLU chain
@@ -499,6 +505,11 @@ public class Config {
 			urlWebFiles = settings.getProperty("url_web_files"); 		
 			urlDashboard = settings.getProperty("url_dashboard");
 			hostFiles = Boolean.valueOf(settings.getProperty("host_files"));
+			allowFileIndex = Boolean.valueOf(settings.getProperty("allow_file_index", "true")); 	//TODO: not yet in properties file
+			String fileMimeTypesList = settings.getProperty("file_mime_types");
+			if (Is.notNullOrEmpty(fileMimeTypesList)){
+				fileMimeTypes = fileMimeTypesList;
+			}
 			//email account
 			emailHost = settings.getProperty("email_host");
 			emailAccount = settings.getProperty("email_account");
@@ -556,6 +567,8 @@ public class Config {
 					smarthome_hub_name = OpenHAB.NAME;
 				}
 			}
+			smarthome_hub_auth_type = settings.getProperty("smarthome_hub_auth_type", null);
+			smarthome_hub_auth_data = settings.getProperty("smarthome_hub_auth_data", null);
 			
 			Debugger.println("loading settings from " + confFile + "... done." , 3);
 		}catch (Exception e){

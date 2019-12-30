@@ -189,7 +189,8 @@ public class ServiceBuilder {
 	}
 	
 	/**
-	 * Set status "incomplete" and add the missing "parameter" with it's "question". Finish after this by building and returning the result.
+	 * Set status "incomplete" and add the missing "parameter" with it's "question". Finish after this by building and returning the result.<br>
+	 * NOTE: The question can use answer wildcards ONLY IF resultInfo was set before!
 	 * @param parameter - PARAMETERS value
 	 * @param question - pool or direct question like "test_0a" or "&lt;direct&gt;what is this?"  
 	 */
@@ -285,7 +286,6 @@ public class ServiceBuilder {
 	 * Note: the order in which actions are created can matter because clients would usually execute them one after another. 
 	 * E.g.: addAction(ACTIONS.OPEN_URL) or addAction(ACTIONS.OPEN_INFO).<br>
 	 * See also: {@link net.b07z.sepia.server.assist.assistant.ActionBuilder}
-	 * @param key
 	 * @param value
 	 */
 	@SuppressWarnings("unchecked")

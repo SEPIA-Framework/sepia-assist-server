@@ -3,6 +3,7 @@ package net.b07z.sepia.server.assist.parameters;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.Normalizer;
 import net.b07z.sepia.server.assist.parameters.Test_Parameters.TestResult;
@@ -14,10 +15,10 @@ import net.b07z.sepia.server.core.tools.Debugger;
 
 public class Test_Numbers {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		
 		Start.setupServicesAndParameters();
-		String[] parametersToTest = new String[]{ PARAMETERS.NUMBER, PARAMETERS.SMART_DEVICE, PARAMETERS.SMART_DEVICE_VALUE };
+		String[] parametersToTest = new String[]{ PARAMETERS.NUMBER, PARAMETERS.SMART_DEVICE, PARAMETERS.ROOM, PARAMETERS.SMART_DEVICE_VALUE };
 		
 		String language = "de";
 				
@@ -26,6 +27,7 @@ public class Test_Numbers {
 		texts.add("-305.14");
 		texts.add("1,75€ ist größr als 1.57$");
 		texts.add("Hausnummer 3b");
+		texts.add("Hausnummer 20F");
 		texts.add("-305.00 leer");
 		texts.add("Das kostet $5");
 		texts.add("Das kostet 5 Dollar");
@@ -37,8 +39,27 @@ public class Test_Numbers {
 		texts.add("Licht auf 70% im Wohnzimmer bitte");
 		texts.add("Licht auf 10 Prozent bitte im Wohnzimmer");
 		texts.add("Lampe 1 auf 50 Prozent");
+		texts.add("Setze 50 Prozent für Lampe 1");
+		texts.add("Setze 50 Prozent für Lampe 1 in Zimmer 2");
+		texts.add("Lampe 1 in Zimmer 2 auf 50%");
+		texts.add("Laser in Kammer 1 einschalten");
+		texts.add("Heizung auf 20.5F bitte");
+		texts.add("Heizung 1 in Bad 2");
+		texts.add("Heizung 2 in Bad 2");
 
 		printTestResults(texts, parametersToTest, language);
+		
+		System.out.println("\nNumber conversion test:\n");
+		System.out.println("20°C in C: " + Number.convertTemperature("20", Number.getTemperatureUnit("heizung auf 20 grad celsius", LANGUAGES.DE), null, "C"));
+		System.out.println("20°C in F: " + Number.convertTemperature("20", Number.getTemperatureUnit("heizung auf 20 grad celsius", LANGUAGES.DE), null, "F"));
+		System.out.println("20 (C) in C: " + Number.convertTemperature("20", Number.getTemperatureUnit("heizung auf 20 grad", LANGUAGES.DE), "C", "C"));
+		System.out.println("20 (C) in F: " + Number.convertTemperature("20", Number.getTemperatureUnit("heizung auf 20 grad", LANGUAGES.DE), "C", "F"));
+		System.out.println("68 (F) in F: " + Number.convertTemperature("68", Number.getTemperatureUnit("heizung auf 68 grad", LANGUAGES.DE), "F", "F"));
+		System.out.println("68 (F) in C: " + Number.convertTemperature("68", Number.getTemperatureUnit("heizung auf 68 grad", LANGUAGES.DE), "F", "C"));
+		System.out.println("68f in C: " + Number.convertTemperature("68", Number.getTemperatureUnit("heizung auf 68f", LANGUAGES.DE), "F", "C"));
+		System.out.println("80°F in F: " + Number.convertTemperature("80", Number.getTemperatureUnit("heater to 80°f", LANGUAGES.EN), "F", "F"));
+		System.out.println("80°F in C: " + Number.convertTemperature("80", Number.getTemperatureUnit("heater to 80°f", LANGUAGES.EN), "F", "C"));
+		System.out.println("80f in C: " + Number.convertTemperature("80", Number.getTemperatureUnit("heater to 80f", LANGUAGES.EN), "F", "C"));
 	}
 	
 	static void printTestResults(List<String> texts, String[] parametersToTest, String language){

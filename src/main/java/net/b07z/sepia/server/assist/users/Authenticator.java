@@ -44,6 +44,7 @@ public class Authenticator {
 	public static final String USER_LANGUAGE = "user_lang_code";
 	public static final String USER_BIRTH = "user_birth";
 	public static final String BOT_CHARACTER = "bot_character";
+	public static final String USER_PREFERRED_UNIT_TEMP = "unit_pref_temp";
 	
 	//Account protection against brute force login-attempts 
 	private static Map<String, AtomicInteger> protectedAccountsFailedLoginAttempts = new HashMap<>();
@@ -255,6 +256,11 @@ public class Authenticator {
 			String bot_char = (String) basics.get(BOT_CHARACTER);
 			if (bot_char != null && !bot_char.isEmpty()){
 				JSON.add(msg, BOT_CHARACTER, bot_char);
+			}
+			//PREFERRED UNIT for TEMPERATURE
+			String unit_pref_temp = (String) basics.get(USER_PREFERRED_UNIT_TEMP);
+			if (unit_pref_temp != null && !unit_pref_temp.isEmpty()){
+				JSON.add(msg, USER_PREFERRED_UNIT_TEMP, unit_pref_temp);
 			}
 		}		
 	}

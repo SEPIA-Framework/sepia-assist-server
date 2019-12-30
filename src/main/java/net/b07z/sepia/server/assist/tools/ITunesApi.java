@@ -29,7 +29,7 @@ public class ITunesApi {
 	public static final String ENTITY_ALBUM = "album";
 	public static final String ENTITY_MIX = "mix";
 	//music entities:	musicArtist, musicTrack, album, musicVideo, mix, song.
-	//please note that “musicTrack” can include both songs and music videos in the results.
+	//please note that  musicTrack can include both songs and music videos in the results.
 	
 	public static final String ATTRIBUTE_SONG = "songTerm";
 	public static final String ATTRIBUTE_ARTIST = "artistTerm";

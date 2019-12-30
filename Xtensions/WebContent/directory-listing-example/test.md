@@ -1,0 +1,1 @@
+This folder will not be indexed by the '/web-content-index/*' endpoint due to the presence of the 'no-index' file. NOTE: this does not apply to sub-folders by default!

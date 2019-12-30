@@ -44,8 +44,12 @@ public class Number implements ParameterHandler{
 		letterend,
 		//letterstart,
 		//...
-		other;
+		other,
+		custom		//this is usually only used in predefined sentences/results (e.g. via Teach-UI)
 	}
+	//sub-types
+	public static final String SUBTYPE_TEMP_F = "F";
+	public static final String SUBTYPE_TEMP_C = "C";
 	
 	public static final String PLAIN_NBR_REGEXP = "(\\-|\\+|\\.|,|)\\d+(\\.|,|)\\d*";
 	
@@ -112,13 +116,13 @@ public class Number implements ParameterHandler{
 	 */
 	public static String getTypeClass(String input, String language){
 		
-		if (input.matches(PLAIN_NBR_REGEXP)){
+		if (input.matches(PLAIN_NBR_REGEXP)){		//matches exactly just a number, e.g. 3.14156
 			return "<" + Types.plain.name() + ">";
 			
 		}else if (NluTools.stringContains(input, "%|prozent|percent")){
 				return "<" + Types.percent.name() + ">";
 			
-		}else if (NluTools.stringContains(input, "(°|(grad|degree(s|)))( |)(celsius|c|fahrenheit|f|)|celsius|fahrenheit|f")){
+		}else if (NluTools.stringContains(input, "(\\d|)(°|(grad|degree(s|)))( |)(celsius|c|fahrenheit|f|)|celsius|fahrenheit|f")){
 			return "<" + Types.temperature.name() + ">";
 			
 		}else if (NluTools.stringContains(input, CURRENCY.TAGS_DE + "|" + CURRENCY.TAGS_EN)){
@@ -149,6 +153,88 @@ public class Number implements ParameterHandler{
 	}
 	
 	/**
+	 * Search input for temperature unit.
+	 * @param userInput - normalized full text user input (to find temp. unit)
+	 * @param language - code for search language
+	 * @return "C", "F" or empty string
+	 */
+	public static String getTemperatureUnit(String userInput, String language){
+		boolean isCelsius = false;
+		boolean isFarenheit = false;
+		//German
+		if (language.matches(LANGUAGES.DE)){
+			if (NluTools.stringContains(userInput, "(\\d+|)(°(?!f)|celsius|c)")){
+				isCelsius = true;
+			}else if (NluTools.stringContains(userInput, "(\\d+|)(°f|fahrenheit|f)")){
+				isFarenheit = true;
+			}
+		//English and other
+		}else{
+			if (NluTools.stringContains(userInput, "(\\d+|)(°(?!f)|celsius|c)")){
+				isCelsius = true;
+			}else if (NluTools.stringContains(userInput, "(\\d+|)(°f|fahrenheit|f)")){
+				isFarenheit = true;
+			}
+		}
+		if (isCelsius){
+			return "C";
+		}else if (isFarenheit){
+			return "F";
+		}else{
+			return "";
+		}
+	}
+	
+	/**
+	 * Convert a number found in user input to a preferred temperature unit (or simply return value as double if no conversion required).
+	 * Fails if source unit cannot be identified (either by input or preferred unit).
+	 * @param value - temperature number previously extracted (String)
+	 * @param givenUnit - unit given e.g. by device or input ("C" or "F"). If not known you can use {@link Number#getTemperatureUnit}.
+	 * @param userPrefUnit - preferred user unit ("C" or "F")
+	 * @param targetUnit - convert to "C" or "F"
+	 * @return temperature as double in target unit. Can throw exception if source or target are unclear.
+	 */
+	public static double convertTemperature(String value, String givenUnit, String userPrefUnit, String targetUnit) throws Exception {
+		boolean isCelsius = false;
+		boolean isFarenheit = false;
+		double val = Double.parseDouble(value);
+		if (givenUnit.equals("C")){
+			isCelsius = true;
+		}else if (givenUnit.equals("F")){
+			isFarenheit = true;
+		}
+		//use user preference
+		if (!isCelsius && !isFarenheit && userPrefUnit != null){
+			if (userPrefUnit.equals("C")){
+				isCelsius = true;
+			}else if (userPrefUnit.equals("F")){
+				isFarenheit = true;
+			}
+		}
+		//check current and target
+		if (targetUnit.equals("F")){
+			if (isFarenheit){
+				return val;
+			}else if (isCelsius){
+				double valF = Math.round(((val * 1.8d + 32.0d))*1000.0d)/1000.0d;
+				return valF;
+			}
+		}else if (targetUnit.equals("C")){
+			if (isFarenheit){
+				double valC = Math.round(((val - 32.0d)/1.8d)*1000.0d)/1000.0d;
+				return valC;
+			}else if (isCelsius){
+				return val;
+			}
+		}else{
+			throw new RuntimeException("Number.convertTemperature - invalid target unit (must be C or F)!");
+		}
+		throw new RuntimeException("Number.convertTemperature - result not clear! Missing source unit.");
+	}
+	
+	//-----------------------------------------------
+	
+	/**
 	 * Static version of extract method to be used in other variations of the number parameter.
 	 */
 	public static String extract(String inputOrg, NluInput nluInput){
@@ -167,9 +253,11 @@ public class Number implements ParameterHandler{
 		
 		//ends with number?
 		if (number.matches(".*?\\d+$")){
-			relevantTypeSearchString = NluTools.getStringAndNextWords(input, number, 3);
+			//we check result + 3 (1 for safety)
+			relevantTypeSearchString = NluTools.getStringAndNextWords(input, number, 3); 	//20 degrees celsius, 20 dollar
 		}else{
-			relevantTypeSearchString = NluTools.getStringAndNextWords(input, number, 2);
+			//we check result + 2 (1 for safety)
+			relevantTypeSearchString = NluTools.getStringAndNextWords(input, number, 2);	//20° celsius, 20$
 		}
 		//System.out.println("PARAMETER-NUMBER - relevantTypeSearchString: " + relevantTypeSearchString); 		//DEBUG
 		
@@ -184,7 +272,11 @@ public class Number implements ParameterHandler{
 			found = number.trim();
 		}else{
 			number = NluTools.stringFindFirst(number, PLAIN_NBR_REGEXP).trim();
-			found = NluTools.stringFindFirst(input, Pattern.quote((number + type).trim()) + "|" + Pattern.quote((type + number).trim())); 
+			found = NluTools.stringFindFirst(input, Pattern.quote((number + type).trim()) + "|" + Pattern.quote((type + number).trim()));
+			if (found.isEmpty()){
+				//this can happen when number and type don't belong together, e.g. "light 1 to 50%" will find 1 and % but its not 1%
+				found = number;
+			}
 		}		
 		return found;
 	}
@@ -218,7 +310,7 @@ public class Number implements ParameterHandler{
 		//System.out.println("PARAMETER-NUMBER - found: " + this.found);					//DEBUG
 		
 		//store it
-		pr = new ParameterResult(PARAMETERS.NUMBER, found, this.found);
+		pr = new ParameterResult(PARAMETERS.NUMBER, number, this.found);
 		nluInput.addToParameterResultStorage(pr);
 		
 		return found;
@@ -259,7 +351,7 @@ public class Number implements ParameterHandler{
 		//build default result
 		JSONObject itemResultJSON = new JSONObject();
 			JSON.add(itemResultJSON, InterviewData.INPUT, input);
-			JSON.add(itemResultJSON, InterviewData.VALUE, value.replaceAll(",", "."));
+			JSON.add(itemResultJSON, InterviewData.VALUE, value.replaceAll(",", "."));	//default decimal format is "1.00"
 			JSON.add(itemResultJSON, InterviewData.NUMBER_TYPE, type);
 		
 		buildSuccess = true;

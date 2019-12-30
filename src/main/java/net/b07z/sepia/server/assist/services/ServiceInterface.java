@@ -7,13 +7,22 @@ import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 
 /**
- * The interface for all services, aka: plug-ins, skills, abilities, APIs. 
- * It's pretty simple and returns e.g. {@link ServiceInfo} and {@link ServiceResult} :-)
+ * The interface for all smart services, aka: plug-ins, skills, voice-actions, abilities, APIs. 
+ * The core objects a service has to return are {@link ServiceInfo}, {@link ServiceResult} and optionally {@link ServiceAnswers}, {@link ServiceRequirements}.
+ * To build a {@link ServiceResult} you can use the high level class {@link ServiceBuilder}.
  *  
  * @author Florian Quirin
  *
  */
 public interface ServiceInterface {
+	
+	/**
+	 * Return service requirements like server version, client version, etc..
+	 * @return {@link ServiceRequirements}
+	 */
+	public default ServiceRequirements getRequirements(){
+		return new ServiceRequirements();
+	}
 	
 	/**
 	 * Get the {@link ServiceResult} for this service. Should at least generate an answer, optionally include HTML info, card info
@@ -35,6 +44,7 @@ public interface ServiceInterface {
 	public default ServiceInfo getInfoFreshOrCache(NluInput input, String serviceCanonicalName){
 		ServiceInfo si = input.getCachedServiceInfo(serviceCanonicalName);
 		if (si == null){
+			//TODO: we could add some extra data to ServiceInfo here, e.g. the whole NluInput
 			si = getInfo(input.language);
 			input.cacheServiceInfo(serviceCanonicalName, si);
 		}

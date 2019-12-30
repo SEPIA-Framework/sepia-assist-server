@@ -248,13 +248,21 @@ public class Alarms implements ServiceInterface{
 				
 				//user probably meant next day?
 				long absTotalDiff_ms = Math.abs(totalDiff_ms);
+				long absDiffDays = Math.abs(diffDays);
 				long maxHours = 23*60*60*1000;
 				long minHours = 1*60*60*1000;
 				if (absTotalDiff_ms > minHours && absTotalDiff_ms < maxHours){
+					//next day
 					dateDay = DateTimeConverters.getTomorrow("yyyy.MM.dd", nluResult.input);
 					changedDateAndTime = true;
+				}else if (absDiffDays >= 2 && absDiffDays < 365){
+					//next year
+					String oldYear = dateDay.split("\\.")[0];
+					String nextYear = Long.toString(Long.parseLong(oldYear) + 1l);
+					dateDay = dateDay.replace(oldYear, nextYear);
+					changedDateAndTime = true;
 				}
-				//TODO: add more
+				//TODO: add more - there is another issue: it is a difference if the user says "alarm for 8am" or "alarm for [day-month-of-today] 8am" (we ignore this for now) 
 				
 				//update time ...
 				if (changedDateAndTime){

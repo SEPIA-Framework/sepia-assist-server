@@ -104,26 +104,25 @@ public class Interview {
 	 * Aborts with a default answer like "I think we are stuck here somehow, can you try again later?".
 	 * @param parameter - a parameter from the pool PARAMETER. ...
 	 * @param question - reference to a question in the database, e.g. "flights_ask_start_0a" or direct question with tag &lt;direct&gt;.
-	 * @param failMsg - reference to an answer that will be given on the 3rd try, e.g. "Sorry I didn't get it! Try again later."
+	 * @param failMsg - reference to an answer that will be given on the 3rd try, e.g. "Sorry I didn't get it! Try again later." - Typical default: 'abort_0b'
+	 * @param wildcards - (optional) parameters given to the question to fill out wildcards
 	 * @return API_Result to send back to client
 	 */
-	public ServiceResult ask(String parameter, String question, String failMsg){
+	public ServiceResult ask(String parameter, String question, String failMsg, Object... wildcards){
 		if (nluResult.input.isRepeatedAnswerToParameter(parameter) < 2){
-			return AskClient.question(question, parameter, nluResult);
+			return AskClient.question(question, parameter, nluResult, wildcards);
 		}else{
 			return NoResult.get(nluResult, failMsg);
 		}
 	}
 	/**
-	 * Same as ask(String parameter, String question, String failMsg) but using "abort_0b" for failMsg.
+	 * Shortcut to "ask(String parameter, String question, String failMsg, Object... wildcards)" with default "failMsg". 
+	 * Automatically chooses custom or default question. 
+	 * @param parameter - parameter to ask for
+	 * @param wildcards - (optional) parameters given to the question to fill out wildcards
+	 * @return
 	 */
-	public ServiceResult ask(String parameter, String question){
-		return ask(parameter, question, "abort_0b");
-	}
-	/**
-	 * Shortcut to "ask(String parameter, String question, String failMsg)" with default "failMsg". Automatically chooses custom or default question. 
-	 */
-	public ServiceResult ask(Parameter parameter){
+	public ServiceResult ask(Parameter parameter, Object... wildcards){
 		String questionFail = parameter.getQuestionFailAnswer();
 		String question = parameter.getQuestion();
 		if (question.isEmpty()){
@@ -131,9 +130,9 @@ public class Interview {
 			Debugger.println("missing default question for '" + parameter.getName() + "'", 1);
 		}
 		if (!questionFail.isEmpty()){
-			return ask(parameter.getName(), question, questionFail);
+			return ask(parameter.getName(), question, questionFail, wildcards);
 		}else{
-			return ask(parameter.getName(), question);
+			return ask(parameter.getName(), question, "abort_0b", wildcards);
 		}
 	}
 	
@@ -266,6 +265,40 @@ public class Interview {
 	//and an API_Result only if there is some action required 
 	
 	/**
+	 * Before building the parameter (final step) check if the input contains a special prefix to indicate further processing
+	 * is required. E.g.: if it's raw input it needs normalization and extraction. This can happen in predefined or 
+	 * custom commands for example.
+	 * @param input - parameter input/value
+	 * @param handler - handler for this parameter
+	 * @return modified or original input
+	 */
+	public static String handleInputBeforeBuild(String input, ParameterHandler handler, NluResult nluRes){
+		//raw input? (normalize and extract)
+		if (input.startsWith(INPUT_RAW)){
+			input = input.replaceFirst("^" + Pattern.quote(INPUT_RAW), "").trim();
+			//search the whole text
+			if (input.isEmpty()){
+				input = nluRes.input.textRaw;
+			}
+			//normalize input
+			Normalizer normalizer = Config.inputNormalizers.get(nluRes.language);
+			if (normalizer != null){
+				input = normalizer.normalizeText(input);
+			}
+			//extract
+			input = handler.extract(input);
+		
+		//normalized input? (extract)
+		}else if (input.startsWith(INPUT_NORM)){
+			input = input.replaceFirst("^" + Pattern.quote(INPUT_NORM), "").trim();
+			//extract
+			input = handler.extract(input);
+		}
+		
+		return input;
+	}
+	
+	/**
 	 * This method is called by an interview module when there is non-final input. It tries to build the default-format result
 	 * for the "Parameter". Additional service-specific methods might be added via "InterviewInfo". 
 	 */
@@ -285,34 +318,15 @@ public class Interview {
 		handler.setup(this.nluResult);
 
 		//System.out.println("input: " + input);		//DEBUG
-		
-		//check for special input tags first:
-		
-		//raw input? (normalize and extract)
-		if (input.startsWith(INPUT_RAW)){
-			input = input.replaceFirst("^" + Pattern.quote(INPUT_RAW), "").trim();
-			//search the whole text
-			if (input.isEmpty()){
-				input = nluResult.input.textRaw;
-			}
-			//normalize input
-			Normalizer normalizer = Config.inputNormalizers.get(this.nluResult.language);
-			if (normalizer != null){
-				input = normalizer.normalizeText(input);
-			}
-			//extract
-			input = handler.extract(input);
-		
-		//normalized input? (extract)
-		}else if (input.startsWith(INPUT_NORM)){
-			input = input.replaceFirst("^" + Pattern.quote(INPUT_NORM), "").trim();
-			//extract
-			input = handler.extract(input);
-		
-		//check if the parameter is already valid (TODO: is this a redundant call? Maybe not ...)
-		}else if (handler.validate(input)){
+				
+		//check if the parameter is already valid
+		if (handler.validate(input)){
 			makeFinal(parameter, input);
 			return null; //this means "all fine, no comments" ^^
+		
+		//check for special tags like <i_raw>, <i_norm>, etc. ...
+		}else{
+			input = handleInputBeforeBuild(input, handler, this.nluResult);
 		}
 		
 		//handle it now
@@ -329,7 +343,7 @@ public class Interview {
 				
 			//else clear and ignore
 			}else{
-				nluResult.removeParameter(p.getName());
+				this.nluResult.removeParameter(p.getName());
 				return null;
 			}
 			
@@ -344,7 +358,7 @@ public class Interview {
 		//everything else can only mean complete fail now. Usually this point should never be reached.
 		}else{
 			Debugger.println("buildParameterOrComment(...) gave no result at all! Parameter: " + parameter + ", Input was: " + input, 1);
-			return NoResult.get(nluResult);
+			return NoResult.get(this.nluResult);
 		}
 	}
 	/**

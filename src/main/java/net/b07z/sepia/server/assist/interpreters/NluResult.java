@@ -472,6 +472,7 @@ public class NluResult {
 	 * @param cmd_sum - cmd_summary to be transformed back
 	 * @return {@link NluResult}
 	 */
+	@SuppressWarnings("unchecked")
 	public static NluResult cmdSummaryToResult(String cmd_sum){
 		//initialize
 		List<String> possibleCMDs = new ArrayList<>();
@@ -479,31 +480,22 @@ public class NluResult {
 		List<Integer> possibleScore = new ArrayList<>();
 		int bestScoreIndex = 0;
 		
-		//split string - Compare to: Converters.getParametersFromCommandSummary (TODO: use?)
+		//split string
 		String cmd;
-		String params;
+		JSONObject params;
 		if (cmd_sum.trim().matches(".*?;;.+")){
 			String[] parts = cmd_sum.split(";;", 2);		//TODO: change this whole ";;" structure to JSON?
 			cmd = parts[0].trim();
-			params = parts[1].trim();
+			params = Converters.getParametersFromCommandSummary(cmd, cmd_sum);
 		}else{
 			cmd = cmd_sum.replaceFirst(";;$", "").trim();
-			params = "";
+			params = new JSONObject();
 		}
 		
 		//construct result
 		possibleCMDs.add(cmd);
 		possibleScore.add(1);
-		Map<String, String> kv = new HashMap<>();
-		for (String p : params.split(";;")){				//TODO: change this whole ";;" structure to JSON?
-			String[] e = p.split("=", 2);
-			if (e.length == 2){
-				String key = e[0].trim();
-				String value = e[1].trim();
-				kv.put(key, value);
-			}
-		}
-		possibleParameters.add(kv);
+		possibleParameters.add(params);
 		NluResult result = new NluResult(possibleCMDs, possibleParameters, possibleScore, bestScoreIndex);
 		result.certaintyLvl = 1.0d;
 		

@@ -61,6 +61,13 @@ public class NluInput {
 	public String customData = null; 		//custom_data:		a dynamic variable to carry any data that does not fit to the predefined stuff. Should be a JSONObject converted to string.
 	private JSONObject customDataJson = null;					//custom data is parsed when needed and the result is stored here. 
 	
+	//often used custom data objects
+	public static final String DATA_RECENT_PRO_ACTIVE_EVENTS = "recentPAE";
+	public static final String DATA_DEFAULT_MUSIC_APP = "defaultMusicApp";
+	public static final String DATA_EMBEDDED_MEDIA_PLAYERS = "embeddedPlayers";
+	public static final String DATA_DEVICE_LOCAL_SITE = "deviceLocalSite";
+	public static final String DATA_PREFERRED_TEMPERATURE_UNIT = "prefTempUnit";
+	
 	//Stuff to cache during all processes from NLU to service result:
 	
 	//Some session cache variables:

@@ -10,15 +10,24 @@ import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.users.User;
+import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 
+/**
+ * Parameter to find rooms typically found in a smart home like living-room etc.
+ * 
+ * @author Florian Quirin
+ * 
+ */
 public class Room implements ParameterHandler{
 
 	//-----data-----
 	
-	//Parameter types
+	/**
+	 * Rooms typically found in a smart home. 
+	 */
 	public static enum Types{
 		livingroom,
 		diningroom,
@@ -27,9 +36,17 @@ public class Room implements ParameterHandler{
 		bath,
 		study,
 		office,
+		childsroom,
 		garage,
-		shack;
+		basement,
+		garden,
+		shack,
+		hallway,
+		other,
+		unassigned	//must be assigned directly
+		//TODO: entrance/front door, veranda(h)/patio/porch/lanai
 	}
+	//TODO: expose this to an endpoint to client and control HUB can download it
 	
 	//Parameter local type names
 	public static HashMap<String, String> types_de = new HashMap<>();
@@ -42,8 +59,14 @@ public class Room implements ParameterHandler{
 		types_de.put("bath", "im Badezimmer");
 		types_de.put("study", "im Arbeitszimmer");
 		types_de.put("office", "im Büro");
+		types_de.put("childsroom", "im Kinderzimmer");
 		types_de.put("garage", "in der Garage");
+		types_de.put("basement", "im Keller");
+		types_de.put("garden", "im Garten");
 		types_de.put("shack", "im Schuppen");
+		types_de.put("hallway", "im Flur");
+		types_de.put("other", "am erwähnten Ort");
+		types_de.put("unassigned", "");
 		
 		types_en.put("livingroom", "in the living room");
 		types_en.put("diningroom", "in the dining room");
@@ -52,12 +75,18 @@ public class Room implements ParameterHandler{
 		types_en.put("bath", "in the bath");
 		types_en.put("study", "in the study room");
 		types_en.put("office", "in the office");
+		types_en.put("childsroom", "in the child's room");
 		types_en.put("garage", "in the garage");
+		types_en.put("basement", "in the basement");
+		types_en.put("garden", "in the garden");
 		types_en.put("shack", "in the shack");
+		types_en.put("hallway", "in the hallway");
+		types_en.put("other", "in the mentioned location");
+		types_en.put("unassigned", "");
 	}
 	
 	/**
-	 * Translate generalized value (e.g. &kitchen&gt) to a context based, useful local name (e.g. in der Küche).
+	 * Translate generalized value (e.g. &lt;kitchen&gt;) to a context based, useful local name (e.g. in der Küche).
 	 * If generalized value is unknown returns empty string
 	 * @param type - generalized type value 
 	 * @param language - ISO language code
@@ -80,6 +109,7 @@ public class Room implements ParameterHandler{
 	
 	User user;
 	String language;
+	NluInput nluInput;
 	boolean buildSuccess = false;
 	
 	//keep that in mind
@@ -89,11 +119,13 @@ public class Room implements ParameterHandler{
 	public void setup(NluInput nluInput) {
 		this.user = nluInput.user;
 		this.language = nluInput.language;
+		this.nluInput = nluInput;
 	}
 	@Override
 	public void setup(NluResult nluResult) {
 		this.user = nluResult.input.user;
 		this.language = nluResult.language;
+		this.nluInput = nluResult.input;
 	}
 	
 	/**
@@ -103,28 +135,42 @@ public class Room implements ParameterHandler{
 		String type = "";
 		//German
 		if (language.matches(LANGUAGES.DE)){
-			type = NluTools.stringFindFirst(input, "wohnzimmer(n|)|"
+			type = NluTools.stringFindFirst(input, 
+					"wohn( |-|)zimmer(n|)|"
 					+ "esszimmer(n|)|"
 					+ "kueche(n|)|"
 					+ "badezimmer(n|)|bad|"
-					+ "schlafzimmer(n|)|"
-					+ "(arbeits|studier|herren)(zimmer|raum|raeumen)|"
+					+ "schlaf( |-|)zimmer(n|)|"
+					+ "(arbeits|studier|herren)( |-|)(zimmer(n|)|raum|raeumen)|"
 					+ "buero(s|)|office|"
+					+ "(kinder|baby|wickel)( |-|)(zimmer|stube)(n|)|"
 					+ "garage|auto(-| |)schuppen|"
-					+ "schuppen|gartenhaus"
+					+ "keller|"
+					+ "schuppen|gartenhaus|"
+					+ "garten|"
+					+ "(haus|)flur|korridor|diele|"
+					//+ "andere(n|es|r|)( |-|)(zimmer|raum|raeumen)"
+					+ "(zimmer(n|)|raum|raeumen|kammer(n|))"
 				+ "");
 			
 		//English and other
 		}else{
-			type = NluTools.stringFindFirst(input, "living( |-|)room(s|)|parlo(u|)r(s|)|lounge(s|)|family(-| )room(s|)|"
+			type = NluTools.stringFindFirst(input, 
+					"living( |-|)room(s|)|parlo(u|)r(s|)|lounge(s|)|family(-| )room(s|)|"
 					+ "dining( |-|)room(s|)|"
 					+ "kitchen(s|)|"
 					+ "bath(ing|)( |-|)room(s|)|bath|powder(-|)room(s|)|"
 					+ "bed(-|)(room|chamber)(s|)|"
 					+ "(study|work)(-|)(room|chamber)(s|)|study|"
 					+ "office|"
+					+ "(child(s|)|children(s|)|baby)( |-|)room(s|)|nursery|"
 					+ "garage|carhouse|"
-					+ "shack(s|)|shed(s|)"
+					+ "basement|"
+					+ "shack(s|)|shed(s|)|"
+					+ "garden|"
+					+ "hallway|corridor|"
+					//+ "other (room|chamber)(s|)|"
+					+ "(room|chamber)(s|)"
 				+ "");
 			
 		}
@@ -134,50 +180,105 @@ public class Room implements ParameterHandler{
 
 	@Override
 	public String extract(String input) {
-		String type = getType(input, language);
-		this.found = type;
+		String tagAndFound;
+		
+		//check storage first
+		ParameterResult pr = nluInput.getStoredParameterResult(PARAMETERS.ROOM);
+		if (pr != null){
+			tagAndFound = pr.getExtracted();
+			this.found = pr.getFound();
+			
+			return tagAndFound;
+		}
+				
+		String room = getType(input, language);
+		if (room.isEmpty()){
+			return "";
+		}else{
+			//check for room number
+			String roomWithNumber = NluTools.stringFindFirst(input, room + " \\d+");
+			if (!roomWithNumber.isEmpty()){
+				this.found = roomWithNumber;
+			}else{
+				this.found = room;
+			}
+		}
 		
 		//classify into types:
 		
-		if (NluTools.stringContains(type, "wohnzimmer(n|)|"
-				+ "living( |-|)room(s|)|parlo(u|)r(s|)|lounge(s|)|family(-| )room")){
-			return "<" + Types.livingroom.name() + ">";
-			
-		}else if (NluTools.stringContains(type, "esszimmer(n|)|"
-				+ "dining( |-|)room(s|)")){
-			return "<" + Types.diningroom.name() + ">";
-			
-		}else if (NluTools.stringContains(type, "kueche(n|)|"
-				+ "kitchen(s|)")){
-			return "<" + Types.kitchen.name() + ">";
-			
-		}else if (NluTools.stringContains(type, "badezimmer(n|)|bad|"
-				+ "bath(ing|)( |-|)room(s|)|bath|powder(-|)room(s|)")){
-			return "<" + Types.bath.name() + ">";
-			
-		}else if (NluTools.stringContains(type, "schlafzimmer(n|)|"
-				+ "bed(-|)(room|chamber)(s|)")){
-			return "<" + Types.bedroom.name() + ">";
-			
-		}else if (NluTools.stringContains(type, "(arbeits|studier|herren)(zimmer|raum|raeumen)|"
-				+ "(study|work)(-|)(room|chamber)(s|)|study")){
-			return "<" + Types.study.name() + ">";
-			
-		}else if (NluTools.stringContains(type, "buero(s|)|"
-				+ "office")){
-			return "<" + Types.office.name() + ">";
-			
-		}else if (NluTools.stringContains(type, "garage|auto(-| |)schuppen|"
-				+ "carhouse")){
-			return "<" + Types.garage.name() + ">";
-			
-		}else if (NluTools.stringContains(type, "schuppen|gartenhaus|"
-				+ "shack(s|)|shed(s|)")){
-			return "<" + Types.shack.name() + ">";
+		String roomTypeTag = null;
 		
+		if (NluTools.stringContains(room, "wohn( |-|)zimmer(n|)|"
+				+ "living( |-|)room(s|)|parlo(u|)r(s|)|lounge(s|)|family(-| )room")){
+			roomTypeTag = "<" + Types.livingroom.name() + ">";
+			
+		}else if (NluTools.stringContains(room, "esszimmer(n|)|"
+				+ "dining( |-|)room(s|)")){
+			roomTypeTag =  "<" + Types.diningroom.name() + ">";
+			
+		}else if (NluTools.stringContains(room, "kueche(n|)|"
+				+ "kitchen(s|)")){
+			roomTypeTag =  "<" + Types.kitchen.name() + ">";
+			
+		}else if (NluTools.stringContains(room, "badezimmer(n|)|bad|"
+				+ "bath(ing|)( |-|)room(s|)|bath|powder(-|)room(s|)")){
+			roomTypeTag =  "<" + Types.bath.name() + ">";
+			
+		}else if (NluTools.stringContains(room, "schlaf( |-|)zimmer(n|)|"
+				+ "bed(-|)(room|chamber)(s|)")){
+			roomTypeTag =  "<" + Types.bedroom.name() + ">";
+			
+		}else if (NluTools.stringContains(room, "(arbeits|studier|herren)( |-|)(zimmer(n|)|raum|raeumen)|"
+				+ "(study|work)(-|)(room|chamber)(s|)|study")){
+			roomTypeTag =  "<" + Types.study.name() + ">";
+			
+		}else if (NluTools.stringContains(room, "buero(s|)|"
+				+ "office")){
+			roomTypeTag =  "<" + Types.office.name() + ">";
+			
+		}else if (NluTools.stringContains(room, "(kinder|baby|wickel)( |-|)(zimmer|stube)(n|)|"
+				+ "(child(s|)|children(s|)|baby)( |-|)room(s|)|nursery(s|)")){
+			roomTypeTag =  "<" + Types.childsroom.name() + ">";
+			
+		}else if (NluTools.stringContains(room, "garage|auto(-| |)schuppen|"
+				+ "carhouse")){
+			roomTypeTag =  "<" + Types.garage.name() + ">";
+			
+		}else if (NluTools.stringContains(room, "keller|"
+				+ "basement")){
+			roomTypeTag =  "<" + Types.basement.name() + ">";
+			
+		}else if (NluTools.stringContains(room, "schuppen|gartenhaus|"
+				+ "shack(s|)|shed(s|)")){
+			roomTypeTag =  "<" + Types.shack.name() + ">";
+			
+		}else if (NluTools.stringContains(room, "garten|"
+				+ "garden")){
+			roomTypeTag =  "<" + Types.garden.name() + ">";
+			
+		}else if (NluTools.stringContains(room, "(haus|)flur|korridor|diele|"
+				+ "hallway|corridor")){
+			roomTypeTag =  "<" + Types.hallway.name() + ">";
+			
+		/*}else if (NluTools.stringContains(room, "andere(n|es|r|)( |-|)(zimmer(n|)|raum|raeumen)|"
+				+ "other room(s|)")){
+			return "<" + Types.other.name() + ">";*/
+			
+		/*}else if (NluTools.stringContains(room, "(zimmer(n|)|raum|raeumen|kammer(n|))|"
+				+ "(room|chamber)(s|)")){
+			roomTypeTag =  "<" + Types.other.name() + ">";*/
+
 		}else{
-			return "";
+			roomTypeTag =  "<" + Types.other.name() + ">";
 		}
+		
+		tagAndFound = roomTypeTag + ";;" + this.found;
+		
+		//store it
+		pr = new ParameterResult(PARAMETERS.ROOM, tagAndFound, this.found);
+		nluInput.addToParameterResultStorage(pr);
+		
+		return tagAndFound;
 	}
 	
 	@Override
@@ -214,6 +315,23 @@ public class Room implements ParameterHandler{
 		//extract again/first? - this should only happen via predefined parameters (e.g. from direct triggers)
 		if (Is.notNullOrEmpty(input) && !input.startsWith("<")){
 			input = extract(input);
+			if (Is.nullOrEmpty(input)){
+				return "";
+			}
+		}
+		
+		//expects a type!
+		String roomFound = "";
+		String roomIndexStr = "";
+		if (input.contains(";;")){
+			String[] typeAndInfo = input.split(";;");
+			if (typeAndInfo.length == 2){
+				roomFound = typeAndInfo[1];
+				roomIndexStr = NluTools.stringFindFirst(roomFound, "\\b\\d+\\b");
+				input = typeAndInfo[0];
+			}else{
+				input = typeAndInfo[0];
+			}
 		}
 		
 		//expects a type
@@ -224,6 +342,12 @@ public class Room implements ParameterHandler{
 		JSONObject itemResultJSON = new JSONObject();
 			JSON.add(itemResultJSON, InterviewData.VALUE, commonValue);
 			JSON.add(itemResultJSON, InterviewData.VALUE_LOCAL, localValue);
+			JSON.add(itemResultJSON, InterviewData.FOUND, roomFound); 		//Note: we can't use this.found here because it is not set in build
+		//add device index
+		if (!roomIndexStr.isEmpty()){
+			int roomIndex = Integer.parseInt(roomIndexStr);
+			JSON.add(itemResultJSON, InterviewData.ITEM_INDEX, roomIndex);
+		}
 		
 		buildSuccess = true;
 		return itemResultJSON.toJSONString();

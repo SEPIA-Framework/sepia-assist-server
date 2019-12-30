@@ -402,7 +402,7 @@ public class RadioStation implements ParameterHandler{
 		return itemResultJSON.toJSONString();
 	}
 	/**
-	 * Convert a station name to normalized format (e.g. egoFM -> ego_fm, Wdr 1 -> wdr1).
+	 * Convert a station name to normalized format (e.g. egoFM -&gt; ego_fm, Wdr 1 -&gt; wdr1).
 	 */
 	public static String normalizeStationName(String stationIn){
 		//optimize stations

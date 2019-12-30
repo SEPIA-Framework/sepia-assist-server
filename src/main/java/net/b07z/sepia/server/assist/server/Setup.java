@@ -355,6 +355,8 @@ public class Setup {
 		JSONObject mappings = db.getMappings();
 		if (mappings == null){
 			throw new RuntimeException("ElasticSearch - Failed to check mappings! Is ES running and reachable?");
+		}else if (mappings.isEmpty()){
+			throw new RuntimeException("ElasticSearch - Failed to check mappings! Did you already run SEPIA setup?");
 		}
 		int mr = 0;
 		int mf = 0;

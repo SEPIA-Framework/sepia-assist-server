@@ -30,7 +30,8 @@
 				"birth" : { "type" : "string" },
 				"lang_code" : { "type" : "string" },
 				"gender" : { "type" : "string" },
-				"bot_char" : { "type" : "string" }
+				"bot_char" : { "type" : "string" },
+				"unit_pref_temp" : { "type" : "string" }
 			}
 		},
 		"addresses" : {

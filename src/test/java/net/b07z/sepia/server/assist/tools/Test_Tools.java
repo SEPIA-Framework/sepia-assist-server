@@ -360,5 +360,11 @@ public class Test_Tools {
 		System.out.println(input.user.loadInfoFromAccount(Test_Accounts.test_api_mng, "midnight"));
 		System.out.println("midnight: " + input.user.info.get("midnight"));
 		*/
+		
+		System.out.println("------------------------------------------------");
+		String TAG_REGEX = "\\bsepia-[-\\w]+";
+		String testTextForRegExp = "test1 test2 sepia-name sepia-type sepia-set-cmd sepia-state-type sepia-room test3 test4";
+		System.out.println(testTextForRegExp);
+		System.out.println(testTextForRegExp.replaceAll(TAG_REGEX, "").replaceAll("\\s+", " ").trim());
 	}
 }

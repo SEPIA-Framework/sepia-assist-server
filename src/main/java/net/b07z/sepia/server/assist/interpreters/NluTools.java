@@ -117,13 +117,13 @@ public class NluTools {
 	 * Splits tokens at \\s+ to count words so you probably need to normalize first.
 	 * @param input - whole string
 	 * @param start - start word/token of new string
-	 * @param nextWords - including this many words (or less)
+	 * @param n - including this many words (or less)
 	 * @return new string
 	 */
-	public static String getStringAndNextWords(String input, String start, int N){
+	public static String getStringAndNextWords(String input, String start, int n){
 		String section = input.replaceFirst(".*\\b(" + start + ")", "$1").trim();
 		String[] words = section.split("\\s+");
-		String[] relevantWords = Arrays.copyOfRange(words, 0, Math.min(N+1, words.length));
+		String[] relevantWords = Arrays.copyOfRange(words, 0, Math.min(n+1, words.length));
 		return String.join(" ", relevantWords);
 	}
 	

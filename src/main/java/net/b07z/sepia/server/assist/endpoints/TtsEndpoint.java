@@ -162,7 +162,8 @@ public class TtsEndpoint {
 
 	/**
 	 * Get input for TTS from API request send to server. See TTS_Input for possible parameters.
-	 * @param request
+	 * @param params
+	 * @param token
 	 * @return
 	 */
 	public static TtsInput getInputTTS(RequestParameters params, Authenticator token){

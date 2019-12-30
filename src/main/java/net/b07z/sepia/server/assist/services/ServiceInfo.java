@@ -86,7 +86,7 @@ public class ServiceInfo {
 	public Map<String, List<String>> customTriggerSentences = new HashMap<>();	//a list of sentences that can trigger the service sorted by language.
 	
 	/**
-	 * Build common info object.
+	 * Build common info object. Use this if you need to set the legacy argument 'worksStandalone'.
 	 */
 	public ServiceInfo(Type serviceType, Content contentType, boolean worksStandalone){
 		this.serviceId = getCallerClassName();
@@ -99,6 +99,12 @@ public class ServiceInfo {
 		listOfRequiredChoices = new ArrayList<>();		listOfChoiceQuestions = new ArrayList<>();
 		customAnswerMap = new HashMap<>();
 		answerParameters = new ArrayList<>();
+	}
+	/**
+	 * Build common info object. This is the default constructor.
+	 */
+	public ServiceInfo(Type serviceType, Content contentType){
+		this(serviceType, contentType, false);
 	}
 	private String getCallerClassName(){
 		try{
@@ -225,7 +231,7 @@ public class ServiceInfo {
 	 * Add the answer parameters in the same order as they are used inside the "custom" or "default" answer.
 	 * You can add more parameters than actually required if you have answers with different requirements just choose the right
 	 * ones in your answer by using the proper references, e.g. "this is &lt1&gt for &lt3&gt" (skipping 2 knowing that it is empty).<br>
-	 * Use {@Link API#resultInfoPut(String, Object)} to set the values as soon as you got them. Use empty strings to fill up the ones not needed. 
+	 * Use {@link ServiceBuilder#resultInfoPut(String, Object)} to set the values as soon as you got them. Use empty strings to fill up the ones not needed. 
 	 * @param parameters - names of the parameters (keys) their values inside resultInfo should be used for the answer
 	 */
 	public ServiceInfo addAnswerParameters(String... parameters){

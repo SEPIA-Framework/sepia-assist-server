@@ -10,16 +10,25 @@ import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.users.User;
+import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 
+/**
+ * Parameter to find any smart device like smart home lights, heater, tv, music player etc. 
+ * 
+ * @author Florian Quirin
+ * 
+ */
 public class SmartDevice implements ParameterHandler{
 
 	//-----data-----
 	
-	//Parameter types
-	public static enum Types{
+	/**
+	 * Smart devices typically found in a smart home like lights, heater, tv, music player etc. 
+	 */
+	public static enum Types {
 		light,
 		heater,
 		tv,
@@ -27,7 +36,20 @@ public class SmartDevice implements ParameterHandler{
 		fridge,
 		oven,
 		coffee_maker,
-		device;
+		roller_shutter,
+		power_outlet,
+		sensor,
+		device,
+		//no extract methods:
+		other,
+		hidden
+		//TODO: window, door or use device?
+	}
+	/**
+	 * Get generalized 'Types' value in format of extraction method.
+	 */
+	public static String getExtractedValueFromType(Types deviceType, String name){
+		return ("<" + deviceType.name() + ">;;" + name);
 	}
 	
 	//Parameter local type names
@@ -38,23 +60,33 @@ public class SmartDevice implements ParameterHandler{
 		types_de.put("heater", "die Heizung");
 		types_de.put("tv", "der Fernseher");
 		types_de.put("music_player", "die Musikanlage");
+		types_de.put("roller_shutter", "der Rollladen");
+		types_de.put("power_outlet", "die Steckdose");
+		types_de.put("sensor", "der Sensor");
 		types_de.put("fridge", "der Kühlschrank");
 		types_de.put("oven", "der Ofen");
 		types_de.put("coffee_maker", "die Kaffeemaschine");
 		types_de.put("device", "das Gerät");
+		types_de.put("other", "");
+		types_de.put("hidden", "");
 		
 		types_en.put("light", "the light");
 		types_en.put("heater", "the heater");
 		types_en.put("tv", "the TV");
 		types_en.put("music_player", "the music player");
+		types_en.put("roller_shutter", "the roller shutter");
+		types_en.put("power_outlet", "the outlet");
+		types_en.put("sensor", "the sensor");
 		types_en.put("fridge", "the fridge");
 		types_en.put("oven", "the oven");
 		types_en.put("coffee_maker", "the coffee maker");
 		types_en.put("device", "the device");
+		types_en.put("other", "");
+		types_en.put("hidden", "");
 	}
 	
 	/**
-	 * Translate generalized value (e.g. &ltlight&gt) to a context based, useful local name (e.g. das Licht).
+	 * Translate generalized value (e.g. &lt;light&gt;) to a context based, useful local name (e.g. das Licht).
 	 * If generalized value is unknown returns empty string
 	 * @param type - generalized type value 
 	 * @param language - ISO language code
@@ -81,6 +113,9 @@ public class SmartDevice implements ParameterHandler{
 	public static final String fridgeRegEx_en = "fridge|refrigerator";
 	public static final String ovenRegEx_en = "oven|stove";
 	public static final String coffeeMakerRegEx_en = "coffee (maker|brewer|machine)";
+	public static final String rollerShutterRegEx_en = "((roller|window|sun)( |-|)|)(shutter(s|)|blind(s|)|louver(s|))|jalousie(s|)";
+	public static final String powerOutletRegEx_en = "((wall|power)( |-|)|)(socket(s|)|outlet(s|))";
+	public static final String sensorRegEx_en = "sensor(s|)";
 	
 	public static final String lightRegEx_de = "licht(er|es|)|lampe(n|)|beleuchtung|leuchte(n|)|helligkeit";
 	public static final String heaterRegEx_de = "heiz(er|ungen|ung|koerper(s|)|luefter(s|)|strahler(s|))|thermostat(es|s|)|temperatur(regler(s|)|en|)";
@@ -89,10 +124,14 @@ public class SmartDevice implements ParameterHandler{
 	public static final String fridgeRegEx_de = "kuehlschrank(s|)";
 	public static final String ovenRegEx_de = "ofen(s|)|herd(es|s)";
 	public static final String coffeeMakerRegEx_de = "kaffeemaschine";
+	public static final String rollerShutterRegEx_de = "(fenster|rol(l|))(l(a|ae)den)|jalousie(n|)|rollo(s|)|markise";
+	public static final String powerOutletRegEx_de = "(steck|strom)( |-|)dose(n|)|stromanschluss(es|)";
+	public static final String sensorRegEx_de = "sensor(en|s|)";
 	//----------------
 	
 	User user;
 	String language;
+	NluInput nluInput;
 	boolean buildSuccess = false;
 	
 	//keep that in mind
@@ -102,11 +141,13 @@ public class SmartDevice implements ParameterHandler{
 	public void setup(NluInput nluInput) {
 		this.user = nluInput.user;
 		this.language = nluInput.language;
+		this.nluInput = nluInput;
 	}
 	@Override
 	public void setup(NluResult nluResult) {
 		this.user = nluResult.input.user;
 		this.language = nluResult.language;
+		this.nluInput = nluResult.input;
 	}
 	
 	/**
@@ -121,6 +162,9 @@ public class SmartDevice implements ParameterHandler{
 					+ heaterRegEx_de + "|"
 					+ tvRegEx_de + "|"
 					+ musicPlayerRegEx_de + "|"
+					+ rollerShutterRegEx_de + "|"
+					+ powerOutletRegEx_de + "|"
+					+ sensorRegEx_de + "|"
 					+ fridgeRegEx_de + "|"
 					+ ovenRegEx_de + "|"
 					+ coffeeMakerRegEx_de
@@ -133,6 +177,9 @@ public class SmartDevice implements ParameterHandler{
 					+ heaterRegEx_en + "|"
 					+ tvRegEx_en + "|"
 					+ musicPlayerRegEx_en + "|"
+					+ rollerShutterRegEx_en + "|"
+					+ powerOutletRegEx_en + "|"
+					+ sensorRegEx_en + "|"
 					+ fridgeRegEx_en + "|"
 					+ ovenRegEx_en + "|"
 					+ coffeeMakerRegEx_en
@@ -145,6 +192,17 @@ public class SmartDevice implements ParameterHandler{
 
 	@Override
 	public String extract(String input) {
+		String tagAndFound;
+		
+		//check storage first
+		ParameterResult pr = nluInput.getStoredParameterResult(PARAMETERS.SMART_DEVICE);
+		if (pr != null){
+			tagAndFound = pr.getExtracted();
+			this.found = pr.getFound();
+			
+			return tagAndFound;
+		}
+				
 		String device = getType(input, language);
 		if (device.isEmpty()){
 			//no known type so let's check some general constructions
@@ -195,6 +253,15 @@ public class SmartDevice implements ParameterHandler{
 			}else if (NluTools.stringContains(device, musicPlayerRegEx_de)){
 				deviceTypeTag = "<" + Types.music_player.name() + ">";
 				
+			}else if (NluTools.stringContains(device, rollerShutterRegEx_de)){
+				deviceTypeTag = "<" + Types.roller_shutter.name() + ">";
+				
+			}else if (NluTools.stringContains(device, powerOutletRegEx_de)){
+				deviceTypeTag = "<" + Types.power_outlet.name() + ">";
+				
+			}else if (NluTools.stringContains(device, sensorRegEx_de)){
+				deviceTypeTag = "<" + Types.sensor.name() + ">";
+				
 			}else if (NluTools.stringContains(device, fridgeRegEx_de)){
 				deviceTypeTag = "<" + Types.fridge.name() + ">";
 				
@@ -220,6 +287,15 @@ public class SmartDevice implements ParameterHandler{
 			}else if (NluTools.stringContains(device, musicPlayerRegEx_en)){
 				deviceTypeTag = "<" + Types.music_player.name() + ">";
 				
+			}else if (NluTools.stringContains(device, rollerShutterRegEx_en)){
+				deviceTypeTag = "<" + Types.roller_shutter.name() + ">";
+				
+			}else if (NluTools.stringContains(device, powerOutletRegEx_en)){
+				deviceTypeTag = "<" + Types.power_outlet.name() + ">";
+				
+			}else if (NluTools.stringContains(device, sensorRegEx_en)){
+				deviceTypeTag = "<" + Types.sensor.name() + ">";
+				
 			}else if (NluTools.stringContains(device, fridgeRegEx_en)){
 				deviceTypeTag = "<" + Types.fridge.name() + ">";
 				
@@ -228,12 +304,18 @@ public class SmartDevice implements ParameterHandler{
 				
 			}else if (NluTools.stringContains(device, coffeeMakerRegEx_en)){
 				deviceTypeTag = "<" + Types.coffee_maker.name() + ">";
-			
+				
 			}else{
 				deviceTypeTag = "<" + Types.device.name() + ">";
 			}
 		}
-		return (deviceTypeTag + ";;" + this.found);
+		tagAndFound = deviceTypeTag + ";;" + this.found;
+		
+		//store it
+		pr = new ParameterResult(PARAMETERS.SMART_DEVICE, tagAndFound, this.found);
+		nluInput.addToParameterResultStorage(pr);
+		
+		return tagAndFound;
 	}
 	
 	@Override
@@ -276,11 +358,13 @@ public class SmartDevice implements ParameterHandler{
 		}
 		
 		//expects a type!
-		String deviceName = "";
+		String deviceNameFound = "";
+		String deviceIndexStr = "";
 		if (input.contains(";;")){
 			String[] typeAndName = input.split(";;");
 			if (typeAndName.length == 2){
-				deviceName = typeAndName[1];
+				deviceNameFound = typeAndName[1];
+				deviceIndexStr = NluTools.stringFindFirst(deviceNameFound, "\\b\\d+\\b");
 				input = typeAndName[0];
 			}else{
 				input = typeAndName[0];
@@ -293,7 +377,12 @@ public class SmartDevice implements ParameterHandler{
 		JSONObject itemResultJSON = new JSONObject();
 			JSON.add(itemResultJSON, InterviewData.VALUE, commonValue);
 			JSON.add(itemResultJSON, InterviewData.VALUE_LOCAL, localValue);
-			JSON.add(itemResultJSON, InterviewData.FOUND, deviceName); 		//Note: we can't use this.found here because it is not set in build
+			JSON.add(itemResultJSON, InterviewData.FOUND, deviceNameFound); 		//Note: we can't use this.found here because it is not set in build
+		//add device index
+		if (!deviceIndexStr.isEmpty()){
+			int deviceIndex = Integer.parseInt(deviceIndexStr);
+			JSON.add(itemResultJSON, InterviewData.ITEM_INDEX, deviceIndex);
+		}
 		
 		buildSuccess = true;
 		return itemResultJSON.toJSONString();

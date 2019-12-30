@@ -1,0 +1,1 @@
+Although the parent folder has a no-index file this restriction does not apply to sub-folders by default

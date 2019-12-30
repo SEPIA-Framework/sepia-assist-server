@@ -99,7 +99,7 @@ public class LanguageSwitcher implements ServiceInterface{
 				+ ")\\b.*", EN);
 		info.setCustomTriggerRegX(".*\\b("
 					+ "((aendere|setze|stelle|wechs(le|el)) die sprache|sprache (aendern|setzen|stellen|wechseln)) (auf|zu|$)|"
-					+ "^(wech(seln|sel|sle) (auf|zu) |sprich )(deutsch|englisch)$"
+					+ "^(wech(seln|sel|sle) (auf|zu) |sprich |spreche )(deutsch|englisch)$"
 				+ ")\\b.*", DE);
 		info.setCustomTriggerRegXscoreBoost(3);		//boost service a bit to increase priority over similar ones
 		

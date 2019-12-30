@@ -27,7 +27,7 @@ import net.b07z.sepia.server.assist.services.PlatformControls;
 import net.b07z.sepia.server.assist.services.SentenceConnect;
 import net.b07z.sepia.server.assist.services.ServiceInfo;
 import net.b07z.sepia.server.assist.services.ServiceInterface;
-import net.b07z.sepia.server.assist.services.SmartOpenHAB;
+import net.b07z.sepia.server.assist.services.SmartHomeHubConnector;
 import net.b07z.sepia.server.assist.services.WeatherDarkSky;
 import net.b07z.sepia.server.assist.services.WebsearchBasic;
 import net.b07z.sepia.server.core.assistant.CMD;
@@ -131,7 +131,7 @@ public class InterviewServicesMap {
 			systemInterviewServicesMap.put(CMD.WEATHER, weather);
 		//SMART-DEVICE CONTROL
 		ArrayList<String> controlSmarthome = new ArrayList<String>();
-			controlSmarthome.add(SmartOpenHAB.class.getCanonicalName());
+			controlSmarthome.add(SmartHomeHubConnector.class.getCanonicalName());
 			systemInterviewServicesMap.put(CMD.SMARTDEVICE, controlSmarthome);
 		//DIRECTIONS
 		ArrayList<String> directions = new ArrayList<String>();

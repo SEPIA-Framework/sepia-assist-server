@@ -259,7 +259,8 @@ public class AbstractInterview implements InterviewInterface{
 				if (status.equals(ServiceBuilder.INCOMPLETE)){
 					Parameter p = r.getIncompleteParameter();
 					if (p != null){
-						ServiceResult question = assistant.ask(p);
+						Object[] aps = AnswerTools.buildAnswerWildcardValues(iInfo.getAnswerParameters(), resultInfo);
+						ServiceResult question = assistant.ask(p, aps);
 						//an answer should be able to use data and actions as well, so copy them over from result
 						JSONArray resultCards = r.getCardInfo();
 						if (resultCards != null && !resultCards.isEmpty()){
@@ -315,11 +316,8 @@ public class AbstractInterview implements InterviewInterface{
 			ansTag = ansTag.replaceFirst("^<silent>", "").trim();
 		}
 		if (!ansTag.isEmpty()){
-			List<String> ansParams = iInfo.getAnswerParameters();
-			Object[] aps = new Object[ansParams.size()];
-			for (int i=0; i<aps.length; i++){
-				aps[i] = servicesResult.resultInfoGet(ansParams.get(i));
-			}
+			//build answer parameters
+			Object[] aps = AnswerTools.buildAnswerWildcardValues(iInfo.getAnswerParameters(), servicesResult.resultInfo);
 			//custom answers available?
 			if (masterServiceAnswers != null && masterServiceAnswers.containsAnswerFor(ansTag)){
 				servicesResult.answer = Answers.getAnswerString(masterServiceAnswers.getMap(), assistant.nluResult, ansTag, aps);

@@ -37,7 +37,7 @@ public class TravelType implements ParameterHandler{
 		travelTypes_en.put("<all>", "");
 	}
 	/**
-	 * Translate generalized value (e.g. &lttransit&gt) to local speakable name (e.g. "by public transport").
+	 * Translate generalized value (e.g. &lt;transit&gt;) to local speakable name (e.g. "by public transport").
 	 * If generalized value is unknown returns empty string
 	 * @param travelValue - generalized value 
 	 * @param language - ISO language code

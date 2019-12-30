@@ -31,6 +31,13 @@ public class Action implements ParameterHandler{
 		remove,
 		create,
 		edit
+		//TODO: OPEN and CLOSE are currently included in ON and OFF, this might need to be updated at some point
+	}
+	/**
+	 * Get generalized action type value in format of extraction method.
+	 */
+	public static String getExtractedValueFromType(Type actionType){
+		return ("<" + actionType.name() + ">");
 	}
 	
 	//-------data-------
@@ -130,14 +137,14 @@ public class Action implements ParameterHandler{
 		//German
 		if (language.matches(LANGUAGES.DE)){
 			on = "(mach|schalte|dreh|(setze|stelle)) .*\\b(an|ein)|"
-					+ "^\\w+\\b (an|ein)$|"
-					+ "(^|auf )(an|ein)$|"
+					//+ "(^|^\\w+ |auf )(an|ein)$|"
+					+ "(^| )(an|ein)$|"
 					+ "oeffne|oeffnen|aktiviere|aktivieren|starte|starten|start|lade|laden|"
 					+ "anschalten|einschalten|anmachen|an machen|aufmachen|auf machen|aufdrehen|auf drehen|spielen|spiele|spiel|abspielen|"
 					+ "ausfuehren|aufrufen";
 			off = "(mach|schalte|dreh|(setze|stelle)) .*\\b(aus)|"
-					+ "^\\w+\\b (aus)$|"
-					+ "(^|auf )(aus)$|"
+					//+ "(^|^\\w+ |auf )(aus)$|"
+					+ "(^| )(aus)$|"
 					+ "schliessen|schliesse|deaktivieren|deaktiviere|"
 					+ "beenden|beende|(aus|ab)schalten|aus schalten|ausmachen|aus machen|ausdrehen|aus drehen|stop(pen|pe|p|)|exit";
 			pause = "pausieren|pause|anhalten|halte .*\\b(an)";
@@ -150,7 +157,7 @@ public class Action implements ParameterHandler{
 					+ "^lautstaerke (von .* |)(auf )|"
 					+ "^wert(e|) (von .* |)(auf )";
 			toggle = "umschalten|schalten|schalte";
-			show = "anzeigen|zeig|zeigen|check|checken|was sagt|wieviel|"
+			show = "anzeigen|zeig|zeigen|check|checken|was sagt|sag mir|wie( |)viel|wie ist|"
 					+ "(\\w+|)status(?! .* (" + set + "|(an|aus)$))|"
 					+ "welche(n|r) wert(e|) (hat|haben)|"
 					+ "wert (von|der)(?! .* (" + set + "))";
@@ -163,26 +170,29 @@ public class Action implements ParameterHandler{
 		//English and other
 		}else{
 			on = "(make|switch|turn|set) .*\\b(on)|"
-					+ "^\\w+\\b (on$)|"
-					+ "(^|to )(active$|on$)|"
+					//+ "(^\\w+ )(on$)|"
+					+ "(^| )(on$)|"
+					+ "(^|to )(active$)|"
 					+ "open|activate|start|play|load|run|execute|call";
 			off = "(make|switch|turn|set) .*\\b(off)|"
-					+ "^\\w+\\b (off$)|"
-					+ "(^|to )(off$)|"
+					//+ "(^|^\\w+ |to )(off$)|"
+					+ "(^| )(off$)|"
 					+ "close|deactivate|end|exit|quit|stop|shut\\b.*? down";
 			pause = "pause|onhold|on hold";
 			increase = "(make|switch|turn) .*\\b(up)|"
-					+ "^\\w+\\b (up$)|"
+					//+ "(^\\w+ )(up$)|"
+					+ "(^| )(up$)|"
 					+ "upwards|higher|bigger|increase|amplify|brighter|(?<!(is ))faster|(?<!(is ))stronger|fast|warmer|warm|louder|loud";
 			decrease = "(make|switch|turn) .*\\b(down)|"
-					+ "^\\w+\\b (down$)|"
+					//+ "(^\\w+ )(down$)|"
+					+ "(^| )(down$)|"
 					+ "downwards|smaller|lower|decrease|reduce|weaker|darker|dim|slow|(?<!(is ))slower|colder|cold|quieter|quiet";
 			set = "set(?! .* (off|on)$)|put|select|choose|"
 					+ "remind (\\w+) to|wake|"
 					+ "^volume (of .* |)(to )|"
 					+ "^value (of .* |)(to )";
 			toggle = "toggle|switch";
-			show = "show|shows|display|check|what does .* say|how much|"
+			show = "show|shows|display|check|what does .* say|how much|what is the|tell me|"
 					+ "status|state of|"
 					+ "what value(s|) ((do|does) .* | )(has|have)|value(s|) of";
 			add = "add|enter|"

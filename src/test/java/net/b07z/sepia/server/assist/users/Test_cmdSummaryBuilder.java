@@ -17,6 +17,7 @@ public class Test_cmdSummaryBuilder {
 		JSONObject params2 = new JSONObject(); 
 		JSONObject params3 = JSON.make(
 				"uid.test_b", "<2>",
+				"device", "<type>;;name",
 				"test2_c", "3"
 		);
 				

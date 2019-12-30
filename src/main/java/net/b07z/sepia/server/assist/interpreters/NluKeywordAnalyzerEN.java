@@ -128,6 +128,7 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 		}
 		
 		//smart device control
+		/* -- moved to service --
 		if (NluTools.stringContains(text, "light(s|)|lighting|lamp(s|)|illumination|brightness|"
 				+ "heater(s|)|temperature(s|)|thermostat(s|)|"
 				+ "(smart( |)home|device|sensor) (control|stat(us|e))"
@@ -143,6 +144,7 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 			possibleScore.set(index, possibleScore.get(index) + aps.getScore());
 			possibleParameters.add(pv);
 		}
+		*/
 		
 		//directions
 		if (NluTools.stringContains(text, "directions|navigation|show me the way|navigate me|(?<!cheapest )way |"

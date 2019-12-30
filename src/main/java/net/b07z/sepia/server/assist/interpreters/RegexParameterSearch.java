@@ -1095,7 +1095,7 @@ public class RegexParameterSearch {
 	/**
 	 * Search text for the first date, day or time. The result is saved as "date_tag" and "time_tag" in the map. Can be an empty string.
 	 * TODO: (misses local date) Try to convert the date_tag into a real date in default format relative to user local date and save as "date".
-	 * @param input - user text input or any text to be searched
+	 * @param text - user text input or any text to be searched
 	 * @param language - ... language code as usual 
 	 * @return
 	 */
@@ -1183,10 +1183,10 @@ public class RegexParameterSearch {
 		return pv;
 	}
 	/**
-	 * Search text for the N date or day tags by repeating get_date -> remove_date.
+	 * Search text for the N date or day tags by repeating get_date + remove_date.
 	 * The result is saved as "date_tag_1..2..3.." in the map. If there is none the loop is stopped and the size of the map is smaller than N+1.
 	 * The final (left over) text is saved as "clean_text" in the map too.
-	 * @param input - user text input or any text to be searched
+	 * @param text - user text input or any text to be searched
 	 * @param N - number of dates to search
 	 * @param language - ... language code as usual 
 	 * @return map with found dates and size smaller or equal to N+1 (+1 because the clean text is always there)

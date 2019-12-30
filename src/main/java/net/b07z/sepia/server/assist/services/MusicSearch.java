@@ -11,6 +11,7 @@ import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.data.Card;
 import net.b07z.sepia.server.assist.data.Card.ElementType;
 import net.b07z.sepia.server.assist.data.Parameter;
+import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.parameters.ClientFunction;
@@ -172,7 +173,7 @@ public class MusicSearch implements ServiceInterface{
 		
 		//Default music app in client
 		if (service.isEmpty()){
-			Object defaultClientService = nluResult.input.getCustomDataObject("defaultMusicApp");
+			Object defaultClientService = nluResult.input.getCustomDataObject(NluInput.DATA_DEFAULT_MUSIC_APP);
 			if (defaultClientService != null){
 				service = (String) defaultClientService;
 			}
@@ -187,7 +188,7 @@ public class MusicSearch implements ServiceInterface{
 		//check if embedding is desired and possible
 		boolean requestEmbedded = false;
 		if (isYouTube || service.contains("_embedded")){		//NOTE: YouTube embedding is usually a common feature in the client used for search as well
-			Object embeddingsObj = nluResult.input.getCustomDataObject("embeddedPlayers");
+			Object embeddingsObj = nluResult.input.getCustomDataObject(NluInput.DATA_EMBEDDED_MEDIA_PLAYERS);
 			if (embeddingsObj != null){
 				requestEmbedded = ((JSONArray) embeddingsObj).contains(rootService);
 			}

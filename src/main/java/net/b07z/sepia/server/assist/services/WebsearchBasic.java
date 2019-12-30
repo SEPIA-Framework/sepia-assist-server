@@ -160,7 +160,7 @@ public class WebsearchBasic implements ServiceInterface{
 			JSON.put(cardData, "brand", MusicSearch.CARD_BRAND_YOUTUBE);
 			JSON.put(cardData, "autoplay", false);
 			//check if embedding is possible
-			Object embeddingsObj = nluResult.input.getCustomDataObject("embeddedPlayers");
+			Object embeddingsObj = nluResult.input.getCustomDataObject(NluInput.DATA_EMBEDDED_MEDIA_PLAYERS);
 			if (embeddingsObj != null){
 				if (((JSONArray) embeddingsObj).contains(MusicService.Service.youtube.name())){
 					addUrlAction = false;

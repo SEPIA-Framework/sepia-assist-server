@@ -179,7 +179,7 @@ public class SportsTeam implements ParameterHandler{
 		soccerIDs.putAll(soccerIDs_bundesliga);
 	}
 	/**
-	 * Get the team ID that belongs to a generalized team name (e.g. &lthertha_bsc_berlin&gt).
+	 * Get the team ID that belongs to a generalized team name (e.g. &lt;hertha_bsc_berlin&gt;).
 	 * If there is none known return -1
 	 */
 	public static long getSoccerTeamID(String name){
@@ -213,7 +213,7 @@ public class SportsTeam implements ParameterHandler{
 		}
 	}
 	/**
-	 * Translate generalized value (e.g. &ltscience&gt) to local name (e.g. Wissenschaft).
+	 * Translate generalized value (e.g. &lt;science&gt;) to local name (e.g. Wissenschaft).
 	 * If generalized value is unknown returns empty string
 	 * @param value - generalized value 
 	 * @param language - ISO language code

@@ -55,7 +55,7 @@ public class Color implements ParameterHandler{
 		//TODO: add more
 	}
 	/**
-	 * Translate generalized color value (e.g. &ltblue&gt) to local name (e.g. blau).
+	 * Translate generalized color value (e.g. &lt;blue&gt;) to local name (e.g. blau).
 	 * If generalized value is unknown returns empty string
 	 * @param colorValue - generalized value 
 	 * @param language - ISO language code

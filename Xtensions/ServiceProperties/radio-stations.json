@@ -1,6 +1,7 @@
 {
 	"collections": {
 		"my": [
+			"size_radio",
 			"ego_fm_pure", 
 			"1live_diggi", 
 			"you_fm_just_music",
@@ -24,7 +25,8 @@
 		"alternative": [
 			"kexp",
 			"delta_indie",
-			"ego_fm_pure"
+			"ego_fm_pure",
+			"size_radio"
 		]
 	},
 	"deprecations": {
@@ -42,7 +44,8 @@
         "ANTENNE BAYERN": "http://www.antenne.de/musik/song-suche/?station=antenne",
         "1LIVE": "http://www1.wdr.de/radio/1live/on-air/1live-playlist/index.html",
         "WDR 2": "http://www1.wdr.de/radio/wdr2/titelsuche-wdrzwei-124.html",
-        "DELUXE LOUNGE RADIO": "http://onlineradiobox.com/de/radiodeluxelounge/playlist/"
+        "DELUXE LOUNGE RADIO": "http://onlineradiobox.com/de/radiodeluxelounge/playlist/",
+		"SIZE RADIO": "http://www.size-radio.com"
     },
     "stations": {
 		"night": [
@@ -55,6 +58,10 @@
 			"antenne_bayern_lovesongs",
 			"1live_fiehe"
 		],
+		"size_radio": [{
+			"streamURL": "http://stream.radiojar.com/atr1e8aswa5tv",
+			"name": "SIZE RADIO"
+		}],
 		"delta_föhnfrisur": [{
 			"streamURL": "https://delta.hoerradar.de/deltaradio-foehnfrisur-mp3-hq",
 			"name": "delta radio Föhnfrisur"
@@ -82,32 +89,37 @@
 			"ego_fm_riff", 
 			"ego_fm_flash", 
 			"ego_fm_soul", 
-			"ego_fm_rap", 
+			"ego_fm_rap",
+			"ego_fm_sun",
 			"ego_fm_snow"
 		],
 		"ego_fm_pure": [{
-            "streamURL": "https://egofm-live.cast.addradio.de/egofm/pure/mp3/high/stream.mp3",
+            "streamURL": "https://egofm-pure.cast.addradio.de/egofm/pure/mp3/high/stream.mp3",
             "name": "egoFM Pure"
         }],
 		"ego_fm_riff": [{
-            "streamURL": "https://egofm-live.cast.addradio.de/egofm/riff/mp3/high/stream.mp3",
+            "streamURL": "https://egofm-riff.cast.addradio.de/egofm/riff/mp3/high/stream.mp3",
             "name": "egoFM Riff"
         }],
 		"ego_fm_flash": [{
-            "streamURL": "https://egofm-live.cast.addradio.de/egofm/flash/mp3/high/stream.mp3",
+            "streamURL": "https://egofm-flash.cast.addradio.de/egofm/flash/mp3/high/stream.mp3",
             "name": "egoFM Flash"
         }],
 		"ego_fm_soul": [{
-            "streamURL": "https://egofm-live.cast.addradio.de/egofm/soul/mp3/high/stream.mp3",
+            "streamURL": "https://egofm-soul.cast.addradio.de/egofm/soul/mp3/high/stream.mp3",
             "name": "egoFM Soul"
         }],
 		"ego_fm_rap": [{
-            "streamURL": "https://egofm-live.cast.addradio.de/egofm/rap/mp3/high/stream.mp3",
+            "streamURL": "https://egofm-rap.cast.addradio.de/egofm/rap/mp3/high/stream.mp3",
             "name": "egoFM Rap"
         }],
 		"ego_fm_snow": [{
-            "streamURL": "https://egofm-live.cast.addradio.de/egofm/snow/mp3/high/stream.mp3",
+            "streamURL": "https://egofm-snow.cast.addradio.de/egofm/snow/mp3/high/stream.mp3",	
             "name": "egoFM Snow"
+        }],
+		"ego_fm_sun": [{
+            "streamURL": "https://egofm-sun.cast.addradio.de/egofm/sun/mp3/high/stream.mp3",
+            "name": "egoFM Sun"
         }],
 		"deluxe_lounge": [{
             "streamURL": "https://audiostreams.deluxemusic.tv/lounge/mp3-192/radio_de",

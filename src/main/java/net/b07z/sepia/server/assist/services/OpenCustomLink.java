@@ -40,7 +40,7 @@ public class OpenCustomLink {
 	
 	/**
 	 * The default method to create a service result handling all the question/answer/action construction. 
-	 * @param NluResult - typically this is given by a direct command
+	 * @param nluResult - typically this is given by a direct command
 	 * @return service result
 	 */
 	public static ServiceResult get(NluResult nluResult){

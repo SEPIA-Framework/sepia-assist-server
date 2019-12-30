@@ -1,7 +1,14 @@
 package net.b07z.sepia.server.assist.answers;
 
+import java.util.List;
+
+import org.json.simple.JSONObject;
+
 import net.b07z.sepia.server.assist.interpreters.NluResult;
+import net.b07z.sepia.server.assist.interviews.InterviewInfo;
 import net.b07z.sepia.server.assist.server.Config;
+import net.b07z.sepia.server.assist.services.ServiceBuilder;
+import net.b07z.sepia.server.assist.services.ServiceInfo;
 import net.b07z.sepia.server.assist.tools.DateTimeConverters;
 import net.b07z.sepia.server.assist.tools.RandomGen;
 
@@ -72,6 +79,21 @@ public class AnswerTools {
 		//remove vocal smileys
 		output = output.replaceAll("#\\w+\\d\\d#", "").trim();
 		return output;
+	}
+	
+	/**
+	 * Build wildcard values from answer parameter list (usually taken from {@link InterviewInfo} or {@link ServiceInfo}) 
+	 * and resultInfo (usually taken from {@link ServiceBuilder}. 
+	 * @param ansParams - List of answer parameters defined by service/interview info
+	 * @param resultInfo - key-value pairs holding values to answer parameters
+	 * @return
+	 */
+	public static Object[] buildAnswerWildcardValues(List<String> ansParams, JSONObject resultInfo){
+		Object[] aps = new Object[ansParams.size()];
+		for (int i=0; i<aps.length; i++){
+			aps[i] = resultInfo.get(ansParams.get(i));
+		}
+		return aps;
 	}
 
 }

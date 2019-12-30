@@ -30,14 +30,14 @@ public class InterviewResult {
 	}
 	
 	/**
-	 * If the interview results in a question, comment, exception, abort, etc. then it will contain an API result.
+	 * If the interview results in a question, comment, exception, abort, etc. then it will contain an {@link ServiceResult} result.
 	 */
 	public ServiceResult getApiComment(){
 		return apiResult;
 	}
 	
 	/**
-	 * If the interview is complete you will get this updated NLU_Result.
+	 * If the interview is complete you will get this updated {@link NluResult}.
 	 */
 	public NluResult getUpdatedNLU(){
 		return nluResult;
@@ -57,7 +57,7 @@ public class InterviewResult {
 	}
 	
 	/**
-	 * Checks if the interview is finished and ready for API 
+	 * Checks if the interview is finished and ready for service 
 	 * or if it returns a result that is a e.g. question to continue gathering parameters.
 	 */
 	public boolean isComplete(){

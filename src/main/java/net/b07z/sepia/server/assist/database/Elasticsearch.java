@@ -15,8 +15,8 @@ public class Elasticsearch extends net.b07z.sepia.server.core.database.Elasticse
 	 * Create Elasticsearch class with server defined during Start.loadSettings(). 
 	 */
 	public Elasticsearch(){
-		//overwrite server value
-		this.server = ConfigElasticSearch.getEndpoint(Config.defaultRegion); 		//override value of base class
+		//override value of base class
+		super(ConfigElasticSearch.getEndpoint(Config.defaultRegion), ConfigElasticSearch.getAuthType(), ConfigElasticSearch.getAuthData());
 	}
 	public Elasticsearch(String server){
 		//the constructor is not supported in this explicit implementation

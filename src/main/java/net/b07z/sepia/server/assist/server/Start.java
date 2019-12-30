@@ -15,6 +15,7 @@ import net.b07z.sepia.server.assist.endpoints.AccountEndpoint;
 import net.b07z.sepia.server.assist.endpoints.AssistEndpoint;
 import net.b07z.sepia.server.assist.endpoints.AuthEndpoint;
 import net.b07z.sepia.server.assist.endpoints.ConfigServer;
+import net.b07z.sepia.server.assist.endpoints.IntegrationsEndpoint;
 import net.b07z.sepia.server.assist.endpoints.RemoteActionEndpoint;
 import net.b07z.sepia.server.assist.endpoints.SdkEndpoint;
 import net.b07z.sepia.server.assist.endpoints.TtsEndpoint;
@@ -39,6 +40,7 @@ import net.b07z.sepia.server.core.server.SparkJavaFw;
 import net.b07z.sepia.server.core.server.Validate;
 import net.b07z.sepia.server.core.tools.DateTime;
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 import net.b07z.sepia.server.core.tools.SandboxSecurityPolicy;
 import net.b07z.sepia.server.core.tools.Security;
@@ -147,6 +149,15 @@ public class Start {
 		if (Config.hostFiles){
 			staticFiles.externalLocation(Config.webServerFolder);
 			Debugger.println("Web-server is active and uses folder: " + Config.webServerFolder, 3);
+			if (Is.notNullOrEmpty(Config.fileMimeTypes)){
+				for (String ft : Config.fileMimeTypes.split(",")){
+					String[] fileAndType = ft.split("=", 2);
+					String f = fileAndType[0].trim();
+					String t = fileAndType[1].trim();
+					staticFiles.registerMimeType(f, t);
+					Debugger.println("Web-server MIME type overwrite: " + f + "=" + t, 3);
+				}
+			}
 		}
 		
 		//SETUP CORE-TOOLS
@@ -295,12 +306,18 @@ public class Start {
 		post("/cluster", (request, response) ->				clusterData(request, response));
 		post("/config", (request, response) -> 				ConfigServer.run(request, response));
 		
+		//Web-server content
+		get("/web-content-index/*", (request, response) ->	CoreEndpoints.getWebContentIndex(request, response, 
+																Config.webServerFolder, "/web-content-index/", Config.allowFileIndex));
+		
 		//Accounts and assistant
 		post("/user-management", (request, response) ->		UserManagementEndpoint.userManagementAPI(request, response));
 		post("/authentication", (request, response) -> 		AuthEndpoint.authenticationAPI(request, response));
 		post("/account", (request, response) ->				AccountEndpoint.accountAPI(request, response));
 		post("/userdata", (request, response) ->			UserDataEndpoint.userdataAPI(request, response));
 		post("/interpret", (request, response) -> 			AssistEndpoint.interpreterAPI(request, response));
+		post("/understand", (request, response) ->			AssistEndpoint.interpreterV2(request, response));
+		post("/interview", (request, response) ->			AssistEndpoint.interview(request, response));
 		post("/answer", (request, response) -> 				AssistEndpoint.answerAPI(request, response));
 		post("/events", (request, response) -> 				AssistEndpoint.events(request, response));
 		
@@ -315,6 +332,9 @@ public class Start {
 		
 		//Remote controls
 		post("/remote-action", (request, response) ->		RemoteActionEndpoint.remoteActionAPI(request, response));
+		
+		//Integrations
+		post("/integrations/*/*", (request, response) ->	IntegrationsEndpoint.handle(request, response));
 	}
 	
 	/**

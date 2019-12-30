@@ -133,8 +133,8 @@ public interface InterpretationStep {
 		NluResult pcResult = personalCommands_NLP.interpret(input);
 		if (pcResult != null && pcResult.getCertaintyLevel() >= Config.threshold_personal_cmd){
 			/*
-			System.out.println("pc_res.: " + pc_result.cmd_summary); 				//debug
-			System.out.println("pc_res.: " + pc_result.get_certainty_level()); 		//debug
+			System.out.println("pc_res.: " + pcResult.cmdSummary); 				//debug
+			System.out.println("pc_res.: " + pcResult.getCertaintyLevel()); 	//debug
 			*/
 			return pcResult;
 		}else if(keepResultForLater){

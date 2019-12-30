@@ -149,6 +149,10 @@ public final class User {
 				info.put(ACCOUNT.BOT_CHARACTER, (String) token.getBasicInfo().get(Authenticator.BOT_CHARACTER));
 				checked.put(ACCOUNT.BOT_CHARACTER, true);
 			}
+			if (token.getBasicInfo().containsKey(Authenticator.USER_PREFERRED_UNIT_TEMP)){
+				info.put(ACCOUNT.USER_PREFERRED_UNIT_TEMP, (String) token.getBasicInfo().get(Authenticator.USER_PREFERRED_UNIT_TEMP));
+				checked.put(ACCOUNT.USER_PREFERRED_UNIT_TEMP, true);
+			}
 		}
 	}
 	
@@ -300,7 +304,7 @@ public final class User {
 	}
 	
 	/**
-	 * Export user account data to JSON string.
+	 * Export part (not all) of user account data to JSON string. Check as well: {@link #exportJsonForWebApi(boolean)}.
 	 * @param onlyBasics - reduce information to basics: id, name, prefLanguage
 	 */
 	public JSONObject exportJSON(){
@@ -325,34 +329,7 @@ public final class User {
 		return account;
 	}
 	/**
-	 * Export part of user account data to JSON string in snake-case format. Fits better to python-bridge for example.
-	 * @param onlyBasics - reduce information to basics: id, name, prefLanguage
-	 */
-	public JSONObject exportJsonForWebApi(boolean onlyBasics){
-		JSONObject account = new JSONObject();
-		JSON.add(account, "user_id", userId);
-		JSON.add(account, "user_name", userName.buildJSON());
-		String upl = (String) info.get(ACCOUNT.USER_PREFERRED_LANGUAGE);
-		if (upl != null && !upl.isEmpty()){
-			JSON.add(account, "pref_language", upl);
-		}
-		if (!onlyBasics){
-			JSON.add(account, "email", email);
-			JSON.add(account, "phone", phone);
-			JSON.add(account, "access_level", accessLvl);
-			List<String> u_roles = Converters.object2ArrayListStr(info.get(ACCOUNT.ROLES));
-			if (u_roles != null && !u_roles.isEmpty()){
-				JSON.add(account, "user_roles", JSON.stringListToJSONArray(u_roles));
-			}
-			String ub = (String) info.get(ACCOUNT.USER_BIRTH);
-			if (ub != null && !ub.isEmpty()){
-				JSON.add(account, "user_birth", ub);
-			}
-		}
-		return account;
-	}
-	/**
-	 * Import account from JSONObject. Make sure user was empty before!
+	 * Import part of account from JSONObject that was created with {@link #exportJSON} method. Make sure user was empty before!
 	 */
 	public void importJSON(JSONObject account){
 		//reset just to make sure
@@ -390,6 +367,33 @@ public final class User {
 		}
 		info.put(ACCOUNT.ROLES, all_roles);
 		checked.put(ACCOUNT.ROLES, true);
+	}
+	/**
+	 * Export part (not all) of user account data to JSON string in snake-case format. Fits better to python-bridge for example.
+	 * @param onlyBasics - reduce information to basics: id, name, prefLanguage
+	 */
+	public JSONObject exportJsonForWebApi(boolean onlyBasics){
+		JSONObject account = new JSONObject();
+		JSON.add(account, "user_id", userId);
+		JSON.add(account, "user_name", userName.buildJSON());
+		String upl = (String) info.get(ACCOUNT.USER_PREFERRED_LANGUAGE);
+		if (upl != null && !upl.isEmpty()){
+			JSON.add(account, "pref_language", upl);
+		}
+		if (!onlyBasics){
+			JSON.add(account, "email", email);
+			JSON.add(account, "phone", phone);
+			JSON.add(account, "access_level", accessLvl);
+			List<String> u_roles = Converters.object2ArrayListStr(info.get(ACCOUNT.ROLES));
+			if (u_roles != null && !u_roles.isEmpty()){
+				JSON.add(account, "user_roles", JSON.stringListToJSONArray(u_roles));
+			}
+			String ub = (String) info.get(ACCOUNT.USER_BIRTH);
+			if (ub != null && !ub.isEmpty()){
+				JSON.add(account, "user_birth", ub);
+			}
+		}
+		return account;
 	}
 	
 	//---------ACCOUNT LOADING/SAVING---------
