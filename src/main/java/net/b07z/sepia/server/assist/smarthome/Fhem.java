@@ -383,12 +383,16 @@ public class Fhem implements SmartHomeHub {
 			//service.addToExtendedLog(httpRes.headers);		//NOTE: you may use this in SEPIA-Home v2.3.2+
 			URLConnection conn = new URL(smartHomeHubHost + "?XHR=1").openConnection();
 			//read header
-			return conn.getHeaderField("X-FHEM-csrfToken").toString();
+			String crfToken = conn.getHeaderField("X-FHEM-csrfToken");
+			if (crfToken == null){
+				crfToken = "";
+			}
+			return crfToken;
 			
 		}catch (Exception e){
 			Debugger.println("FHEM - getCsrfToken FAILED with msg.: " + e.getMessage(), 1);
 			Debugger.printStackTrace(e, 3);
-			return null;
+			return "";
 		}
 	}
 	
