@@ -42,6 +42,7 @@ public class Room implements ParameterHandler{
 		garden,
 		shack,
 		hallway,
+		sunroom, //winter garden
 		other,
 		unassigned	//must be assigned directly
 		//TODO: entrance/front door, veranda(h)/patio/porch/lanai
@@ -63,6 +64,7 @@ public class Room implements ParameterHandler{
 		types_de.put("garage", "in der Garage");
 		types_de.put("basement", "im Keller");
 		types_de.put("garden", "im Garten");
+		types_de.put("sunroom", "im Wintergarten");
 		types_de.put("shack", "im Schuppen");
 		types_de.put("hallway", "im Flur");
 		types_de.put("other", "am erwähnten Ort");
@@ -79,6 +81,7 @@ public class Room implements ParameterHandler{
 		types_en.put("garage", "in the garage");
 		types_en.put("basement", "in the basement");
 		types_en.put("garden", "in the garden");
+		types_en.put("sunroom", "in the sunroom");
 		types_en.put("shack", "in the shack");
 		types_en.put("hallway", "in the hallway");
 		types_en.put("other", "in the mentioned location");
@@ -147,6 +150,7 @@ public class Room implements ParameterHandler{
 					+ "garage|auto(-| |)schuppen|"
 					+ "keller|"
 					+ "schuppen|gartenhaus|"
+					+ "winter(-| |)(garten|gaerten)|glasveranda|"
 					+ "garten|"
 					+ "(haus|)flur|korridor|diele|"
 					//+ "andere(n|es|r|)( |-|)(zimmer|raum|raeumen)"
@@ -167,6 +171,7 @@ public class Room implements ParameterHandler{
 					+ "garage|carhouse|"
 					+ "basement|"
 					+ "shack(s|)|shed(s|)|"
+					+ "winter(-| |)garden|sun(-| |)room|conservatory|solarium|"
 					+ "garden|"
 					+ "hallway|corridor|"
 					//+ "other (room|chamber)(s|)|"
@@ -251,6 +256,10 @@ public class Room implements ParameterHandler{
 		}else if (NluTools.stringContains(room, "schuppen|gartenhaus|"
 				+ "shack(s|)|shed(s|)")){
 			roomTypeTag =  "<" + Types.shack.name() + ">";
+			
+		}else if (NluTools.stringContains(room, "winter(-| |)(garten|gaerten)|glasveranda|"
+				+ "winter(-| |)garden|sun(-| |)room|conservatory|solarium")){
+			roomTypeTag =  "<" + Types.sunroom.name() + ">";
 			
 		}else if (NluTools.stringContains(room, "garten|"
 				+ "garden")){

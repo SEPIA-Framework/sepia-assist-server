@@ -423,6 +423,9 @@ public class Fhem implements SmartHomeHub {
 			}
 		}
 		//smart-guess if missing sepia-specific settings
+		if (name == null && attributes != null){
+			name = JSON.getStringOrDefault(attributes, "alias", null);		//NOTE: has to be unique!
+		}
 		if (name == null && internals != null){
 			name = JSON.getStringOrDefault(internals, "name", JSON.getStringOrDefault(internals, "NAME", null));		//NOTE: has to be unique!
 		}
