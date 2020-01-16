@@ -269,7 +269,7 @@ smartdevice_1c;;		rep=1|mood=5;;		Sag noch mal bitte <user_name>! ;;char=cool,ne
 smartdevice_1c;;		rep=1|mood=5;;		Sag noch mal bitte, welcher Raum war das? ;;char=cool,rude
 smartdevice_1c;;		rep=2|mood=5;;		Sorry, ich glaub da kann ich dir gerade nicht weiterhelfen. ;;char=cool,polite,neutral
 smartdevice_1d;;		rep=0|mood=5;;		Sag mir einen Wert bitte. ;;char=neutral
-smartdevice_1d;;		rep=0|mood=5;;		Auf welchen Wert?. ;;char=cool,polite,neutral
+smartdevice_1d;;		rep=0|mood=5;;		Auf welchen Wert? ;;char=cool,polite,neutral
 smartdevice_1d;;		rep=1|mood=5;;		Welche Zahl war das? ;;char=rude
 smartdevice_1d;;		rep=2|mood=5;;		Sorry, ich glaub da kann ich dir gerade nicht weiterhelfen <user_name>. ;;char=cool,polite,neutral
 smartdevice_2a;;		rep=0|mood=5;;		<1> auf <3>, alles klaro. ;;char=neutral,cool

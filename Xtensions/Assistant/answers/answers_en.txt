@@ -256,7 +256,7 @@ smartdevice_1c;;		rep=1|mood=5;;		Say again please! ;;char=neutral,polite
 smartdevice_1c;;		rep=1|mood=5;;		Can you repeat the name of the room once more? ;;char=neutral
 smartdevice_1c;;		rep=2|mood=5;;		<user_name> I'm sorry, but I think I can't help you with that. ;;char=neutral
 smartdevice_1d;;		rep=0|mood=5;;		Give me a value please. ;;char=neutral,polite
-smartdevice_1d;;		rep=0|mood=5;;		What is the value?. ;;char=neutral
+smartdevice_1d;;		rep=0|mood=5;;		What is the value? ;;char=neutral
 smartdevice_1d;;		rep=1|mood=5;;		Repeat that number please! ;;char=neutral,polite
 smartdevice_1d;;		rep=2|mood=5;;		Sorry I think I can't help you with that :-( ;; char=neutral,polite
 smartdevice_2a;;		rep=0|mood=5;;		<1> to <3>, ok. ;;char=neutral

@@ -90,7 +90,7 @@ public class Sentences implements ParameterHandler{
 
 	@Override
 	public boolean validate(String input) {
-		if (input.matches("^\\{\".*\":.+\\}$") && input.contains("\"" + InterviewData.ARRAY + "\"")){
+		if (input.matches("^\\{\".*\"(\\s|):.+\\}$") && input.contains("\"" + InterviewData.ARRAY + "\"")){
 			//System.out.println("IS VALID: " + input); 		//debug
 			return true;
 		}else{

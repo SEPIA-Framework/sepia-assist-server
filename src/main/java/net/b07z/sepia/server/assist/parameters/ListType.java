@@ -217,7 +217,7 @@ public class ListType implements ParameterHandler{
 
 	@Override
 	public boolean validate(String input) {
-		if (input.matches("^\\{\".*\":.+\\}$") && input.contains("\"" + InterviewData.LIST_TYPE + "\"")){
+		if (input.matches("^\\{\".*\"(\\s|):.+\\}$") && input.contains("\"" + InterviewData.LIST_TYPE + "\"")){
 			//System.out.println("ListType IS VALID: " + input); 		//debug
 			return true;
 		}else{

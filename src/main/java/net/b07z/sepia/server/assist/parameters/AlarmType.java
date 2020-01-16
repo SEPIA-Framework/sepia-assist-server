@@ -198,7 +198,7 @@ public class AlarmType implements ParameterHandler{
 
 	@Override
 	public boolean validate(String input) {
-		if (input.matches("^\\{\".*\":.+\\}$") && input.contains("\"" + InterviewData.VALUE + "\"")){
+		if (input.matches("^\\{\".*\"(\\s|):.+\\}$") && input.contains("\"" + InterviewData.VALUE + "\"")){
 			//System.out.println("IS VALID: " + input); 		//debug
 			return true;
 		}else{
