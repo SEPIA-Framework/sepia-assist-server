@@ -131,7 +131,7 @@ public class TestHub implements SmartHomeHub {
 	public Map<String, SmartHomeDevice> getDevices(){
 		Map<String, SmartHomeDevice> devices = new HashMap<>();
 		for (SmartHomeDevice shd : devicesList){
-			devices.put(shd.getName(), shd);
+			devices.put(shd.getMetaValueAsString("id"), shd);
 		}
 		return devices;
 	}

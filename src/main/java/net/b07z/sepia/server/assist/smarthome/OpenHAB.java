@@ -11,6 +11,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.parameters.SmartDevice;
+import net.b07z.sepia.server.assist.smarthome.SmartHomeDevice.StateType;
 import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
@@ -127,7 +128,7 @@ public class OpenHAB implements SmartHomeHub {
 					
 					//devices
 					if (shd != null){
-						devices.put(shd.getName(), shd);
+						devices.put(shd.getMetaValueAsString("id"), shd);
 					}
 				}
 				return devices;
@@ -346,9 +347,9 @@ public class OpenHAB implements SmartHomeHub {
 			}
 		}
 		//smart-guess if missing sepia-specific settings
-		String originalName = JSON.getStringOrDefault(hubDevice, "name", null);
+		String originalName = JSON.getStringOrDefault(hubDevice, "name", null);		//NOTE: has to be unique
 		if (name == null && originalName != null){
-			name = originalName;			//NOTE: has to be unique
+			name = originalName;
 		}
 		if (name == null){
 			//we only accept devices with name
@@ -388,6 +389,9 @@ public class OpenHAB implements SmartHomeHub {
 		//try to deduce state type if not given
 		if (Is.nullOrEmpty(stateType) && state != null){
 			stateType = SmartHomeDevice.findStateType(state);
+			if (stateType != null && type != null && stateType.equals(StateType.number_plain.name())){
+				stateType = SmartHomeDevice.makeSmartTypeAssumptionForPlainNumber(SmartDevice.Types.valueOf(type));
+			}
 		}
 		if (state != null){
 			if (stateType != null){

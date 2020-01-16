@@ -11,6 +11,7 @@ import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.parameters.SmartDevice;
+import net.b07z.sepia.server.assist.smarthome.SmartHomeDevice.StateType;
 import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
@@ -168,7 +169,7 @@ public class Fhem implements SmartHomeHub {
 					
 					//devices
 					if (shd != null){
-						devices.put(shd.getName(), shd);
+						devices.put(shd.getMetaValueAsString("id"), shd);
 					}
 				}
 				return devices;
@@ -423,13 +424,14 @@ public class Fhem implements SmartHomeHub {
 			}
 		}
 		//smart-guess if missing sepia-specific settings
+		String fhemObjName = JSON.getStringOrDefault(hubDevice, "Name", null);		//NOTE: has to be unique!
 		if (name == null && attributes != null){
-			name = JSON.getStringOrDefault(attributes, "alias", null);		//NOTE: has to be unique!
+			name = JSON.getStringOrDefault(attributes, "alias", null);
 		}
 		if (name == null && internals != null){
 			name = JSON.getStringOrDefault(internals, "name", JSON.getStringOrDefault(internals, "NAME", null));		//NOTE: has to be unique!
 		}
-		if (name == null){
+		if (name == null && Is.notNullOrEmpty(fhemObjName)){
 			//we only accept devices with name
 			return null;
 		}
@@ -452,19 +454,23 @@ public class Fhem implements SmartHomeHub {
 			}else{
 				type = fhemType;		//take this if we don't have a specific type yet
 			}
+			//TODO: add more
 		}
 		if (room == null && attributes != null){
 			String fhemRoom = JSON.getString(attributes, "room").toLowerCase();
 			room = fhemRoom;
+			//TODO: try to map to SEPIA rooms
 		}
 		//create common object
-		String fhemObjName = JSON.getStringOrDefault(hubDevice, "Name", null);
 		//JSONObject stateObj = JSON.getJObject(hubDevice, new String[]{"Readings", "state"});
 		//String state = (stateObj != null)? JSON.getString(stateObj, "Value") : null;
 		String state = JSON.getStringOrDefault(internals, "STATE", null);
 		//try to deduce state type if not given
 		if (Is.nullOrEmpty(stateType) && state != null){
 			stateType = SmartHomeDevice.findStateType(state);
+			if (stateType != null && type != null && stateType.equals(StateType.number_plain.name())){
+				stateType = SmartHomeDevice.makeSmartTypeAssumptionForPlainNumber(SmartDevice.Types.valueOf(type));
+			}
 		}
 		if (state != null){
 			if (stateType != null){

@@ -457,14 +457,14 @@ public class SmartHomeDevice {
 		if (state.matches("[\\d.,]+")){
 			genStateType = StateType.number_plain.name();
 		//percent
-		}else if (state.matches(".*[\\d.,]+(\\+s|)(%|pct)\\b.*")){
+		}else if (state.matches(".*[\\d.,]+(\\s+|)(%|pct)(\\s|\\b|$).*")){
 			genStateType = StateType.number_percent.name();
 		//temperature
-		}else if (state.matches(".*[\\d.,]+(\\+s|)(°|deg|)C\\b.*")){
+		}else if (state.matches(".*[\\d.,]+(\\s+|)(°|deg|)C\\b.*")){
 			genStateType = StateType.number_temperature_c.name();
-		}else if (state.matches(".*[\\d.,]+(\\+s|)(°|deg|)F\\b.*")){
+		}else if (state.matches(".*[\\d.,]+(\\s+|)(°|deg|)F\\b.*")){
 			genStateType = StateType.number_temperature_f.name();
-		}else if (state.matches(".*[\\d.,]+(\\+s|)(°|deg)\\b.*")){
+		}else if (state.matches(".*[\\d.,]+(\\s+|)(°|deg)(\\s|\\b|$).*")){
 			genStateType = StateType.number_temperature.name();
 		//ON/OFF
 		}else if (state.matches("(?i)(on|off|open|close(d|)|up|down|(dis|)connected|(in|)active)")){
@@ -507,7 +507,8 @@ public class SmartHomeDevice {
 	 * @return
 	 */
 	public static String makeSmartTypeAssumptionForPlainNumber(SmartDevice.Types deviceType){
-		if (deviceType.equals(SmartDevice.Types.light) || deviceType.equals(SmartDevice.Types.roller_shutter)){
+		if (deviceType.equals(SmartDevice.Types.light) 
+				|| deviceType.equals(SmartDevice.Types.roller_shutter)){
 			return StateType.number_percent.name();
 		}else if (deviceType.equals(SmartDevice.Types.heater)){
 			return StateType.number_temperature.name();
