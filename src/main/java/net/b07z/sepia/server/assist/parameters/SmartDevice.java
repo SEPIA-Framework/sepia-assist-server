@@ -229,7 +229,12 @@ public class SmartDevice implements ParameterHandler{
 			return "";
 		}else{
 			//we should take device names (tag/number..) into account, like "Lamp 1", "Light A" or "Desk-Lights" etc.
-			String deviceWithNumber = NluTools.stringFindFirst(input, device + " \\d+");
+			String deviceWithNumber;
+			if (language.matches(LANGUAGES.DE)){
+				deviceWithNumber = NluTools.stringFindFirst(input, device + "( (mit der |mit |)nummer|) \\d+");
+			}else{
+				deviceWithNumber = NluTools.stringFindFirst(input, device + "( (with the |with |)number|) \\d+");
+			}
 			if (!deviceWithNumber.isEmpty()){
 				this.found = deviceWithNumber;
 			}else{

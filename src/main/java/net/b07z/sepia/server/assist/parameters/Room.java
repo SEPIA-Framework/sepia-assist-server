@@ -201,7 +201,12 @@ public class Room implements ParameterHandler{
 			return "";
 		}else{
 			//check for room number
-			String roomWithNumber = NluTools.stringFindFirst(input, room + " \\d+");
+			String roomWithNumber;
+			if (language.matches(LANGUAGES.DE)){
+				roomWithNumber = NluTools.stringFindFirst(input, room + "( (mit der |mit |)nummer|) \\d+");
+			}else{
+				roomWithNumber = NluTools.stringFindFirst(input, room + "( (with the |with |)number|) \\d+");
+			}
 			if (!roomWithNumber.isEmpty()){
 				this.found = roomWithNumber;
 			}else{
