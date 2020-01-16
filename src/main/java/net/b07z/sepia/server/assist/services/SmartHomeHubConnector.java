@@ -74,6 +74,8 @@ public class SmartHomeHubConnector implements ServiceInterface {
 				+ SmartDevice.rollerShutterRegEx_de + "|"
 				+ SmartDevice.powerOutletRegEx_de + "|"
 				+ SmartDevice.sensorRegEx_de + "|"
+				+ SmartDevice.genericDeviceRegEx_de + "|"
+				+ "^smart( |)home|"
 				+ "(smart( |)home|geraet(e|)|sensor(en|))( |)(control|kontrolle|steuer(ung|n)|status|zustand)"
 				+ "", LANGUAGES.DE);
 		info.setCustomTriggerRegX(""
@@ -87,6 +89,8 @@ public class SmartHomeHubConnector implements ServiceInterface {
 				+ SmartDevice.rollerShutterRegEx_en + "|"
 				+ SmartDevice.powerOutletRegEx_en + "|"
 				+ SmartDevice.sensorRegEx_en + "|"
+				+ SmartDevice.genericDeviceRegEx_en + "|"
+				+ "^smart( |)home|"
 				+ "(smart( |)home|device|sensor) (control|stat(us|e))"
 				+ "", LANGUAGES.EN);
 		//info.setCustomTriggerRegXscoreBoost(2);		//boost service a bit to increase priority over similar ones
@@ -264,7 +268,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		
 		//assign selected device name - NOTE: we remove info in brackets
 		String selectedDeviceName = selectedDevice.getName().trim();	//cannot be null?
-		selectedDeviceName = selectedDeviceName.replaceFirst("\\(.*?\\)", " ").replaceAll("\\s+", " ").trim();
+		selectedDeviceName = selectedDeviceName.replaceAll("\\(.*?\\)", " ").replaceAll("\\s+", " ").trim();
 		service.resultInfoPut("device", selectedDeviceName);		//TODO: or use deviceTypeLocal? - If the name is not the same language this might sound strange
 		
 		//ACTIONS

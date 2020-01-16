@@ -116,6 +116,7 @@ public class SmartDevice implements ParameterHandler{
 	public static final String rollerShutterRegEx_en = "((roller|window|sun)( |-|)|)(shutter(s|)|blind(s|)|louver(s|))|jalousie(s|)";
 	public static final String powerOutletRegEx_en = "((wall|power)( |-|)|)(socket(s|)|outlet(s|))";
 	public static final String sensorRegEx_en = "sensor(s|)";
+	public static final String genericDeviceRegEx_en = "device( |)\\d+";
 	
 	public static final String lightRegEx_de = "licht(er|es|)|lampe(n|)|beleuchtung|leuchte(n|)|helligkeit";
 	public static final String heaterRegEx_de = "heiz(er|ungen|ung|koerper(s|)|luefter(s|)|strahler(s|))|thermostat(es|s|)|temperatur(regler(s|)|en|)";
@@ -127,6 +128,7 @@ public class SmartDevice implements ParameterHandler{
 	public static final String rollerShutterRegEx_de = "(fenster|rol(l|))(l(a|ae)den)|jalousie(n|)|rollo(s|)|markise";
 	public static final String powerOutletRegEx_de = "(steck|strom)( |-|)dose(n|)|stromanschluss(es|)";
 	public static final String sensorRegEx_de = "sensor(en|s|)";
+	public static final String genericDeviceRegEx_de = "geraet( |)\\d+";
 	//----------------
 	
 	User user;
@@ -167,7 +169,8 @@ public class SmartDevice implements ParameterHandler{
 					+ sensorRegEx_de + "|"
 					+ fridgeRegEx_de + "|"
 					+ ovenRegEx_de + "|"
-					+ coffeeMakerRegEx_de
+					+ coffeeMakerRegEx_de + "|"
+					+ genericDeviceRegEx_de
 				+ ")");
 			
 		//English and other
@@ -182,7 +185,8 @@ public class SmartDevice implements ParameterHandler{
 					+ sensorRegEx_en + "|"
 					+ fridgeRegEx_en + "|"
 					+ ovenRegEx_en + "|"
-					+ coffeeMakerRegEx_en
+					+ coffeeMakerRegEx_en + "|"
+					+ genericDeviceRegEx_en
 				+ ")");
 			
 		}
@@ -390,7 +394,7 @@ public class SmartDevice implements ParameterHandler{
 
 	@Override
 	public boolean validate(String input) {
-		if (input.matches("^\\{\".*\":.+\\}$") && input.contains("\"" + InterviewData.VALUE + "\"")){
+		if (input.matches("^\\{\".*\"(\\s|):.+\\}$") && input.contains("\"" + InterviewData.VALUE + "\"")){
 			//System.out.println("IS VALID: " + input); 		//debug
 			return true;
 		}else{

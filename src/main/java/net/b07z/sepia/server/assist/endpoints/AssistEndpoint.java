@@ -182,6 +182,7 @@ public class AssistEndpoint {
 					
 					//check if the parameter is already valid
 					boolean wasBuilt = false;
+					//System.out.println("------IN: " + in); 		//DEBUG
 					if (!handler.validate(in)){
 						//check for special tags like <i_raw>, <i_norm>, etc. ..., extract if required
 						in = Interview.handleInputBeforeBuild(in, handler, result);

@@ -68,7 +68,8 @@ public class SmartHomeDevice {
 		number_percent,
 		number_temperature,
 		number_temperature_c,
-		number_temperature_f
+		number_temperature_f,
+		custom
 	}
 	public static final String REGEX_STATE_TYPE_TEXT = "^text_.*";
 	public static final String REGEX_STATE_TYPE_NUMBER = "^number_.*";
