@@ -71,7 +71,10 @@ public class Config {
 	public static String sdkClassesFolder = pluginsFolder + "net/b07z/sepia/sdk/";		//folder for SDK plugin classes - NOTE: has to be sub-folder of plugins
 	public static String servicePropertiesFolder = xtensionsFolder + "ServiceProperties/";		//folder for service properties and static data
 	public static String dbSetupFolder = xtensionsFolder + "Database/";		//folder for database stuff
-	public static String webServerFolder = xtensionsFolder + "WebContent";	//folder for web-server
+	public static String webServerFolder = xtensionsFolder + "WebContent";	//folder for web-server (NOTE: it's given without '/' at the end)
+	public static String ttsEngines = xtensionsFolder + "TTS/";				//folder for TTS engines if not given by system
+	public static String ttsWebServerUrl = "/tts/";							//URL for TTS when accessing web-server root
+	public static String ttsWebServerPath = webServerFolder + ttsWebServerUrl;		//folder for TTS generated on server
 	public static boolean hostFiles = true;									//use web-server?
 	public static boolean allowFileIndex = true;							//allow web-server index
 	public static String fileMimeTypes = "mp4=video/mp4, mp3=audio/mpeg";	//MIME Types for files when loaded from static web server

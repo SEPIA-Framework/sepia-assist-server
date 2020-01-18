@@ -1,7 +1,6 @@
 package net.b07z.sepia.server.assist.endpoints;
 
-import java.util.ArrayList;
-
+import java.util.Collection;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.interpreters.InterpretationStep;
@@ -142,17 +141,17 @@ public class TtsEndpoint {
 		}
 		
 		TtsInterface speaker = (TtsInterface) ClassBuilder.construct(Config.ttsModule); //new TTS_Acapela();
-		ArrayList<String> voiceList = speaker.getVoices();
-		ArrayList<String> genderList = speaker.getGenders();
-		ArrayList<String> languagesList = speaker.getLanguages();
-		ArrayList<String> soundFormatsList = speaker.getSoundFormats();
+		Collection<String> voiceList = speaker.getVoices();
+		Collection<String> genderList = speaker.getGenders();
+		Collection<String> languagesList = speaker.getLanguages();
+		Collection<String> soundFormatsList = speaker.getSoundFormats();
 		JSONObject info = new JSONObject();
 		JSON.add(info, "result", "success");
 		JSON.add(info, "interface", "TTS_Acapela");
-		JSON.add(info, "voices", JSON.stringListToJSONArray(voiceList));
-		JSON.add(info, "genders", JSON.stringListToJSONArray(genderList));
-		JSON.add(info, "languages", JSON.stringListToJSONArray(languagesList));
-		JSON.add(info, "formats", JSON.stringListToJSONArray(soundFormatsList));
+		JSON.add(info, "voices", voiceList);
+		JSON.add(info, "genders", genderList);
+		JSON.add(info, "languages", languagesList);
+		JSON.add(info, "formats", soundFormatsList);
 		JSON.add(info, "maxMoodIndex", speaker.getMaxMoodIndex());
 		String answer = info.toJSONString();
 				

@@ -366,5 +366,15 @@ public class Test_Tools {
 		String testTextForRegExp = "test1 test2 sepia-name sepia-type sepia-set-cmd sepia-state-type sepia-room test3 test4";
 		System.out.println(testTextForRegExp);
 		System.out.println(testTextForRegExp.replaceAll(TAG_REGEX, "").replaceAll("\\s+", " ").trim());
+		
+		System.out.println("\n------------------------------------------------");
+		System.out.println(DateTimeConverters.getToday("dd.MM.yyyy", "2020.01.04_15:30:00"));
+		System.out.println(DateTimeConverters.getToday("dd.MM.yyyy", "2020.01.04_03:30:00"));
+		System.out.println(DateTimeConverters.getToday("MM/dd/yyyy", "2020.01.04_15:30:00"));
+		System.out.println(DateTimeConverters.getToday("MM/dd/yyyy", "2020.01.04_03:30:00"));
+		System.out.println(DateTimeConverters.getToday("HH:mm", "2020.01.04_15:30:00"));
+		System.out.println(DateTimeConverters.getToday("HH:mm", "2020.01.04_03:30:00"));
+		System.out.println(DateTimeConverters.getToday("H:mm", "2020.01.04_15:30:00"));
+		System.out.println(DateTimeConverters.getToday("H:mm", "2020.01.04_03:30:00"));
 	}
 }

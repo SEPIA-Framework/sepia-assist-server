@@ -10,6 +10,8 @@ import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Debugger;
 
 /**
+ * NOTE: This is pretty old code and might need some upgrades ^^<br>
+ * <br>
  * This is the TTS_Interface implementation for Acapela supporting multiple languages and emotional voices.<br>
  * Note that there is a certain order in which to call the settings to avoid overwriting parameters:<br><br>
  * setLanguage -> setGender -> setVoice -> setMood -> setSpeedFactor -> setToneFactor <br>

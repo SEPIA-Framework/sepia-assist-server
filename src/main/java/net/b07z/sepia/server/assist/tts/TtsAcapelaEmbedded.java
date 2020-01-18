@@ -15,6 +15,8 @@ import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.core.tools.Debugger;
 
 /**
+ * NOTE: This is pretty old code and might need some upgrades ^^<br>
+ * <br>
  * This is the TTS_Interface implementation for embedded Acapela supporting multiple languages and emotional voices.<br>
  * Note that there is a certain order in which to call the settings to avoid overwriting parameters:<br><br>
  * setLanguage -> setVoice -> setGender -> setMood -> setSpeedFactor -> setToneFactor <br>
@@ -29,8 +31,8 @@ public class TtsAcapelaEmbedded implements TtsInterface {
 	//track files
 	private static int MAX_FILES = 30;
 	private static AtomicInteger fileID = new AtomicInteger(0);
-	private static String acapelaPath = Config.xtensionsFolder + "AcapelaTTS/";
-	private static String audioPath = acapelaPath + "audio_out/";
+	private static String acapelaPath = Config.ttsEngines + "acapela/";
+	private static String audioPath = Config.ttsWebServerPath;
 	private static String textPath = acapelaPath + "text_in/";
 	
 	//track process
@@ -179,7 +181,7 @@ public class TtsAcapelaEmbedded implements TtsInterface {
 		return soundFormat;
 	}
 	
-	//create mp3 file from text via google
+	//create sound file from text
 	public String getAudioURL(String read_this) {
 		
 		//characters limit - does Acapela have a limit?
@@ -260,8 +262,8 @@ public class TtsAcapelaEmbedded implements TtsInterface {
 			// - got a working file?
 			if ((!Files.exists(pathText) && !Files.exists(pathAudio)) || (Files.isWritable(pathText) && Files.isWritable(pathAudio))){
 				
-				String audioURL = pathAudio.toAbsolutePath().toString();
-				Debugger.println("TTS LOG - URL: " + audioURL, 2);		//debug
+				String audioURL = pathAudio.toAbsolutePath().toString();			//TODO: fix
+				Debugger.println("TTS LOG - URL: " + audioURL, 3);		//debug
 				
 				// - save textFile
 				ArrayList<String> lines = new ArrayList<String>();
@@ -270,7 +272,7 @@ public class TtsAcapelaEmbedded implements TtsInterface {
 				//Files.write(Paths.get(textFile), lines, StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 				Files.write(Paths.get(textFile), lines, StandardCharsets.ISO_8859_1, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 				
-				//build command line action
+				//build command line action --- TODO: fix
 				String command = acapelaPath + "sdk/babile/txt_to_wav/generate " + ini_path + " " + textFile + " " + audioFile;
 				/* TEST PROCESS
 				File zip = new File(Config.xtensionsFolder + "Test/sdk/babile/txt_to_wav/7z.exe");
@@ -278,7 +280,7 @@ public class TtsAcapelaEmbedded implements TtsInterface {
 				File dir = new File(Config.xtensionsFolder + "AcapelaTTS/audio_out");
 				String command = zip.getPath() + " e " + arc.getPath() + " -o" + dir.getPath() + " -y";
 				*/
-				Debugger.println("TTS LOG - Command: " + command, 2);		//debug
+				Debugger.println("TTS LOG - Command: " + command, 3);		//debug
 				//run process - note: its thread blocking but this should be considered "intended" here ;-) 
 				runProcess(command);
 				waitForProcess(maxWait_ms);
