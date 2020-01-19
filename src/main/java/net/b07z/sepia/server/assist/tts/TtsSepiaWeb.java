@@ -55,6 +55,11 @@ public class TtsSepiaWeb implements TtsInterface{
 		getInfo();
 	}
 	
+	@Override
+	public boolean setup(){
+		return true;
+	}
+	
 	//set TTS input and check it for special stuff like environment based format (web-browser != android app)
 	public void setInput(TtsInput input){
 		if (input != null){

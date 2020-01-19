@@ -1,18 +1,23 @@
 package net.b07z.sepia.server.assist.tts;
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.FilesAndStreams;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.RuntimeInterface;
 import net.b07z.sepia.server.core.tools.Security;
+import net.b07z.sepia.server.core.tools.ThreadManager;
 import net.b07z.sepia.server.core.tools.RuntimeInterface.RuntimeResult;
 
 /**
@@ -55,7 +60,50 @@ public class TtsOpenEmbedded implements TtsInterface {
 	private static TtsVoiceTrait enUS_espeak_m_2 = new TtsVoiceTrait("gmw/en-US", Type.espeak.name(), "en", "male", 160, 30, 100);
 	*/
 	
-	static {
+	//track files
+	private static int MAX_FILES = 30;
+	private static long PROCESS_TIMEOUT_MS = 5000;
+	private static long CLEAN_UP_DELAY_MS = 120000;
+	private static AtomicInteger fileID = new AtomicInteger(0);
+	private static String ttsOutFolder = Config.ttsWebServerPath;
+	
+	//file clean-up
+	Queue<File> fileCleanUpQueue = new ConcurrentLinkedQueue<>();
+	Runnable cleanUpTask = () -> {
+		File f = fileCleanUpQueue.poll();
+		if (f != null && f.exists()){
+			try{
+				f.delete();
+				Debugger.println(TtsOpenEmbedded.class.getSimpleName() + " - cleaned up file: " + f.getName(), 2);
+			}catch (Exception e){
+				Debugger.println(TtsOpenEmbedded.class.getSimpleName() + " - error in clean-up task: " + e.getMessage(), 1);
+			}
+		}
+		int n = fileCleanUpQueue.size();
+		if (n > MAX_FILES * 10){
+			Debugger.println(TtsOpenEmbedded.class.getSimpleName() + " - TTS clean-up queue is too large (" + n + ")! Deactivating TTS until server restart.", 1);
+			Config.ttsModuleEnabled = false;
+		}
+	};
+        
+    //defaults
+    private String language = "en";
+	private String gender = "male";
+	private String activeVoice = "en-GB espeak m";		//name of voice set as seen in get_voices (not necessarily the same as the actual selected voice (enu_will != will22k)
+	private int mood_index=0;			//0 - neutral/default, 1 - happy, 2 - sad, 3 - angry, 4 - shout, 5 - whisper, 6 - fun1 (e.g. old), 7 - fun2 (e.g. Yoda)
+	private double speedFactor = 1.0d;	//multiply speed with this 	
+	private double toneFactor = 1.0d;	//multiply tone with this
+	
+	int charLimit = 600;				//limit text length
+	String soundFormat = "WAV";
+	
+	public String client = "";			//client info
+	public String environment = "";		//client environment
+	
+	public TtsOpenEmbedded(){}
+	
+	@Override
+	public boolean setup(){
 		//supported languages:
 		languageList.add("de");
 		languageList.add("en");
@@ -74,34 +122,26 @@ public class TtsOpenEmbedded implements TtsInterface {
 		
 		//supported maximum mood index
 		maxMoodIndex = 3;
+		
+		//clean-up 'tts' folder
+		try{
+			List<File> ttsFiles = FilesAndStreams.directoryToFileList(Config.ttsWebServerPath, null, false);
+			int i = 0;
+			for (File f : ttsFiles){
+				if (!f.getName().equalsIgnoreCase("no-index") && !f.getName().toLowerCase().startsWith("readme")){
+					f.delete();
+					i++;
+				}
+			}
+			Debugger.println("TTS module setup has cleaned up '" + i + "' leftover files.", 3);
+			
+		}catch (Exception e){
+			Debugger.println("TTS module setup error during folder clean-up: " + e.getMessage(), 1);
+			return false;
+		}
+		
+		return true;
 	}
-	
-	//track files
-	private static int MAX_FILES = 30;
-	private static AtomicInteger fileID = new AtomicInteger(0);
-	private static String ttsOutFolder = Config.ttsWebServerPath;
-	
-	//track process
-	public boolean isProcessing = false;
-	public boolean abortProcess = false;
-	public boolean isTimedOut = false;
-	long maxWait_ms = 5000;
-        
-    //defaults
-    private String language = "en";
-	private String gender = "male";
-	private String activeVoice = "en-GB espeak m";		//name of voice set as seen in get_voices (not necessarily the same as the actual selected voice (enu_will != will22k)
-	private int mood_index=0;			//0 - neutral/default, 1 - happy, 2 - sad, 3 - angry, 4 - shout, 5 - whisper, 6 - fun1 (e.g. old), 7 - fun2 (e.g. Yoda)
-	private double speedFactor = 1.0d;	//multiply speed with this 	
-	private double toneFactor = 1.0d;	//multiply tone with this
-	
-	int charLimit = 600;				//limit text length
-	String soundFormat = "WAV";
-	
-	public String client = "";			//client info
-	public String environment = "";		//client environment
-	
-	public TtsOpenEmbedded(){}
 	
 	//set TTS input and check it for special stuff like environment based format (web-browser != android app)
 	public void setInput(TtsInput input){
@@ -285,8 +325,9 @@ public class TtsOpenEmbedded implements TtsInterface {
 			}
 			Debugger.println("TTS LOG - Command: " + String.join(" ", command), 2);		//debug
 			//run process - note: its thread blocking but this should be considered "intended" here ;-)
-			RuntimeResult res = RuntimeInterface.runCommand(command, maxWait_ms);
+			RuntimeResult res = RuntimeInterface.runCommand(command, PROCESS_TIMEOUT_MS);
 			if (res.getStatusCode() != 0){
+				//Error
 				if (res.getStatusCode() == 3){
 					throw new RuntimeException("TTS procces took too long!");
 				}else{
@@ -294,6 +335,9 @@ public class TtsOpenEmbedded implements TtsInterface {
 					throw new RuntimeException("TTS procces failed! Msg: " + ((e != null)? e.getMessage() : "unknown"));
 				}
 			}else{
+				//Success
+				fileCleanUpQueue.add(new File(audioFilePath));
+				ThreadManager.scheduleTaskToRunOnceInBackground(CLEAN_UP_DELAY_MS, cleanUpTask);
 				return audioURL;
 			}
 
@@ -345,6 +389,12 @@ public class TtsOpenEmbedded implements TtsInterface {
 		if (Is.systemWindows()){
 			//Windows
 			cmd = (Config.ttsEngines + "espeak-ng/espeak-ng.exe").replace("/", File.separator);
+			//encoding conversion
+			text = new String(text.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1);
+			/* -- this should work .. but does not --
+			if (RuntimeInterface.windowsShellCodepage != null && !RuntimeInterface.windowsShellCodepage.equals(StandardCharsets.UTF_8)){
+				text = new String(text.getBytes(StandardCharsets.UTF_8), RuntimeInterface.windowsShellCodepage);
+			}*/
 		}else{
 			//Other
 			cmd = "espeak-ng";

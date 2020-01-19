@@ -34,6 +34,7 @@ import net.b07z.sepia.server.assist.services.ServiceAccessManager;
 import net.b07z.sepia.server.assist.smarthome.OpenHAB;
 import net.b07z.sepia.server.assist.tools.RssFeedReader;
 import net.b07z.sepia.server.assist.tools.SpotifyApi;
+import net.b07z.sepia.server.assist.tts.TtsInterface;
 import net.b07z.sepia.server.assist.tts.TtsOpenEmbedded;
 import net.b07z.sepia.server.assist.users.AccountDynamoDB;
 import net.b07z.sepia.server.assist.users.AccountElasticsearch;
@@ -75,6 +76,7 @@ public class Config {
 	public static String ttsEngines = xtensionsFolder + "TTS/";				//folder for TTS engines if not given by system
 	public static String ttsWebServerUrl = "/tts/";							//URL for TTS when accessing web-server root
 	public static String ttsWebServerPath = webServerFolder + ttsWebServerUrl;		//folder for TTS generated on server
+	public static boolean ttsModuleEnabled = true;									//is TTS module available (can be set to false by module setup)
 	public static boolean hostFiles = true;									//use web-server?
 	public static boolean allowFileIndex = true;							//allow web-server index
 	public static String fileMimeTypes = "mp4=video/mp4, mp3=audio/mpeg";	//MIME Types for files when loaded from static web server
@@ -425,6 +427,27 @@ public class Config {
 		}
 	}
 	
+	/**
+	 * Setup TTS module (e.g. clean-up 'tts' folder, load voices etc.).
+	 */
+	public static void setupTts(){
+		boolean setupOk = false;
+		try{
+			Debugger.println("Running TTS module setup ...", 3);
+			TtsInterface tts = (TtsInterface) ClassBuilder.construct(Config.ttsModule);
+			setupOk = tts.setup();
+		}catch (Exception e){
+			setupOk = false;
+			Debugger.println("TTS module setup failed with message: " + e.getMessage(), 1);
+		}
+		if (!setupOk){
+			Config.ttsModuleEnabled = false;
+			Debugger.println("TTS module setup failed and module was deactivated!", 1);
+		}else{
+			Debugger.println("TTS module setup successful.", 3);
+		}
+	}
+	
 	//----------helpers----------
 	
 	/**
@@ -477,6 +500,7 @@ public class Config {
 			}
 			ttsModule = settings.getProperty("module_tts", TtsOpenEmbedded.class.getCanonicalName());
 			ttsName = settings.getProperty("tts_engine_name", "Open Embedded");
+			ttsModuleEnabled = Boolean.valueOf(settings.getProperty("tts_enabled", "true"));
 			enableSDK = Boolean.valueOf(settings.getProperty("enable_sdk"));
 			//useSandboxPolicy = Boolean.valueOf(settings.getProperty("use_sandbox_security_policy", "true"));		//NOTE: this will only be accessible via commandline argument
 			useSentencesDB = Boolean.valueOf(settings.getProperty("enable_custom_commands"));

@@ -155,6 +155,12 @@ public class TtsAcapelaEmbedded implements TtsInterface {
 		maxMoodIndex = 7;
 	}
 	
+	@Override
+	public boolean setup(){
+		//TODO
+		return false;
+	}
+	
 	//set TTS input and check it for special stuff like environment based format (web-browser != android app)
 	public void setInput(TtsInput input){
 		if (input != null){

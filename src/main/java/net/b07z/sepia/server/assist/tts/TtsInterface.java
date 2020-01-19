@@ -18,6 +18,12 @@ import java.util.Collection;
 public interface TtsInterface {
 	
 	/**
+	 * If you need to run code at server start, put it here (e.g. clean-up 'tts' folder, load voices etc.).<br>
+	 * NOTE: runs ONLY ONCE at server start.
+	 */
+	public boolean setup();
+	
+	/**
 	 * Set input obtained from user client. Can be used internally to optimize parameters like sound format if the client does not 
 	 * support all formats etc. ...
 	 * 

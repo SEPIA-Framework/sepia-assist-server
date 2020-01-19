@@ -43,6 +43,15 @@ public class TtsEndpoint {
 		Statistics.add_TTS_hit();					//hit counter
 		long tic = System.currentTimeMillis();
 		
+		//check module
+		if (!Config.ttsModuleEnabled){
+			Statistics.add_TTS_error();
+			return SparkJavaFw.returnResult(request, response, JSON.make(
+					"result", "fail",
+					"error", "TTS module not active!"
+			).toJSONString(), 200);
+		}
+		
 		//prepare parameters
 		RequestParameters params = new RequestGetOrFormParameters(request);
 				
@@ -133,6 +142,14 @@ public class TtsEndpoint {
 	 * End-point that returns some info about the TTS engine in use.
 	 */
 	public static String ttsInfo(Request request, Response response){
+		//check module
+		if (!Config.ttsModuleEnabled){
+			return SparkJavaFw.returnResult(request, response, JSON.make(
+					"result", "fail",
+					"error", "TTS module not active!"
+			).toJSONString(), 200);
+		}
+		
 		//prepare parameters
 		RequestParameters params = new RequestGetOrFormParameters(request);		//TODO: because of form-post?
 		

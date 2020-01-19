@@ -23,9 +23,9 @@ import net.b07z.sepia.server.core.tools.Debugger;
  */
 public class TtsAcapelaWeb implements TtsInterface {
 	
-    //private String VAAS_URL = "https://vaas.acapela-group.com/Services/Synthesizer/";
+    private String VAAS_URL = "https://vaas.acapela-group.com/Services/Synthesizer/";
     //private String VAAS_URL = "http://vaas.acapela-group.com/Services/UrlMaker.json";
-	private String VAAS_URL = "http://vaas.acapela-group.com/webservices/1-60-00/synthesizer.php";
+	//private String VAAS_URL = "http://vaas.acapela-group.com/webservices/1-60-00/synthesizer.php";
     private String VAAS_LOGIN = "EVAL_VAAS";
     
     //Voices - 1) default, 2) happy, 3) sad, 4) angry, 5) shout, 6) whisper, 7) fun1 (e.g. old), 8) fun2 (e.g. Yoda)
@@ -163,7 +163,7 @@ public class TtsAcapelaWeb implements TtsInterface {
 	ArrayList<String> soundFormatList = new ArrayList<String>();
 	int maxMoodIndex = 0;
 	
-	//CONSTRUCTOR - configuration
+	//CONSTRUCTOR - configuration - TODO: update/move to setup
 	public TtsAcapelaWeb(){
 		//supported languages:
 		languageList.add(LANGUAGES.DE);
@@ -215,6 +215,12 @@ public class TtsAcapelaWeb implements TtsInterface {
 		
 		//supported maximum mood index
 		maxMoodIndex = 7;
+	}
+	
+	@Override
+	public boolean setup(){
+		//TODO
+		return true;
 	}
 	
 	//set TTS input and check it for special stuff like environment based format (web-browser != android app)
