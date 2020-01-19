@@ -33,6 +33,7 @@ Xtensions/Plugins/net/b07z/sepia/sdk/services/uid*
 Xtensions/WebContent/app*
 Xtensions/WebContent/tools*
 Xtensions/WebContent/shared*
+Xtensions/WebContent/tts/*
 
 # Avoid ignoring Maven wrapper jar file (.jar files are usually ignored)
 !/.mvn/wrapper/maven-wrapper.jar

@@ -133,25 +133,27 @@ public class TtsEndpoint {
 	 * End-point that returns some info about the TTS engine in use.
 	 */
 	public static String ttsInfo(Request request, Response response){
+		//prepare parameters
+		RequestParameters params = new RequestGetOrFormParameters(request);		//TODO: because of form-post?
 		
 		//authenticate
-		Authenticator token = Start.authenticate(request);
+		Authenticator token = Start.authenticate(params, request);
 		if (!token.authenticated()){
 			return SparkJavaFw.returnNoAccess(request, response, token.getErrorCode());
 		}
 		
-		TtsInterface speaker = (TtsInterface) ClassBuilder.construct(Config.ttsModule); //new TTS_Acapela();
+		TtsInterface speaker = (TtsInterface) ClassBuilder.construct(Config.ttsModule);
 		Collection<String> voiceList = speaker.getVoices();
 		Collection<String> genderList = speaker.getGenders();
 		Collection<String> languagesList = speaker.getLanguages();
 		Collection<String> soundFormatsList = speaker.getSoundFormats();
 		JSONObject info = new JSONObject();
 		JSON.add(info, "result", "success");
-		JSON.add(info, "interface", "TTS_Acapela");
-		JSON.add(info, "voices", voiceList);
-		JSON.add(info, "genders", genderList);
-		JSON.add(info, "languages", languagesList);
-		JSON.add(info, "formats", soundFormatsList);
+		JSON.add(info, "interface", speaker.getClass().getSimpleName());
+		JSON.add(info, "voices", JSON.stringCollectionToJSONArray(voiceList));
+		JSON.add(info, "genders", JSON.stringCollectionToJSONArray(genderList));
+		JSON.add(info, "languages", JSON.stringCollectionToJSONArray(languagesList));
+		JSON.add(info, "formats", JSON.stringCollectionToJSONArray(soundFormatsList));
 		JSON.add(info, "maxMoodIndex", speaker.getMaxMoodIndex());
 		String answer = info.toJSONString();
 				

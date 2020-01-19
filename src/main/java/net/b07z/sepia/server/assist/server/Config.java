@@ -34,7 +34,7 @@ import net.b07z.sepia.server.assist.services.ServiceAccessManager;
 import net.b07z.sepia.server.assist.smarthome.OpenHAB;
 import net.b07z.sepia.server.assist.tools.RssFeedReader;
 import net.b07z.sepia.server.assist.tools.SpotifyApi;
-import net.b07z.sepia.server.assist.tts.TtsAcapelaWeb;
+import net.b07z.sepia.server.assist.tts.TtsOpenEmbedded;
 import net.b07z.sepia.server.assist.users.AccountDynamoDB;
 import net.b07z.sepia.server.assist.users.AccountElasticsearch;
 import net.b07z.sepia.server.assist.users.AuthenticationDynamoDB;
@@ -147,8 +147,8 @@ public class Config {
 	public static String userDataModule = UserDataDefault.class.getCanonicalName();
 	public static String knowledgeDbModule = Elasticsearch.class.getCanonicalName();
 	public static String answerModule = AnswerLoaderFile.class.getCanonicalName(); 			//TODO: switch to Elasticsearch by default?
-	public static String ttsModule = TtsAcapelaWeb.class.getCanonicalName();
-	public static String ttsName = "Acapela";
+	public static String ttsModule = TtsOpenEmbedded.class.getCanonicalName();
+	public static String ttsName = "Open Embedded";
 	public static String emailModule = SendEmailBasicSmtp.class.getCanonicalName();
 	
 	//toggles and switches:
@@ -475,6 +475,8 @@ public class Config {
 					answerModule = answerModuleValue;
 				}
 			}
+			ttsModule = settings.getProperty("module_tts", TtsOpenEmbedded.class.getCanonicalName());
+			ttsName = settings.getProperty("tts_engine_name", "Open Embedded");
 			enableSDK = Boolean.valueOf(settings.getProperty("enable_sdk"));
 			//useSandboxPolicy = Boolean.valueOf(settings.getProperty("use_sandbox_security_policy", "true"));		//NOTE: this will only be accessible via commandline argument
 			useSentencesDB = Boolean.valueOf(settings.getProperty("enable_custom_commands"));
