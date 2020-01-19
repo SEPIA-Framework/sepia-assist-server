@@ -106,7 +106,7 @@
 		<dependency>
 			<groupId>net.b07z.sepia.websockets</groupId>
 			<artifactId>sepia-websockets</artifactId>
-			<version>1.2.2</version>
+			<version>1.2.3</version>
 		</dependency>
 		<!-- included in sepia-websockets 
 		<dependency>
