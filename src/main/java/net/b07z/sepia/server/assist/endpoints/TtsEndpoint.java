@@ -22,6 +22,7 @@ import net.b07z.sepia.server.core.server.RequestGetOrFormParameters;
 import net.b07z.sepia.server.core.server.RequestParameters;
 import net.b07z.sepia.server.core.server.SparkJavaFw;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 import net.b07z.sepia.server.core.tools.SoundPlayer;
 import spark.Request;
@@ -85,8 +86,10 @@ public class TtsEndpoint {
 		//get URL answer
 		String answer;
 		
-		if (message == null || message.matches("")){
+		if (Is.nullOrEmpty(message)){
 			answer = "{\"result\":\"fail\",\"url\":\"" + "" + "\",\"error\":\"no message\"}";
+			Statistics.add_TTS_error();
+			return SparkJavaFw.returnResult(request, response, answer, 200);
 			
 		}else{
 			//SET source:
@@ -132,10 +135,10 @@ public class TtsEndpoint {
 			//success stats
 			Statistics.add_TTS_hit_authenticated();
 			Statistics.save_TTS_total_time(tic);			//store TTS request time
+			
+			//return URL in requested format
+			return SparkJavaFw.returnResult(request, response, answer, 200);
 		}
-		
-		//return URL in requested format
-		return SparkJavaFw.returnResult(request, response, answer, 200);
 	}
 
 	/**TTS INFO<br>

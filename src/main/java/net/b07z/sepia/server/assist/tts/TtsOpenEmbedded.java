@@ -45,18 +45,18 @@ public class TtsOpenEmbedded implements TtsInterface {
 	
 	//espeak de-DE male (default, happy, sad)
 	private static TtsVoiceTrait deDE_espeak_m_0 = new TtsVoiceTrait("gmw/de", Type.espeak.name(), "de", "male", 160, 50, 100);
-	private static TtsVoiceTrait deDE_espeak_m_1 = new TtsVoiceTrait("gmw/de", Type.espeak.name(), "de", "male", 160, 65, 100);
+	private static TtsVoiceTrait deDE_espeak_m_1 = new TtsVoiceTrait("gmw/de", Type.espeak.name(), "de", "male", 160, 60, 100);
 	private static TtsVoiceTrait deDE_espeak_m_2 = new TtsVoiceTrait("gmw/de", Type.espeak.name(), "de", "male", 160, 30, 100);
 	
 	//espeak en-GB male (default, happy, sad)
 	private static TtsVoiceTrait enGB_espeak_m_0 = new TtsVoiceTrait("gmw/en", Type.espeak.name(), "en", "male", 160, 50, 100);
-	private static TtsVoiceTrait enGB_espeak_m_1 = new TtsVoiceTrait("gmw/en", Type.espeak.name(), "en", "male", 160, 65, 100);
+	private static TtsVoiceTrait enGB_espeak_m_1 = new TtsVoiceTrait("gmw/en", Type.espeak.name(), "en", "male", 160, 60, 100);
 	private static TtsVoiceTrait enGB_espeak_m_2 = new TtsVoiceTrait("gmw/en", Type.espeak.name(), "en", "male", 160, 30, 100);
 	
 	//espeak en-US male (default, happy, sad)
 	/*
 	private static TtsVoiceTrait enUS_espeak_m_0 = new TtsVoiceTrait("gmw/en-US", Type.espeak.name(), "en", "male", 160, 50, 100);
-	private static TtsVoiceTrait enUS_espeak_m_1 = new TtsVoiceTrait("gmw/en-US", Type.espeak.name(), "en", "male", 160, 65, 100);
+	private static TtsVoiceTrait enUS_espeak_m_1 = new TtsVoiceTrait("gmw/en-US", Type.espeak.name(), "en", "male", 160, 60, 100);
 	private static TtsVoiceTrait enUS_espeak_m_2 = new TtsVoiceTrait("gmw/en-US", Type.espeak.name(), "en", "male", 160, 30, 100);
 	*/
 	
@@ -328,10 +328,10 @@ public class TtsOpenEmbedded implements TtsInterface {
 			RuntimeResult res = RuntimeInterface.runCommand(command, PROCESS_TIMEOUT_MS);
 			if (res.getStatusCode() != 0){
 				//Error
+				Exception e = res.getException();
 				if (res.getStatusCode() == 3){
 					throw new RuntimeException("TTS procces took too long!");
 				}else{
-					Exception e = res.getException();
 					throw new RuntimeException("TTS procces failed! Msg: " + ((e != null)? e.getMessage() : "unknown"));
 				}
 			}else{
