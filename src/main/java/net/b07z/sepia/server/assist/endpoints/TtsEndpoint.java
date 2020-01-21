@@ -175,6 +175,7 @@ public class TtsEndpoint {
 		JSON.add(info, "languages", JSON.stringCollectionToJSONArray(languagesList));
 		JSON.add(info, "formats", JSON.stringCollectionToJSONArray(soundFormatsList));
 		JSON.add(info, "maxMoodIndex", speaker.getMaxMoodIndex());
+		JSON.add(info, "maxChunkLength", speaker.getMaxChunkLength());
 		String answer = info.toJSONString();
 				
 		//return URL in requested format

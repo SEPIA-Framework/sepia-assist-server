@@ -592,6 +592,11 @@ public class TtsAcapelaWeb implements TtsInterface {
 	public int getMaxMoodIndex(){
 		return maxMoodIndex;
 	}
+	
+	@Override
+	public int getMaxChunkLength(){
+		return charLimit;
+	}
 
 	//sets the mood index to choose the emotional voice.
 	public boolean setMood(int mood) {

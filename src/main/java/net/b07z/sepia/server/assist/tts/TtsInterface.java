@@ -96,6 +96,11 @@ public interface TtsInterface {
 	public int getMaxMoodIndex();
 	
 	/**
+	 * @return maximum chunk length (characters + spaces) possible for this engine. 
+	 */
+	public int getMaxChunkLength();
+	
+	/**
 	 * Sets the gender of the voice if available for the active language.
 	 * @param gender - options "f" or "female" and "m" or "male"
 	 */

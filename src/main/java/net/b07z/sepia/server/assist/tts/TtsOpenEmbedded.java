@@ -153,7 +153,7 @@ public class TtsOpenEmbedded implements TtsInterface {
 	
 	//play sound on server?
 	public boolean supportsPlayOnServer(){
-		return true;
+		return false;	//TODO: not yet, but we can implement this
 	}
 	
 	//return supported sound formats
@@ -187,6 +187,11 @@ public class TtsOpenEmbedded implements TtsInterface {
 	//return max mood index
 	public int getMaxMoodIndex(){
 		return maxMoodIndex;
+	}
+	
+	@Override
+	public int getMaxChunkLength(){
+		return charLimit;
 	}
 	
 	//set language and default voice sets (voice, speed, tune, vol)
