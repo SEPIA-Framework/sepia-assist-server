@@ -21,6 +21,7 @@ import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.assist.smarthome.SmartHomeDevice;
 import net.b07z.sepia.server.assist.smarthome.SmartHomeHub;
+import net.b07z.sepia.server.core.assistant.ACTIONS;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.data.Language;
@@ -122,6 +123,8 @@ public class SmartHomeHubConnector implements ServiceInterface {
 			.addCustomAnswer("actionNotPossible", actionNotPossible)
 			.addCustomAnswer("actionCurrentlyNotWorking", actionCurrentlyNotWorking)
 			.addCustomAnswer("askStateValue", askStateValue)
+			.addCustomAnswer("askFirstOfMany", askFirstOfMany)
+			.addCustomAnswer("okDoNothing", okDoNothing)
 			;
 		info.addAnswerParameters("device", "room", "state"); 	//variables used inside answers: <1>, <2>, ...
 		
@@ -139,6 +142,8 @@ public class SmartHomeHubConnector implements ServiceInterface {
 	private static final String actionCurrentlyNotWorking = "error_0a";
 	private static final String askRoom = "smartdevice_1c";
 	private static final String askStateValue = "smartdevice_1d";
+	private static final String askFirstOfMany = "default_ask_first_of_many_0a";
+	private static final String okDoNothing = "ok_0a";
 	
 	@Override
 	public ServiceResult getResult(NluResult nluResult){
@@ -167,6 +172,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		String deviceType = device.getValueAsString();
 		String deviceTypeLocal = JSON.getStringOrDefault(device.getData(), InterviewData.VALUE_LOCAL, deviceType);
 		int deviceNumber = JSON.getIntegerOrDefault(device.getData(), InterviewData.ITEM_INDEX, Integer.MIN_VALUE);
+		String deviceTag = JSON.getStringOrDefault(device.getData(), InterviewData.SMART_DEVICE_TAG, "");
 		
 		//get optional parameters:
 		Parameter action = nluResult.getOptionalParameter(PARAMETERS.ACTION, "");
@@ -183,6 +189,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		String roomType = room.getValueAsString();
 		String roomTypeLocal = JSON.getStringOrDefault(room.getData(), InterviewData.VALUE_LOCAL, roomType);
 		int roomNumber = JSON.getIntegerOrDefault(room.getData(), InterviewData.ITEM_INDEX, Integer.MIN_VALUE);
+		//String roomTag = JSON.getStringOrDefault(room.getData(), InterviewData.ROOM_TAG, "");
 		//Client local site/position/room
 		Object deviceLocalSite = nluResult.input.getCustomDataObject(NluInput.DATA_DEVICE_LOCAL_SITE);
 		if (Is.nullOrEmpty(roomType) && deviceLocalSite != null && deviceLocalSite.getClass().equals(JSONObject.class)){
@@ -190,9 +197,12 @@ public class SmartHomeHubConnector implements ServiceInterface {
 			JSONObject dlsJson = (JSONObject) deviceLocalSite;
 			if (JSON.getString(dlsJson, "location").equals("home") && JSON.getString(dlsJson, "type").equals("room")){
 				roomType = JSON.getStringOrDefault(dlsJson, "name", "");
-				roomNumber = JSON.getIntegerOrDefault(dlsJson, "index", Integer.MIN_VALUE);
-				if (Is.notNullOrEmpty(roomType)){
+				//should be something else than "unassigned"
+				if (Is.notNullOrEmpty(roomType) && !Is.typeEqual(roomType, Room.Types.unassigned)){
+					roomNumber = JSON.getIntegerOrDefault(dlsJson, "index", Integer.MIN_VALUE);
 					roomTypeLocal = Room.getLocal(roomType, nluResult.language);
+				}else{
+					roomType = "";
 				}
 			}
 		}
@@ -221,12 +231,15 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		filters.put("limit", -1);
 		List<SmartHomeDevice> matchingDevices = smartHomeHUB.getFilteredDevicesList(filters);
 		if (matchingDevices == null){
+			Debugger.println(SmartHomeHub.class.getSimpleName() + " failed to get devices! Connection to smart home HUB might be broken.", 1);		//debug
 			service.setStatusFail(); 						//"hard"-fail (probably HUB connection error)
 			return service.buildResult();
 		}
 		
 		//have found any?
 		if (matchingDevices.isEmpty()){
+			Debugger.println(SmartHomeHub.class.getSimpleName() + " failed to find any match for "
+					+ "device: " + deviceType + ", room: " + roomType, 1);	//debug
 			service.setStatusOkay();
 			service.setCustomAnswer(noDeviceMatchesFound);	//"soft"-fail with "no matching devices found" answer
 			return service.buildResult();
@@ -238,21 +251,71 @@ public class SmartHomeHubConnector implements ServiceInterface {
 			selectedDevice = SmartHomeDevice.findFirstDeviceWithNumberInNameOrDefault(matchingDevices, deviceNumber, -1);
 			if (selectedDevice == null){
 				//no device with number
+				Debugger.println(SmartHomeHub.class.getSimpleName() + " failed to find any match for "
+						+ "device: " + deviceType + ", index: " + deviceNumber + ", room: " + roomType, 1);	//debug
 				service.setStatusOkay();
 				service.setCustomAnswer(noDeviceMatchesFound);	//"soft"-fail with "no matching devices found" answer
 				return service.buildResult();
 			}
 		}else{
+			int matchesN = matchingDevices.size();
+			boolean tagMatch = false;
+			//we try to match the tag first
+			if (Is.notNullOrEmpty(deviceTag)){
+				List<SmartHomeDevice> matchingDevicesWithSameTag = SmartHomeDevice.findDevicesWithMatchingTagIgnoreCase(matchingDevices, deviceTag);
+				int matchesWithTagN = matchingDevicesWithSameTag.size();
+				if (matchesWithTagN > 0){
+					matchingDevices = matchingDevicesWithSameTag;
+					tagMatch = true;
+					matchesN = matchesWithTagN;
+				}
+			}
 			//multiple results but no room?
-			if (roomType.isEmpty() && matchingDevices.size() > 1){
+			if (matchesN > 1 && roomType.isEmpty()){
 				//RETURN with question
 				service.resultInfoPut("device", deviceTypeLocal);
 				service.setIncompleteAndAsk(PARAMETERS.ROOM, askRoom);
 				return service.buildResult();
-			//run through all?
+				
+			//run through all? get best result?
 			}else{
-				//TODO: we simplify and take only first - let's run through all devices or we need to really check singular/plural
-				selectedDevice = matchingDevices.get(0);
+				if (tagMatch && matchesN == 1){
+					//this should be the correct device
+					selectedDevice = matchingDevices.get(0);
+				}else if (matchesN == 1){
+					//this is just a guess
+					selectedDevice = matchingDevices.get(0);
+					//teach UI button
+					service.addAction(ACTIONS.BUTTON_TEACH_UI);
+					service.putActionInfo("info", JSON.make(
+							"input", nluResult.input.textRaw,
+							"service", CMD.SMARTDEVICE
+					));
+				}else{
+					//TODO: we simplify and take only first - we should check singular/plural, trigger all or ask for top 3
+					//selectedDevice = matchingDevices.get(0);
+					int confirmState = service.getConfirmationStatusOf("use_first_device");
+					if (confirmState == 0){
+						//ASK FIRST
+						service.resultInfoPut("device", matchingDevices.get(0).getName());
+						service.confirmActionOrParameter("use_first_device", askFirstOfMany);
+						//teach UI button
+						service.addAction(ACTIONS.BUTTON_TEACH_UI);
+						service.putActionInfo("info", JSON.make(
+								"input", nluResult.input.textRaw,
+								"service", CMD.SMARTDEVICE
+						));
+						return service.buildResult();
+					}else if (confirmState == 1){
+						//OK
+						selectedDevice = matchingDevices.get(0);
+					}else{
+						//NO selection, abort - TODO: improve
+						service.setStatusOkay();
+						service.setCustomAnswer(okDoNothing);	//"soft"-fail with "ok" answer and just do nothing
+						return service.buildResult();
+					}
+				}
 			}
 		}
 		//reassign roomType from device?

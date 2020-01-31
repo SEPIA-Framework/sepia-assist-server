@@ -447,6 +447,23 @@ public class SmartHomeDevice {
 	}
 	
 	/**
+	 * Filter list of devices by tag/name ignoring case. NO fuzzy matching!
+	 * @param devicesList - list of devices, usually already filtered by device type and room
+	 * @param tag - usually the name of a device
+	 * @return list with matches or empty list
+	 */
+	public static List<SmartHomeDevice> findDevicesWithMatchingTagIgnoreCase(List<SmartHomeDevice> devicesList, String tag){
+		List<SmartHomeDevice> matches = new ArrayList<>();
+		for (SmartHomeDevice shd : devicesList){
+			//System.out.println(shd.getName() + " - " + shd.getName().equals(tag));		//DEBUG
+			if (shd.getName().equalsIgnoreCase(tag)){
+				matches.add(shd);
+			}
+		}
+		return matches;
+	}
+	
+	/**
 	 * Find correct, generalized stateType from given state.
 	 * @param state - state as given by parameter
 	 * @return found state type or null

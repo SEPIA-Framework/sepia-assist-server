@@ -31,6 +31,7 @@ default_ask_parameter_0b;;		rep=2|mood=5;;		Nein, auch das hat nicht geklappt. E
 default_ask_action_0a;;		rep=0|mood=5;;		Welche Aktion soll ich ausführen? ;;char=neutral
 default_ask_action_0a;;		rep=1|mood=5;;		Sorry, welche Aktion war das? ;;char=neutral
 default_ask_action_0a;;		rep=2|mood=5;;		Mir fehlt leider eine Aktion wie z.B. öffnen oder schließen, sag noch mal bitte!;;char=neutral
+default_ask_first_of_many_0a;;		rep=0|mood=5;;		Ich habe mehrere Möglichkeiten zur Auswahl. Meintest du <1>? ;;char=neutral
 default_miss_info_0a;;		rep=0|mood=5;;		Da scheinen mir jetzt leider noch die nötigen Zusatzinformationen zu fehlen. ;;char=polite,neutral
 default_miss_info_0b;;		rep=0|mood=5;;		Da scheinen mir jetzt leider die nötigen Informationen zu fehlen, aber du kannst sie deinem Account hinzufügen. ;;char=polite,neutral
 default_miss_user_location_0a;;		rep=0|mood=5;;		<user_name>, mir fehlen leider gerade die Informationen zu deinem Standort. ;;char=polite,neutral

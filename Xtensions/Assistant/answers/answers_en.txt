@@ -31,6 +31,7 @@ default_ask_parameter_0b;;		rep=2|mood=5;;		No, still not working, try once more
 default_ask_action_0a;;		rep=0|mood=5;;		Which action should I perform? ;;char=neutral
 default_ask_action_0a;;		rep=1|mood=5;;		Sorry, which action was that? ;;char=neutral
 default_ask_action_0a;;		rep=2|mood=5;;		I'm missing an action like open or close, say again please!;;char=neutral
+default_ask_first_of_many_0a;;		rep=0|mood=5;;		I have multiple choices here. Did you mean <1>? ;;char=neutral
 default_miss_info_0a;;		rep=0|mood=5;;		It seems I'm missing necessary additional info. ;;char=neutral
 default_miss_info_0b;;		rep=0|mood=5;;		It seems I'm missing the necessary info, but you can add it to your account. ;;char=neutral
 default_miss_user_location_0a;;		rep=0|mood=5;;		<user_name>, I'm missing information about your location. ;;char=polite,neutral
