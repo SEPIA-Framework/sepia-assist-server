@@ -8,7 +8,9 @@ import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interpreters.NluTools;
+import net.b07z.sepia.server.assist.interpreters.Normalizer;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
+import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Debugger;
@@ -196,15 +198,15 @@ public class SmartDevice implements ParameterHandler{
 
 	@Override
 	public String extract(String input) {
-		String tagAndFound;
+		String typeAndTag;
 		
 		//check storage first
 		ParameterResult pr = nluInput.getStoredParameterResult(PARAMETERS.SMART_DEVICE);
 		if (pr != null){
-			tagAndFound = pr.getExtracted();
+			typeAndTag = pr.getExtracted();
 			this.found = pr.getFound();
 			
-			return tagAndFound;
+			return typeAndTag;
 		}
 				
 		String device = getType(input, language);
@@ -318,13 +320,18 @@ public class SmartDevice implements ParameterHandler{
 				deviceTypeTag = "<" + Types.device.name() + ">";
 			}
 		}
-		tagAndFound = deviceTypeTag + ";;" + this.found;
+		
+		//reconstruct original phrase to get proper item names
+		Normalizer normalizer = Config.inputNormalizers.get(this.language);
+		String tag = normalizer.reconstructPhrase(nluInput.textRaw, this.found);
+		
+		typeAndTag = deviceTypeTag + ";;" + tag;
 		
 		//store it
-		pr = new ParameterResult(PARAMETERS.SMART_DEVICE, tagAndFound, this.found);
+		pr = new ParameterResult(PARAMETERS.SMART_DEVICE, typeAndTag, this.found);
 		nluInput.addToParameterResultStorage(pr);
 		
-		return tagAndFound;
+		return typeAndTag;
 	}
 	
 	@Override
@@ -386,7 +393,7 @@ public class SmartDevice implements ParameterHandler{
 		JSONObject itemResultJSON = new JSONObject();
 			JSON.add(itemResultJSON, InterviewData.VALUE, commonValue);
 			JSON.add(itemResultJSON, InterviewData.VALUE_LOCAL, localValue);
-			JSON.add(itemResultJSON, InterviewData.FOUND, deviceNameFound); 		//Note: we can't use this.found here because it is not set in build
+			JSON.add(itemResultJSON, InterviewData.SMART_DEVICE_TAG, deviceNameFound);
 		//add device index
 		if (!deviceIndexStr.isEmpty()){
 			int deviceIndex = Integer.parseInt(deviceIndexStr);
