@@ -1,7 +1,7 @@
 {
 	"collections": {
 		"my": [
-			"size_radio",
+			"size",
 			"ego_fm_pure", 
 			"1live_diggi", 
 			"you_fm_just_music",
@@ -26,7 +26,12 @@
 			"kexp",
 			"delta_indie",
 			"ego_fm_pure",
-			"size_radio"
+			"size"
+		],
+		"chill": [
+			"deluxe_lounge",
+			"antenne_bayern_chillout",
+			"ego_fm_soul"
 		]
 	},
 	"deprecations": {
@@ -58,7 +63,7 @@
 			"antenne_bayern_lovesongs",
 			"1live_fiehe"
 		],
-		"size_radio": [{
+		"size": [{
 			"streamURL": "http://stream.radiojar.com/atr1e8aswa5tv",
 			"name": "SIZE RADIO"
 		}],
