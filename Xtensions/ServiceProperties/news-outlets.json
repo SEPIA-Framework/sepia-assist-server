@@ -23,7 +23,7 @@
 		{ "name": "t3n", "url": "https://t3n.de/rss.xml", "name_html": "<b><span style='color:#000;'>t</span><span style='color:#FF0000;'>3</span><span style='color:#000000;'>n</span></b>" },
 		{ "name": "Business Punk", "url": "https://www.business-punk.com/feed/", "name_html": "<span style='color:#2C2C2C; font-family:serif;'><b>Business Punk</b></span>" },
 		{ "name": "RollingStone", "url": "https://www.rollingstone.com/music/feed/", "name_html": "<span style='color:#C81429; font-family:serif;'><b>RollingStone</b></span>" },
-		{ "name": "MUSIC NEWS", "url": "http://www.music-news.com/rss/UK/news", "name_html": "<span style='color:#ba1a56;'><b>MUSIC</b> </span><span style='color:#000000;'>NEWS</span>" },
+		{ "name": "MUSIC NEWS", "url": "https://www.music-news.com/rss/UK/news", "name_html": "<span style='color:#ba1a56;'><b>MUSIC</b> </span><span style='color:#000000;'>NEWS</span>" },
 		{ "name": "CinemaxX", "url": "https://www.presseportal.de/rss/pm_9588.rss2", "name_html": "<span style='color:#b90049;'><i>Cinemax<b>X</b></i></span>" },
 		{ "name": "Filmstarts.de - aktuell", "url": "http://rss.filmstarts.de/fs/kinos/aktuelle?format=xml", "name_html": "<b><span style='color:#3d59ba;'>Filmstarts.de</span><span style='color:#000000;'> - aktuell</span></b>" },
 		{ "name": "Filmstarts.de - bald", "url": "http://rss.filmstarts.de/fs/kinos/bald?format=xml", "name_html": "<b><span style='color:#3d59ba;'>Filmstarts.de</span><span style='color:#000000;'> - bald</span></b>" },
