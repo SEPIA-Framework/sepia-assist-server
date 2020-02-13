@@ -386,7 +386,8 @@ public class Config {
 		DataLoader dl = new DataLoader(); 		
 		fixCommands_NLP = new NluSentenceMatcher(dl.loadCommandsFromFilebase(commandsPath + "teachIt"));	//identity match
 		int iv = dl.getValidEntries();
-		int is = dl.getStoredEntries();
+		//int is = dl.getStoredEntries();
+		int is = dl.getUniqueEntries();
 		Debugger.println("Finished loading " + is + "(" + iv + ") predefined commands in "+ Debugger.toc(tic) + " ms.", 3);
 	}
 	
@@ -402,7 +403,8 @@ public class Config {
 		DataLoader dl = new DataLoader();
 		fixChats_NLP = new NluApproximateMatcher(dl.loadCommandsFromFilebase(commandsPath + "chats"));	//approximation match
 		int iv = dl.getValidEntries();
-		int is = dl.getStoredEntries();
+		//int is = dl.getStoredEntries();
+		int is = dl.getUniqueEntries();
 		Debugger.println("Finished loading " + is + "(" + iv + ") predefined chats in "+ Debugger.toc(tic) + " ms.", 3);
 	}
 	
