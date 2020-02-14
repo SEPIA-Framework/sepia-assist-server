@@ -469,7 +469,12 @@ public class Fhem implements SmartHomeHub {
 		if (Is.nullOrEmpty(stateType) && state != null){
 			stateType = SmartHomeDevice.findStateType(state);
 			if (stateType != null && type != null && stateType.equals(StateType.number_plain.name())){
-				stateType = SmartHomeDevice.makeSmartTypeAssumptionForPlainNumber(SmartDevice.Types.valueOf(type));
+				try{
+					SmartDevice.Types sdt = SmartDevice.Types.valueOf(type);
+					stateType = SmartHomeDevice.makeSmartTypeAssumptionForPlainNumber(sdt);
+				}catch (Exception e){
+					//ignore. Probably HUB specific, unknown type
+				}
 			}
 		}
 		if (state != null){
