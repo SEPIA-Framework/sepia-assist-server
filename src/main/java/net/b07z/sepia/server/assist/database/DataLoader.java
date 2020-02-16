@@ -90,7 +90,7 @@ public class DataLoader {
 			TreeMap<String, String> cmdsFromFile = loadCommandsFromFileToMap_Reverse(file_base + "_" + l + ".txt", l);
 			//check custom file as well
 			String customFile = file_base + "_" + l + "_custom.txt";
-			if (Files.exists(Path.of(customFile))){
+			if (Files.exists(Paths.get(customFile))){
 				TreeMap<String, String> customCmdsFromFile = loadCommandsFromFileToMap_Reverse(customFile, l);
 				customCmdsFromFile.keySet().forEach((String key) -> {
 					//add new and overwrite existing
@@ -114,7 +114,7 @@ public class DataLoader {
 			Map<String, List<Answer>> answersFromFile = loadAnswersFromFileToMap(file_base + "_" + l + ".txt", l);
 			//check custom file as well
 			String customFile = file_base + "_" + l + "_custom.txt";
-			if (Files.exists(Path.of(customFile))){
+			if (Files.exists(Paths.get(customFile))){
 				Map<String, List<Answer>> customAnswersFromFile = loadAnswersFromFileToMap(customFile, l);
 				customAnswersFromFile.keySet().forEach((String key) -> {
 					//add new and overwrite existing
