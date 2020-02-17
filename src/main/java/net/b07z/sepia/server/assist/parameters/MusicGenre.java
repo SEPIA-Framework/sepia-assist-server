@@ -98,6 +98,7 @@ public class MusicGenre implements ParameterHandler{
 				+ "alternative|"
 				+ "indie|"
 				+ "disco|"
+				+ "chill((-| |)out|)|"
 				+ "(acid(-| |)|)jazz|"
 				+ "hip(-| |)hop|"
 				+ "r(n|&)b|"
@@ -192,6 +193,7 @@ public class MusicGenre implements ParameterHandler{
 				.replaceFirst("(?i)\\b(mein(s|en|e|))\\b", "my") 		//TODO: this is inefficient!
 				.replaceFirst("(?i)\\b(klassik)\\b", "classic")
 				.replaceFirst("(?i)\\b(alternativ)\\b", "alternative")
+				.replaceFirst("(?i)\\b(chill(-| |)out)\\b", "chill")
 				;
 		//clean
 		return genreIn.toLowerCase().replaceAll("(\\s+|-|_)", "").trim();
@@ -199,7 +201,7 @@ public class MusicGenre implements ParameterHandler{
 
 	@Override
 	public boolean validate(String input) {
-		if (input.matches("^\\{\".*\":.+\\}$") && input.contains("\"" + InterviewData.VALUE + "\"")){
+		if (input.matches("^\\{\".*\"(\\s|):.+\\}$") && input.contains("\"" + InterviewData.VALUE + "\"")){
 			//System.out.println("IS VALID: " + input); 		//debug
 			return true;
 		}else{

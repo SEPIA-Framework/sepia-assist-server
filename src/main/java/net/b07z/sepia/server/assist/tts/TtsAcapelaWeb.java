@@ -10,7 +10,9 @@ import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Debugger;
 
 /**
- * This is the TTS_Interface implementation for Acapela supporting multiple languages and emotional voices.<br>
+ * NOTE: This is pretty old code and might need some upgrades ^^<br>
+ * <br>
+ * This is the TTS interface implementation for Acapela supporting multiple languages and emotional voices.<br>
  * Note that there is a certain order in which to call the settings to avoid overwriting parameters:<br><br>
  * setLanguage -> setGender -> setVoice -> setMood -> setSpeedFactor -> setToneFactor <br>
  * <br>
@@ -21,9 +23,9 @@ import net.b07z.sepia.server.core.tools.Debugger;
  */
 public class TtsAcapelaWeb implements TtsInterface {
 	
-    //private String VAAS_URL = "https://vaas.acapela-group.com/Services/Synthesizer/";
+    private String VAAS_URL = "https://vaas.acapela-group.com/Services/Synthesizer/";
     //private String VAAS_URL = "http://vaas.acapela-group.com/Services/UrlMaker.json";
-	private String VAAS_URL = "http://vaas.acapela-group.com/webservices/1-60-00/synthesizer.php";
+	//private String VAAS_URL = "http://vaas.acapela-group.com/webservices/1-60-00/synthesizer.php";
     private String VAAS_LOGIN = "EVAL_VAAS";
     
     //Voices - 1) default, 2) happy, 3) sad, 4) angry, 5) shout, 6) whisper, 7) fun1 (e.g. old), 8) fun2 (e.g. Yoda)
@@ -161,7 +163,7 @@ public class TtsAcapelaWeb implements TtsInterface {
 	ArrayList<String> soundFormatList = new ArrayList<String>();
 	int maxMoodIndex = 0;
 	
-	//CONSTRUCTOR - configuration
+	//CONSTRUCTOR - configuration - TODO: update/move to setup
 	public TtsAcapelaWeb(){
 		//supported languages:
 		languageList.add(LANGUAGES.DE);
@@ -213,6 +215,12 @@ public class TtsAcapelaWeb implements TtsInterface {
 		
 		//supported maximum mood index
 		maxMoodIndex = 7;
+	}
+	
+	@Override
+	public boolean setup(){
+		//TODO
+		return true;
 	}
 	
 	//set TTS input and check it for special stuff like environment based format (web-browser != android app)
@@ -583,6 +591,11 @@ public class TtsAcapelaWeb implements TtsInterface {
 	//return max mood index
 	public int getMaxMoodIndex(){
 		return maxMoodIndex;
+	}
+	
+	@Override
+	public int getMaxChunkLength(){
+		return charLimit;
 	}
 
 	//sets the mood index to choose the emotional voice.

@@ -1,0 +1,5 @@
+acapela/sdk/*
+acapela/text_in/*
+acapela/voices/*
+espeak-ng/*
+!espeak-ng/README.md

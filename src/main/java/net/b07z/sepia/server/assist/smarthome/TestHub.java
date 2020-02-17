@@ -97,7 +97,9 @@ public class TestHub implements SmartHomeHub {
 	
 	@Override
 	public boolean writeDeviceAttribute(SmartHomeDevice device, String attrName, String attrValue){
-		SmartHomeDevice deviceFound = getDevices().get(device.getName());
+		//get reference to stored object from internal list (the given 'device' can be imported from JSON or created)
+		SmartHomeDevice deviceFound = getDevices().get(device.getMetaValueAsString("id"));
+		//modify object reference
 		if (deviceFound != null){
 			Debugger.println(TestHub.class.getSimpleName() + " - writeDeviceAttribute - attrName: " 
 					+ attrName + ", attrValue: " + attrValue, 3);
@@ -131,7 +133,7 @@ public class TestHub implements SmartHomeHub {
 	public Map<String, SmartHomeDevice> getDevices(){
 		Map<String, SmartHomeDevice> devices = new HashMap<>();
 		for (SmartHomeDevice shd : devicesList){
-			devices.put(shd.getName(), shd);
+			devices.put(shd.getMetaValueAsString("id"), shd);
 		}
 		return devices;
 	}
@@ -159,7 +161,9 @@ public class TestHub implements SmartHomeHub {
 
 	@Override
 	public boolean setDeviceState(SmartHomeDevice device, String state, String stateType){
-		SmartHomeDevice deviceFound = getDevices().get(device.getName());
+		//get reference to stored object from internal list (the given 'device' can be imported from JSON or created)
+		SmartHomeDevice deviceFound = getDevices().get(device.getMetaValueAsString("id"));
+		//modify object reference
 		Debugger.println(TestHub.class.getSimpleName() + " - setDeviceState - name: " 
 				+ device.getName() + ", stateType: " + stateType + ", state: " + state, 3);
 		if (deviceFound != null){
@@ -178,6 +182,8 @@ public class TestHub implements SmartHomeHub {
 			deviceFound.setState(state);
 			return true;
 		}else{
+			Debugger.println(TestHub.class.getSimpleName() + " - setDeviceState FAILED - name: " 
+					+ device.getName() + " NOT FOUND!", 1);
 			return false;
 		}
 	}

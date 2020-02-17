@@ -1,6 +1,6 @@
 package net.b07z.sepia.server.assist.tts;
 
-import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Interface for all TTS Classes. Required methods are:<br>
@@ -16,6 +16,12 @@ import java.util.ArrayList;
  *
  */
 public interface TtsInterface {
+	
+	/**
+	 * If you need to run code at server start, put it here (e.g. clean-up 'tts' folder, load voices etc.).<br>
+	 * NOTE: runs ONLY ONCE at server start.
+	 */
+	public boolean setup();
 	
 	/**
 	 * Set input obtained from user client. Can be used internally to optimize parameters like sound format if the client does not 
@@ -35,7 +41,7 @@ public interface TtsInterface {
 	 * Get a list of supported sound formats.
 	 * @return
 	 */
-	public ArrayList<String> getSoundFormats();
+	public Collection<String> getSoundFormats();
 	
 	/**
 	 * Get active sound format.
@@ -72,22 +78,27 @@ public interface TtsInterface {
 	/**
 	 * @return ArrayList with possible voice names
 	 */
-	public ArrayList<String> getVoices();
+	public Collection<String> getVoices();
 	
 	/**
 	 * @return ArrayList with available languages
 	 */
-	public ArrayList<String> getLanguages();
+	public Collection<String> getLanguages();
 	
 	/**
 	 * @return ArrayList with available genders (where as "gender" can be male, female, creature, child, old, etc. ...)
 	 */
-	public ArrayList<String> getGenders();
+	public Collection<String> getGenders();
 	
 	/**
 	 * @return maximum mood index available. Typically: 0-neutral, 1-happy, 2-sad/apologetic, ... enu_will has 7 available variations.
 	 */
 	public int getMaxMoodIndex();
+	
+	/**
+	 * @return maximum chunk length (characters + spaces) possible for this engine. 
+	 */
+	public int getMaxChunkLength();
 	
 	/**
 	 * Sets the gender of the voice if available for the active language.

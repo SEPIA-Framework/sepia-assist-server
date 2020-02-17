@@ -8,7 +8,9 @@ import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interpreters.NluTools;
+import net.b07z.sepia.server.assist.interpreters.Normalizer;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
+import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Debugger;
@@ -42,6 +44,7 @@ public class Room implements ParameterHandler{
 		garden,
 		shack,
 		hallway,
+		sunroom, //winter garden
 		other,
 		unassigned	//must be assigned directly
 		//TODO: entrance/front door, veranda(h)/patio/porch/lanai
@@ -63,6 +66,7 @@ public class Room implements ParameterHandler{
 		types_de.put("garage", "in der Garage");
 		types_de.put("basement", "im Keller");
 		types_de.put("garden", "im Garten");
+		types_de.put("sunroom", "im Wintergarten");
 		types_de.put("shack", "im Schuppen");
 		types_de.put("hallway", "im Flur");
 		types_de.put("other", "am erwähnten Ort");
@@ -79,6 +83,7 @@ public class Room implements ParameterHandler{
 		types_en.put("garage", "in the garage");
 		types_en.put("basement", "in the basement");
 		types_en.put("garden", "in the garden");
+		types_en.put("sunroom", "in the sunroom");
 		types_en.put("shack", "in the shack");
 		types_en.put("hallway", "in the hallway");
 		types_en.put("other", "in the mentioned location");
@@ -147,6 +152,7 @@ public class Room implements ParameterHandler{
 					+ "garage|auto(-| |)schuppen|"
 					+ "keller|"
 					+ "schuppen|gartenhaus|"
+					+ "winter(-| |)(garten|gaerten)|glasveranda|"
 					+ "garten|"
 					+ "(haus|)flur|korridor|diele|"
 					//+ "andere(n|es|r|)( |-|)(zimmer|raum|raeumen)"
@@ -167,6 +173,7 @@ public class Room implements ParameterHandler{
 					+ "garage|carhouse|"
 					+ "basement|"
 					+ "shack(s|)|shed(s|)|"
+					+ "winter(-| |)garden|sun(-| |)room|conservatory|solarium|"
 					+ "garden|"
 					+ "hallway|corridor|"
 					//+ "other (room|chamber)(s|)|"
@@ -180,15 +187,15 @@ public class Room implements ParameterHandler{
 
 	@Override
 	public String extract(String input) {
-		String tagAndFound;
+		String typeAndTag;
 		
 		//check storage first
 		ParameterResult pr = nluInput.getStoredParameterResult(PARAMETERS.ROOM);
 		if (pr != null){
-			tagAndFound = pr.getExtracted();
+			typeAndTag = pr.getExtracted();
 			this.found = pr.getFound();
 			
-			return tagAndFound;
+			return typeAndTag;
 		}
 				
 		String room = getType(input, language);
@@ -196,7 +203,12 @@ public class Room implements ParameterHandler{
 			return "";
 		}else{
 			//check for room number
-			String roomWithNumber = NluTools.stringFindFirst(input, room + " \\d+");
+			String roomWithNumber;
+			if (language.matches(LANGUAGES.DE)){
+				roomWithNumber = NluTools.stringFindFirst(input, room + "( (mit der |mit |)nummer|) \\d+");
+			}else{
+				roomWithNumber = NluTools.stringFindFirst(input, room + "( (with the |with |)number|) \\d+");
+			}
 			if (!roomWithNumber.isEmpty()){
 				this.found = roomWithNumber;
 			}else{
@@ -252,6 +264,10 @@ public class Room implements ParameterHandler{
 				+ "shack(s|)|shed(s|)")){
 			roomTypeTag =  "<" + Types.shack.name() + ">";
 			
+		}else if (NluTools.stringContains(room, "winter(-| |)(garten|gaerten)|glasveranda|"
+				+ "winter(-| |)garden|sun(-| |)room|conservatory|solarium")){
+			roomTypeTag =  "<" + Types.sunroom.name() + ">";
+			
 		}else if (NluTools.stringContains(room, "garten|"
 				+ "garden")){
 			roomTypeTag =  "<" + Types.garden.name() + ">";
@@ -272,13 +288,17 @@ public class Room implements ParameterHandler{
 			roomTypeTag =  "<" + Types.other.name() + ">";
 		}
 		
-		tagAndFound = roomTypeTag + ";;" + this.found;
+		//reconstruct original phrase to get proper item names
+		Normalizer normalizer = Config.inputNormalizers.get(this.language);
+		String tag = normalizer.reconstructPhrase(nluInput.textRaw, this.found);
+		
+		typeAndTag = roomTypeTag + ";;" + tag;
 		
 		//store it
-		pr = new ParameterResult(PARAMETERS.ROOM, tagAndFound, this.found);
+		pr = new ParameterResult(PARAMETERS.ROOM, typeAndTag, this.found);
 		nluInput.addToParameterResultStorage(pr);
 		
-		return tagAndFound;
+		return typeAndTag;
 	}
 	
 	@Override
@@ -342,7 +362,7 @@ public class Room implements ParameterHandler{
 		JSONObject itemResultJSON = new JSONObject();
 			JSON.add(itemResultJSON, InterviewData.VALUE, commonValue);
 			JSON.add(itemResultJSON, InterviewData.VALUE_LOCAL, localValue);
-			JSON.add(itemResultJSON, InterviewData.FOUND, roomFound); 		//Note: we can't use this.found here because it is not set in build
+			JSON.add(itemResultJSON, InterviewData.ROOM_TAG, roomFound);
 		//add device index
 		if (!roomIndexStr.isEmpty()){
 			int roomIndex = Integer.parseInt(roomIndexStr);
@@ -355,7 +375,7 @@ public class Room implements ParameterHandler{
 
 	@Override
 	public boolean validate(String input) {
-		if (input.matches("^\\{\".*\":.+\\}$") && input.contains("\"" + InterviewData.VALUE + "\"")){
+		if (input.matches("^\\{\".*\"(\\s|):.+\\}$") && input.contains("\"" + InterviewData.VALUE + "\"")){
 			//System.out.println("IS VALID: " + input); 		//debug
 			return true;
 		}else{

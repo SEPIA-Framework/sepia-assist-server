@@ -245,6 +245,9 @@ public class Start {
 		Config.setupChats(); 			//predefined chats
 		Config.setupNluSteps(); 		//interpretation chain
 		Config.setupTools(); 			//tools like RssFeedReader or SpotifyApi
+		if (Config.ttsModuleEnabled){
+			Config.setupTts();				//TTS module setup (e.g. clean local folders etc.)
+		}
 		Workers.setupWorkers(); 		//setup and start selected workers
 		if (Config.connectToWebSocket){
 			Clients.setupSocketMessenger();		//setup webSocket messenger and connect

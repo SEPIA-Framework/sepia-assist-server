@@ -48,11 +48,17 @@ public class TtsSepiaWeb implements TtsInterface{
 	ArrayList<String> soundFormatList;
 	String soundFormat = "default";
 	int maxMoodIndex = 0;
+	int charLimit = 600;
 	
 	//CONSTRUCTOR
 	public TtsSepiaWeb(){
 		//get TTS service info - is this too early here?
 		getInfo();
+	}
+	
+	@Override
+	public boolean setup(){
+		return true;
 	}
 	
 	//set TTS input and check it for special stuff like environment based format (web-browser != android app)
@@ -234,6 +240,7 @@ public class TtsSepiaWeb implements TtsInterface{
 				languageList = lList;
 				soundFormatList = sfList;
 				maxMoodIndex = Integer.parseInt(response.get("maxMoodIndex").toString());
+				charLimit = Integer.parseInt(response.get("maxChunkLength").toString());
 			}
 			
 		//error	
@@ -274,6 +281,11 @@ public class TtsSepiaWeb implements TtsInterface{
 			getInfo();
 		}
 		return maxMoodIndex;
+	}
+	
+	@Override
+	public int getMaxChunkLength(){
+		return charLimit;
 	}
 	
 	//Settings SET

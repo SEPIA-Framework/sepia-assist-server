@@ -34,7 +34,8 @@ import net.b07z.sepia.server.assist.services.ServiceAccessManager;
 import net.b07z.sepia.server.assist.smarthome.OpenHAB;
 import net.b07z.sepia.server.assist.tools.RssFeedReader;
 import net.b07z.sepia.server.assist.tools.SpotifyApi;
-import net.b07z.sepia.server.assist.tts.TtsAcapelaWeb;
+import net.b07z.sepia.server.assist.tts.TtsInterface;
+import net.b07z.sepia.server.assist.tts.TtsOpenEmbedded;
 import net.b07z.sepia.server.assist.users.AccountDynamoDB;
 import net.b07z.sepia.server.assist.users.AccountElasticsearch;
 import net.b07z.sepia.server.assist.users.AuthenticationDynamoDB;
@@ -58,7 +59,7 @@ import net.b07z.sepia.server.core.tools.Is;
  */
 public class Config {
 	public static final String SERVERNAME = "SEPIA-Assist-API"; 		//public server name
-	public static final String apiVersion = "v2.4.0";					//API version
+	public static final String apiVersion = "v2.4.1";					//API version
 	public static String privacyPolicyLink = "";						//Link to privacy policy
 	
 	//helper for dynamic class creation (e.g. from strings in config-file) - TODO: reduce dependencies further 
@@ -71,7 +72,11 @@ public class Config {
 	public static String sdkClassesFolder = pluginsFolder + "net/b07z/sepia/sdk/";		//folder for SDK plugin classes - NOTE: has to be sub-folder of plugins
 	public static String servicePropertiesFolder = xtensionsFolder + "ServiceProperties/";		//folder for service properties and static data
 	public static String dbSetupFolder = xtensionsFolder + "Database/";		//folder for database stuff
-	public static String webServerFolder = xtensionsFolder + "WebContent";	//folder for web-server
+	public static String webServerFolder = xtensionsFolder + "WebContent";	//folder for web-server (NOTE: it's given without '/' at the end)
+	public static String ttsEngines = xtensionsFolder + "TTS/";				//folder for TTS engines if not given by system
+	public static String ttsWebServerUrl = "/tts/";							//URL for TTS when accessing web-server root
+	public static String ttsWebServerPath = webServerFolder + ttsWebServerUrl;		//folder for TTS generated on server
+	public static boolean ttsModuleEnabled = true;									//is TTS module available (can be set to false by module setup)
 	public static boolean hostFiles = true;									//use web-server?
 	public static boolean allowFileIndex = true;							//allow web-server index
 	public static String fileMimeTypes = "mp4=video/mp4, mp3=audio/mpeg";	//MIME Types for files when loaded from static web server
@@ -144,8 +149,8 @@ public class Config {
 	public static String userDataModule = UserDataDefault.class.getCanonicalName();
 	public static String knowledgeDbModule = Elasticsearch.class.getCanonicalName();
 	public static String answerModule = AnswerLoaderFile.class.getCanonicalName(); 			//TODO: switch to Elasticsearch by default?
-	public static String ttsModule = TtsAcapelaWeb.class.getCanonicalName();
-	public static String ttsName = "Acapela";
+	public static String ttsModule = TtsOpenEmbedded.class.getCanonicalName();
+	public static String ttsName = "Open Embedded";
 	public static String emailModule = SendEmailBasicSmtp.class.getCanonicalName();
 	
 	//toggles and switches:
@@ -381,7 +386,8 @@ public class Config {
 		DataLoader dl = new DataLoader(); 		
 		fixCommands_NLP = new NluSentenceMatcher(dl.loadCommandsFromFilebase(commandsPath + "teachIt"));	//identity match
 		int iv = dl.getValidEntries();
-		int is = dl.getStoredEntries();
+		//int is = dl.getStoredEntries();
+		int is = dl.getUniqueEntries();
 		Debugger.println("Finished loading " + is + "(" + iv + ") predefined commands in "+ Debugger.toc(tic) + " ms.", 3);
 	}
 	
@@ -397,7 +403,8 @@ public class Config {
 		DataLoader dl = new DataLoader();
 		fixChats_NLP = new NluApproximateMatcher(dl.loadCommandsFromFilebase(commandsPath + "chats"));	//approximation match
 		int iv = dl.getValidEntries();
-		int is = dl.getStoredEntries();
+		//int is = dl.getStoredEntries();
+		int is = dl.getUniqueEntries();
 		Debugger.println("Finished loading " + is + "(" + iv + ") predefined chats in "+ Debugger.toc(tic) + " ms.", 3);
 	}
 	
@@ -419,6 +426,27 @@ public class Config {
 		//Spotify
 		if (Is.notNullOrEmpty(spotify_client_id) && Is.notNullOrEmpty(spotify_client_secret)){
 			spotifyApi = new SpotifyApi(spotify_client_id, spotify_client_secret);
+		}
+	}
+	
+	/**
+	 * Setup TTS module (e.g. clean-up 'tts' folder, load voices etc.).
+	 */
+	public static void setupTts(){
+		boolean setupOk = false;
+		try{
+			Debugger.println("Running TTS module setup ...", 3);
+			TtsInterface tts = (TtsInterface) ClassBuilder.construct(Config.ttsModule);
+			setupOk = tts.setup();
+		}catch (Exception e){
+			setupOk = false;
+			Debugger.println("TTS module setup failed with message: " + e.getMessage(), 1);
+		}
+		if (!setupOk){
+			Config.ttsModuleEnabled = false;
+			Debugger.println("TTS module setup failed and module was deactivated!", 1);
+		}else{
+			Debugger.println("TTS module setup successful.", 3);
 		}
 	}
 	
@@ -472,6 +500,9 @@ public class Config {
 					answerModule = answerModuleValue;
 				}
 			}
+			ttsModule = settings.getProperty("module_tts", TtsOpenEmbedded.class.getCanonicalName());
+			ttsName = settings.getProperty("tts_engine_name", "Open Embedded");
+			ttsModuleEnabled = Boolean.valueOf(settings.getProperty("tts_enabled", "true"));
 			enableSDK = Boolean.valueOf(settings.getProperty("enable_sdk"));
 			//useSandboxPolicy = Boolean.valueOf(settings.getProperty("use_sandbox_security_policy", "true"));		//NOTE: this will only be accessible via commandline argument
 			useSentencesDB = Boolean.valueOf(settings.getProperty("enable_custom_commands"));

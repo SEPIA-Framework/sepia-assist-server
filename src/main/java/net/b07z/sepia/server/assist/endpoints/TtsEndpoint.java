@@ -1,7 +1,6 @@
 package net.b07z.sepia.server.assist.endpoints;
 
-import java.util.ArrayList;
-
+import java.util.Collection;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.interpreters.InterpretationStep;
@@ -23,6 +22,7 @@ import net.b07z.sepia.server.core.server.RequestGetOrFormParameters;
 import net.b07z.sepia.server.core.server.RequestParameters;
 import net.b07z.sepia.server.core.server.SparkJavaFw;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 import net.b07z.sepia.server.core.tools.SoundPlayer;
 import spark.Request;
@@ -43,6 +43,15 @@ public class TtsEndpoint {
 		
 		Statistics.add_TTS_hit();					//hit counter
 		long tic = System.currentTimeMillis();
+		
+		//check module
+		if (!Config.ttsModuleEnabled){
+			Statistics.add_TTS_error();
+			return SparkJavaFw.returnResult(request, response, JSON.make(
+					"result", "fail",
+					"error", "TTS module not active!"
+			).toJSONString(), 200);
+		}
 		
 		//prepare parameters
 		RequestParameters params = new RequestGetOrFormParameters(request);
@@ -77,8 +86,10 @@ public class TtsEndpoint {
 		//get URL answer
 		String answer;
 		
-		if (message == null || message.matches("")){
+		if (Is.nullOrEmpty(message)){
 			answer = "{\"result\":\"fail\",\"url\":\"" + "" + "\",\"error\":\"no message\"}";
+			Statistics.add_TTS_error();
+			return SparkJavaFw.returnResult(request, response, answer, 200);
 			
 		}else{
 			//SET source:
@@ -124,36 +135,47 @@ public class TtsEndpoint {
 			//success stats
 			Statistics.add_TTS_hit_authenticated();
 			Statistics.save_TTS_total_time(tic);			//store TTS request time
+			
+			//return URL in requested format
+			return SparkJavaFw.returnResult(request, response, answer, 200);
 		}
-		
-		//return URL in requested format
-		return SparkJavaFw.returnResult(request, response, answer, 200);
 	}
 
 	/**TTS INFO<br>
 	 * End-point that returns some info about the TTS engine in use.
 	 */
 	public static String ttsInfo(Request request, Response response){
+		//check module
+		if (!Config.ttsModuleEnabled){
+			return SparkJavaFw.returnResult(request, response, JSON.make(
+					"result", "fail",
+					"error", "TTS module not active!"
+			).toJSONString(), 200);
+		}
+		
+		//prepare parameters
+		RequestParameters params = new RequestGetOrFormParameters(request);		//TODO: because of form-post?
 		
 		//authenticate
-		Authenticator token = Start.authenticate(request);
+		Authenticator token = Start.authenticate(params, request);
 		if (!token.authenticated()){
 			return SparkJavaFw.returnNoAccess(request, response, token.getErrorCode());
 		}
 		
-		TtsInterface speaker = (TtsInterface) ClassBuilder.construct(Config.ttsModule); //new TTS_Acapela();
-		ArrayList<String> voiceList = speaker.getVoices();
-		ArrayList<String> genderList = speaker.getGenders();
-		ArrayList<String> languagesList = speaker.getLanguages();
-		ArrayList<String> soundFormatsList = speaker.getSoundFormats();
+		TtsInterface speaker = (TtsInterface) ClassBuilder.construct(Config.ttsModule);
+		Collection<String> voiceList = speaker.getVoices();
+		Collection<String> genderList = speaker.getGenders();
+		Collection<String> languagesList = speaker.getLanguages();
+		Collection<String> soundFormatsList = speaker.getSoundFormats();
 		JSONObject info = new JSONObject();
 		JSON.add(info, "result", "success");
-		JSON.add(info, "interface", "TTS_Acapela");
-		JSON.add(info, "voices", JSON.stringListToJSONArray(voiceList));
-		JSON.add(info, "genders", JSON.stringListToJSONArray(genderList));
-		JSON.add(info, "languages", JSON.stringListToJSONArray(languagesList));
-		JSON.add(info, "formats", JSON.stringListToJSONArray(soundFormatsList));
+		JSON.add(info, "interface", speaker.getClass().getSimpleName());
+		JSON.add(info, "voices", JSON.stringCollectionToJSONArray(voiceList));
+		JSON.add(info, "genders", JSON.stringCollectionToJSONArray(genderList));
+		JSON.add(info, "languages", JSON.stringCollectionToJSONArray(languagesList));
+		JSON.add(info, "formats", JSON.stringCollectionToJSONArray(soundFormatsList));
 		JSON.add(info, "maxMoodIndex", speaker.getMaxMoodIndex());
+		JSON.add(info, "maxChunkLength", speaker.getMaxChunkLength());
 		String answer = info.toJSONString();
 				
 		//return URL in requested format

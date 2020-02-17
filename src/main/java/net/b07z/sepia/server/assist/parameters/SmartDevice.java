@@ -8,7 +8,9 @@ import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interpreters.NluTools;
+import net.b07z.sepia.server.assist.interpreters.Normalizer;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
+import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Debugger;
@@ -116,6 +118,7 @@ public class SmartDevice implements ParameterHandler{
 	public static final String rollerShutterRegEx_en = "((roller|window|sun)( |-|)|)(shutter(s|)|blind(s|)|louver(s|))|jalousie(s|)";
 	public static final String powerOutletRegEx_en = "((wall|power)( |-|)|)(socket(s|)|outlet(s|))";
 	public static final String sensorRegEx_en = "sensor(s|)";
+	public static final String genericDeviceRegEx_en = "device( |)\\d+";
 	
 	public static final String lightRegEx_de = "licht(er|es|)|lampe(n|)|beleuchtung|leuchte(n|)|helligkeit";
 	public static final String heaterRegEx_de = "heiz(er|ungen|ung|koerper(s|)|luefter(s|)|strahler(s|))|thermostat(es|s|)|temperatur(regler(s|)|en|)";
@@ -127,6 +130,7 @@ public class SmartDevice implements ParameterHandler{
 	public static final String rollerShutterRegEx_de = "(fenster|rol(l|))(l(a|ae)den)|jalousie(n|)|rollo(s|)|markise";
 	public static final String powerOutletRegEx_de = "(steck|strom)( |-|)dose(n|)|stromanschluss(es|)";
 	public static final String sensorRegEx_de = "sensor(en|s|)";
+	public static final String genericDeviceRegEx_de = "geraet( |)\\d+";
 	//----------------
 	
 	User user;
@@ -167,7 +171,8 @@ public class SmartDevice implements ParameterHandler{
 					+ sensorRegEx_de + "|"
 					+ fridgeRegEx_de + "|"
 					+ ovenRegEx_de + "|"
-					+ coffeeMakerRegEx_de
+					+ coffeeMakerRegEx_de + "|"
+					+ genericDeviceRegEx_de
 				+ ")");
 			
 		//English and other
@@ -182,7 +187,8 @@ public class SmartDevice implements ParameterHandler{
 					+ sensorRegEx_en + "|"
 					+ fridgeRegEx_en + "|"
 					+ ovenRegEx_en + "|"
-					+ coffeeMakerRegEx_en
+					+ coffeeMakerRegEx_en + "|"
+					+ genericDeviceRegEx_en
 				+ ")");
 			
 		}
@@ -192,15 +198,15 @@ public class SmartDevice implements ParameterHandler{
 
 	@Override
 	public String extract(String input) {
-		String tagAndFound;
+		String typeAndTag;
 		
 		//check storage first
 		ParameterResult pr = nluInput.getStoredParameterResult(PARAMETERS.SMART_DEVICE);
 		if (pr != null){
-			tagAndFound = pr.getExtracted();
+			typeAndTag = pr.getExtracted();
 			this.found = pr.getFound();
 			
-			return tagAndFound;
+			return typeAndTag;
 		}
 				
 		String device = getType(input, language);
@@ -225,7 +231,12 @@ public class SmartDevice implements ParameterHandler{
 			return "";
 		}else{
 			//we should take device names (tag/number..) into account, like "Lamp 1", "Light A" or "Desk-Lights" etc.
-			String deviceWithNumber = NluTools.stringFindFirst(input, device + " \\d+");
+			String deviceWithNumber;
+			if (language.matches(LANGUAGES.DE)){
+				deviceWithNumber = NluTools.stringFindFirst(input, device + "( (mit der |mit |)nummer|) \\d+");
+			}else{
+				deviceWithNumber = NluTools.stringFindFirst(input, device + "( (with the |with |)number|) \\d+");
+			}
 			if (!deviceWithNumber.isEmpty()){
 				this.found = deviceWithNumber;
 			}else{
@@ -309,13 +320,18 @@ public class SmartDevice implements ParameterHandler{
 				deviceTypeTag = "<" + Types.device.name() + ">";
 			}
 		}
-		tagAndFound = deviceTypeTag + ";;" + this.found;
+		
+		//reconstruct original phrase to get proper item names
+		Normalizer normalizer = Config.inputNormalizers.get(this.language);
+		String tag = normalizer.reconstructPhrase(nluInput.textRaw, this.found);
+		
+		typeAndTag = deviceTypeTag + ";;" + tag;
 		
 		//store it
-		pr = new ParameterResult(PARAMETERS.SMART_DEVICE, tagAndFound, this.found);
+		pr = new ParameterResult(PARAMETERS.SMART_DEVICE, typeAndTag, this.found);
 		nluInput.addToParameterResultStorage(pr);
 		
-		return tagAndFound;
+		return typeAndTag;
 	}
 	
 	@Override
@@ -377,7 +393,7 @@ public class SmartDevice implements ParameterHandler{
 		JSONObject itemResultJSON = new JSONObject();
 			JSON.add(itemResultJSON, InterviewData.VALUE, commonValue);
 			JSON.add(itemResultJSON, InterviewData.VALUE_LOCAL, localValue);
-			JSON.add(itemResultJSON, InterviewData.FOUND, deviceNameFound); 		//Note: we can't use this.found here because it is not set in build
+			JSON.add(itemResultJSON, InterviewData.SMART_DEVICE_TAG, deviceNameFound);
 		//add device index
 		if (!deviceIndexStr.isEmpty()){
 			int deviceIndex = Integer.parseInt(deviceIndexStr);
@@ -390,7 +406,7 @@ public class SmartDevice implements ParameterHandler{
 
 	@Override
 	public boolean validate(String input) {
-		if (input.matches("^\\{\".*\":.+\\}$") && input.contains("\"" + InterviewData.VALUE + "\"")){
+		if (input.matches("^\\{\".*\"(\\s|):.+\\}$") && input.contains("\"" + InterviewData.VALUE + "\"")){
 			//System.out.println("IS VALID: " + input); 		//debug
 			return true;
 		}else{

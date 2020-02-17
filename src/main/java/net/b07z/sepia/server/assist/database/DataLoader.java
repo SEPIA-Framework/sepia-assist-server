@@ -33,9 +33,10 @@ import net.b07z.sepia.server.core.tools.JSON;
 public class DataLoader {
 	
 	//helper to track errors
-	String last_line = "";
-	int i_valid = 0;		//valid lines in data
-	int i_stored = 0;		//stored lines (depending on normalizer it can be bigger than i_valid)
+	private String last_line = "";
+	private int i_valid = 0;		//valid lines in data
+	private int i_stored = 0;		//stored lines (depending on normalizer it can be bigger than i_valid)
+	private int i_unique = 0;		//unique lines
 	
 	//------getters------
 	
@@ -52,11 +53,17 @@ public class DataLoader {
 		return i_valid;
 	}
 	/**
-	 * Get the number of stored entries. Compared to getValidEntries() this can be larger e.g. if a set of normalizers
+	 * Get the number of stored entries (entries written but not necessarily unique). Compared to getValidEntries() this can be larger e.g. if a set of normalizers
 	 * creates multiple different versions of the input text.
 	 */
 	public int getStoredEntries(){
 		return i_stored;
+	}
+	/**
+	 * Get the number of stored unique entries.
+	 */
+	public int getUniqueEntries(){
+		return i_unique;
 	}
 	/**
 	 * If you want to reuse the same DataLoader consider a counter (valid entries, stored entries) reset.
@@ -64,6 +71,7 @@ public class DataLoader {
 	public void resetCounters(){
 		i_valid = 0;
 		i_stored = 0;
+		i_unique = 0;
 	}
 	
 	//------Loading scripts------
@@ -79,8 +87,17 @@ public class DataLoader {
 		
 		Map<String, TreeMap<String, String>> map = new HashMap<>();
 		for (String l : Config.supportedLanguages){
-			TreeMap<String, String> chats_xyz = loadCommandsFromFileToMap_Reverse(file_base + "_" + l + ".txt", l);
-			map.put(l, chats_xyz);
+			TreeMap<String, String> cmdsFromFile = loadCommandsFromFileToMap_Reverse(file_base + "_" + l + ".txt", l);
+			//check custom file as well
+			String customFile = file_base + "_" + l + "_custom.txt";
+			if (Files.exists(Paths.get(customFile))){
+				TreeMap<String, String> customCmdsFromFile = loadCommandsFromFileToMap_Reverse(customFile, l);
+				customCmdsFromFile.keySet().forEach((String key) -> {
+					//add new and overwrite existing
+					cmdsFromFile.put(key, customCmdsFromFile.get(key));
+				});
+			}
+			map.put(l, cmdsFromFile);
 		}
 		return map;
 	}
@@ -94,8 +111,17 @@ public class DataLoader {
 		
 		Map<String, Map<String, List<Answer>>> answers = new HashMap<>();
 		for (String l : Config.supportedLanguages){
-			Map<String, List<Answer>> answers_xyz = loadAnswersFromFileToMap(file_base + "_" + l + ".txt", l);
-			answers.put(l, answers_xyz);
+			Map<String, List<Answer>> answersFromFile = loadAnswersFromFileToMap(file_base + "_" + l + ".txt", l);
+			//check custom file as well
+			String customFile = file_base + "_" + l + "_custom.txt";
+			if (Files.exists(Paths.get(customFile))){
+				Map<String, List<Answer>> customAnswersFromFile = loadAnswersFromFileToMap(customFile, l);
+				customAnswersFromFile.keySet().forEach((String key) -> {
+					//add new and overwrite existing
+					answersFromFile.put(key, customAnswersFromFile.get(key));
+				});
+			}
+			answers.put(l, answersFromFile);
 		}
 		return answers;
 	}
@@ -118,8 +144,7 @@ public class DataLoader {
 		
 		try{
 			JSONObject sentence;
-			i_valid = 0;
-			i_stored = 0;
+			resetCounters();
 			for (int i=0; i<sentences.size(); i++){
 				//the result of "sentences.get("sentence")" is an array because it usually holds many languages 
 				sentence = (JSONObject) ((JSONArray) JSON.getJObject(sentences, i).get("sentence")).get(0);
@@ -148,6 +173,7 @@ public class DataLoader {
 					}
 				}
 			}
+			i_unique = pool.size();
 			fullPool.put(language, pool);
 			return fullPool;
 			
@@ -232,6 +258,7 @@ public class DataLoader {
 				}
 				  
 			});
+			i_unique += commands.size();
 			Debugger.println("DataLoader.loadCommandsFromFileToMap_Reverse(), number: " + i_stored + "(" + i_valid + ") , file: " + filename, 2);
 			return commands;
 			
@@ -283,6 +310,7 @@ public class DataLoader {
 					}
 				} 
 			});
+			i_unique += answersThis.size();
 			Debugger.println("DataLoader.loadAnswersFromFileToMap(), number: " + i_stored + "(" + i_valid + ") , file: " + filename, 2);
 			return answersThis;
 			

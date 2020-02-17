@@ -64,7 +64,7 @@ public class AnswerTools {
 	public static String replaceSpecialTags(String answer, NluResult info){
 		answer = answer.replaceAll("<user_name>", info.input.user.getName(Config.superuserServiceAccMng));
 		answer = answer.replaceAll("<name>", Config.assistantName);
-		answer = answer.replaceAll("<local_time_hhmm>", DateTimeConverters.getToday("HH:mm", info.input));
+		answer = answer.replaceAll("<local_time_hhmm>", DateTimeConverters.getToday("H:mm", info.input));
 		answer = answer.replaceAll("<local_date_ddMMyyyy>", DateTimeConverters.getToday("dd.MM.yyyy", info.input));
 		answer = answer.replaceAll("<local_date_MMddyyyy>", DateTimeConverters.getToday("MM/dd/yyyy", info.input));
 		return answer;

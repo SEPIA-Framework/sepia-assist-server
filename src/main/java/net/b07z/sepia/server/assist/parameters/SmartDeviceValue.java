@@ -248,14 +248,20 @@ public class SmartDeviceValue implements ParameterHandler {
 		input = value; 	//the original "found"
 		value = value.replaceFirst(".*?(" + Number.PLAIN_NBR_REGEXP + ").*", "$1").trim();
 		
-		//default decimal format is "1.00"
-		if (!Is.typeEqual(type, Number.Types.custom)){
-			value = value.replaceAll(",", ".");
-		}
-		
 		//convert Number.Types to device SmartHomeDevice.StateType
 		if (Is.notNullOrEmpty(type)){
-			StateType stateType = numberTypeDeviceStateTypeMap.get(type);
+			StateType stateType;
+			try {
+				//already state type?
+				stateType = StateType.valueOf(type);
+			}catch (Exception e){
+				//check Number types
+				stateType = numberTypeDeviceStateTypeMap.get(type);
+			}
+			if (stateType == null){
+				stateType = StateType.text_raw;
+			}
+			
 			if (stateType.equals(StateType.number_temperature)){
 				String foundUnit = Number.getTemperatureUnit(input, language);
 				if (foundUnit.equals("C")){
@@ -264,6 +270,11 @@ public class SmartDeviceValue implements ParameterHandler {
 					stateType = StateType.number_temperature_f;
 				}
 			}
+			//default decimal format is "1.00"
+			if (!Is.typeEqual(type, StateType.custom) && !type.matches(SmartHomeDevice.REGEX_STATE_TYPE_TEXT)){
+				value = value.replaceAll(",", ".");
+			}
+			
 			type = stateType.name();
 			//TODO: convert temperature from fahrenheit to celsius? I think we leave this to any service
 		}
@@ -280,7 +291,7 @@ public class SmartDeviceValue implements ParameterHandler {
 
 	@Override
 	public boolean validate(String input) {
-		if (input.matches("^\\{\".*\":.+\\}$") && input.contains("\"" + InterviewData.VALUE + "\"")){
+		if (input.matches("^\\{\".*\"(\\s|):.+\\}$") && input.contains("\"" + InterviewData.VALUE + "\"")){
 			//System.out.println("IS VALID: " + input); 		//debug
 			return true;
 		}else{

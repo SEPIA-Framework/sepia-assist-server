@@ -61,6 +61,8 @@ public class InterviewData {
 	public static final String LIST_SUBTYPE = "subtype";			//sub-type of list
 	
 	//-smart home and devices
+	public static final String SMART_DEVICE_TAG = "device_tag";		//a tag or name of a device
 	public static final String SMART_DEVICE_VALUE_TYPE = "type";	//something like number_plain, number_temperature, ...
 	public static final String ITEM_INDEX = "index";				//index number of an item like device or room, e.g. Light 1, Room 1: index=1
+	public static final String ROOM_TAG = "room_tag";				//a tag or name of a room
 }

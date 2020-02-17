@@ -31,6 +31,7 @@ default_ask_parameter_0b;;		rep=2|mood=5;;		No, still not working, try once more
 default_ask_action_0a;;		rep=0|mood=5;;		Which action should I perform? ;;char=neutral
 default_ask_action_0a;;		rep=1|mood=5;;		Sorry, which action was that? ;;char=neutral
 default_ask_action_0a;;		rep=2|mood=5;;		I'm missing an action like open or close, say again please!;;char=neutral
+default_ask_first_of_many_0a;;		rep=0|mood=5;;		I have multiple choices here. Did you mean <1>? ;;char=neutral
 default_miss_info_0a;;		rep=0|mood=5;;		It seems I'm missing necessary additional info. ;;char=neutral
 default_miss_info_0b;;		rep=0|mood=5;;		It seems I'm missing the necessary info, but you can add it to your account. ;;char=neutral
 default_miss_user_location_0a;;		rep=0|mood=5;;		<user_name>, I'm missing information about your location. ;;char=polite,neutral
@@ -256,7 +257,7 @@ smartdevice_1c;;		rep=1|mood=5;;		Say again please! ;;char=neutral,polite
 smartdevice_1c;;		rep=1|mood=5;;		Can you repeat the name of the room once more? ;;char=neutral
 smartdevice_1c;;		rep=2|mood=5;;		<user_name> I'm sorry, but I think I can't help you with that. ;;char=neutral
 smartdevice_1d;;		rep=0|mood=5;;		Give me a value please. ;;char=neutral,polite
-smartdevice_1d;;		rep=0|mood=5;;		What is the value?. ;;char=neutral
+smartdevice_1d;;		rep=0|mood=5;;		What is the value? ;;char=neutral
 smartdevice_1d;;		rep=1|mood=5;;		Repeat that number please! ;;char=neutral,polite
 smartdevice_1d;;		rep=2|mood=5;;		Sorry I think I can't help you with that :-( ;; char=neutral,polite
 smartdevice_2a;;		rep=0|mood=5;;		<1> to <3>, ok. ;;char=neutral

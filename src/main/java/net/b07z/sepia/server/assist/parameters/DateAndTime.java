@@ -455,7 +455,7 @@ public class DateAndTime implements ParameterHandler{
 
 	@Override
 	public boolean validate(String input) {
-		if (input.matches("^\\{\".*\":.+\\}$") && input.contains("\"" + InterviewData.TIME_TYPE + "\"") && input.contains("\"" + InterviewData.TIME_DIFF + "\"")){
+		if (input.matches("^\\{\".*\"(\\s|):.+\\}$") && input.contains("\"" + InterviewData.TIME_TYPE + "\"") && input.contains("\"" + InterviewData.TIME_DIFF + "\"")){
 			//System.out.println("IS VALID: " + input); 		//debug
 			return true;
 		}else{

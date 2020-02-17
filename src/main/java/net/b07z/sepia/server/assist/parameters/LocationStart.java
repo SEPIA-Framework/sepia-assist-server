@@ -307,7 +307,7 @@ public class LocationStart implements ParameterHandler{
 	 * Static version of "validate" to be reusable in other location parameter handlers. 
 	 */
 	public static boolean validateLocation(String input){
-		if (input.matches("^\\{\".*\":.+\\}$") && input.contains("\"" + InterviewData.INPUT + "\"")){
+		if (input.matches("^\\{\".*\"(\\s|):.+\\}$") && input.contains("\"" + InterviewData.INPUT + "\"")){
 			//System.out.println("IS VALID: " + input); 		//debug
 			return true;
 		}else{

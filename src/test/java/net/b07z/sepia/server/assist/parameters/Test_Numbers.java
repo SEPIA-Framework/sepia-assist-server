@@ -60,6 +60,12 @@ public class Test_Numbers {
 		System.out.println("80°F in F: " + Number.convertTemperature("80", Number.getTemperatureUnit("heater to 80°f", LANGUAGES.EN), "F", "F"));
 		System.out.println("80°F in C: " + Number.convertTemperature("80", Number.getTemperatureUnit("heater to 80°f", LANGUAGES.EN), "F", "C"));
 		System.out.println("80f in C: " + Number.convertTemperature("80", Number.getTemperatureUnit("heater to 80f", LANGUAGES.EN), "F", "C"));
+		
+		System.out.println("\nNumber type checks:\n");
+		System.out.println("dim0% = percent? " + "dim0%".matches(".*[\\d.,]+(\\s+|)(%|pct)(\\s|\\b|$).*"));
+		System.out.println("0% dim = percent? " + "0% dim".matches(".*[\\d.,]+(\\s+|)(%|pct)(\\s|\\b|$).*"));
+		System.out.println("13° = degree? " + "13°".matches(".*[\\d.,]+(\\s+|)(°|deg|)(C|F|)(\\s|\\b|$).*"));
+		System.out.println("13°C = degree? " + "13°C".matches(".*[\\d.,]+(\\s+|)(°|deg|)(C|F|)(\\s|\\b|$).*"));
 	}
 	
 	static void printTestResults(List<String> texts, String[] parametersToTest, String language){

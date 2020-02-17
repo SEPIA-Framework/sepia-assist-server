@@ -14,7 +14,6 @@
 		{ "name": "Wired", "url": "https://www.wired.com/feed/category/science/latest/rss", "name_html": "<span style='color:#222222; font-family:serif'><b>W</b>I<b>R</b>E<b>D</b></span>" },
 		{ "name": "Gruenderszene", "url": "https://www.gruenderszene.de/feed", "name_html": "<b><span style='color:#000; font-family:serif'>GRÜNDER</span><span style='color:#456494; font-family:serif'>SZENE</span></b>" },
 		{ "name": "jetzt.de", "url": "https://www.jetzt.de/alle_artikel.rss", "name_html": "<b><span style='color:#000; font-family:serif'>jetzt.de</span></b>" },
-		{ "name": "11FREUNDE", "url": "https://www.11freunde.de/feed", "name_html": "<span style='color:#000;'>11<b>FREUNDE</b></span>" },
 		{ "name": "golem.de", "url": "https://rss.golem.de/rss.php?feed=RSS2.0", "name_html": "<b><span style='color:#000;'>golem.</span><span style='color:#6EC5CD;'>d</span><span style='color:#9AC54B;'>e</span></b>" },
 		{ "name": "heise online", "url": "https://www.heise.de/rss/heise-top-atom.xml", "name_html": "<b><span style='color:#999898;'>heise online</span></b>" },
 		{ "name": "heise Developer", "url": "https://www.heise.de/developer/rss/news-atom.xml", "name_html": "<b><span style='color:#999898;'>heise </span><span style='color:#6d1124;'>Developer</span></b>" },
@@ -24,7 +23,7 @@
 		{ "name": "t3n", "url": "https://t3n.de/rss.xml", "name_html": "<b><span style='color:#000;'>t</span><span style='color:#FF0000;'>3</span><span style='color:#000000;'>n</span></b>" },
 		{ "name": "Business Punk", "url": "https://www.business-punk.com/feed/", "name_html": "<span style='color:#2C2C2C; font-family:serif;'><b>Business Punk</b></span>" },
 		{ "name": "RollingStone", "url": "https://www.rollingstone.com/music/feed/", "name_html": "<span style='color:#C81429; font-family:serif;'><b>RollingStone</b></span>" },
-		{ "name": "MUSIC NEWS", "url": "http://www.music-news.com/rss/UK/news", "name_html": "<span style='color:#ba1a56;'><b>MUSIC</b> </span><span style='color:#000000;'>NEWS</span>" },
+		{ "name": "MUSIC NEWS", "url": "https://www.music-news.com/rss/UK/news", "name_html": "<span style='color:#ba1a56;'><b>MUSIC</b> </span><span style='color:#000000;'>NEWS</span>" },
 		{ "name": "CinemaxX", "url": "https://www.presseportal.de/rss/pm_9588.rss2", "name_html": "<span style='color:#b90049;'><i>Cinemax<b>X</b></i></span>" },
 		{ "name": "Filmstarts.de - aktuell", "url": "http://rss.filmstarts.de/fs/kinos/aktuelle?format=xml", "name_html": "<b><span style='color:#3d59ba;'>Filmstarts.de</span><span style='color:#000000;'> - aktuell</span></b>" },
 		{ "name": "Filmstarts.de - bald", "url": "http://rss.filmstarts.de/fs/kinos/bald?format=xml", "name_html": "<b><span style='color:#3d59ba;'>Filmstarts.de</span><span style='color:#000000;'> - bald</span></b>" },
@@ -38,7 +37,8 @@
 	],
 	"deprecated":[
 		{ "name": "RevierSport", "url": "https://abo.reviersport.de/?news-rss-ama", "name_html": "<span style='color:#000;'>RevierSport</span>" },
-		{ "name": "Wired.de", "url": "https://www.wired.de/feed/latest", "name_html": "<span style='color:#222222; font-family:serif'><b>W</b>I<b>R</b>E<b>D</b>.de</span>" }
+		{ "name": "Wired.de", "url": "https://www.wired.de/feed/latest", "name_html": "<span style='color:#222222; font-family:serif'><b>W</b>I<b>R</b>E<b>D</b>.de</span>" },
+		{ "name": "11FREUNDE", "url": "https://www.11freunde.de/feed", "name_html": "<span style='color:#000;'>11<b>FREUNDE</b></span>" },
 	],
 	"groups":[
 		{ "language": "de", "data": [
@@ -48,7 +48,7 @@
 			{"section": "science", "group": ["wissenschaft.de", "t3n", "golem.de", "heise online"]},
 			{"section": "tech", "group": ["golem.de", "t3n", "heise online", "heise Developer", "heise Make", "HACKADAY", "PCGames"]},
 			{"section": "sports", "group": ["Sport1", "Sportschau", "Kicker"]},
-			{"section": "soccer", "group": ["Sportschau - Fussball", "Kicker", "Sport1", "11FREUNDE"]},
+			{"section": "soccer", "group": ["Sportschau - Fussball", "Kicker", "Sport1"]},
 			{"section": "games", "group": ["PCGames", "GameStar"]},
 			{"section": "music", "group": ["RollingStone", "MUSIC NEWS"]},
 			{"section": "cinema", "group": ["Filmstarts.de - aktuell", "Filmstarts.de - bald", "Kino.de - Film-News", "SPIEGEL Kino"]},
@@ -62,7 +62,7 @@
 			{"section": "science", "group": ["Wired", "t3n", "golem.de", "heise online"]},
 			{"section": "tech", "group": ["Wired", "MIT Technology Review", "HACKADAY", "t3n", "golem.de", "heise online", "PCGames"]},
 			{"section": "sports", "group": ["Sport1", "Sportschau", "Kicker"]},
-			{"section": "soccer", "group": ["Sportschau - Fussball", "Kicker", "Sport1", "11FREUNDE"]},
+			{"section": "soccer", "group": ["Sportschau - Fussball", "Kicker", "Sport1"]},
 			{"section": "games", "group": ["PCGames", "GameStar"]},
 			{"section": "music", "group": ["RollingStone", "MUSIC NEWS"]},
 			{"section": "cinema", "group": ["Filmstarts.de - aktuell", "Filmstarts.de - bald", "Kino.de - Film-News", "SPIEGEL Kino"]},

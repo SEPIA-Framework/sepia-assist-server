@@ -135,11 +135,11 @@ public class RssFeedReader {
 		    			Debugger.println("RSS-FEED: '" + url + "' has REDIRECT to: " + errorRedirect, 1);
 		    		}
 		    		*/
-        	//Get content as String then create a stream (its safer as the previous method)
+        	//Get content as String then create a stream (its safer than the previous method)
         	HttpClientResult httpRes = Connectors.apacheHttpGET(url, null);
         	statusLine = httpRes.statusLine;
         	if (httpRes.content == null || httpRes.content.isEmpty()){
-        		throw new RuntimeException("Feed content not found.");
+        		throw new RuntimeException("Feed content not found. Code: " + httpRes.statusCode + ", Status: " + httpRes.statusLine);
         	}
 			//System.out.println(content.substring(0, 50));
 			InputStream stream;

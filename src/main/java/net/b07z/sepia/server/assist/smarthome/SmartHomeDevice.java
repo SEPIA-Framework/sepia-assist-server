@@ -68,7 +68,8 @@ public class SmartHomeDevice {
 		number_percent,
 		number_temperature,
 		number_temperature_c,
-		number_temperature_f
+		number_temperature_f,
+		custom
 	}
 	public static final String REGEX_STATE_TYPE_TEXT = "^text_.*";
 	public static final String REGEX_STATE_TYPE_NUMBER = "^number_.*";
@@ -446,6 +447,23 @@ public class SmartHomeDevice {
 	}
 	
 	/**
+	 * Filter list of devices by tag/name ignoring case. NO fuzzy matching!
+	 * @param devicesList - list of devices, usually already filtered by device type and room
+	 * @param tag - usually the name of a device
+	 * @return list with matches or empty list
+	 */
+	public static List<SmartHomeDevice> findDevicesWithMatchingTagIgnoreCase(List<SmartHomeDevice> devicesList, String tag){
+		List<SmartHomeDevice> matches = new ArrayList<>();
+		for (SmartHomeDevice shd : devicesList){
+			//System.out.println(shd.getName() + " - " + shd.getName().equals(tag));		//DEBUG
+			if (shd.getName().equalsIgnoreCase(tag)){
+				matches.add(shd);
+			}
+		}
+		return matches;
+	}
+	
+	/**
 	 * Find correct, generalized stateType from given state.
 	 * @param state - state as given by parameter
 	 * @return found state type or null
@@ -456,14 +474,14 @@ public class SmartHomeDevice {
 		if (state.matches("[\\d.,]+")){
 			genStateType = StateType.number_plain.name();
 		//percent
-		}else if (state.matches(".*[\\d.,]+(\\+s|)(%|pct)\\b.*")){
+		}else if (state.matches(".*[\\d.,]+(\\s+|)(%|pct)(\\s|\\b|$).*")){
 			genStateType = StateType.number_percent.name();
 		//temperature
-		}else if (state.matches(".*[\\d.,]+(\\+s|)(°|deg|)C\\b.*")){
+		}else if (state.matches(".*[\\d.,]+(\\s+|)(°|deg|)C\\b.*")){
 			genStateType = StateType.number_temperature_c.name();
-		}else if (state.matches(".*[\\d.,]+(\\+s|)(°|deg|)F\\b.*")){
+		}else if (state.matches(".*[\\d.,]+(\\s+|)(°|deg|)F\\b.*")){
 			genStateType = StateType.number_temperature_f.name();
-		}else if (state.matches(".*[\\d.,]+(\\+s|)(°|deg)\\b.*")){
+		}else if (state.matches(".*[\\d.,]+(\\s+|)(°|deg)(\\s|\\b|$).*")){
 			genStateType = StateType.number_temperature.name();
 		//ON/OFF
 		}else if (state.matches("(?i)(on|off|open|close(d|)|up|down|(dis|)connected|(in|)active)")){
@@ -506,7 +524,8 @@ public class SmartHomeDevice {
 	 * @return
 	 */
 	public static String makeSmartTypeAssumptionForPlainNumber(SmartDevice.Types deviceType){
-		if (deviceType.equals(SmartDevice.Types.light) || deviceType.equals(SmartDevice.Types.roller_shutter)){
+		if (deviceType.equals(SmartDevice.Types.light) 
+				|| deviceType.equals(SmartDevice.Types.roller_shutter)){
 			return StateType.number_percent.name();
 		}else if (deviceType.equals(SmartDevice.Types.heater)){
 			return StateType.number_temperature.name();
