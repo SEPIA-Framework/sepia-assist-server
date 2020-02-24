@@ -108,8 +108,12 @@ public class SmartDevice implements ParameterHandler{
 		return localName;
 	}
 	
-	public static final String lightRegEx_en = "light(s|)|lighting|lamp(s|)|illumination|brightness";
-	public static final String heaterRegEx_en = "heater(s|)|temperature(s|)|thermostat(s|)";
+	public static final String lightRegEx_en = "light(s|)|lighting|lamp(s|)|"
+											+ "illumination|"
+											+ "brightness";
+	public static final String heaterRegEx_en = "heat(er(s|)|ing)|"
+											+ "temperature(s|)|"
+											+ "thermostat(s|)";
 	public static final String tvRegEx_en = "tv|television";
 	public static final String musicPlayerRegEx_en = "(stereo|music)( |)(player)|stereo|bluetooth(-| )(speaker|box)|speaker(s|)";
 	public static final String fridgeRegEx_en = "fridge|refrigerator";
@@ -120,10 +124,16 @@ public class SmartDevice implements ParameterHandler{
 	public static final String sensorRegEx_en = "sensor(s|)";
 	public static final String genericDeviceRegEx_en = "device( |)\\d+";
 	
-	public static final String lightRegEx_de = "licht(er|es|)|lampe(n|)|beleuchtung|leuchte(n|)|helligkeit";
-	public static final String heaterRegEx_de = "heiz(er|ungen|ung|koerper(s|)|luefter(s|)|strahler(s|))|thermostat(es|s|)|temperatur(regler(s|)|en|)";
+	public static final String lightRegEx_de = "\\w*(licht(er|es|)|lampe(n|)|beleuchtung|leuchte(n|))|"
+											+ "helligkeit";
+	public static final String heaterRegEx_de = "\\w*(heiz(er|ungen|ung|koerper(s|)|luefter(s|)|strahler(s|)))|"
+											+ "\\w*(thermostat(es|s|))|"
+											+ "temperatur(regler(s|)|en|)";
 	public static final String tvRegEx_de = "tv(s|)|television(s|)|fernseh(er(s|)|geraet(es|s|)|apparat(es|s|))";
-	public static final String musicPlayerRegEx_de = "(stereo|musi(k|c))( |)(anlage|player(s|))|bluetooth(-| )(lautsprecher(s|)|box)|lautsprecher(s|)|boxen";
+	public static final String musicPlayerRegEx_de = "(stereo|musi(k|c))( |)(anlage|player(s|))|"
+											+ "bluetooth(-| )(lautsprecher(s|)|box)|"
+											+ "\\w*(lautsprecher(s|))|"
+											+ "\\w*(boxen)";
 	public static final String fridgeRegEx_de = "kuehlschrank(s|)";
 	public static final String ovenRegEx_de = "ofen(s|)|herd(es|s)";
 	public static final String coffeeMakerRegEx_de = "kaffeemaschine";
