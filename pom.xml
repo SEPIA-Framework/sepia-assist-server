@@ -125,6 +125,11 @@
 			<artifactId>rome</artifactId>
 			<version>1.12.0</version>
 		</dependency>
+		<dependency>
+    		<groupId>me.xdrop</groupId>
+    		<artifactId>fuzzywuzzy</artifactId>
+    		<version>1.2.0</version>
+		</dependency>
 		
 		<!-- Add JUnit but only for testing (scope) -->
 		<dependency>
