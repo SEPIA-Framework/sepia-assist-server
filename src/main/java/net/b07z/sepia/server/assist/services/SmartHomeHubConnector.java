@@ -1,7 +1,6 @@
 package net.b07z.sepia.server.assist.services;
 
 import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,8 +21,6 @@ import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.assist.smarthome.SmartHomeDevice;
 import net.b07z.sepia.server.assist.smarthome.SmartHomeHub;
-import net.b07z.sepia.server.assist.tools.StringCompare;
-import net.b07z.sepia.server.assist.tools.StringCompare.StringCompareResult;
 import net.b07z.sepia.server.core.assistant.ACTIONS;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
@@ -263,7 +260,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		}else{
 			int matchesN = matchingDevices.size();
 			boolean tagMatch = false;
-			//can we find a better tag in the user input?
+			//can we find a better tag in the user input? --- THIS MOVED TO SmartDevice parameter
 			/*if (matchesN > 1){
 				List<String> possibleTags = new ArrayList<>();
 				if (Is.notNullOrEmpty(deviceTag)){
@@ -274,7 +271,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 				}
 				System.out.println("possible tags: " + possibleTags); 		//DEBUG
 				StringCompareResult scr = StringCompare.scanSentenceForBestPhraseMatch(
-						nluResult.input.text, possibleTags, LANGUAGES.DE
+						nluResult.input.text, possibleTags, nluResult.input.langauge
 				);
 				int bestScore = scr.getResultPercent();
 				if (bestScore == 100){

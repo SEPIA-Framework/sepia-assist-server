@@ -4,8 +4,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -26,10 +29,14 @@ import net.b07z.sepia.server.core.tools.JSON;
  */
 public class OpenHAB implements SmartHomeHub {
 	
+	public static String NAME = "openhab";
+	
 	private String host;
 	private String authType;
 	private String authData;
-	public static String NAME = "openhab";
+	
+	private static Map<String, Map<String, Set<String>>> bufferedDevicesOfHostByType = new ConcurrentHashMap<>();
+	private Map<String, Set<String>> bufferedDevicesByType;
 	
 	/**
 	 * Build OpenHAB connector with given host address.
@@ -40,6 +47,7 @@ public class OpenHAB implements SmartHomeHub {
 			throw new RuntimeException("No host address found for openHAB integration!");
 		}else{
 			this.host = host;
+			this.bufferedDevicesByType = bufferedDevicesOfHostByType.get(this.host);
 		}
 	}
 	
@@ -98,6 +106,9 @@ public class OpenHAB implements SmartHomeHub {
 		JSONObject response = httpGET(this.host + "/rest/items");
 		//System.out.println("openHAB REST response: " + response); 									//DEBUG
 		if (Connectors.httpSuccess(response)){
+			//use the chance to update the "names by type" buffer
+			this.bufferedDevicesByType = new ConcurrentHashMap<>();
+			
 			JSONArray devicesArray = null;
 			if (response.containsKey("JSONARRAY")){
 				devicesArray = JSON.getJArray(response, "JSONARRAY");		//this should usually be the one triggered
@@ -129,8 +140,22 @@ public class OpenHAB implements SmartHomeHub {
 					//devices
 					if (shd != null){
 						devices.put(shd.getMetaValueAsString("id"), shd);
+						
+						//fill buffer
+						if ((boolean) shd.getMeta().get("namedBySepia")){
+							Set<String> deviceNamesOfType = this.bufferedDevicesByType.get(shd.getType());
+							if (deviceNamesOfType == null){
+								deviceNamesOfType = new HashSet<>();
+								this.bufferedDevicesByType.put(shd.getType(), deviceNamesOfType);
+							}
+							deviceNamesOfType.add(shd.getName());
+						}
 					}
 				}
+				
+				//store new buffer
+				bufferedDevicesOfHostByType.put(this.host, this.bufferedDevicesByType);
+				
 				return devices;
 				
 			}catch (Exception e){
@@ -145,6 +170,15 @@ public class OpenHAB implements SmartHomeHub {
 			Debugger.println("Service:OpenHAB - failed to get devices from server!", 1);
 			return null;
 		}
+	}
+	
+	@Override
+	public Map<String, Set<String>> getBufferedDeviceNamesByType(){
+		if (this.bufferedDevicesByType == null){
+			//first run, fill buffer
+			getDevices();
+		}
+		return this.bufferedDevicesByType;
 	}
 	
 	@Override
@@ -322,12 +356,16 @@ public class OpenHAB implements SmartHomeHub {
 		String stateType = null;
 		JSONObject setCmds = null;
 		boolean typeGuessed = false;
+		boolean namedBySepia = false;
 		if (tags != null){
 			//try to find self-defined SEPIA tags first
 			for (Object tagObj : tags){
 				String t = (String) tagObj;
 				if (t.startsWith(SmartHomeDevice.SEPIA_TAG_NAME + "=")){
 					name = t.split("=", 2)[1];
+					if (Is.notNullOrEmpty(name)){
+						namedBySepia = true;
+					}
 				}else if (t.startsWith(SmartHomeDevice.SEPIA_TAG_TYPE + "=")){
 					type = t.split("=", 2)[1];
 				}else if (t.startsWith(SmartHomeDevice.SEPIA_TAG_ROOM + "=")){
@@ -346,14 +384,15 @@ public class OpenHAB implements SmartHomeHub {
 				}
 			}
 		}
-		//smart-guess if missing sepia-specific settings
 		String originalName = JSON.getStringOrDefault(hubDevice, "name", null);		//NOTE: has to be unique
-		if (name == null && originalName != null){
-			name = originalName;
+		if (Is.nullOrEmpty(originalName)){
+			//we need the ID
+			return null;
 		}
+		//smart-guess if missing sepia-specific settings
 		if (name == null){
 			//we only accept devices with name
-			return null;
+			name = originalName;
 		}
 		if (type == null){
 			String openHabCategory = JSON.getString(hubDevice, "category").toLowerCase();	//NOTE: we prefer category, not type
@@ -413,6 +452,7 @@ public class OpenHAB implements SmartHomeHub {
 				"typeGuessed", typeGuessed,
 				"setCmds", setCmds
 		);
+		JSON.put(meta, "namedBySepia", namedBySepia);
 		//TODO: we could add some stuff to meta when we need other data from response.
 		SmartHomeDevice shd = new SmartHomeDevice(name, type, room, 
 				state, stateType, memoryState, 

@@ -2,8 +2,10 @@ package net.b07z.sepia.server.assist.smarthome;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.json.simple.JSONObject;
 
@@ -38,7 +40,8 @@ public class TestHub implements SmartHomeHub {
 			"link", JSON.make(
 					"id", "Light_Test_A",
 					"origin", NAME,
-					"typeGuessed", false
+					"typeGuessed", false,
+					"namedBySepia", true
 			)
 	);
 	private static SmartHomeDevice light2 = new SmartHomeDevice(
@@ -49,7 +52,8 @@ public class TestHub implements SmartHomeHub {
 			"link", JSON.make(
 					"id", "Light_Test_B",
 					"origin", NAME,
-					"typeGuessed", true
+					"typeGuessed", true,
+					"namedBySepia", true
 			)
 	);
 	private static SmartHomeDevice heater = new SmartHomeDevice(
@@ -60,7 +64,8 @@ public class TestHub implements SmartHomeHub {
 			"link", JSON.make(
 					"id", "Heater_Test_A",
 					"origin", NAME,
-					"typeGuessed", false
+					"typeGuessed", false,
+					"namedBySepia", true
 			)
 	);
 	private static SmartHomeDevice rollerShutter = new SmartHomeDevice(
@@ -71,7 +76,8 @@ public class TestHub implements SmartHomeHub {
 			"link", JSON.make(
 					"id", "Shutter_Test_A",
 					"origin", NAME,
-					"typeGuessed", false
+					"typeGuessed", false,
+					"namedBySepia", true
 			)
 	);
 	private static List<SmartHomeDevice> devicesList = Arrays.asList(
@@ -136,6 +142,21 @@ public class TestHub implements SmartHomeHub {
 			devices.put(shd.getMetaValueAsString("id"), shd);
 		}
 		return devices;
+	}
+	
+	@Override
+	public Map<String, Set<String>> getBufferedDeviceNamesByType(){
+		Map<String, Set<String>> devicesByType = new HashMap<>();
+		for (SmartHomeDevice shd : devicesList){
+			String type = shd.getType();
+			Set<String> devices = devicesByType.get(type);
+			if (devices == null){
+				devices = new HashSet<>();
+				devicesByType.put(type, devices);
+			}
+			devices.add(shd.getName());
+		}
+		return devicesByType;
 	}
 
 	@Override

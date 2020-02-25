@@ -1,6 +1,6 @@
 package net.b07z.sepia.server.assist.tools;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.regex.Pattern;
 
 import me.xdrop.fuzzywuzzy.FuzzySearch;
@@ -180,11 +180,11 @@ public class StringCompare {
 	 * Longer phrases have higher priority.<br>
 	 * NOTE: If no normalizer is available result will be empty. 
 	 * @param sentence - raw sentence to scan
-	 * @param phrases - list of raw phrases to scan for
+	 * @param phrases - collection of raw phrases to scan for
 	 * @param language - ISO language code used for norm. {@link LANGUAGES}
 	 * @return best phrase or empty result (empty string, 0 score)
 	 */
-	public static StringCompareResult scanSentenceForBestPhraseMatch(String sentence, List<String> phrases, String language){
+	public static StringCompareResult scanSentenceForBestPhraseMatch(String sentence, Collection<String> phrases, String language){
 		Normalizer normalizer = Config.inputNormalizersLight.get(language);
 		String bestPhrase = null;
 		int bestScore = 0;

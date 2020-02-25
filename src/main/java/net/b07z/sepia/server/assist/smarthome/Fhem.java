@@ -3,8 +3,11 @@ package net.b07z.sepia.server.assist.smarthome;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -26,12 +29,16 @@ import net.b07z.sepia.server.core.tools.URLBuilder;
  */
 public class Fhem implements SmartHomeHub {
 	
+	public static final String NAME = "fhem";
+	
 	private String host;
 	private String authType;
 	private String authData;
 	private String csrfToken = "";
-	public static final String NAME = "fhem";
 	
+	private static Map<String, Map<String, Set<String>>> bufferedDevicesOfHostByType = new ConcurrentHashMap<>();
+	private Map<String, Set<String>> bufferedDevicesByType;
+		
 	private static final String TAG_REGEX = "\\bsepia-.*?\\s";
 	private static final String TAG_NAME = SmartHomeDevice.SEPIA_TAG_NAME;
 	private static final String TAG_TYPE = SmartHomeDevice.SEPIA_TAG_TYPE;
@@ -52,6 +59,7 @@ public class Fhem implements SmartHomeHub {
 		}else{
 			this.host = host;
 			this.csrfToken = getCsrfToken(this.host);
+			this.bufferedDevicesByType = bufferedDevicesOfHostByType.get(this.host);
 		}
 	}
 	/**
@@ -65,6 +73,7 @@ public class Fhem implements SmartHomeHub {
 		}else{
 			this.host = host;
 			this.csrfToken = csrfToken;
+			this.bufferedDevicesByType = bufferedDevicesOfHostByType.get(this.host);
 		}
 	}
 	
@@ -161,6 +170,11 @@ public class Fhem implements SmartHomeHub {
 			try {
 				Map<String, SmartHomeDevice> devices = new HashMap<>();
 				JSONArray devicesArray = JSON.getJArray(result, "Results");
+				
+				//use the chance to update the "names by type" buffer
+				this.bufferedDevicesByType = new ConcurrentHashMap<>();
+				
+				//convert all to 'SmartHomeDevice' and collect
 				for (Object o : devicesArray){
 					JSONObject hubDevice = (JSONObject) o;
 					
@@ -170,8 +184,22 @@ public class Fhem implements SmartHomeHub {
 					//devices
 					if (shd != null){
 						devices.put(shd.getMetaValueAsString("id"), shd);
+						
+						//fill buffer
+						if ((boolean) shd.getMeta().get("namedBySepia")){
+							Set<String> deviceNamesOfType = this.bufferedDevicesByType.get(shd.getType());
+							if (deviceNamesOfType == null){
+								deviceNamesOfType = new HashSet<>();
+								this.bufferedDevicesByType.put(shd.getType(), deviceNamesOfType);
+							}
+							deviceNamesOfType.add(shd.getName());
+						}
 					}
 				}
+				
+				//store new buffer
+				bufferedDevicesOfHostByType.put(this.host, this.bufferedDevicesByType);
+				
 				return devices;
 				
 			}catch (Exception e){
@@ -183,6 +211,18 @@ public class Fhem implements SmartHomeHub {
 			Debugger.println("FHEM - getDevices FAILED with msg.: " + result.toJSONString(), 1);
 			return null;
 		}
+	}
+	
+	@Override
+	public Map<String, Set<String>> getBufferedDeviceNamesByType(){
+		if (this.bufferedDevicesByType == null){
+			//first run, fill buffer
+			System.out.println("refreshing bufferedDevicesByType");								//DEBUG
+			getDevices();
+			//TODO: we should add a check so that repeated null results will temporarily disable this feature ...
+		}
+		System.out.println("bufferedDevicesByType: " + bufferedDevicesByType.toString());		//DEBUG
+		return this.bufferedDevicesByType;
 	}
 	
 	@Override
@@ -410,9 +450,13 @@ public class Fhem implements SmartHomeHub {
 		String stateType = null;
 		JSONObject setCmds = null;
 		boolean typeGuessed = false;
+		boolean namedBySepia = false;
 		if (attributes != null){
 			//try to find self-defined SEPIA tags first
 			name = JSON.getStringOrDefault(attributes, TAG_NAME, null);
+			if (Is.notNullOrEmpty(name)){
+				namedBySepia = true;
+			}
 			type = JSON.getStringOrDefault(attributes, TAG_TYPE, null);
 			room = JSON.getStringOrDefault(attributes, TAG_ROOM, null);
 			roomIndex = JSON.getStringOrDefault(attributes, TAG_ROOM_INDEX, null);
@@ -423,17 +467,21 @@ public class Fhem implements SmartHomeHub {
 				setCmds = JSON.parseString(setCmdsStr);
 			}
 		}
-		//smart-guess if missing sepia-specific settings
 		String fhemObjName = JSON.getStringOrDefault(hubDevice, "Name", null);		//NOTE: has to be unique!
+		if (Is.nullOrEmpty(fhemObjName)){
+			//we need the ID
+			return null;
+		}
+		//smart-guess if missing sepia-specific settings
 		if (name == null && attributes != null){
 			name = JSON.getStringOrDefault(attributes, "alias", null);
 		}
 		if (name == null && internals != null){
 			name = JSON.getStringOrDefault(internals, "name", JSON.getStringOrDefault(internals, "NAME", null));		//NOTE: has to be unique!
 		}
-		if (name == null && Is.notNullOrEmpty(fhemObjName)){
+		if (name == null){
 			//we only accept devices with name
-			return null;
+			name = fhemObjName;
 		}
 		if (type == null && internals != null){
 			String fhemType = JSON.getStringOrDefault(internals, "type", JSON.getStringOrDefault(internals, "TYPE", "")).toLowerCase();
@@ -489,10 +537,11 @@ public class Fhem implements SmartHomeHub {
 		JSONObject meta = JSON.make(
 				"id", fhemObjName,
 				"origin", NAME,
-				"setOptions", JSON.getStringOrDefault(hubDevice, "PossibleSets", null),
+				"setOptions", JSON.getStringOrDefault(hubDevice, "PossibleSets", null), 		//FHEM specific
 				"setCmds", setCmds,
 				"typeGuessed", typeGuessed
 		);
+		JSON.put(meta, "namedBySepia", namedBySepia);
 		//note: we need 'id' for commands although it is basically already in 'link'
 		SmartHomeDevice shd = new SmartHomeDevice(name, type, room, 
 				state, stateType, memoryState, 

@@ -2,6 +2,7 @@ package net.b07z.sepia.server.assist.smarthome;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.b07z.sepia.server.assist.parameters.Room;
 import net.b07z.sepia.server.assist.parameters.SmartDevice;
@@ -125,5 +126,14 @@ public interface SmartHomeHub {
 	 * @return true IF no error was thrown after request
 	 */
 	public boolean setDeviceStateMemory(SmartHomeDevice device, String stateMemory);
-
+	
+	/**
+	 * Returns a map with device type as key and a set of device names for this type as value.<br> 
+	 * The method is meant to be used for example by NLU parameters to extract entities. It should return a buffered result for super fast
+	 * access.<br>
+	 * Note for developers: AVOID RELOADING during the call (except on first call) since this can slow down SEPIA's NLU chain dramatically!<br>
+	 * Use only names that are defined via SEPIA ('sepia-name' tag), you can check this via 'namedBySepia' in meta info of {@link SmartHomeDevice}!
+	 * @return set of device names by type
+	 */
+	public Map<String, Set<String>> getBufferedDeviceNamesByType();
 }
