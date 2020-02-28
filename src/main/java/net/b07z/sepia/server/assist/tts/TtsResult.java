@@ -49,9 +49,9 @@ public class TtsResult {
 		settingsObj.put("language", language);
 		settingsObj.put("gender", gender);
 		settingsObj.put("voice", voice);
-		settingsObj.put("mood_index", new Integer(mood_index));
-		settingsObj.put("speed", new Double(speed));
-		settingsObj.put("tone", new Double(tone));
+		settingsObj.put("mood_index", mood_index);
+		settingsObj.put("speed", speed);
+		settingsObj.put("tone", tone);
 		//create JSON result
 		result_JSON.put("result", status);
 		result_JSON.put("url", url);

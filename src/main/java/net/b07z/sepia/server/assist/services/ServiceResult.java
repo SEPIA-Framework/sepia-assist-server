@@ -98,11 +98,11 @@ public class ServiceResult {
 		resultJson.put("result", status);
 		resultJson.put("answer", answer);
 		resultJson.put("answer_clean", answer_clean);
-		resultJson.put("hasInfo", new Boolean(hasInfo));
+		resultJson.put("hasInfo", hasInfo);
 		resultJson.put("htmlInfo", htmlInfo);
-		resultJson.put("hasCard", new Boolean(hasCard));
+		resultJson.put("hasCard", hasCard);
 		resultJson.put("cardInfo", cardInfo);
-		resultJson.put("hasAction", new Boolean(hasAction));
+		resultJson.put("hasAction", hasAction);
 		resultJson.put("actionInfo", actionInfo);
 	}
 	/**
@@ -132,11 +132,11 @@ public class ServiceResult {
 		resultJson.put("result", status);
 		resultJson.put("answer", answer);
 		resultJson.put("answer_clean", answer_clean);
-		resultJson.put("hasInfo", new Boolean(hasInfo));
+		resultJson.put("hasInfo", hasInfo);
 		resultJson.put("htmlInfo", htmlInfo);
-		resultJson.put("hasCard", new Boolean(hasCard));
+		resultJson.put("hasCard", hasCard);
 		resultJson.put("cardInfo", cardInfo);
-		resultJson.put("hasAction", new Boolean(hasAction));
+		resultJson.put("hasAction", hasAction);
 		resultJson.put("actionInfo", actionInfo);
 	}
 	
@@ -179,11 +179,11 @@ public class ServiceResult {
 		// ... oh crimes of my youth ...
 		//TODO: make sure to update the class as well and not only the JSON
 		//to make things a bit easier update the 3 basics data fields again
-		JSON.add(resultJson, "hasInfo", new Boolean(!htmlInfo.isEmpty()));
+		JSON.add(resultJson, "hasInfo", !htmlInfo.isEmpty());
 		JSON.add(resultJson, "htmlInfo", htmlInfo);
-		JSON.add(resultJson, "hasCard", new Boolean(cardInfo != null && !cardInfo.isEmpty()));
+		JSON.add(resultJson, "hasCard", (cardInfo != null && !cardInfo.isEmpty()));
 		JSON.add(resultJson, "cardInfo", cardInfo);
-		JSON.add(resultJson, "hasAction", new Boolean(actionInfo != null && !actionInfo.isEmpty()));
+		JSON.add(resultJson, "hasAction", (actionInfo != null && !actionInfo.isEmpty()));
 		JSON.add(resultJson, "actionInfo", actionInfo);
 		return resultJson;
 	}

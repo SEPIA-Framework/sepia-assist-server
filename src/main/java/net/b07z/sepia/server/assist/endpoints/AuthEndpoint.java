@@ -211,7 +211,7 @@ public class AuthEndpoint {
 				JSON.add(msg, "result", "success");
 				JSON.add(msg, "access_level", token.getAccessLevel());
 				JSON.add(msg, "keyToken", new_token);
-				JSON.add(msg, "keyToken_TS", new Long(timeStamp));
+				JSON.add(msg, "keyToken_TS", timeStamp);
 				JSON.add(msg, "duration_ms", Debugger.toc(tic));
 				//basic info
 				token.addBasicInfoToJsonObject(msg);

@@ -200,7 +200,7 @@ public class AuthenticationDynamoDB implements AuthenticationInterface{
 			ticketId = GUID.getTicketGUID();
 			String storeToken = Security.hashClientPassword(email + token + time + ticketId);
 			String[] keys = new String[]{TOKENS_REG, TOKENS_REG_TS};
-			Object[] objects = new Object[]{storeToken, new Long(time)};
+			Object[] objects = new Object[]{storeToken, time};
 			if (!write_reg_token(ticketId, keys, objects)){
 				throw new RuntimeException("registration token storing failed!");
 			}
@@ -286,7 +286,7 @@ public class AuthenticationDynamoDB implements AuthenticationInterface{
 			}
 			
 			//delete old token or make it invalid
-			write_reg_token(ticketId, new String[]{TOKENS_REG_TS}, new Object[]{new Long(0)});
+			write_reg_token(ticketId, new String[]{TOKENS_REG_TS}, new Object[]{Long.valueOf(0)});
 			
 			//get a new ID and create a save storage for the password by standard PBKDF2 HMAC-SHA-256 algorithm
 			String[] ids = {email, "-"};   	//additionally known ids due to type of login. Order fixed: email, phone, xy, ...
@@ -425,7 +425,7 @@ public class AuthenticationDynamoDB implements AuthenticationInterface{
 			ticketId = GUID.getTicketGUID();
 			String storeToken = Security.hashClientPassword(userid + token + time + ticketId);
 			String[] keys = new String[]{TOKENS_SUPP, TOKENS_SUPP_TS};
-			Object[] objects = new Object[]{storeToken, new Long(time)};
+			Object[] objects = new Object[]{storeToken, time};
 			if (!write_reg_token(ticketId, keys, objects)){
 				throw new RuntimeException("requestPasswordChange token storing failed!");
 			}
@@ -538,7 +538,7 @@ public class AuthenticationDynamoDB implements AuthenticationInterface{
 		}
 		
 		//delete old token or make it invalid
-		write_reg_token(ticketId, new String[]{TOKENS_SUPP_TS}, new Object[]{new Long(0)});
+		write_reg_token(ticketId, new String[]{TOKENS_SUPP_TS}, new Object[]{Long.valueOf(0)});
 		
 		//-------------------------------------------------------------------------------------------
 		
@@ -901,7 +901,7 @@ public class AuthenticationDynamoDB implements AuthenticationInterface{
 		long now = System.currentTimeMillis();
 		String tokenPath_ts = tokenPath + "_ts";
 		String[] keys = new String[]{tokenPath, tokenPath_ts};
-		Object[] objects = new Object[]{token, new Long(now)};
+		Object[] objects = new Object[]{token, now};
 		
 		return write_protected(userid, idType, keys, objects);
 	}

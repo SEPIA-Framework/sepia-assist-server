@@ -217,11 +217,8 @@ public class Fhem implements SmartHomeHub {
 	public Map<String, Set<String>> getBufferedDeviceNamesByType(){
 		if (this.bufferedDevicesByType == null){
 			//first run, fill buffer
-			System.out.println("refreshing bufferedDevicesByType");								//DEBUG
 			getDevices();
-			//TODO: we should add a check so that repeated null results will temporarily disable this feature ...
 		}
-		System.out.println("bufferedDevicesByType: " + bufferedDevicesByType.toString());		//DEBUG
 		return this.bufferedDevicesByType;
 	}
 	

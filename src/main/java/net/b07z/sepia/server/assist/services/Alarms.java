@@ -346,7 +346,7 @@ public class Alarms implements ServiceInterface{
 						"name", name,
 						"eventId", "timer-" + eventIdSuffix,
 						"lastChange", lastChange,
-						"activated", new Boolean(activatedByUI)
+						"activated", activatedByUI
 				);
 				JSON.put(data, "eleType", UserDataList.EleType.timer.name());
 				JSON.add(activeList.data, data);
@@ -399,7 +399,7 @@ public class Alarms implements ServiceInterface{
 				JSON.put(data, "eleType", UserDataList.EleType.alarm.name());
 				JSON.put(data, "eventId", "alarm-" + eventIdSuffix);
 				JSON.put(data, "lastChange", lastChange);
-				JSON.put(data, "activated", new Boolean(activatedByUI));
+				JSON.put(data, "activated", activatedByUI);
 				JSON.add(activeList.data, data);
 				
 				//action

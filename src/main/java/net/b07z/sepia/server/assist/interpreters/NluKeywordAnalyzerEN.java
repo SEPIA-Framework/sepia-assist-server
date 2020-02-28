@@ -1021,39 +1021,6 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 		}
 	}
 	/**
-	 * Get the music parameters artist/creator and genre. 
-	 * uses: music_artist, music_genre
-	 * @param text - complete text to search
-	 * @param language - language code
-	 */
-	private void search_music_parameters(String text, String language){
-		if (music_parameters == null){
-			music_parameters = new HashMap<String, String>();
-			String artist = RegexParameterSearch.get_creator(text, language);
-			String genre = RegexParameterSearch.get_music_genre(text, language);
-			String search = RegexParameterSearch.get_startable(text, language);
-			music_parameters.put("music_artist", artist);
-			music_parameters.put("music_genre", genre);
-			music_parameters.put("music_search", search);
-			//TODO: maybe remove artist and genre from search?
-		}
-	}
-	/**
-	 * Get the control parameters. If it has been done already this method does nothing. 
-	 * uses: control_action, control_type, control_info, control_number
-	 * @param text - complete text to search
-	 * @param language - language code
-	 */
-	private void search_control_parameters(String text, String language){
-		if (controls == null){
-			controls = new HashMap<String, String>();
-			controls.put("control_type", RegexParameterSearch.get_control_type(text, language));
-			controls.put("control_action", RegexParameterSearch.get_control_action(text, language)[0]);
-			controls.put("control_info", RegexParameterSearch.get_control_location(text, language));
-			controls.put("control_number", RegexParameterSearch.get_number(text));
-		}
-	}
-	/**
 	 * Get the vehicle search parameters price/power/age/color. 
 	 * uses: vehicle_age, vehicle_color, vehicle_price, vehicle_price_t, vehicle_power, vehicle_power_t
 	 * @param text - complete text to search

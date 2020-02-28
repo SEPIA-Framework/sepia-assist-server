@@ -580,7 +580,7 @@ public class ServiceBuilder {
 			result.dialogStage = dialogStage;
 			JSON.add(result.resultJson, "response_type", responseType);
 			JSON.add(result.resultJson, "input_miss", inputMiss);
-			JSON.add(result.resultJson, "dialog_stage", new Integer(dialogStage)); 	//should track this always?
+			JSON.add(result.resultJson, "dialog_stage", dialogStage); 	//should track this always?
 		}
 		
 		return result;

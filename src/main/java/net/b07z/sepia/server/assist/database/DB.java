@@ -509,7 +509,7 @@ public class DB {
 		getFilters.put("userIds", userId);
 		getFilters.put("language", language);
 		getFilters.put("searchText", textToMatch);
-		getFilters.put("matchExactText", new Boolean(true));
+		getFilters.put("matchExactText", Boolean.TRUE);
 		
 		JSONArray matchingSentences = getCommands(getFilters);
 		String itemId = "";
