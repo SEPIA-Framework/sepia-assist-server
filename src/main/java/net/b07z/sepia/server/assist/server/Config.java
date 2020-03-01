@@ -119,7 +119,7 @@ public class Config {
 	
 	public static String answersPath = xtensionsFolder + "Assistant/answers/";		//where to find the answers text files ...
 	public static String commandsPath = xtensionsFolder + "Assistant/commands/";	//where to find predefined sentences/commands ...
-		
+	
 	//URLs
 	public static String endpointUrl = "http://localhost:20721/";			//**this API URL
 	public static String teachApiUrl = "http://localhost:20722/";			//**teach API URL
@@ -174,6 +174,9 @@ public class Config {
 		answerModule = module.getClass().getCanonicalName();
 		setupAnswers();
 	}
+	
+	//Some performance settings (NLU)
+	public static int parameterPerformanceMode = 0; 	//0: skip profiled methods for a few seconds if they exceed threshold too often, 1: always run, 2: never run
 	
 	//Default users and managers
 	public static ServiceAccessManager superuserServiceAccMng = new ServiceAccessManager("API_BOSS"); 	//universal API manager for internal procedures
@@ -524,6 +527,8 @@ public class Config {
 			if (nluInterpretationChainArr != null && !nluInterpretationChainArr.isEmpty()){
 				nluInterpretationStepsCustomChain = Arrays.asList(nluInterpretationChainArr.split(","));
 			}
+			//NLU performance profilers
+			parameterPerformanceMode = Integer.valueOf(settings.getProperty("parameter_performance_mode", "0"));
 			//workers
 			String backgroundWorkersArr = settings.getProperty("background_workers", "");
 			if (backgroundWorkersArr != null && !backgroundWorkersArr.isEmpty()){
