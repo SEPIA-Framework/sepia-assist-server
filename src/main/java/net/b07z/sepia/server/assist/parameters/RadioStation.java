@@ -173,8 +173,11 @@ public class RadioStation implements ParameterHandler{
 		if (language.matches(LANGUAGES.DE)){
 			String radio = NluTools.stringFindFirst(input, "(radio|musik)( |-|)(kanal|station|sender|stream)|"
 														+ "kanal|sender|\\w*radio(?! fm)|\\w*station(?! fm)");
-			String action1 = NluTools.stringFindFirst(input, "einschalten|anmachen|oeffnen|start(en|$)|an$|ein$|hoeren|spielen|aktivieren|aufdrehen");
-			String action2 = NluTools.stringFindFirst(input, "oeffne|start(e|)|spiel(e|)|aktiviere");
+			String action1 = NluTools.stringFindFirst(input, "einschalten|anmachen|oeffnen|start(en|$)|an$|ein$|"
+														+ "hoeren|spielen|(de|)aktivieren|(auf|zu)drehen|"
+														+ "pause|pausieren|weiter|fortsetzen|stop(pen|p|)|anhalten");
+			String action2 = NluTools.stringFindFirst(input, "oeffne|start(e|)|spiel(e|)|(de|)aktiviere|"
+														+ "pausiere|stoppe");
 			
 			String artist = NluTools.stringFindFirst(input, "(musik|lieder(n|)|song(s|)) von .*");
 			
@@ -255,8 +258,10 @@ public class RadioStation implements ParameterHandler{
 		}else if (language.matches(LANGUAGES.EN)){
 			String radio = NluTools.stringFindFirst(input, "(radio|music)( |-|)(channel|station|stream)|"
 														+ "channel|sender|\\w*radio(?! fm)|\\w*station(?! fm)");
-			String action1 = NluTools.stringFindFirst(input, "on$|start$|play$|activate$");
-			String action2 = NluTools.stringFindFirst(input, "open|start|play|activate|tune in to|turn on|switch on");
+			String action1 = NluTools.stringFindFirst(input, "on$|start$|play$|(de|)activate$|"
+														+ "off$|stop$|pause$|resume$|continue$");
+			String action2 = NluTools.stringFindFirst(input, "open|start|play|(de|)activate|tune in to|turn on|switch on|"
+														+ "pause|stop|resume|continue");
 			
 			String artist = NluTools.stringFindFirst(input, "(music|song(s|)) (of|by|from) .*");
 			

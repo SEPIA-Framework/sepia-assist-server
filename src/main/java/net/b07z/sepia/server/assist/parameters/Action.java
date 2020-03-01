@@ -22,6 +22,7 @@ public class Action implements ParameterHandler{
 		on,
 		off,
 		pause,
+		resume,
 		set,
 		toggle,
 		increase,
@@ -47,6 +48,7 @@ public class Action implements ParameterHandler{
 		actions_de.put("<on>", "anschalten");
 		actions_de.put("<off>", "ausschalten");
 		actions_de.put("<pause>", "pausieren");
+		actions_de.put("<resume>", "fortsetzen");
 		actions_de.put("<set>", "setzen");
 		actions_de.put("<toggle>", "umschalten");
 		actions_de.put("<increase>", "raufsetzen");
@@ -62,6 +64,7 @@ public class Action implements ParameterHandler{
 		actions_en.put("<on>", "turn on");
 		actions_en.put("<off>", "turn off");
 		actions_en.put("<pause>", "pause");
+		actions_en.put("<resume>", "resume");
 		actions_en.put("<set>", "set");
 		actions_en.put("<toggle>", "toggle");
 		actions_en.put("<increase>", "increase");
@@ -133,7 +136,7 @@ public class Action implements ParameterHandler{
 			return action;
 		}
 		
-		String on, off, pause, increase, decrease, set, toggle, show, add, remove, create, edit;
+		String on, off, pause, resume, increase, decrease, set, toggle, show, add, remove, create, edit;
 		//German
 		if (language.matches(LANGUAGES.DE)){
 			on = "(mach|schalte|dreh|(setze|stelle)) .*\\b(an|ein)|"
@@ -148,11 +151,12 @@ public class Action implements ParameterHandler{
 					+ "schliessen|schliesse|deaktivieren|deaktiviere|"
 					+ "beenden|beende|(aus|ab)schalten|aus schalten|ausmachen|aus machen|ausdrehen|aus drehen|stop(pen|pe|p|)|exit";
 			pause = "pausieren|pause|anhalten|halte .*\\b(an)";
+			resume = "fortsetzen|weiter|setze .*\\b(fort)";
 			increase = "(mach|dreh) .*\\b(auf|hoch)|"
 					+ "(?<!(wie ))hoch|rauf|hoeher|groesser|erhoehen|aufdrehen|erhoehe|verstaerk(en|e)|heller|(?<!(ist ))schneller|(?<!(ist ))staerker|waermer|warm|lauter|laut";
 			decrease = "(mach|dreh) .*\\b(runter|aus)|"
 					+ "runterdrehen|runter|kleiner|niedriger|erniedrigen|erniedrige|abschwaechen|schwaech(er|en|e)|senk(en|e|)|dunkler|dimmen|dimme|(?<!(wie ))langsam|langsamer|kaelter|(?<!(wie ))kalt|leiser|leise";
-			set = "setzen|(setze|stelle)(?! .* (aus|an)$)|stellen|auswaehlen|waehlen|waehle|"
+			set = "setzen|(setze|stelle)(?! .* (aus|an|fort)$)|stellen|auswaehlen|waehlen|waehle|"
 					+ "erinnere|weck(e|)|"
 					+ "^lautstaerke (von .* |)(auf )|"
 					+ "^wert(e|) (von .* |)(auf )";
@@ -179,6 +183,7 @@ public class Action implements ParameterHandler{
 					+ "(^| )(off$)|"
 					+ "close|deactivate|end|exit|quit|stop|shut\\b.*? down";
 			pause = "pause|onhold|on hold";
+			resume = "resume|continue";
 			increase = "(make|switch|turn) .*\\b(up)|"
 					//+ "(^\\w+ )(up$)|"
 					+ "(^| )(up$)|"
@@ -202,7 +207,7 @@ public class Action implements ParameterHandler{
 			edit = "(change|edit)(?! (" + add + "))";			//we need this now to compensate for the more exotic "add" actions
 		}
 		
-		String extracted = NluTools.stringFindFirst(input, set + "|" + on + "|" + off + "|" + pause + "|"
+		String extracted = NluTools.stringFindFirst(input, set + "|" + on + "|" + off + "|" + pause + "|" + resume + "|"
 						+ increase + "|" + decrease + "|" + toggle + "|" + show + "|" + add + "|" + remove
 						+ "|" + create + "|" + edit);
 		
@@ -219,6 +224,9 @@ public class Action implements ParameterHandler{
 			//PAUSE
 			}else if (NluTools.stringContains(extracted, pause)){
 				action = "<" + Type.pause + ">";
+			//RESUME
+			}else if (NluTools.stringContains(extracted, resume)){
+				action = "<" + Type.resume + ">";
 			//INCREASE
 			}else if (NluTools.stringContains(extracted, increase)){
 				action = "<" + Type.increase + ">";

@@ -47,22 +47,25 @@ public class MusicRadioMixed implements ServiceInterface {
 		info.addParameter(p2).addParameter(p3);
 		
 		//... but either station or genre is required, if both are missing ask for station
-		info.getAtLeastOneOf("", p1, p2); 		
-		//TODO: this only works because "radio off" recognizes station=off ... if not "radio off" will not work without station question!
-		//... we should get rid of it and replace it by (if (action != off) check station and genre) 
+		//info.getAtLeastOneOf("", p1, p2); 		
+		//NOTE: this has been replaced by manual switch inside action check to support "radio off" and "resume radio" 
 		
 		//Answers (these are the default answers, you can add a custom answer at any point in the module with api.setCustomAnswer(..)):
 		info.addSuccessAnswer("music_radio_1e")
 			.addFailAnswer("music_radio_0a")
 			.addOkayAnswer("music_radio_0b")
 			.addCustomAnswer("streamResult", streamResultAns)
+			.addCustomAnswer("radioAskStation", radioAskStation)
 			.addCustomAnswer("radioOff", radioOffAns)
-			.addAnswerParameters("station"); 		//be sure to use the same parameter names as in resultInfo
+			.addCustomAnswer("radioResumeAns", radioResumeAns)
+		.addAnswerParameters("station"); 		//be sure to use the same parameter names as in resultInfo
 		
 		return info;
 	}
 	private static String streamResultAns = "music_radio_1d";
+	private static String radioAskStation = "music_radio_ask_0a";
 	private static String radioOffAns = "music_radio_2a";
+	private static String radioResumeAns = "ok_0b";
 	
 	//result
 	public ServiceResult getResult(NluResult nluResult){
@@ -132,7 +135,29 @@ public class MusicRadioMixed implements ServiceInterface {
 					ServiceResult result = api.buildResult();
 					return result;
 					//<----------- END------------
+				
+				//--RESUME--
+				}else if (action.equals("<" + Action.Type.resume + ">")){
+					//add action
+					api.addAction(ACTIONS.PLAY_AUDIO_STREAM);
+					api.hasAction = true;
+					
+					api.setCustomAnswer(radioResumeAns);
+					api.setStatusSuccess();
+					
+					ServiceResult result = api.buildResult();
+					return result;
+					//<----------- END------------
 				}
+			}
+			
+			//check if we need to ask for station
+			if (station.isEmpty() && genre.isEmpty()){
+				//ask
+				api.setIncompleteAndAsk(PARAMETERS.RADIO_STATION, radioAskStation);
+				ServiceResult result = api.buildResult();
+				return result;
+				//<----------- END------------
 			}
 			
 			//check if we have a stream
