@@ -357,6 +357,15 @@ public class SmartHomeDevice {
 	//--------- static helper methods ----------
 	
 	/**
+	 * Clean up a device name, e.g. remove all (..) brackets and trim result.
+	 * @param rawName - name of device as defined by user
+	 * @return
+	 */
+	public static String getCleanedUpName(String rawName){
+		return rawName.replaceAll("\\(.*?\\)", " ").replaceAll("\\s+", " ").trim();
+	}
+	
+	/**
 	 * Get devices from the list that match type and room (optionally).
 	 * @param devices - map of devices taken e.g. from getDevices()
 	 * @param deviceType - type of device (or null), see {@link SmartDevice.Types}

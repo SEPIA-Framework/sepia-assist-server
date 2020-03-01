@@ -154,7 +154,7 @@ public class TestHub implements SmartHomeHub {
 				devices = new HashSet<>();
 				devicesByType.put(type, devices);
 			}
-			devices.add(shd.getName());
+			devices.add(SmartHomeDevice.getCleanedUpName(shd.getName()));		//NOTE: use "clean" name!
 		}
 		return devicesByType;
 	}

@@ -148,7 +148,7 @@ public class OpenHAB implements SmartHomeHub {
 								deviceNamesOfType = new HashSet<>();
 								this.bufferedDevicesByType.put(shd.getType(), deviceNamesOfType);
 							}
-							deviceNamesOfType.add(shd.getName());
+							deviceNamesOfType.add(SmartHomeDevice.getCleanedUpName(shd.getName()));		//NOTE: use "clean" name!
 						}
 					}
 				}

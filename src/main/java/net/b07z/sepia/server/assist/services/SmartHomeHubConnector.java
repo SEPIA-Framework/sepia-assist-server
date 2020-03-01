@@ -210,9 +210,6 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		//get background parameters
 		String reply = nluResult.getParameter(PARAMETERS.REPLY);	//a custom reply (defined via Teach-UI)
 		
-		//TODO: implement in future:
-		//String deviceName = null;
-		
 		//check if device is supported
 		/*if (Is.typeEqual(deviceType, SmartDevice.Types....)){
 			service.setStatusOkay();
@@ -244,6 +241,9 @@ public class SmartHomeHubConnector implements ServiceInterface {
 			service.setCustomAnswer(noDeviceMatchesFound);	//"soft"-fail with "no matching devices found" answer
 			return service.buildResult();
 		}
+		
+		//TODO: implement in future:
+		//String deviceName = null;
 		
 		//keep matching number or only the first match for now - TODO: improve
 		SmartHomeDevice selectedDevice;
@@ -352,7 +352,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		
 		//assign selected device name - NOTE: we remove info in brackets
 		String selectedDeviceName = selectedDevice.getName().trim();	//cannot be null?
-		selectedDeviceName = selectedDeviceName.replaceAll("\\(.*?\\)", " ").replaceAll("\\s+", " ").trim();
+		selectedDeviceName = SmartHomeDevice.getCleanedUpName(selectedDeviceName);
 		service.resultInfoPut("device", selectedDeviceName);		//TODO: or use deviceTypeLocal? - If the name is not the same language this might sound strange
 		
 		//ACTIONS
