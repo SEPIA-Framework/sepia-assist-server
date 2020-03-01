@@ -16,7 +16,9 @@ public class StringCompare {
 	 * Multi-purpose compare result object. 
 	 */
 	public static class StringCompareResult {
+		private String inputStringNorm;
 		private String resultString;
+		private String resultStringNorm;
 		private int resultPercent;
 		private double resultDecimal;
 		
@@ -25,8 +27,19 @@ public class StringCompare {
 		 */
 		public StringCompareResult(){};
 		
+		public String getInputStringNormalized(){
+			return inputStringNorm;
+		}
+		public StringCompareResult setInputStringNormalized(String inputString){
+			this.inputStringNorm = inputString;
+			return this;
+		}
+		
 		public String getResultString(){
 			return resultString;
+		}
+		public String getResultStringNormalized(){
+			return resultStringNorm;
 		}
 		public int getResultPercent(){
 			return resultPercent;
@@ -37,6 +50,10 @@ public class StringCompare {
 
 		public StringCompareResult setResultString(String resultString){
 			this.resultString = resultString;
+			return this;
+		}
+		public StringCompareResult setResultStringNormalized(String resultStringNorm){
+			this.resultStringNorm = resultStringNorm;
 			return this;
 		}
 		public StringCompareResult setResultPercent(int resultPercent){
@@ -187,6 +204,7 @@ public class StringCompare {
 	public static StringCompareResult scanSentenceForBestPhraseMatch(String sentence, Collection<String> phrases, String language){
 		Normalizer normalizer = Config.inputNormalizersLight.get(language);
 		String bestPhrase = null;
+		String bestPhraseNorm = null;
 		int bestScore = 0;
 		String sentenceNorm = normalizer.normalizeText(sentence);
 		if (normalizer != null){
@@ -197,11 +215,14 @@ public class StringCompare {
 				if (score > bestScore || (score == bestScore && phrase.length() > bestPhrase.length())){
 					bestScore = score;
 					bestPhrase = phrase;
+					bestPhraseNorm = phraseNorm;
 				}
 			}
 		}
 		return new StringCompareResult()
+			.setInputStringNormalized(sentenceNorm)
 			.setResultString(bestPhrase)
+			.setResultStringNormalized(bestPhraseNorm)
 			.setResultPercent(bestScore);
 	}
 }

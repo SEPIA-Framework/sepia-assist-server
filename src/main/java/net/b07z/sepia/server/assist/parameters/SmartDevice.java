@@ -2,9 +2,9 @@ package net.b07z.sepia.server.assist.parameters;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.json.simple.JSONObject;
 
@@ -31,6 +31,8 @@ import net.b07z.sepia.server.core.tools.JSON;
  * 
  */
 public class SmartDevice implements ParameterHandler{
+	
+	private static final long parameterToolsId = ParameterTools.getNewIdForPerformanceProfiling("SmartDevice#deviceNamesScan");
 
 	//-----data-----
 	
@@ -247,129 +249,146 @@ public class SmartDevice implements ParameterHandler{
 			//Still empty
 			return "";
 		}else{
-			//we should take device names (tag/number..) into account, like "Lamp 1", "Light A" or "Desk-Lights" etc.
-			String deviceWithNumber;
-			if (language.matches(LANGUAGES.DE)){
-				deviceWithNumber = NluTools.stringFindFirst(input, device + "( (mit der |mit |)nummer|) \\d+");
-			}else{
-				deviceWithNumber = NluTools.stringFindFirst(input, device + "( (with the |with |)number|) \\d+");
-			}
-			if (!deviceWithNumber.isEmpty()){
-				this.found = deviceWithNumber;
-			}else{
-				this.found = device;
-			}
-			System.out.println("found 1: " + this.found); 		//DEBUG
+			this.found = device;
+			//System.out.println("found 1: " + this.found); 		//DEBUG
 		}
 		
-		//classify into types:
+		//classify into generalized types:
 		
-		String deviceTypeTag = null;
+		final String deviceType;
 		
 		if (language.matches(LANGUAGES.DE)){
 			if (NluTools.stringContains(device, lightRegEx_de)){
-				deviceTypeTag = Types.light.name();
+				deviceType = Types.light.name();
 				
 			}else if (NluTools.stringContains(device, heaterRegEx_de)){
-				deviceTypeTag = Types.heater.name();
+				deviceType = Types.heater.name();
 				
 			}else if (NluTools.stringContains(device, tvRegEx_de)){
-				deviceTypeTag = Types.tv.name();
+				deviceType = Types.tv.name();
 				
 			}else if (NluTools.stringContains(device, musicPlayerRegEx_de)){
-				deviceTypeTag = Types.music_player.name();
+				deviceType = Types.music_player.name();
 				
 			}else if (NluTools.stringContains(device, rollerShutterRegEx_de)){
-				deviceTypeTag = Types.roller_shutter.name();
+				deviceType = Types.roller_shutter.name();
 				
 			}else if (NluTools.stringContains(device, powerOutletRegEx_de)){
-				deviceTypeTag = Types.power_outlet.name();
+				deviceType = Types.power_outlet.name();
 				
 			}else if (NluTools.stringContains(device, sensorRegEx_de)){
-				deviceTypeTag = Types.sensor.name();
+				deviceType = Types.sensor.name();
 				
 			}else if (NluTools.stringContains(device, fridgeRegEx_de)){
-				deviceTypeTag = Types.fridge.name();
+				deviceType = Types.fridge.name();
 				
 			}else if (NluTools.stringContains(device, ovenRegEx_de)){
-				deviceTypeTag = Types.oven.name();
+				deviceType = Types.oven.name();
 				
 			}else if (NluTools.stringContains(device, coffeeMakerRegEx_de)){
-				deviceTypeTag = Types.coffee_maker.name();
+				deviceType = Types.coffee_maker.name();
 			
 			}else{
-				deviceTypeTag = Types.device.name();
+				deviceType = Types.device.name();
 			}
 		}else{
 			if (NluTools.stringContains(device, lightRegEx_en)){
-				deviceTypeTag = Types.light.name();
+				deviceType = Types.light.name();
 				
 			}else if (NluTools.stringContains(device, heaterRegEx_en)){
-				deviceTypeTag = Types.heater.name();
+				deviceType = Types.heater.name();
 				
 			}else if (NluTools.stringContains(device, tvRegEx_en)){
-				deviceTypeTag = Types.tv.name();
+				deviceType = Types.tv.name();
 				
 			}else if (NluTools.stringContains(device, musicPlayerRegEx_en)){
-				deviceTypeTag = Types.music_player.name();
+				deviceType = Types.music_player.name();
 				
 			}else if (NluTools.stringContains(device, rollerShutterRegEx_en)){
-				deviceTypeTag = Types.roller_shutter.name();
+				deviceType = Types.roller_shutter.name();
 				
 			}else if (NluTools.stringContains(device, powerOutletRegEx_en)){
-				deviceTypeTag = Types.power_outlet.name();
+				deviceType = Types.power_outlet.name();
 				
 			}else if (NluTools.stringContains(device, sensorRegEx_en)){
-				deviceTypeTag = Types.sensor.name();
+				deviceType = Types.sensor.name();
 				
 			}else if (NluTools.stringContains(device, fridgeRegEx_en)){
-				deviceTypeTag = Types.fridge.name();
+				deviceType = Types.fridge.name();
 				
 			}else if (NluTools.stringContains(device, ovenRegEx_en)){
-				deviceTypeTag = Types.oven.name();
+				deviceType = Types.oven.name();
 				
 			}else if (NluTools.stringContains(device, coffeeMakerRegEx_en)){
-				deviceTypeTag = Types.coffee_maker.name();
+				deviceType = Types.coffee_maker.name();
 				
 			}else{
-				deviceTypeTag = Types.device.name();
+				deviceType = Types.device.name();
 			}
 		}
 		
 		//can we improve the result with known smart device names for the found type?
-		SmartHomeHub smartHomeHUB = SmartHomeHub.getHubFromSeverConfig();
+		SmartHomeHub smartHomeHUB = SmartHomeHub.getHubFromSeverConfig(); 
+		String[] deviceNameMatchResult = null;
 		if (smartHomeHUB != null){
-			Map<String, Set<String>> deviceNamesByType = smartHomeHUB.getBufferedDeviceNamesByType();
-			if (deviceNamesByType != null){
-				Set<String> deviceNames = deviceNamesByType.get(deviceTypeTag);
-				if (Is.notNullOrEmpty(deviceNames)){
-					List<String> possibleTags = new ArrayList<>();
-					if (Is.notNullOrEmpty(this.found)){
-						possibleTags.add(this.found);		//add the found tag as first entry
+			//make sure this procedure does not seriously influence NLU chain performance: 
+			deviceNameMatchResult = ParameterTools.runOrSkipPerformanceCriticalMethod(parameterToolsId, (in) -> {
+				Map<String, Set<String>> deviceNamesByType = smartHomeHUB.getBufferedDeviceNamesByType();
+				if (deviceNamesByType != null){
+					Set<String> deviceNames = deviceNamesByType.get(deviceType);
+					if (Is.notNullOrEmpty(deviceNames)){
+						//System.out.println("possible tags: " + deviceNames); 		//DEBUG
+						StringCompareResult scr = StringCompare.scanSentenceForBestPhraseMatch(
+								input, new ArrayList<>(deviceNames), this.language
+						);
+						int bestScore = scr.getResultPercent();
+						if (bestScore == 100){			//allow more "fuzziness" ??
+							String bestMatch = scr.getResultString();
+							String bestMatchNorm = scr.getResultStringNormalized();
+							return new String[]{bestMatch, bestMatchNorm};
+							//System.out.println("Best tag: " + bestMatch); 		//DEBUG
+						}
 					}
-					possibleTags.addAll(deviceNames);
-					//System.out.println("possible tags: " + possibleTags); 		//DEBUG
-					StringCompareResult scr = StringCompare.scanSentenceForBestPhraseMatch(
-							input, possibleTags, this.language
-					);
-					int bestScore = scr.getResultPercent();
-					if (bestScore == 100){
-						this.found = scr.getResultString();
-						//System.out.println("Best tag: " + this.found); 			//DEBUG
-					}else{
-						//TODO: what to do with "almost matches" ... search them in smart home service ?
-					}
+					return new String[]{};		//return empty to prevent error
+				}else{
+					return null;				//return null to indicate error
 				}
+			}, null);
+			if (deviceNameMatchResult != null && deviceNameMatchResult.length == 2){
+				//can we combine the found name with previous result?
+				if (!deviceNameMatchResult[1].contains(device)){	//NOTE: this is the norm. 'name' because 'device' is norm.
+					if (input.contains(deviceNameMatchResult[1] + " " + device)){
+						this.found = deviceNameMatchResult[1] + " " + device;
+					}else if (input.contains(device + " " + deviceNameMatchResult[1])){
+						this.found = device + " " + deviceNameMatchResult[1];
+					}else{
+						this.found = deviceNameMatchResult[1];
+					}
+				}else{
+					this.found = deviceNameMatchResult[1];
+				}
+				//System.out.println("found 2: " + this.found); 		//DEBUG
 			}
 		}
-		System.out.println("found 2: " + this.found); 		//DEBUG
-		//TODO: needs further work ->  create an additional parameter called SMART_DEVICE_NAME
+		
+		//we should take device names (tag/number..) into account like "Lamp 1", "Light A" etc.
+		String deviceWithNumber;
+		if (language.matches(LANGUAGES.DE)){
+			deviceWithNumber = NluTools.stringFindFirst(input, Pattern.quote(this.found) + "( (mit der |mit |)nummer|) \\d+");
+		}else{
+			deviceWithNumber = NluTools.stringFindFirst(input, Pattern.quote(this.found) + "( (with the |with |)number|) \\d+");
+		}
+		if (!deviceWithNumber.isEmpty()){
+			//String deviceNumber = deviceWithNumber.replaceFirst(".* (\\d+)", "$1")
+			this.found = deviceWithNumber;
+			//System.out.println("found 3: " + this.found); 		//DEBUG
+		}
 		
 		//reconstruct original phrase to get proper item names
 		Normalizer normalizer = Config.inputNormalizers.get(this.language);
 		String tag = normalizer.reconstructPhrase(nluInput.textRaw, this.found);
 		
-		typeAndTag = "<" + deviceTypeTag + ">;;" + tag;
+		typeAndTag = "<" + deviceType + ">;;" + tag;
 		
 		//store it
 		pr = new ParameterResult(PARAMETERS.SMART_DEVICE, typeAndTag, this.found);
