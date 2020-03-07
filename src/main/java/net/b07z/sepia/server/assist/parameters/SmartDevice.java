@@ -342,7 +342,9 @@ public class SmartDevice implements ParameterHandler{
 								input, new ArrayList<>(deviceNames), this.language
 						);
 						int bestScore = scr.getResultPercent();
-						if (bestScore == 100){			//allow more "fuzziness" ??
+						//System.out.println("bestScore: " + bestScore); 		//DEBUG
+						//System.out.println("bestMatch: " + scr.getResultString()); 		//DEBUG
+						if (bestScore == 100){			//allow more "fuzziness" ?? - NOTE: we can't do this unless we fix smart device value too
 							String bestMatch = scr.getResultString();
 							String bestMatchNorm = scr.getResultStringNormalized();
 							return new String[]{bestMatch, bestMatchNorm};
@@ -452,11 +454,19 @@ public class SmartDevice implements ParameterHandler{
 		String commonValue = input.replaceAll("^<|>$", "").trim();
 		String localValue = getLocal(commonValue, language);
 		
+		String deviceNameFoundClean;
+		if (language.matches(LANGUAGES.DE)){
+			deviceNameFoundClean = deviceNameFound.replaceFirst("(?i)( (mit der |mit |)nummer|) \\d+", "").trim();
+		}else{
+			deviceNameFoundClean = deviceNameFound.replaceFirst("(?i)( (with the |with |)number|) \\d+", "").trim();
+		}
+		
 		//build default result
 		JSONObject itemResultJSON = new JSONObject();
 			JSON.add(itemResultJSON, InterviewData.VALUE, commonValue);
 			JSON.add(itemResultJSON, InterviewData.VALUE_LOCAL, localValue);
-			JSON.add(itemResultJSON, InterviewData.SMART_DEVICE_TAG, deviceNameFound);
+			JSON.add(itemResultJSON, InterviewData.SMART_DEVICE_TAG, deviceNameFoundClean);
+			JSON.add(itemResultJSON, InterviewData.FOUND, deviceNameFound);
 		//add device index
 		if (!deviceIndexStr.isEmpty()){
 			int deviceIndex = Integer.parseInt(deviceIndexStr);

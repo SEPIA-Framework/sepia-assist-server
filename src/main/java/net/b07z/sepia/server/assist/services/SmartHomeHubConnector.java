@@ -21,6 +21,8 @@ import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.assist.smarthome.SmartHomeDevice;
 import net.b07z.sepia.server.assist.smarthome.SmartHomeHub;
+import net.b07z.sepia.server.assist.tools.StringCompare;
+import net.b07z.sepia.server.assist.tools.StringCompare.StringCompareResult;
 import net.b07z.sepia.server.core.assistant.ACTIONS;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
@@ -227,115 +229,119 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		}
 		filters.put("limit", -1);
 		List<SmartHomeDevice> matchingDevices = smartHomeHUB.getFilteredDevicesList(filters);
+		
+		//abort with no result?
 		if (matchingDevices == null){
 			Debugger.println(SmartHomeHub.class.getSimpleName() + " failed to get devices! Connection to smart home HUB might be broken.", 1);		//debug
 			service.setStatusFail(); 						//"hard"-fail (probably HUB connection error)
 			return service.buildResult();
+			
+		//check device index number
+		}else if (!matchingDevices.isEmpty()){
+			if (deviceNumber != Integer.MIN_VALUE){
+				matchingDevices = SmartHomeDevice.findDevicesWithNumberInName(matchingDevices, deviceNumber);
+			}
 		}
 		
 		//have found any?
 		if (matchingDevices.isEmpty()){
 			Debugger.println(SmartHomeHub.class.getSimpleName() + " failed to find any match for "
-					+ "device: " + deviceType + ", room: " + roomType, 1);	//debug
+					+ "device: " + deviceType + ", index: " + deviceNumber + ", room: " + roomType, 1);	//debug
 			service.setStatusOkay();
 			service.setCustomAnswer(noDeviceMatchesFound);	//"soft"-fail with "no matching devices found" answer
 			return service.buildResult();
 		}
 		
-		//TODO: implement in future:
-		//String deviceName = null;
-		
-		//keep matching number or only the first match for now - TODO: improve
+		//find the best match using the device tag (name)
 		SmartHomeDevice selectedDevice;
-		if (deviceNumber != Integer.MIN_VALUE){
-			selectedDevice = SmartHomeDevice.findFirstDeviceWithNumberInNameOrDefault(matchingDevices, deviceNumber, -1);
-			if (selectedDevice == null){
-				//no device with number
-				Debugger.println(SmartHomeHub.class.getSimpleName() + " failed to find any match for "
-						+ "device: " + deviceType + ", index: " + deviceNumber + ", room: " + roomType, 1);	//debug
-				service.setStatusOkay();
-				service.setCustomAnswer(noDeviceMatchesFound);	//"soft"-fail with "no matching devices found" answer
-				return service.buildResult();
-			}
-		}else{
-			int matchesN = matchingDevices.size();
-			boolean tagMatch = false;
-			//can we find a better tag in the user input? --- THIS MOVED TO SmartDevice parameter
-			/*if (matchesN > 1){
-				List<String> possibleTags = new ArrayList<>();
-				if (Is.notNullOrEmpty(deviceTag)){
-					possibleTags.add(deviceTag);		//add one as first entry if we have it
-				}
+		int matchesN = matchingDevices.size();
+		boolean didTagMatch = false;
+		String bestTagMatch = null;
+		int bestTagMatchScore = 0;
+		//we try to match the tag first
+		if (Is.notNullOrEmpty(deviceTag)){
+			//can we find a known device name in the extracted device tag
+			if (matchesN > 1){
+				Map<String, String> possibleTagsMap = new HashMap<>();
 				for (SmartHomeDevice shd : matchingDevices){
-					possibleTags.add(shd.getName());					
+					String nameTag = shd.getName();
+					possibleTagsMap.put(SmartHomeDevice.getBaseName(nameTag), nameTag);		//NOTE: we assume device index is already applied here				
 				}
-				System.out.println("possible tags: " + possibleTags); 		//DEBUG
-				StringCompareResult scr = StringCompare.scanSentenceForBestPhraseMatch(
-						nluResult.input.text, possibleTags, nluResult.input.langauge
+				//System.out.println("deviceTag: " + deviceTag); 							//DEBUG
+				//System.out.println("possibleTags: " + possibleTagsMap.values()); 			//DEBUG
+				StringCompareResult scr = StringCompare.findMostSimilarMatch(
+						deviceTag, possibleTagsMap.keySet(), nluResult.input.language
 				);
-				int bestScore = scr.getResultPercent();
-				if (bestScore == 100){
-					//TODO: what if the user gave the initial device tag and wants exactly that???
-					deviceTag = scr.getResultString();
-					System.out.println("Best tag: " + deviceTag); 			//DEBUG
-				}
-				//TODO: else could be the "best guess"
-			}*/
-			//we try to match the tag first
-			if (Is.notNullOrEmpty(deviceTag)){
-				List<SmartHomeDevice> matchingDevicesWithSameTag = SmartHomeDevice.findDevicesWithMatchingTagIgnoreCase(matchingDevices, deviceTag);
-				int matchesWithTagN = matchingDevicesWithSameTag.size();
-				if (matchesWithTagN > 0){
-					matchingDevices = matchingDevicesWithSameTag;
-					tagMatch = true;
-					matchesN = matchesWithTagN;
+				bestTagMatchScore = scr.getResultPercent();
+				bestTagMatch = possibleTagsMap.get(scr.getResultString());
+				//System.out.println("Best " + bestTagMatchScore + "% tag: " + bestTagMatch); 		//DEBUG
+				if (bestTagMatchScore == 100){
+					//set as new deviceTag
+					deviceTag = bestTagMatch;
 				}
 			}
-			//multiple results but no room?
-			if (matchesN > 1 && roomType.isEmpty()){
-				//RETURN with question
-				service.resultInfoPut("device", deviceTypeLocal);
-				service.setIncompleteAndAsk(PARAMETERS.ROOM, askRoom);
-				return service.buildResult();
-				
-			//run through all? get best result?
+			//find exact tag match
+			List<SmartHomeDevice> matchingDevicesWithSameTag = SmartHomeDevice.findDevicesWithMatchingTagIgnoreCase(matchingDevices, deviceTag);
+			int matchesWithTagN = matchingDevicesWithSameTag.size();
+			if (matchesWithTagN > 0){
+				matchingDevices = matchingDevicesWithSameTag;
+				didTagMatch = true;
+				matchesN = matchesWithTagN;
+			}
+		}
+		
+		//multiple results but no room?
+		if (matchesN > 1 && roomType.isEmpty()){
+			//RETURN with question
+			service.resultInfoPut("device", deviceTypeLocal);
+			service.setIncompleteAndAsk(PARAMETERS.ROOM, askRoom);
+			return service.buildResult();
+			
+		//run through all? get best result?
+		}else{
+			if (didTagMatch && matchesN == 1){
+				//this should be the correct device
+				selectedDevice = matchingDevices.get(0);
+			}else if (matchesN == 1){
+				//this is just a guess
+				selectedDevice = matchingDevices.get(0);
+				//teach UI button
+				service.addAction(ACTIONS.BUTTON_TEACH_UI);
+				service.putActionInfo("info", JSON.make(
+						"input", nluResult.input.textRaw,
+						"service", CMD.SMARTDEVICE
+				));
 			}else{
-				if (tagMatch && matchesN == 1){
-					//this should be the correct device
-					selectedDevice = matchingDevices.get(0);
-				}else if (matchesN == 1){
-					//this is just a guess
-					selectedDevice = matchingDevices.get(0);
+				//it is not 100% clear which device we should take
+				//TODO: we simplify and take only best match if possible - we should check singular/plural, trigger all or ask for top 3
+				if (bestTagMatchScore > 0){
+					List<SmartHomeDevice> bestMatchingDevices = SmartHomeDevice.findDevicesWithMatchingTagIgnoreCase(matchingDevices, bestTagMatch);
+					if (Is.notNullOrEmpty(bestMatchingDevices)){
+						matchingDevices = bestMatchingDevices;
+						matchesN = bestMatchingDevices.size();
+					}
+				}
+				//selectedDevice = matchingDevices.get(0);
+				int confirmState = service.getConfirmationStatusOf("use_first_device");
+				if (confirmState == 0){
+					//ASK FIRST
+					service.resultInfoPut("device", matchingDevices.get(0).getName());
+					service.confirmActionOrParameter("use_first_device", askFirstOfMany);
 					//teach UI button
 					service.addAction(ACTIONS.BUTTON_TEACH_UI);
 					service.putActionInfo("info", JSON.make(
 							"input", nluResult.input.textRaw,
 							"service", CMD.SMARTDEVICE
 					));
+					return service.buildResult();
+				}else if (confirmState == 1){
+					//OK
+					selectedDevice = matchingDevices.get(0);
 				}else{
-					//TODO: we simplify and take only first - we should check singular/plural, trigger all or ask for top 3
-					//selectedDevice = matchingDevices.get(0);
-					int confirmState = service.getConfirmationStatusOf("use_first_device");
-					if (confirmState == 0){
-						//ASK FIRST
-						service.resultInfoPut("device", matchingDevices.get(0).getName());
-						service.confirmActionOrParameter("use_first_device", askFirstOfMany);
-						//teach UI button
-						service.addAction(ACTIONS.BUTTON_TEACH_UI);
-						service.putActionInfo("info", JSON.make(
-								"input", nluResult.input.textRaw,
-								"service", CMD.SMARTDEVICE
-						));
-						return service.buildResult();
-					}else if (confirmState == 1){
-						//OK
-						selectedDevice = matchingDevices.get(0);
-					}else{
-						//NO selection, abort - TODO: improve
-						service.setStatusOkay();
-						service.setCustomAnswer(okDoNothing);	//"soft"-fail with "ok" answer and just do nothing
-						return service.buildResult();
-					}
+					//NO selection, abort - TODO: improve
+					service.setStatusOkay();
+					service.setCustomAnswer(okDoNothing);	//"soft"-fail with "ok" answer and just do nothing
+					return service.buildResult();
 				}
 			}
 		}

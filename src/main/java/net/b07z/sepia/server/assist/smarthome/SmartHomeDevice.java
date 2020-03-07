@@ -364,6 +364,14 @@ public class SmartHomeDevice {
 	public static String getCleanedUpName(String rawName){
 		return rawName.replaceAll("\\(.*?\\)", " ").replaceAll("\\s+", " ").trim();
 	}
+	/**
+	 * Get clean name with no brackets and no number.
+	 * @param rawName - name of device as defined by user
+	 * @return
+	 */
+	public static String getBaseName(String rawName){
+		return rawName.replaceAll("\\(.*?\\)", " ").replaceAll("\\d+", " ").replaceAll("\\s+", " ").trim();
+	}
 	
 	/**
 	 * Get devices from the list that match type and room (optionally).
@@ -453,6 +461,33 @@ public class SmartHomeDevice {
 		}else{
 			return devicesList.get(defaultIndex);
 		}
+	}
+	/**
+	 * Search for a given number in device name and return all matches. If number is 1 return all matches AND all devices without any number.
+	 * @param devicesList - list of devices, usually already filtered by device type and room
+	 * @param number - a number to look for in device name (e.g. 1 for "Light 1 in living-room")
+	 * @return list of matches or empty list
+	 */
+	public static List<SmartHomeDevice> findDevicesWithNumberInName(List<SmartHomeDevice> devicesList, int number){
+		List<SmartHomeDevice> matchingDevices = new ArrayList<>();
+		String indexRegExp = ".*(^|\\b|\\D)" + number + "(\\b|\\D|$).*";
+		if (number == 1){
+			//if number is 1 search all devices with 1 or without number
+			for (SmartHomeDevice shd : devicesList){
+				String name = shd.getName();
+				if (!name.matches(".*\\d.*") || name.matches(indexRegExp)){
+					matchingDevices.add(shd);
+				}
+			}
+		}else{
+			//get all with this number
+			for (SmartHomeDevice shd : devicesList){
+				if (shd.getName().matches(indexRegExp)){
+					matchingDevices.add(shd);
+				}
+			}
+		}
+		return matchingDevices;
 	}
 	
 	/**

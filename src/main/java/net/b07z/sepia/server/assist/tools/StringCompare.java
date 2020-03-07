@@ -183,18 +183,20 @@ public class StringCompare {
 	 * Scan a sentence for a phrase of words.
 	 * @param phrase - input words in given order as one string
 	 * @param sentence - sentence to scan
-	 * @return percent match as integer (full phrase in longer sentence -> 100)
+	 * @return percent match as integer (full phrase in sentence -> 100)
 	 */
 	public static int scanSentenceForPhrase(String phrase, String sentence){
 		if (sentence.contains(phrase)){
 			return 100;
+		}else if (sentence.length() < phrase.length()){
+			return FuzzySearch.ratio(phrase, sentence);
 		}else{
 			return FuzzySearch.partialRatio(phrase, sentence);
 		}
 	}
 	/**
-	 * Scan a sentence for a list of phrases and return the best match. Sentence and phrases will be normalized.
-	 * Longer phrases have higher priority.<br>
+	 * Scan a sentence for a list of phrases and return the best match. If the sentence contains the whole phrase the result is 100.<br>
+	 * Sentence and phrases will be normalized. Longer phrases have higher priority.<br>
 	 * NOTE: If no normalizer is available result will be empty. 
 	 * @param sentence - raw sentence to scan
 	 * @param phrases - collection of raw phrases to scan for
@@ -212,7 +214,7 @@ public class StringCompare {
 				String phraseNorm = normalizer.normalizeText(phrase);
 				int score = scanSentenceForPhrase(phraseNorm, sentenceNorm);
 				//System.out.println("phraseNorm: " + phraseNorm + " - score: " + score); 		//DEBUG
-				if (score > bestScore || (score == bestScore && phrase.length() > bestPhrase.length())){
+				if (score > bestScore || (score == bestScore && phraseNorm.length() > bestPhraseNorm.length())){
 					bestScore = score;
 					bestPhrase = phrase;
 					bestPhraseNorm = phraseNorm;
@@ -223,6 +225,41 @@ public class StringCompare {
 			.setInputStringNormalized(sentenceNorm)
 			.setResultString(bestPhrase)
 			.setResultStringNormalized(bestPhraseNorm)
+			.setResultPercent(bestScore);
+	}
+	
+	/**
+	 * Compare a base-string (sentence, words, single token) to a collection of other strings and find best match.
+	 * Base-string and collection strings will be normalized. Longer strings have higher priority when matching score is same.<br>
+	 * NOTE: If no normalizer is available result will be empty. 
+	 * @param baseString - raw string reference (can be a sentence, a few words or a single token)
+	 * @param stringsToCompare - collection of raw strings to compare to base string
+	 * @param language - ISO language code used for norm. {@link LANGUAGES}
+	 * @return best match or empty result (empty string, 0 score)
+	 */
+	public static StringCompareResult findMostSimilarMatch(String baseString, Collection<String> stringsToCompare, String language){
+		Normalizer normalizer = Config.inputNormalizersLight.get(language);
+		String bestMatch = null;
+		String bestMatchNorm = null;
+		int bestScore = 0;
+		String baseStringNorm = normalizer.normalizeText(baseString);
+		if (normalizer != null){
+			for (String stringToCompare : stringsToCompare){
+				String stringToCompareNorm = normalizer.normalizeText(stringToCompare);
+				//System.out.println("stringToCompareNorm: " + stringToCompareNorm + " - baseStringNorm: " + baseStringNorm); 		//DEBUG
+				int score = FuzzySearch.ratio(stringToCompareNorm, baseStringNorm);
+				//System.out.println("bestMatchNorm: " + bestMatchNorm + " - score: " + score); 		//DEBUG
+				if (score > bestScore || (score == bestScore && stringToCompareNorm.length() > bestMatchNorm.length())){
+					bestScore = score;
+					bestMatch = stringToCompare;
+					bestMatchNorm = stringToCompareNorm;
+				}
+			}
+		}
+		return new StringCompareResult()
+			.setInputStringNormalized(baseStringNorm)
+			.setResultString(bestMatch)
+			.setResultStringNormalized(bestMatchNorm)
 			.setResultPercent(bestScore);
 	}
 }
