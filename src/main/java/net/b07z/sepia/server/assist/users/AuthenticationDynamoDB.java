@@ -1,6 +1,7 @@
 package net.b07z.sepia.server.assist.users;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,7 @@ import spark.Request;
  * @author Florian Quirin
  *
  */
-public class AuthenticationDynamoDB implements AuthenticationInterface{
+public class AuthenticationDynamoDB implements AuthenticationInterface {
 	
 	private static final String tableName = DB.USERS;					//table of the users
 	private static final String ticketsTable = DB.TICKETS;				//table of tickets (used here to temporary store reg. tokens)
@@ -58,7 +59,7 @@ public class AuthenticationDynamoDB implements AuthenticationInterface{
 	private HashMap<String, Object> basicInfo;
 	
 	@Override
-	public void setRequestInfo(Object request) {
+	public void setRequestInfo(Object request){
 		this.metaInfo = (Request) request;	
 	}
 		
@@ -388,6 +389,12 @@ public class AuthenticationDynamoDB implements AuthenticationInterface{
 		}
 		//--------------------------------------------------------
 		return success;
+	}
+	
+	//get an array of users
+	public JSONArray listUsers(Collection<String> keys, int from, int size){
+		//TODO: implement
+		throw new RuntimeException("The method 'listUsers' of class '" + AuthenticationDynamoDB.class.getSimpleName() + "' is NOT YET IMPLEMENTED!");
 	}
 	
 	//request change of password

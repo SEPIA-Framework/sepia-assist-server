@@ -196,5 +196,8 @@ public class ACCOUNT {
 			//NOTE: this is applied on top level, don't use nesting here
 			PASSWORD, PWD_SALT, PWD_ITERATIONS, TOKENS, APIS, ROLES
 	);
-
+	//these can be shown to admin, e.g. when listing users
+	public static final List<String> allowedToShowAdmin = Arrays.asList(
+			GUUID, EMAIL, USER_NAME, ROLES, STATISTICS 			//TODO: should be extended?
+	);
 }

@@ -1,5 +1,6 @@
 package net.b07z.sepia.server.assist.users;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -27,7 +28,7 @@ import spark.Request;
  * @author Florian Quirin
  *
  */
-public class AuthenticationElasticsearch implements AuthenticationInterface{
+public class AuthenticationElasticsearch implements AuthenticationInterface {
 	
 	private static final long access_lvl_token_valid_time = 1800000L;		//that token is valid 30min
 	private static final long registration_token_valid_time = 86400000L;	//that token is valid 24h
@@ -58,7 +59,7 @@ public class AuthenticationElasticsearch implements AuthenticationInterface{
 	}
 	
 	@Override
-	public void setRequestInfo(Object request) {
+	public void setRequestInfo(Object request){
 		this.metaInfo = (Request) request;	
 	}
 	
@@ -81,6 +82,7 @@ public class AuthenticationElasticsearch implements AuthenticationInterface{
 			}
 			
 		}catch (Exception e){
+			errorCode = 3;
 			e.printStackTrace();
 			return false;
 		}
@@ -97,6 +99,7 @@ public class AuthenticationElasticsearch implements AuthenticationInterface{
 		}else if (idType.equals(ID.Type.phone)){
 			key = ACCOUNT.PHONE;
 		}else{
+			errorCode = 4;
 			throw new RuntimeException("userExists(...) reports 'unsupported ID type' " + idType);
 		}
 		//all primary user IDs need to be lowerCase in DB!!!
@@ -106,12 +109,14 @@ public class AuthenticationElasticsearch implements AuthenticationInterface{
 		JSONObject response = searchUserIndex(key, identifier);
 		//System.out.println("RESPONSE: " + response.toJSONString());				//debug
 		if (!Connectors.httpSuccess(response)){
+			errorCode = 4;
 			throw new RuntimeException("Authentication.userExists(...) reports 'DB query failed! Result unclear!'");
 		}
 		JSONArray hits = JSON.getJArray(response, new String[]{"hits", "hits"});
 		if (hits != null && !hits.isEmpty()){
 			return JSON.getJObject((JSONObject) hits.get(0), "_source").get(ACCOUNT.GUUID).toString();
 		}else{
+			errorCode = 4;
 			return "";
 		}
 	}
@@ -344,6 +349,32 @@ public class AuthenticationElasticsearch implements AuthenticationInterface{
 		}
 		//--------------------------------------------------------
 		return success;
+	}
+	
+	@Override
+	public JSONArray listUsers(Collection<String> keys, int from, int size){
+		//validate keys
+		keys.retainAll(ACCOUNT.allowedToShowAdmin);
+		if (keys.isEmpty()){
+			errorCode = 2;
+			return null;
+		}
+		JSONObject response = getDB().getDocuments(DB.USERS, "all", from, size, keys);
+		if (response == null){
+			errorCode = 4;
+			return null;
+		}
+		JSONArray hits = JSON.getJArray(response, new String[]{"hits", "hits"});
+		if (hits != null && !hits.isEmpty()){
+			JSONArray res = new JSONArray();
+			for (Object o : hits){
+				JSON.add(res, JSON.getJObject((JSONObject) o, "_source"));
+			}
+			return res;
+		}else{
+			errorCode = 4;
+			return new JSONArray();
+		}
 	}
 	
 	@Override
@@ -803,12 +834,14 @@ public class AuthenticationElasticsearch implements AuthenticationInterface{
 	public boolean logoutAllClients(String userid) {
 		if (userid == null || userid.isEmpty()){
 			Debugger.println("logoutAllClients(...) reports 'missing user ID'", 1);
+			errorCode = 4;
 			return false;
 		}
 		//delete all tokens
 		if (deleteFromUserIndex(userid, ACCOUNT.TOKENS) != 0){
 			Debugger.println("logoutAllClients(...) reports 'could not delete old tokens for " 
 							+ userid + ", account may not be safe!'", 1);
+			errorCode = 4;
 			return false;
 		}else{
 			return true;
