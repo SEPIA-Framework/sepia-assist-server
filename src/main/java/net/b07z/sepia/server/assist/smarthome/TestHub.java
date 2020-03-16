@@ -30,6 +30,8 @@ public class TestHub implements SmartHomeHub {
 		//Not required
 	}
 	
+	private JSONObject info;
+	
 	//------ test devices ------
 	
 	private static SmartHomeDevice light = new SmartHomeDevice(
@@ -95,6 +97,15 @@ public class TestHub implements SmartHomeHub {
 	public void setAuthenticationInfo(String authType, String authData){
 		//Not required
 	}
+	
+	@Override
+	public void setInfo(JSONObject info){
+		this.info = info;
+	}
+	@Override
+	public JSONObject getInfo(){
+		return this.info;
+	}
 
 	@Override
 	public boolean registerSepiaFramework(){
@@ -120,9 +131,7 @@ public class TestHub implements SmartHomeHub {
 				deviceFound.setRoomIndex(attrValue);
 			}else if (attrName.equals(SmartHomeDevice.SEPIA_TAG_SET_CMDS)){
 				if (attrValue != null && attrValue.trim().startsWith("{")){
-					JSON.put(deviceFound.getMeta(), "setCmds", JSON.parseString(attrValue));
-				}else{
-					JSON.put(deviceFound.getMeta(), "setCmds", attrValue);
+					deviceFound.setCustomCommands(JSON.parseString(attrValue));
 				}
 			}else if (attrName.equals(SmartHomeDevice.SEPIA_TAG_STATE_TYPE)){
 				deviceFound.setStateType(attrValue);
@@ -189,7 +198,7 @@ public class TestHub implements SmartHomeHub {
 				+ device.getName() + ", stateType: " + stateType + ", state: " + state, 3);
 		if (deviceFound != null){
 			//set command overwrite?
-			JSONObject setCmds = (JSONObject) device.getMeta().get("setCmds");
+			JSONObject setCmds = device.getCustomCommands();
 			if (Is.notNullOrEmpty(setCmds)){
 				String newState = SmartHomeDevice.getStateFromCustomSetCommands(state, stateType, setCmds);
 				if (newState != null){

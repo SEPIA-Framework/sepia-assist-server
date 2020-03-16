@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.json.simple.JSONObject;
+
 import net.b07z.sepia.server.assist.parameters.Room;
 import net.b07z.sepia.server.assist.parameters.SmartDevice;
 import net.b07z.sepia.server.assist.server.Config;
@@ -28,7 +30,7 @@ public interface SmartHomeHub {
 	/**
 	 * Get HUB with custom data (name and host). Use 'setAuthenticationInfo' later if you need to add auth. data.
 	 * @param hubName - name like "openhab" or "fhem". A full class name is possible as well.
-	 * @param hubHist - address of HUB, e.g. http://localhost:8083/fhem
+	 * @param hubHost - address of HUB, e.g. http://localhost:8083/fhem
 	 * @return HUB or null
 	 */
 	public static SmartHomeHub getHub(String hubName, String hubHost){
@@ -70,6 +72,17 @@ public interface SmartHomeHub {
 	 * @param authData - data for auth. type e.g. a base64 encoded user:password combination 
 	 */
 	public void setAuthenticationInfo(String authType, String authData);
+	
+	/**
+	 * Add any kind of extra info via the info-object, e.g. "name", "description" etc.
+	 * @param info
+	 */
+	public void setInfo(JSONObject info);
+	/**
+	 * Get extra info (optional data, might not be set).
+	 * @return info object with data, empty or null
+	 */
+	public JSONObject getInfo();
 	
 	/**
 	 * Register SEPIA Framework in specific smart home HUB software. This can for example be the creation of new attributes 
@@ -138,4 +151,5 @@ public interface SmartHomeHub {
 	 * @return set of device names by type
 	 */
 	public Map<String, Set<String>> getBufferedDeviceNamesByType();
+	
 }

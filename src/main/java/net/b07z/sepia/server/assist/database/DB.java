@@ -20,6 +20,7 @@ import net.b07z.sepia.server.assist.data.Address;
 import net.b07z.sepia.server.assist.data.Word;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.Statistics;
+import net.b07z.sepia.server.assist.smarthome.SmartDevicesDb;
 import net.b07z.sepia.server.assist.users.ACCOUNT;
 import net.b07z.sepia.server.assist.users.AccountInterface;
 import net.b07z.sepia.server.assist.users.Authenticator;
@@ -66,12 +67,15 @@ public class DB {
 	public static final String COMMANDS = "commands";		//system and personal commands - Type: Command.COMMANDS_TYPE
 	public static final String ANSWERS = Answer.ANSWERS_INDEX; 		//system and personal answers - Type: Answer.ANSWERS_TYPE;
 	public static final String WHITELIST = "whitelist";		//white-lists of e.g. users
+	//additional indices see:
+	//SmartDevices..., chat server
 	
 	//----------Database Implementations----------
 
 	private static AccountInterface accounts = (AccountInterface) ClassBuilder.construct(Config.accountModule);				//USER ACCOUNT STUFF
-	//note: you can use Account_DynamoDB.setTable(...) to access other tables in DynamoDB
-	private static DatabaseInterface knowledge = (DatabaseInterface) ClassBuilder.construct(Config.knowledgeDbModule);		//BASICALLY EVERYTHING ELSE
+	private static DatabaseInterface knowledge = (DatabaseInterface) ClassBuilder.construct(Config.knowledgeDbModule);		//BASICALLY EVERYTHING ELSE USER RELATED
+	
+	private static SmartDevicesDb smartDevices = (SmartDevicesDb) ClassBuilder.construct(Config.smartDevicesModule);		//CUSTOM SMART DEVICES AND INTERFACES
 	
 	/**
 	 * Refresh the settings for accounts and knowledge database.
@@ -80,10 +84,17 @@ public class DB {
 		GUID.setup();
 		accounts = (AccountInterface) ClassBuilder.construct(Config.accountModule);
 		knowledge = (DatabaseInterface) ClassBuilder.construct(Config.knowledgeDbModule);
+		smartDevices = (SmartDevicesDb) ClassBuilder.construct(Config.smartDevicesModule);
 	}
 	
 	private static AuthenticationInterface getAuthDb(){
 		return (AuthenticationInterface) ClassBuilder.construct(Config.authenticationModule);
+	}
+	
+	//----------Smart Devices----------
+	
+	public static SmartDevicesDb getSmartDevicesDb(){
+		return smartDevices;
 	}
 	
 	//----------Account methods----------

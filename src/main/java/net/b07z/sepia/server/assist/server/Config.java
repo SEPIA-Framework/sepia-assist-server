@@ -32,6 +32,7 @@ import net.b07z.sepia.server.assist.interpreters.NormalizerLightEN;
 import net.b07z.sepia.server.assist.interpreters.NormalizerLightTR;
 import net.b07z.sepia.server.assist.services.ServiceAccessManager;
 import net.b07z.sepia.server.assist.smarthome.OpenHAB;
+import net.b07z.sepia.server.assist.smarthome.SmartDevicesElasticsearch;
 import net.b07z.sepia.server.assist.tools.RssFeedReader;
 import net.b07z.sepia.server.assist.tools.SpotifyApi;
 import net.b07z.sepia.server.assist.tts.TtsInterface;
@@ -152,6 +153,7 @@ public class Config {
 	public static String ttsModule = TtsOpenEmbedded.class.getCanonicalName();
 	public static String ttsName = "Open Embedded";
 	public static String emailModule = SendEmailBasicSmtp.class.getCanonicalName();
+	public static String smartDevicesModule = SmartDevicesElasticsearch.class.getCanonicalName();	//TODO: not variable yet
 	
 	//toggles and switches:
 	

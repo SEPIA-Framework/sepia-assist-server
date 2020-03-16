@@ -34,6 +34,7 @@ public class Fhem implements SmartHomeHub {
 	private String host;
 	private String authType;
 	private String authData;
+	private JSONObject info;
 	private String csrfToken = "";
 	
 	private static Map<String, Map<String, Set<String>>> bufferedDevicesOfHostByType = new ConcurrentHashMap<>();
@@ -100,6 +101,15 @@ public class Fhem implements SmartHomeHub {
 	public void setAuthenticationInfo(String authType, String authData){
 		this.authType = authType;
 		this.authData = authData;
+	}
+	
+	@Override
+	public void setInfo(JSONObject info){
+		this.info = info;
+	}
+	@Override
+	public JSONObject getInfo(){
+		return this.info;
 	}
 	
 	@Override
@@ -318,7 +328,7 @@ public class Fhem implements SmartHomeHub {
 			return false;
 		}else{
 			//set command overwrite?
-			JSONObject setCmds = (JSONObject) device.getMeta().get("setCmds");
+			JSONObject setCmds = device.getCustomCommands();
 			//System.out.println("setCmds: " + setCmds);		//DEBUG
 			if (Is.notNullOrEmpty(setCmds)){
 				String newState = SmartHomeDevice.getStateFromCustomSetCommands(state, stateType, setCmds);
@@ -535,7 +545,6 @@ public class Fhem implements SmartHomeHub {
 				"id", fhemObjName,
 				"origin", NAME,
 				"setOptions", JSON.getStringOrDefault(hubDevice, "PossibleSets", null), 		//FHEM specific
-				"setCmds", setCmds,
 				"typeGuessed", typeGuessed
 		);
 		JSON.put(meta, "namedBySepia", namedBySepia);
@@ -546,6 +555,9 @@ public class Fhem implements SmartHomeHub {
 		//specify more
 		if (Is.notNullOrEmpty(roomIndex)){
 			shd.setRoomIndex(roomIndex);
+		}
+		if (Is.notNullOrEmpty(setCmds)){
+			shd.setCustomCommands(setCmds);
 		}
 		return shd;
 	}

@@ -23,11 +23,12 @@ import net.b07z.sepia.server.core.tools.URLBuilder;
  */
 public class IoBroker implements SmartHomeHub {
 	
-	public static String NAME = "iobroker";
+	public static final String NAME = "iobroker";
 	
 	private String host;
 	private String authType;
 	private String authData;
+	private JSONObject info;
 	
 	private static Map<String, Map<String, Set<String>>> bufferedDevicesOfHostByType = new ConcurrentHashMap<>();
 	private Map<String, Set<String>> bufferedDevicesByType;
@@ -68,6 +69,15 @@ public class IoBroker implements SmartHomeHub {
 	public void setAuthenticationInfo(String authType, String authData){
 		this.authType = authType;
 		this.authData = authData;
+	}
+	
+	@Override
+	public void setInfo(JSONObject info){
+		this.info = info;
+	}
+	@Override
+	public JSONObject getInfo(){
+		return this.info;
 	}
 
 	@Override
