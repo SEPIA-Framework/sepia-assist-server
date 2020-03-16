@@ -319,6 +319,24 @@ public class SmartHomeDevice {
 	}
 	
 	/**
+	 * Get custom commands object (aka 'setCmds').
+	 * @return
+	 */
+	public JSONObject getCustomCommands(){
+		if (meta == null){
+			return null;
+		}else{
+			return JSON.getJObject(meta, "setCmds");
+		}
+	}
+	/**
+	 * Set custom commands object (aka 'setCmds'; no write to HUB!)
+	 */
+	public void setCustomCommands(JSONObject setCmds){
+		setMetaValue("setCmds", setCmds);
+	}
+	
+	/**
 	 * Export device to JSON.
 	 * @return
 	 */
@@ -331,9 +349,9 @@ public class SmartHomeDevice {
 				"state", state,
 				"link", link
 		);
-		JSON.put(newDeviceObject, "room-index", roomIndex);
-		JSON.put(newDeviceObject, "state-type", stateType);
-		JSON.put(newDeviceObject, "state-memory", stateMemory);		//NOTE: this CAN BE smart HUB specific (not identical to generalized state value)
+		JSON.put(newDeviceObject, "roomIndex", roomIndex);
+		JSON.put(newDeviceObject, "stateType", stateType);
+		JSON.put(newDeviceObject, "stateMemory", stateMemory);		//NOTE: this CAN BE smart HUB specific (not identical to generalized state value)
 		JSON.put(newDeviceObject, "meta", meta);
 		return newDeviceObject;
 	}
@@ -345,10 +363,10 @@ public class SmartHomeDevice {
 		this.name = JSON.getString(deviceJson, "name");
 		this.type = JSON.getString(deviceJson, "type");
 		this.room = JSON.getString(deviceJson, "room");
-		this.roomIndex = JSON.getString(deviceJson, "room-index");
+		this.roomIndex = JSON.getString(deviceJson, "roomIndex");
 		this.state = JSON.getString(deviceJson, "state");
-		this.stateType = JSON.getString(deviceJson, "state-type");
-		this.stateMemory = JSON.getString(deviceJson, "state-memory");
+		this.stateType = JSON.getString(deviceJson, "stateType");
+		this.stateMemory = JSON.getString(deviceJson, "stateMemory");
 		this.link = JSON.getString(deviceJson, "link");
 		this.meta = JSON.getJObject(deviceJson, "meta");
 		return this;
