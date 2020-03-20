@@ -83,10 +83,13 @@ public class Fhem implements SmartHomeHub {
 		return Connectors.addAuthHeader(headers, this.authType, this.authData);
 	}
 	private JSONObject httpGET(String url){
+		Map<String, String> headers = new HashMap<>();
+		headers.put(Connectors.HEADER_ACCEPT_CONTENT, "application/json");
+		headers.put(Connectors.HEADER_ACCEPT_ENCODING, "gzip");
 		if (Is.notNullOrEmpty(this.authData)){
-			return Connectors.httpGET(url, null, addAuthHeader(null));
+			return Connectors.httpGET(url, null, addAuthHeader(headers));
 		}else{
-			return Connectors.httpGET(url);
+			return Connectors.httpGET(url, null, headers);
 		}
 	}
 	
