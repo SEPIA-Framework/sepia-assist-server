@@ -45,7 +45,7 @@ public abstract class WebApiParameter extends CustomParameter implements Paramet
 			String result = JSON.getStringOrDefault(response, "result", "fail");
 			if (!result.equals("fail")){
 				response.remove("result");
-				extracted =  Interview.INPUT_EXTRACTED + ";;" + response.toJSONString();
+				extracted = Interview.INPUT_EXTRACTED + ";;" + response.toJSONString();
 			}else{
 				return "";
 			}
