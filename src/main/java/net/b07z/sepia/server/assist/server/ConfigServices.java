@@ -274,7 +274,8 @@ public class ConfigServices {
 		List<ServiceInterface> apiList = new ArrayList<>();
 		for (String className : refList){
 			try{
-				ServiceInterface service = (ServiceInterface) getCustomServiceClassLoader(className).loadClass(className).newInstance();
+				//ServiceInterface service = (ServiceInterface) getCustomServiceClassLoader(className).loadClass(className).newInstance();
+				ServiceInterface service = (ServiceInterface) ClassBuilder.construct(getCustomServiceClassLoader(className), className);
 				//check if service is public or the creator asks for it
 				if (service.getInfoFreshOrCache(nluInput, service.getClass().getCanonicalName()).makePublic 
 							|| className.startsWith(CUSTOM_SERVICES_PACKAGE + "." + nluInput.user.getUserID() + ".")){

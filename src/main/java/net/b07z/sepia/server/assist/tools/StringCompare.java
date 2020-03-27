@@ -3,7 +3,8 @@ package net.b07z.sepia.server.assist.tools;
 import java.util.Collection;
 import java.util.regex.Pattern;
 
-import me.xdrop.fuzzywuzzy.FuzzySearch;
+import com.willowtreeapps.fuzzywuzzy.diffutils.FuzzySearch;
+
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.interpreters.Normalizer;
 import net.b07z.sepia.server.assist.server.Config;

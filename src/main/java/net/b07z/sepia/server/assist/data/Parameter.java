@@ -125,7 +125,8 @@ public class Parameter {
 		if (isCustom(thisName)){
 			//Is already a class ... try to build with sand-box
 			try{
-				return (ParameterHandler) ConfigServices.getCustomServiceClassLoader(thisName).loadClass(thisName).newInstance();
+				//return (ParameterHandler) ConfigServices.getCustomServiceClassLoader(thisName).loadClass(thisName).newInstance();
+				return (ParameterHandler) ClassBuilder.construct(ConfigServices.getCustomServiceClassLoader(thisName), thisName);
 			}catch (Exception e){
 				Debugger.println("Parameter.getHandler() for '" + thisName + "' triggered exception: " + e.getMessage(), 1);
 				return new GenericParameter();
