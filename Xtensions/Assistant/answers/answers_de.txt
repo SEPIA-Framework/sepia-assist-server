@@ -10,6 +10,7 @@ error_geo_location_personal_0a;;		rep=2|mood=5;;		Es tut mir leid, da komme ich 
 error_language_not_supported_0a;;	rep=0|mood=5;;		Es tut mir leid, aber dieser Service unterstützt die aktive Sprache nicht. 		;;char=neutral
 error_region_not_supported_0a;;		rep=0|mood=5;;		Es tut mir leid, aber dieser Service unterstützt die aktive Region nicht. 		;;char=neutral
 error_client_control_0a;;		rep=0|mood=5;;		<user_name>, die Steuerungsfunktion konnte nicht ausgeführt werden. Ich weiß leider nicht warum. 		;;char=neutral
+error_client_control_0b;;		rep=0|mood=5;;		<user_name>, die Steuerungsfunktion konnte nicht ausgeführt werden. 		;;char=neutral
 error_client_support_0a;;		rep=0|mood=5;;		Sorry, aber diese Version der App unterstütz die aufgerufene Aktion nicht. 		;;char=neutral
 abort_0a;;		rep=0|mood=5;;		Ok, lass noch mal neu anfangen. ;;char=cool,neutral
 abort_0a;;		rep=0|mood=5;;		Ok, habs abgebrochen. ;;char=cool,neutral
@@ -22,6 +23,7 @@ ok_0a;;		rep=0|mood=5;;		Ok.		;;char=neutral
 ok_0b;;		rep=0|mood=5;;		Ok, wird erledigt.		;;char=neutral
 ok_0b;;		rep=0|mood=5;;		Ok, wird gemacht.		;;char=neutral
 ok_0c;;		rep=0|mood=5;;		Ok, ist erledigt.		;;char=neutral
+done_0a;;		rep=0|mood=5;;		Erledigt.		;;char=neutral
 default_ask_parameter_0a;;		rep=0|mood=5;;		Hmm, die Anfrage ist scheinbar unvollständig, was ist der fehlende Parameter? ;;char=polite,neutral
 default_ask_parameter_0a;;		rep=1|mood=5;;		Und der nächste fehlende Parameter? ;;char=cool,rude,neutral
 default_ask_parameter_0a;;		rep=2|mood=5;;		Und noch einen Parameter bitte! ;;char=cool,rude
@@ -59,6 +61,9 @@ client_controls_ask_fun_0a;;		rep=1|mood=5;;		Sorry, wie heißt die Funktion? ;;
 client_controls_ask_fun_0a;;		rep=2|mood=5;;		Mir fehlt leider der Name einer Funktion wie z.B. Einstellungen, sag noch mal bitte!;;char=neutral
 client_controls_volume_eleven_0a;;		rep=0|mood=5;;		Tonight I'm Gonna Rock You Tonight! ;;char=neutral
 client_controls_volume_exceeded_0a;;		rep=0|mood=5;;		Bisschen laut, ich stelle die Lautstärke mal auf 10. ;;char=neutral
+client_controls_runtime_command_0a;;		rep=0|mood=5;;		Ein geplanter OS-Befehl wurde erfolgreich ausgeführt. ;;char=neutral
+client_controls_runtime_command_0b;;		rep=0|mood=5;;		Der OS-Befehl <1> wurde erfolgreich ausgeführt. ;;char=neutral
+client_controls_runtime_command_0c;;		rep=0|mood=5;;		Der OS-Befehl wurde erfolgreich ausgeführt. ;;char=neutral
 alarms_0a;;	rep=0|mood=5;;		Der nächste Alarm ist in <1>. ;;char=neutral
 alarms_0b;;	rep=0|mood=5;;		Es gibt scheinbar keinen aktiven <3> zur Zeit. ;;char=neutral
 alarms_0c;;	rep=0|mood=5;;		Dazu kann ich gerade nix finden irgendwie, versuch es bitte gleich noch mal. ;;char=neutral

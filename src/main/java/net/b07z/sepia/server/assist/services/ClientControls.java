@@ -4,6 +4,7 @@ import java.util.TreeSet;
 
 import org.json.simple.JSONObject;
 
+import net.b07z.sepia.server.assist.answers.AnswerTools;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
@@ -148,6 +149,7 @@ public class ClientControls implements ServiceInterface{
 		boolean isClexi = controlFun.equals(ClientFunction.Type.clexi.name());
 		boolean isMedia = controlFun.equals(ClientFunction.Type.media.name()); 		//NOTE: media and volume can exist simultaneously
 		boolean isVolume = controlFun.equals(ClientFunction.Type.volume.name()) || mediaControls.startsWith("volume_");
+		boolean isRuntimeCommand = Is.typeEqual(controlFun, ClientFunction.Type.runtimeCommands);
 		
 		if (isVolume){
 			controlFun = ClientFunction.Type.volume.name();
@@ -159,6 +161,9 @@ public class ClientControls implements ServiceInterface{
 		
 		Parameter numberP = nluResult.getOptionalParameter(PARAMETERS.NUMBER, "");
 		String num = numberP.getValueAsString();
+		
+		//get background parameters
+		String reply = nluResult.getParameter(PARAMETERS.REPLY);	//a custom reply (defined via Teach-UI)
 				
 		//This service basically cannot fail here ... only inside client
 		
@@ -238,8 +243,8 @@ public class ClientControls implements ServiceInterface{
 			//Always-On mode support
 			actionName = "toggle";	//we simply use a toggle command, no matter what action 
 			
-		}else if (isMeshNode || isClexi){
-			//Mesh-Node & CLEXI support
+		}else if (isMeshNode || isClexi || isRuntimeCommand){
+			//Mesh-Node / CLEXI / Runtime (e.g. via CLEXI) support
 			actionName = data; 		//this call requires a custom data block
 		}
 		JSONObject a = JSON.make("action", actionName);
@@ -287,6 +292,12 @@ public class ClientControls implements ServiceInterface{
 			api.setStatusOkay();
 		}else{
 			api.setStatusSuccess();
+			
+			//custom success reply?
+			if (!reply.isEmpty()){
+				reply = AnswerTools.handleUserAnswerSets(reply);
+				api.setCustomAnswer(reply);
+			}
 		}
 		
 		//build the API_Result

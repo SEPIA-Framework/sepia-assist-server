@@ -31,6 +31,7 @@ public class ClientFunction implements ParameterHandler {
 		meshNode,
 		clexi,
 		media,
+		runtimeCommands,
 		platformFunction, 	//this is handled by PlatformControls service (we use it just for the action)
 		searchForMusic		//this is handled by MusicSearch service (we use it just for the action)
 	}
@@ -47,6 +48,7 @@ public class ClientFunction implements ParameterHandler {
 		local_de.put("<meshNode>", "die Mesh-Node");
 		local_de.put("<clexi>", "CLEXI");
 		local_de.put("<media>", "die Medienwiedergabe");
+		local_de.put("<runtimeCommands>", "der Befehl");
 		//Button names
 		buttons_de.put("<default>", "Funktion");
 		buttons_de.put("<settings>", "Einstellungen");
@@ -55,6 +57,7 @@ public class ClientFunction implements ParameterHandler {
 		buttons_de.put("<meshNode>", "Mesh-Node");
 		buttons_de.put("<clexi>", "CLEXI");
 		buttons_de.put("<media>", "Medienwiedergabe");
+		buttons_de.put("<runtimeCommands>", "Systembefehl");
 		
 		local_en.put("<settings>", "the settings");
 		local_en.put("<volume>", "the volume");
@@ -62,6 +65,7 @@ public class ClientFunction implements ParameterHandler {
 		local_en.put("<meshNode>", "the mesh-node");
 		local_en.put("<clexi>", "CLEXI");
 		local_en.put("<media>", "the media player");
+		local_en.put("<runtimeCommands>", "the command");
 		//Button names
 		buttons_en.put("<default>", "Function");
 		buttons_en.put("<settings>", "Settings");
@@ -70,6 +74,7 @@ public class ClientFunction implements ParameterHandler {
 		buttons_en.put("<meshNode>", "Mesh-Node");
 		buttons_en.put("<clexi>", "CLEXI");
 		buttons_en.put("<media>", "Media Player");
+		buttons_en.put("<runtimeCommands>", "System Command");
 	}
 	/**
 	 * Translate generalized value.
@@ -157,7 +162,7 @@ public class ClientFunction implements ParameterHandler {
 		}
 		*/
 		
-		String settings, volume, alwaysOn, meshNode, clexi, media;
+		String settings, volume, alwaysOn, meshNode, clexi, media;	//runtimeCommands
 		//German
 		if (language.matches(LANGUAGES.DE)){
 			settings = "einstellung(en|)|setting(s|)|menue|option(en|)";

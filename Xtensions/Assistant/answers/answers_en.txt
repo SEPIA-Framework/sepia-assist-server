@@ -10,6 +10,7 @@ error_geo_location_personal_0a;;		rep=2|mood=5;;		I'm sorry, I think I'm stuck h
 error_language_not_supported_0a;;	rep=0|mood=5;;		I'm sorry but this service does not support the active language.		;;char=neutral
 error_region_not_supported_0a;;		rep=0|mood=5;;		I'm sorry but this service does not support the active region. 			;;char=neutral
 error_client_control_0a;;		rep=0|mood=5;;		<user_name>, the control function could not be executed. I don't know why, sorry. 		;;char=neutral
+error_client_control_0b;;		rep=0|mood=5;;		<user_name>, the control function could not be executed. 		;;char=neutral
 error_client_support_0a;;		rep=0|mood=5;;		Sorry, but this version of the app does not support the requested action. 		;;char=neutral
 abort_0a;;		rep=0|mood=5;;		Ok, let's start over. ;;char=cool,neutral
 abort_0a;;		rep=0|mood=5;;		Ok, I've aborted the action. ;;char=neutral
@@ -22,6 +23,7 @@ ok_0a;;		rep=0|mood=5;;		Ok.		;;char=neutral
 ok_0b;;		rep=0|mood=5;;		Ok, it will be done.	;;char=neutral
 ok_0b;;		rep=0|mood=5;;		Ok, I'll take care of it.	;;char=neutral
 ok_0c;;		rep=0|mood=5;;		Ok, it's done.		;;char=neutral
+done_0a;;		rep=0|mood=5;;		Done.		;;char=neutral
 default_ask_parameter_0a;;		rep=0|mood=5;;		Hmm the request seems incomplete, what is the missing parameter? ;;char=neutral
 default_ask_parameter_0a;;		rep=1|mood=5;;		And the next missing parameter? ;;char=neutral
 default_ask_parameter_0a;;		rep=2|mood=5;;		And another missing parameter? ;;char=neutral
@@ -60,6 +62,9 @@ client_controls_ask_fun_0a;;		rep=1|mood=5;;		Sorry, which function was that? ;;
 client_controls_ask_fun_0a;;		rep=2|mood=5;;		I'm missing a function name like settings, say again please!;;char=neutral
 client_controls_volume_eleven_0a;;		rep=0|mood=5;;		Tonight I'm Gonna Rock You Tonight! ;;char=neutral
 client_controls_volume_exceeded_0a;;		rep=0|mood=5;;		A bit loud, I'll set the volume to 10. ;;char=neutral
+client_controls_runtime_command_0a;;		rep=0|mood=5;;		A scheduled OS command has been successfully completed. ;;char=neutral
+client_controls_runtime_command_0b;;		rep=0|mood=5;;		The OS command <1> has been successfully executed. ;;char=neutral
+client_controls_runtime_command_0c;;		rep=0|mood=5;;		The OS command has been successfully executed. ;;char=neutral
 alarms_0a;;	rep=0|mood=5;;		The next alarm is in <1>. ;;char=neutral
 alarms_0b;;	rep=0|mood=5;;		There seems to be no active <3> at the moment. ;;char=neutral
 alarms_0c;;	rep=0|mood=5;;		I can't find anything right now, please try again in a few moments. ;;char=neutral
