@@ -1,9 +1,12 @@
 error_0a;;		rep=0|mood=5;;		Sorry, da gab es wohl einen Fehler. Versuch es doch noch mal bitte. ;;char=neutral
 error_0a;;		rep=1|mood=5;;		Nein, es tut mir leid, das scheint gerade nicht zu funktionieren. 	;;char=neutral
 error_0a;;		rep=2|mood=5;;		Es tut mir leid, das scheint gerade nicht zu funktionieren. 		;;char=neutral
-error_geo_location_0a;;		rep=0|mood=5;;		Sorry, da gab es wohl einen Fehler. Versuch es doch noch mal bitte. ;;char=neutral
+error_geo_location_0a;;		rep=0|mood=5;;		Sorry, da gab es wohl einen Fehler mit den Geodaten. Versuch es doch noch mal bitte. ;;char=neutral
 error_geo_location_0a;;		rep=1|mood=5;;		Es kann sein, dass die Adresse falsch oder unvollständig ist, ich kann sie einfach nicht finden. 		;;char=neutral
 error_geo_location_0a;;		rep=2|mood=5;;		Es tut mir leid, da komme ich wohl gerade nicht weiter. Entweder kann ich die Adresse nicht finden oder es gibt einen Fehler irgendwo.		;;char=neutral
+error_geo_location_0b;;		rep=0|mood=5;;		Sorry, aber ich konnte die passenden Geodaten nicht finden. Versuch es doch noch mal bitte. ;;char=neutral
+error_geo_location_0b;;		rep=1|mood=5;;		Sorry, die Geodaten sind immer noch unvollständig. Vielleicht gibt es einen Fehler in der Suchfunktion. 		;;char=neutral
+error_geo_location_0b;;		rep=2|mood=5;;		Es tut mir leid, da komme ich wohl gerade nicht weiter, habe keine passenden Geodaten.		;;char=neutral
 error_geo_location_personal_0a;;		rep=0|mood=5;;		Es tut mir leid, ich kann den Ort wohl nicht bestimmen, kannst du bitte die Einstellungen prüfen. 		;;char=neutral
 error_geo_location_personal_0a;;		rep=1|mood=5;;		Es kann sein, dass die Adresse falsch oder unvollständig ist, ich kann sie einfach nicht finden. 		;;char=neutral
 error_geo_location_personal_0a;;		rep=2|mood=5;;		Es tut mir leid, da komme ich wohl gerade nicht weiter, kann diese Adresse einfach nicht nutzen.		;;char=neutral

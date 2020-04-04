@@ -1,9 +1,12 @@
 error_0a;;		rep=0|mood=5;;		Sorry there has been an error, please try again. ;;char=neutral
 error_0a;;		rep=1|mood=5;;		No sorry, for some reason this does not work right now. ;;char=neutral
 error_0a;;		rep=2|mood=5;;		For some reason this does not work right now. ;;char=neutral
-error_geo_location_0a;;		rep=0|mood=5;;		Sorry there has been an error, please try again. ;;char=neutral
+error_geo_location_0a;;		rep=0|mood=5;;		Sorry there has been an error in the geo data, please try again. ;;char=neutral
 error_geo_location_0a;;		rep=1|mood=5;;		Maybe the address is wrong or incomplete, but I can't seem to find it. 		;;char=neutral
 error_geo_location_0a;;		rep=2|mood=5;;		I'm sorry, I think I'm stuck here. I can't use this address somehow or there is an error somewhere.		;;char=neutral
+error_geo_location_0b;;		rep=0|mood=5;;		Sorry, but I cant find the required geo data. Please try again. ;;char=neutral
+error_geo_location_0b;;		rep=1|mood=5;;		Sorry, the geo data is still incomplete. Maybe there is an error in the search function. 		;;char=neutral
+error_geo_location_0b;;		rep=2|mood=5;;		I'm sorry, I think I'm stuck here. I don't have the required geo data.		;;char=neutral
 error_geo_location_personal_0a;;		rep=0|mood=5;;		I'm sorry but I can't determine the location of this place, can you check your settings please. 		;;char=neutral
 error_geo_location_personal_0a;;		rep=1|mood=5;;		Maybe the address is wrong or incomplete, but I can't seem to find it. 		;;char=neutral
 error_geo_location_personal_0a;;		rep=2|mood=5;;		I'm sorry, I think I'm stuck here. I can't use this address somehow.		;;char=neutral

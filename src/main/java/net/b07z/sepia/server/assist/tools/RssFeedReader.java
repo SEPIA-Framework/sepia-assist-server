@@ -136,7 +136,7 @@ public class RssFeedReader {
 		    		}
 		    		*/
         	//Get content as String then create a stream (its safer than the previous method)
-        	HttpClientResult httpRes = Connectors.apacheHttpGET(url, null);
+        	HttpClientResult httpRes = Connectors.apacheHttpGET(url, "");
         	statusLine = httpRes.statusLine;
         	if (httpRes.content == null || httpRes.content.isEmpty()){
         		throw new RuntimeException("Feed content not found. Code: " + httpRes.statusCode + ", Status: " + httpRes.statusLine);
