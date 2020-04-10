@@ -1,6 +1,8 @@
 package net.b07z.sepia.server.assist.services;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONArray;
@@ -9,6 +11,7 @@ import org.json.simple.JSONObject;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
+import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.parameters.DateAndTime.DateType;
 import net.b07z.sepia.server.assist.server.Config;
@@ -29,23 +32,146 @@ import net.b07z.sepia.server.core.tools.URLBuilder;
 public class WeatherMeteoNorway implements ServiceInterface {
 	
 	//Data
+	public static final List<String> supportedLanguages = Arrays.asList(
+			LANGUAGES.DE, 
+			LANGUAGES.EN
+	);
+	private static final String DESC = "desc";		
+	private static final String HEAVY = "heavy";
+	private static final String LIGHT = "light";
+	private static final String TYPE = "type";
+	private static final String NOW = "now";
+	private static final String FUTURE = "future";
+	private static final String ICON = "sepiaIcon";
+	public static Map<Integer, JSONObject> descBaseByType = new HashMap<>();
+	static {
+		descBaseByType.put(1, JSON.make( 
+				LANGUAGES.DE, JSON.make(NOW, "es ist {desc}", FUTURE, "es wird {desc}"),
+				LANGUAGES.EN, JSON.make(NOW, "it is {desc}", FUTURE, "it will be {desc}")
+		));
+		descBaseByType.put(2, JSON.make( 
+				LANGUAGES.DE, JSON.make(NOW, "es gibt {desc}", FUTURE, "es wird {desc} geben"),
+				LANGUAGES.EN, JSON.make(NOW, "there is {desc}", FUTURE, "there will be {desc}")
+		));
+		descBaseByType.put(3, JSON.make( 
+				LANGUAGES.DE, JSON.make(NOW, "es gibt {desc}", FUTURE, "es wird {desc} geben"),
+				LANGUAGES.EN, JSON.make(NOW, "there are {desc}", FUTURE, "there will be {desc}")
+		));
+	}
+	//Type 1: (The report/forecast says) it is/will be 			| (Der Wetterbericht sagt) es ist/wird
+	//Type 2: (Here is the report/forecast.) There is/will be 	| (Hier ist der Wetterberichtt.) Es gibt/wird ... geben
+	//Type 3: (Here is the report/forecast.) There are/will be 	| (Hier ist der Wetterberichtt.) Es gibt/wird ... geben
 	public static Map<String, JSONObject> iconData = new HashMap<>();
 	static {
-		iconData.put("clearsky", JSON.make("sepiaIcon", "clear-{time}", "desc", JSON.make(
-				LANGUAGES.DE, "klarer Himmel", LANGUAGES.EN, "clear sky"
-		)));
-		iconData.put("cloudy", JSON.make("sepiaIcon", "cloudy", "desc", JSON.make(
-				LANGUAGES.DE, "bewölkt", LANGUAGES.EN, "cloudy"
-		)));
-		iconData.put("rain", JSON.make("sepiaIcon", "rain", "desc", JSON.make(
-				LANGUAGES.DE, "Regen", LANGUAGES.EN, "rain"
-		)));
-		//"fair", "lightssnowshowersandthunder", "lightsnowshowers", "heavyrainandthunder", "heavysnowandthunder", "rainandthunder", 
-		//"heavysleetshowersandthunder", "heavysnow", "heavyrainshowers", "lightsleet", "heavyrain", "lightrainshowers", 
-		//"heavysleetshowers", "lightsleetshowers", "snow", "heavyrainshowersandthunder", "snowshowers", "fog", "snowshowersandthunder", 
-		//"lightsnowandthunder", "heavysleetandthunder", "lightrain", "rainshowersandthunder", "lightsnow", "lightrainshowersandthunder", 
-		//"heavysleet", "sleetandthunder", "lightrainandthunder", "sleet", "lightssleetshowersandthunder", "lightsleetandthunder", "partlycloudy", 
-		//"sleetshowersandthunder", "rainshowers", "snowandthunder", "sleetshowers", "heavysnowshowersandthunder", "heavysnowshowers"
+		iconData.put("clearsky", JSON.make(ICON, "clear-{time}", 
+				LANGUAGES.DE, JSON.make(TYPE, 1, DESC, "klar, mit blauem Himmel"),
+				LANGUAGES.EN, JSON.make(TYPE, 1, DESC, "clear with blue sky")
+		));
+		iconData.put("cloudy", JSON.make(ICON, "cloudy", 
+				LANGUAGES.DE, JSON.make(TYPE, 1, DESC, "bewölkt", HEAVY, "stark", LIGHT, "leicht"),
+				LANGUAGES.EN, JSON.make(TYPE, 1, DESC, "cloudy", HEAVY, "very", LIGHT, "slightly")
+		));
+		iconData.put("partlycloudy", JSON.make(ICON, "partly-cloudy-{time}", 
+				LANGUAGES.DE, JSON.make(TYPE, 1, DESC, "teilweise bewölkt"),
+				LANGUAGES.EN, JSON.make(TYPE, 1, DESC, "partly cloudy")
+		));
+		iconData.put("rain", JSON.make(ICON, "rain", 
+				LANGUAGES.DE, JSON.make(TYPE, 1, DESC, "regnerisch", HEAVY, "sehr", LIGHT, "etwas"),
+				LANGUAGES.EN, JSON.make(TYPE, 1, DESC, "rainy", HEAVY, "very", LIGHT, "a bit")
+		));
+		iconData.put("rainshowers", JSON.make(ICON, "rain", 
+				LANGUAGES.DE, JSON.make(TYPE, 2, DESC, "Regenschauer", HEAVY, "heftige", LIGHT, "leichte"),
+				LANGUAGES.EN, JSON.make(TYPE, 3, DESC, "rain showers", HEAVY, "heavy", LIGHT, "light")
+		));
+		iconData.put("snow", JSON.make(ICON, "snow", 
+				LANGUAGES.DE, JSON.make(TYPE, 2, DESC, "Schnee", HEAVY, "viel", LIGHT, "ein wenig"),
+				LANGUAGES.EN, JSON.make(TYPE, 2, DESC, "snow", "a lot of", HEAVY, LIGHT, "a bit of")
+		));
+		iconData.put("snowshowers", JSON.make(ICON, "snow", 
+				LANGUAGES.DE, JSON.make(TYPE, 2, DESC, "Schneeschauer", HEAVY, "heftige", LIGHT, "leichte"),
+				LANGUAGES.EN, JSON.make(TYPE, 3, DESC, "snow showers", HEAVY, "heavy", LIGHT, "light")
+		));
+		iconData.put("sleet", JSON.make(ICON, "sleet", 
+				LANGUAGES.DE, JSON.make(TYPE, 2, DESC, "Graupel", HEAVY, "viel", LIGHT, "ein wenig"),
+				LANGUAGES.EN, JSON.make(TYPE, 2, DESC, "sleet", HEAVY, "a lot of", LIGHT, "a bit of")
+		));
+		iconData.put("sleetshowers", JSON.make(ICON, "sleet", 
+				LANGUAGES.DE, JSON.make(TYPE, 2, DESC, "Graupelschauer", HEAVY, "heftige", LIGHT, "leichte"),
+				LANGUAGES.EN, JSON.make(TYPE, 3, DESC, "showers of sleet", HEAVY, "heavy", LIGHT, "light")
+		));
+		iconData.put("fog", JSON.make(ICON, "fog", 
+				LANGUAGES.DE, JSON.make(TYPE, 1, DESC, "neblig", HEAVY, "stark", LIGHT, "leicht"),
+				LANGUAGES.EN, JSON.make(TYPE, 2, DESC, "fog", HEAVY, "heavy", LIGHT, "light")
+		));
+		iconData.put("fair", JSON.make(ICON, "fair-{time}", 
+				LANGUAGES.DE, JSON.make(TYPE, 1, DESC, "heiter"),
+				LANGUAGES.EN, JSON.make(TYPE, 1, DESC, "fair")
+		));
+		iconData.put("wind", JSON.make(ICON, "wind", 
+				LANGUAGES.DE, JSON.make(TYPE, 1, DESC, "windig", HEAVY, "sehr", LIGHT, "etwas"),
+				LANGUAGES.EN, JSON.make(TYPE, 2, DESC, "wind", HEAVY, "heavy", LIGHT, "light")
+		));
+		iconData.put("snowandthunder", JSON.make(ICON, "thunder-and-snow", 
+				LANGUAGES.DE, JSON.make(TYPE, 2, DESC, "Unwetter mit Donner, Blitzen und Schnee", HEAVY, "heftiges", LIGHT, "leichtes"),
+				LANGUAGES.EN, JSON.make(TYPE, 3, DESC, "storms with thunder, lightning and snow", HEAVY, "heavy", LIGHT, "light")
+		));
+		iconData.put("sleetandthunder", JSON.make(ICON, "thunder-and-sleet", 
+				LANGUAGES.DE, JSON.make(TYPE, 2, DESC, "Unwetter mit Donner, Blitzen und Graupel", HEAVY, "heftiges", LIGHT, "leichtes"),
+				LANGUAGES.EN, JSON.make(TYPE, 3, DESC, "storms with thunder, lightning and sleet", HEAVY, "heavy", LIGHT, "light")
+		));
+		iconData.put("rainandthunder", JSON.make(ICON, "thunder-and-rain", 
+				LANGUAGES.DE, JSON.make(TYPE, 2, DESC, "Unwetter mit Donner, Blitzen und Regen", HEAVY, "heftiges", LIGHT, "leichtes"),
+				LANGUAGES.EN, JSON.make(TYPE, 3, DESC, "storms with thunder, lightning and rain", HEAVY, "heavy", LIGHT, "light")
+		));
+		iconData.put("default", JSON.make(ICON, "default", 
+				LANGUAGES.DE, JSON.make(TYPE, 3, DESC, "unknown conditions"),
+				LANGUAGES.EN, JSON.make(TYPE, 3, DESC, "unbekannte Bedingungen")
+		));
+	}
+	public static JSONObject getIconWithDescription(String weatherInfo, String language, String predictionTime){
+		//supported?
+		if (!supportedLanguages.contains(language)){
+			language = LANGUAGES.EN;		//fallback EN
+		}
+		//get time, default to day - Note: 'polartwilight$' for now because we don't have icons for it
+		String dayNightTwilight = NluTools.stringFindFirstPart(weatherInfo, "(day$|night$)");	
+		if (Is.nullOrEmpty(dayNightTwilight)){
+			dayNightTwilight = "day";
+		}
+		weatherInfo = weatherInfo.replaceFirst("_\\w+$", "").trim();		//we assume this must be (day|night|polartwilight)
+		//heavy, light or normal?
+		String heavyLight = NluTools.stringFindFirstPart(weatherInfo, "(heavy|light)");
+		if (Is.notNullOrEmpty(heavyLight)){
+			weatherInfo = weatherInfo.replace(heavyLight, "").trim();
+		}
+		//thunder?
+		if (weatherInfo.contains("thunder")){
+			weatherInfo = weatherInfo.replace("showers", "").trim();
+		}
+		//get data
+		//System.out.println("weatherInfo: " + weatherInfo);		//DEBUG
+		JSONObject data = iconData.get(weatherInfo);
+		if (data == null){
+			data = iconData.get("default");
+		}
+		String icon = JSON.getString(data, ICON);
+		if (Is.notNullOrEmpty(dayNightTwilight)){
+			//replace day/night tag
+			icon = icon.replace("{time}", dayNightTwilight);
+		}
+		//description with modifiers
+		JSONObject descriptionObj = JSON.getJObject(data, language);
+		String description = JSON.getStringOrDefault(descriptionObj, DESC, "unknown conditions");
+		if (Is.notNullOrEmpty(heavyLight)){
+			description = (JSON.getStringOrDefault(descriptionObj, heavyLight, "") + " " + description).trim();
+		}
+		int baseType = JSON.getIntegerOrDefault(descriptionObj, TYPE, 3);
+		String descBase = (String) JSON.getJObject(descBaseByType.get(baseType), language).get(predictionTime);
+		description = descBase.replace("{desc}", description);
+		return JSON.make(
+			ICON, icon,
+			DESC, description
+		);
 	}
 
 	@Override
@@ -275,12 +401,27 @@ public class WeatherMeteoNorway implements ServiceInterface {
 						n++;
 					}
 					
+					//Today
+					String summarySymbol;
+					String predictTime;
+					if (isToday){
+						JSONObject oneHourSummary = JSON.getJObject(dayJson, new String[]{"data", "next_1_hours", "summary"});
+						summarySymbol = JSON.getStringOrDefault(oneHourSummary, "symbol_code", "default");
+						predictTime = NOW;
+					}else{
+						summarySymbol = "default";
+						predictTime = FUTURE;
+					}
+					JSONObject summaryDescAndIcon = getIconWithDescription(summarySymbol, nluResult.input.language, predictTime);
+					
 					String localDateForItem = DateTimeConverters.getTodayPlusX_seconds(
 							"yyyy.MM.dd_HH:mm:ss", nluResult.input, secondsDiff
 					);
 					System.out.println("Date UTC: " + dateUTC);		//debug
 					System.out.println("Date Local: " + localDateForItem);		//debug
 					System.out.println("Temp. (" + tempUnitFound + "): " + JSON.getString(dayJsonDetails, "air_temperature"));		//debug
+					System.out.println("Desc.: " + summaryDescAndIcon.get(DESC));
+					System.out.println("Icon: " + summaryDescAndIcon.get(ICON));
 					System.out.println("");		//debug
 					
 					if (secondsDiff > timeDiffEnd){

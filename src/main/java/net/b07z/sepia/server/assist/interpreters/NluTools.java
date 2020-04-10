@@ -44,7 +44,8 @@ public class NluTools {
 		return false;
 	}
 	/**
-	 * Find first match of these ...
+	 * Find first match.<br>
+	 * NOTE: Matches separate tokens, e.g.: "b" in "a b c" but NOT in "abc"!
 	 * @param text - string with text to analyze
 	 * @param find_first_of - string with terms to find separated by "|" e.g. a|b|c
 	 * @return string with first match or empty string for "no match"
@@ -57,7 +58,22 @@ public class NluTools {
 		}
 	}
 	/**
-	 * Find first match of these ...
+	 * Find first match.<br>
+	 * NOTE: Matches parts of words, e.g.: "b" in "a b c" AND in "abc"!
+	 * @param text - string with text to analyze
+	 * @param find_first_of - string with terms to find separated by "|" e.g. a|b|c
+	 * @return string with first match or empty string for "no match"
+	 */
+	public static String stringFindFirstPart(String text, String find_first_of){
+		if (text.matches(".*?(" + find_first_of + ").*")){
+			return text.replaceAll(".*?(" + find_first_of + ").*", "$1");			//TODO: it would be better to name the group instead of using $1
+		}else{
+			return "";
+		}
+	}
+	/**
+	 * Find first match.<br>
+	 * NOTE: Matches separate tokens, e.g.: "b" in "a b c" but NOT in "abc"!
 	 * @param text - string with text to analyze
 	 * @param find_first_of - string with terms to find separated by "|" e.g. a|b|c
 	 * @return string with first match or empty string for "no match"
@@ -70,7 +86,8 @@ public class NluTools {
 		}
 	}
 	/**
-	 * Find last and minimal match of these. Runs greedy through the string and USUALLY finds a minimal version of the options.
+	 * Find last and minimal match of these. Runs greedy through the string and USUALLY finds a minimal version of the options.<br>
+	 * NOTE: Matches separate tokens, e.g.: "b" in "a b c" but NOT in "abc"!
 	 * @param text - string with text to analyze
 	 * @param find_last_of - string with terms to find separated by "|" e.g. a|b|c
 	 * @return string with last match or empty string for "no match"
@@ -83,8 +100,9 @@ public class NluTools {
 		}
 	}
 	/**
-	 * Remove first match of these ... <br>
-	 * Note: since its regExp you might need to make wise use of {@link Pattern#quote}.
+	 * Remove first match.<br>
+	 * NOTE 1: Matches separate tokens, e.g.: "b" in "a b c" but NOT in "abc"!<br>
+	 * NOTE 2: Since its regExp you might need to make wise use of {@link Pattern#quote}.
 	 * @param text - string with text to analyze
 	 * @param remove_first_of - string with terms to remove the first match, separated by "|" e.g. a|b|c
 	 * @return string with removed first match
