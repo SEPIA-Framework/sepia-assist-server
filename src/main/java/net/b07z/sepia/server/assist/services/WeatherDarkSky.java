@@ -92,8 +92,8 @@ public class WeatherDarkSky implements ServiceInterface {
 	}
 	
 	/**
-	 * Get a localized name for a day of the week (1-7), today (0) and now (-1)
-	 * @param tag - numbers from -1 to 7 as string 
+	 * Get a localized name for a day of the week (1-7), today (0) and now (-1) or short localized name for a day (monday - Mon, montag - Mo).
+	 * @param tag - numbers from -1 to 7 as string, days in different formats like "monday", "montag" or "Mon", "Mo", "Tue", "Die" etc.
 	 * @param language - ISO code
 	 */
 	public static String getTimeName(String tag, String language){
@@ -137,7 +137,7 @@ public class WeatherDarkSky implements ServiceInterface {
 			.addCustomAnswer("dayOfWeekAnswer", answerDayOfWeek)	//specific for a certain day of the week
 			.addCustomAnswer("weekAnswer", answerThisWeek)			//specific for anything even further than tomorrow
 			.addFailAnswer("weather_0a")							//for some reason the service failed
-			.addAnswerParameters("place", "tempRequest", "tempDesc", "day");
+			.addAnswerParameters("place", "temp", "description", "day");
 		
 		return info;
 	}
@@ -382,8 +382,8 @@ public class WeatherDarkSky implements ServiceInterface {
 				
 				//response info
 				api.resultInfoPut("place", place);
-				api.resultInfoPut("tempRequest", (int) tempNow);
-				api.resultInfoPut("tempDesc", tempNowDesc);
+				api.resultInfoPut("temp", (int) tempNow);
+				api.resultInfoPut("description", tempNowDesc);
 				api.resultInfoPut("day", dayLong);
 				
 				//card type
@@ -468,18 +468,18 @@ public class WeatherDarkSky implements ServiceInterface {
 				//response info and card type
 				api.resultInfoPut("place", place);
 				if (days == 1){
-					api.resultInfoPut("tempRequest", (int) targetTemp);
-					api.resultInfoPut("tempDesc", targetDesc);
+					api.resultInfoPut("temp", (int) targetTemp);
+					api.resultInfoPut("description", targetDesc);
 					api.resultInfoPut("day", dayLong);
 					cardElementType = ElementType.weatherTmo;
 				}else if (!tooFarOrUnspecific){
-					api.resultInfoPut("tempRequest", (int) targetTemp);
-					api.resultInfoPut("tempDesc", targetDesc);
+					api.resultInfoPut("temp", (int) targetTemp);
+					api.resultInfoPut("description", targetDesc);
 					api.resultInfoPut("day", dayLong);
 					cardElementType = ElementType.weatherWeek;
 				}else{
-					api.resultInfoPut("tempRequest", "");
-					api.resultInfoPut("tempDesc", tempWeekDesc);
+					api.resultInfoPut("temp", "");
+					api.resultInfoPut("description", tempWeekDesc);
 					api.resultInfoPut("day", "");
 					cardElementType = ElementType.weatherWeek;
 				}

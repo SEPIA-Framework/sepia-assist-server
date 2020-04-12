@@ -47,14 +47,16 @@ public class Test_Weather {
 		String WEA = CMD.WEATHER;
 		String language;
 		JSONObject location = LOCATION.makeLocation("Deutschland", "NRW", "Essen", null, null, null, "51.45", "7.01");
+		//JSONObject location = LOCATION.makeLocation("Norwegen", null, "Tromsö", null, null, null, "69.649", "18.954");
 		
 		language = LANGUAGES.DE;
 		tests = new HashMap<>();
-		tests.put("Wie ist das Wetter heute?",		JSON.make("c", WEA, "p", JSON.make(PARAMETERS.REPLY, "")));
+		//tests.put("Wie ist das Wetter heute?",		JSON.make("c", WEA, "p", JSON.make(PARAMETERS.REPLY, "")));
 		//tests.put("Wie ist das Wetter morgen?",		JSON.make("c", WEA, "p", JSON.make(PARAMETERS.REPLY, "")));
 		//tests.put("Wie ist das Wetter übermorgen?",		JSON.make("c", WEA, "p", JSON.make(PARAMETERS.REPLY, "")));
 		//tests.put("Wie ist das Wetter am Dienstag?",		JSON.make("c", WEA, "p", JSON.make(PARAMETERS.REPLY, "")));
 		//tests.put("Wie ist das Wetter am Donnerstag?",		JSON.make("c", WEA, "p", JSON.make(PARAMETERS.REPLY, "")));
+		tests.put("Wie ist das Wetter diese Woche?",		JSON.make("c", WEA, "p", JSON.make(PARAMETERS.REPLY, "")));
 				
 		for (Map.Entry<String, JSONObject> t : tests.entrySet()){
 			String shouldBeCmd = JSON.getString(t.getValue(), "c");
