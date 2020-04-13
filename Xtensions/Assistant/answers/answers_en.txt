@@ -369,14 +369,14 @@ weather_ask_place_1a;;		rep=0|mood=5;;		Where do you want me to search for the w
 weather_ask_place_1a;;		rep=1|mood=5;;		Sorry, say again, where should I look? ;;char=neutral,polite
 weather_ask_place_1a;;		rep=2|mood=5;;		Hmm I think there is a problem, one more time please. ;;char=neutral,polite
 weather_today_1a;;		rep=0|mood=5;;		The weather in <1> is <3> at a temperature of <2> degrees. ;;char=neutral
-weather_today_1b;;		rep=0|mood=5;;		Here is the weather for <1>. <3> at a temperature of <2> degrees. ;;char=neutral
+weather_today_1b;;		rep=0|mood=5;;		Here is the weather for <1>. <3> at a temperature of <2> degrees <7>. ;;char=neutral
 weather_tomorrow_1a;;	rep=0|mood=5;;		The weather in <1> for tomorrow is <3> at temperatures up to <2> degrees. ;;char=neutral
-weather_tomorrow_1b;;	rep=0|mood=5;;		Here is the weather for tomorrow in <1>. <3> in the morning and the temperature will be between <5> and <2> degrees. ;;char=neutral
+weather_tomorrow_1b;;	rep=0|mood=5;;		Here is the weather for tomorrow in <1>. <3> in the morning and the temperature will be between <5> and <2> degrees <7>. ;;char=neutral
 weather_day_1a;;		rep=0|mood=5;;		The weather on <4> in <1> is <3> at temperatures up to <2> degrees. ;;char=neutral
-weather_day_1b;;		rep=0|mood=5;;		Here is the weather for <1> on <4>. <3> in the morning and the temperature will be between <5> and <2> degrees. ;;char=neutral
+weather_day_1b;;		rep=0|mood=5;;		Here is the weather for <1> on <4>. <3> in the morning and the temperature will be between <5> and <2> degrees <7>. ;;char=neutral
 weather_week_0a;;		rep=0|mood=5;;		The overview of the week can currently only be shown on the display, but you could ask me for a specific day. ;;char=neutral
 weather_week_1a;;		rep=0|mood=5;;		Hmm I'd be careful but what they say for this week is <3>. ;;char=neutral
-weather_week_1b;;		rep=0|mood=5;;		Here is an overview of the week. ;;char=neutral
+weather_week_1b;;		rep=0|mood=5;;		Here is an overview of the next 7 days for <1>. ;;char=neutral
 websearch_1a;;		rep=0|mood=5;;		Ok, let me open a page for you. ;;char=neutral
 websearch_1a;;		rep=0|mood=5;;		Just a second while I search the web for <1>. ;;char=neutral
 websearch_ask_search_0a;;		rep=0|mood=5;;		What should I look for? ;;char=neutral

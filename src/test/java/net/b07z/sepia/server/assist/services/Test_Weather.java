@@ -80,16 +80,16 @@ public class Test_Weather {
 			"heavysnowshowersandthunder",
 			"sleetandthunder"
 		).forEach(iconTag -> {
-			testIconAndDescription(iconTag);
+			testIconAndDescription(iconTag, null);
 		});
 		*/
 	}
 	
-	private static void testIconAndDescription(String iconTag){
+	private static void testIconAndDescription(String iconTag, String warning){
 		System.out.println("---- IconId: " + iconTag);
 		Arrays.asList(LANGUAGES.DE, LANGUAGES.EN).forEach(lang -> {
 			Arrays.asList("now", "future").forEach(predictTime -> {
-				JSONObject data = WeatherMeteoNorway.getIconWithDescription(iconTag, lang, predictTime);
+				JSONObject data = WeatherMeteoNorway.getIconWithDescription(iconTag, warning, lang, predictTime);
 				System.out.println("Icon and desc.: " + data.toJSONString());
 			});
 		});

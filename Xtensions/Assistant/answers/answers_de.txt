@@ -389,15 +389,15 @@ weather_ask_place_1a;;		rep=1|mood=5;;		Sorry, sag noch mal, wo soll ich gucken?
 weather_ask_place_1a;;		rep=2|mood=5;;		Hmm ich glaub es gibt ein Problem, ein mal bitte noch. ;;char=polite,neutral
 weather_ask_place_1a;;		rep=2|mood=5;;		Es könnte tatsächlich sein, dass ich diesen Ort noch nicht kenne. Sag noch einmal bitte.;;char=polite,neutral
 weather_today_1a;;		rep=0|mood=5;;		Das Wetter in <1> ist <3> bei einer Temperatur von <2> Grad. ;;char=neutral
-weather_today_1b;;		rep=0|mood=5;;		Hier ist das Wetter für <1>. <3> bei einer Temperatur von <2> Grad. ;;char=neutral
+weather_today_1b;;		rep=0|mood=5;;		Hier ist das Wetter für <1>. <3> bei einer Temperatur von <2> Grad <7>. ;;char=neutral
 weather_tomorrow_1a;;	rep=0|mood=5;;		Das Wetter für Morgen in <1> ist <3> bei Temperaturen von bis zu <2> Grad.
-weather_tomorrow_1b;;	rep=0|mood=5;;		Hier ist das Wetter für Morgen in <1>. <3> am Vormittag und die Temperatur liegt zwischen <5> und <2> Grad.
-weather_tomorrow_1c;;	rep=0|mood=5;;		Hier ist das Wetter für Morgen in <1>. <3> am Vormittag und <5> am Nachmittag bei Temperaturen von <2> bis <6> Grad.
+weather_tomorrow_1b;;	rep=0|mood=5;;		Hier ist das Wetter für Morgen in <1>. <3> am Vormittag und die Temperatur liegt zwischen <5> und <2> Grad <7>.
+weather_tomorrow_1c;;	rep=0|mood=5;;		Hier ist das Wetter für Morgen in <1>. <3> am Vormittag und <5> am Nachmittag bei Temperaturen von <2> bis <6> Grad <7>.
 weather_day_1a;;		rep=0|mood=5;;		Das Wetter am <4> in <1> ist <3> bei Temperaturen von bis zu <2> Grad.
-weather_day_1b;;		rep=0|mood=5;;		Hier ist das Wetter für <4> in <1>. <3> am Vormittag und die Temperatur liegt zwischen <5> und <2> Grad.
+weather_day_1b;;		rep=0|mood=5;;		Hier ist das Wetter für <4> in <1>. <3> am Vormittag und die Temperatur liegt zwischen <5> und <2> Grad <7>.
 weather_week_0a;;		rep=0|mood=5;;		Die Übersicht der Woche kann zur Zeit leider nur auf dem Display angezeigt werden. Frag mich doch nach einem bestimmten Tag. ;;char=neutral
 weather_week_1a;;		rep=0|mood=5;;		Hmm ich wäre da vorsichtig aber was man sagt für diese Woche ist <3>. ;;char=neutral
-weather_week_1b;;		rep=0|mood=5;;		Schau mal, hier ist eine Übersicht der Woche. ;;char=neutral
+weather_week_1b;;		rep=0|mood=5;;		Schau mal, hier ist eine Übersicht der nächsten 7 Tage für <1>. ;;char=neutral
 websearch_1a;;		rep=0|mood=5;;		Ok, lass mich eine Seite öffnen für dich. ;;char=cool,rude,neutral
 websearch_1a;;		rep=0|mood=5;;		Einen Moment, ich such schnell im Web nach <1>. ;;char=polite,neutral
 websearch_ask_search_0a;;		rep=0|mood=5;;		Wonach soll ich suchen? ;;char=cool,rude,neutral

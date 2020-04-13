@@ -4,10 +4,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import net.b07z.sepia.server.assist.answers.AnswerStatics;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.data.Card;
 import net.b07z.sepia.server.assist.data.Parameter;
@@ -34,7 +37,7 @@ import net.b07z.sepia.server.core.tools.JSON;
 import net.b07z.sepia.server.core.tools.URLBuilder;
 
 /**
- * Weather service using Meteorologisk Institutt Norway data.
+ * Weather service using data from the Meteorologisk Institutt Norway.
  * 
  * @author Florian Quirin
  */
@@ -42,11 +45,15 @@ public class WeatherMeteoNorway implements ServiceInterface {
 	
 	//Some API data
 	private final static String API_HEADER_INFO = "Self-hosted open-source SEPIA assistant sepia-framework.github.io";
+	private static AtomicLong lastApiCall = new AtomicLong(0l);
+	private static AtomicInteger recentApiCalls = new AtomicInteger(0);
+	private static int apiQuoteLimitPer5min = 9;	//NOTE: if you increase this please change API_HEADER_INFO since it might lead to SEPIA getting blocked!!!
 	
 	//Some references
-	private final static double rainReferenceMmPerHour = 1.0d;		//24mm in 24h = heavy rain
-	private final static double snowReferenceMmPerHour = 1.0d;		//TODO: is this ok?
-	private final static double sleetReferenceMmPerHour = 1.0d;		//TODO: is this ok?
+	private final static double rainReferenceMmPerHour = 5.0d;		//Middle strong rain: 5mm/h
+	private final static double snowReferenceMmPerHour = 5.0d;		//TODO: is this ok?
+	private final static double sleetReferenceMmPerHour = 5.0d;		//TODO: is this ok?
+	private final static double strongWind = 11.0d;					//40 km/h , 11 m/s
 	
 	//Data
 	public static final List<String> supportedLanguages = Arrays.asList(
@@ -78,15 +85,30 @@ public class WeatherMeteoNorway implements ServiceInterface {
 				LANGUAGES.EN, JSON.make(NOW, "There are {desc}", FUTURE, "There will be {desc}")
 		));
 	}
+	public static Map<String, JSONObject> weatherWarnings = new HashMap<>();
+	static {
+		weatherWarnings.put("strong_wind", JSON.make( 
+				LANGUAGES.DE, JSON.make("type1", "und sehr windig", 	"type2", "und starken Wind", 	"type3", "und starken Wind"),
+				LANGUAGES.EN, JSON.make("type1", "and very windy", 		"type2", "and strong wind", 	"type3", "and strong wind")
+		));
+		weatherWarnings.put("wind", JSON.make( 
+				LANGUAGES.DE, JSON.make("type1", "und windig", 	"type2", "und Wind", 	"type3", "und Wind"),
+				LANGUAGES.EN, JSON.make("type1", "and windy", 	"type2", "and wind", 	"type3", "and wind")
+		));
+	}
 	public static Map<String, JSONObject> partOfDay = new HashMap<>();
 	static {
 		partOfDay.put("morning", JSON.make(
-				LANGUAGES.DE, "Vormittag",
-				LANGUAGES.EN, "morning"
+				LANGUAGES.DE, "Vormittag",				LANGUAGES.EN, "morning"
+		));
+		partOfDay.put("morning_short", JSON.make(
+				LANGUAGES.DE, "Vm",					LANGUAGES.EN, "AM"
 		));
 		partOfDay.put("afternoon", JSON.make(
-				LANGUAGES.DE, "Nachmittag",
-				LANGUAGES.EN, "afternoon"
+				LANGUAGES.DE, "Nachmittag",				LANGUAGES.EN, "afternoon"
+		));
+		partOfDay.put("afternoon_short", JSON.make(
+				LANGUAGES.DE, "Nm",					LANGUAGES.EN, "PM"
 		));
 	}
 	public static Map<String, JSONObject> iconData = new HashMap<>();
@@ -156,7 +178,7 @@ public class WeatherMeteoNorway implements ServiceInterface {
 				LANGUAGES.EN, JSON.make(TYPE, 3, DESC, "unbekannte Bedingungen")
 		));
 	}
-	public static JSONObject getIconWithDescription(String weatherInfo, String language, String predictionTime){
+	public static JSONObject getIconWithDescription(String weatherInfo, String warning, String language, String predictionTime){
 		//supported?
 		if (!supportedLanguages.contains(language)){
 			language = LANGUAGES.EN;		//fallback EN
@@ -196,11 +218,24 @@ public class WeatherMeteoNorway implements ServiceInterface {
 		int baseType = JSON.getIntegerOrDefault(descriptionObj, TYPE, 3);
 		String descBase = (String) JSON.getJObject(descBaseByType.get(baseType), language).get(predictionTime);
 		String descLong = descBase.replace("{desc}", description);
+		//warnings
+		String warningDesc = null;
+		if (Is.notNullOrEmpty(warning) && !weatherInfo.contains(warning)){		//might already be in icon
+			try{
+				warningDesc = (String) ((JSONObject) weatherWarnings.get(warning).get(language)).get("type" + baseType);
+			}catch(Exception e){
+				//not found
+			}
+			if (warningDesc != null){
+				descLong += " " + warningDesc;
+			}
+		}
 		return JSON.make(
 			ICON, icon,
 			DESC, descLong,
 			"descShort", description,
-			TYPE, baseType 
+			TYPE, baseType,
+			"warning", warningDesc
 		);
 	}
 
@@ -225,7 +260,7 @@ public class WeatherMeteoNorway implements ServiceInterface {
 			.addCustomAnswer("missingDisplayForWeek", missingDisplayForWeek)	//a display to show results is missing 
 			.addCustomAnswer("missingGeoData", missingGeoData)		//geo data like GPS coordinates are missing
 			;
-		info.addAnswerParameters("place", "temp", "description", "day", "context1", "context2");
+		info.addAnswerParameters("place", "temp", "description", "day", "context1", "context2", "unit");
 		
 		return info;
 	}
@@ -326,6 +361,18 @@ public class WeatherMeteoNorway implements ServiceInterface {
 		long tic = System.currentTimeMillis();
 		HttpClientResult response = null;
 		try{
+			//track self-limiting quota
+			long timeTillLastCall = System.currentTimeMillis() - lastApiCall.get(); 
+			if (timeTillLastCall > 300000){
+				//reset after 5min without call
+				recentApiCalls.set(0);
+			}else{
+				long newVal = recentApiCalls.incrementAndGet();
+				if (newVal > apiQuoteLimitPer5min){
+					throw new RuntimeException("Self-defined quota limit of " + apiQuoteLimitPer5min + " calls in 5 minutes reached. Please wait 5min.");
+				}
+			}
+			lastApiCall.set(System.currentTimeMillis());
 			//NOTE: initially this was reading XML data that's why we use 'apacheHttpGET'
 			//For XML see: https://www.baeldung.com/jackson-convert-xml-json (probably requires a correct class for the result)
 			Map<String, String> headers = new HashMap<>();
@@ -377,8 +424,15 @@ public class WeatherMeteoNorway implements ServiceInterface {
 					if (tempUnitFound.equalsIgnoreCase("C") && userPrefTempUnit.equalsIgnoreCase("F")){
 						convertToFahrenheit = true;
 					}else if (tempUnitFound.equalsIgnoreCase("F") && userPrefTempUnit.equalsIgnoreCase("C")){
-						convertToCelsius = true;
+						convertToCelsius = true;						
 					}
+				}
+				if (userPrefTempUnit.equalsIgnoreCase("C") || convertToCelsius){
+					service.resultInfoPut("unit", "Celsius");
+				}else if (userPrefTempUnit.equalsIgnoreCase("F") || convertToFahrenheit){
+					service.resultInfoPut("unit", "Fahrenheit");
+				}else{
+					service.resultInfoPut("unit", "");		//unknown?
 				}
 				//Data array
 				JSONArray weatherTimeseries = JSON.getJArray(weatherData, new String[]{"properties", "timeseries"});
@@ -447,6 +501,9 @@ public class WeatherMeteoNorway implements ServiceInterface {
 				//iterate days
 				JSONObject morningSummary = null;
 				JSONObject afternoonSummary = null;
+				int bestSummaryTemp = Integer.MIN_VALUE;
+				String bestSummaryDay = null;
+				boolean wholeWeekBaseSet = false;
 				int n = 0;
 				for (Object o : weatherTimeseries){
 					JSONObject dayJson = (JSONObject) o;
@@ -481,13 +538,35 @@ public class WeatherMeteoNorway implements ServiceInterface {
 					String dayShort = WeatherDarkSky.getTimeName(tags[1].toLowerCase(), service.language);
 					String dayLong = WeatherDarkSky.getTimeName(dayShort, service.language);
 					
+					//temperature
+					String tempStr = JSON.getString(dayJsonDetails, "air_temperature");
+					int tempInt;
+					if (convertToFahrenheit || convertToCelsius){
+						double newTemp = Number.convertTemperature(tempStr, tempUnitFound, userPrefTempUnit, userPrefTempUnit);
+						tempInt = (int) Math.round(newTemp);
+						tempUnitUsed = userPrefTempUnit;
+					}else{
+						tempInt = (int) Math.round(Double.parseDouble(tempStr));
+						tempUnitUsed = tempUnitFound;
+					}
+					
+					//wind
+					double windSpeedMs = JSON.getDoubleOrDefault(dayJsonDetails, "wind_speed", 0.0d);
+					double windFactor = windSpeedMs / strongWind;
+					String dayWarning = null;
+					if (windFactor > 1.0d){
+						dayWarning = "strong_wind";
+					}else if (windFactor > 0.6){
+						dayWarning = "wind";
+					}
+					
 					//track morning and afternoon - NOTE: this only works if we get reliable data at 6 and 12 o'clock !
 					boolean isMorning = false;
 					boolean isAfternoon = false;
 					if (secondsDiff > nextMorningDiffSec){
 						//System.out.println("MORNING: " + dateUTC); 	//DEBUG
 						//JSON.prettyPrint(dayJson); 					//DEBUG
-						morningSummary = getSixHoursSummary(dayJson, tags[2], service);
+						morningSummary = getSixHoursSummary(dayJson, dayWarning, tags[2], dayLong, service);
 						if (morningSummary != null){
 							int i=0;
 							do{
@@ -505,7 +584,7 @@ public class WeatherMeteoNorway implements ServiceInterface {
 					}else if (secondsDiff > nextAfternoonDiffSec){
 						//System.out.println("NOON: " + dateUTC); 	//DEBUG
 						//JSON.prettyPrint(dayJson); 				//DEBUG
-						afternoonSummary = getSixHoursSummary(dayJson, tags[2], service);
+						afternoonSummary = getSixHoursSummary(dayJson, dayWarning, tags[2], dayLong, service);
 						if (afternoonSummary != null){
 							int i=0;
 							do{
@@ -522,27 +601,19 @@ public class WeatherMeteoNorway implements ServiceInterface {
 						}
 					}
 					
-					//temperature
-					String tempStr = JSON.getString(dayJsonDetails, "air_temperature");
-					int tempInt;
-					if (convertToFahrenheit || convertToCelsius){
-						double newTemp = Number.convertTemperature(tempStr, tempUnitFound, userPrefTempUnit, userPrefTempUnit);
-						tempInt = (int) Math.round(newTemp);
-						tempUnitUsed = userPrefTempUnit;
-					}else{
-						tempInt = (int) Math.round(Double.parseDouble(tempStr));
-						tempUnitUsed = tempUnitFound;
-					}
-					
 					//Specific:
 					
 					//TODAY
 					if (isToday){
 						String predictTime = NOW;
-						JSONObject oneHourSummary = getOneHourSummary(predictTime, dayJson, service);
+						JSONObject oneHourSummary = getOneHourSummary(predictTime, dayJson, dayWarning, service);
 						String icon = JSON.getString(oneHourSummary, ICON);
 						double precipRelative = JSON.getDoubleOrDefault(oneHourSummary, "precipRelative", -1.0d);
 						String precipType = JSON.getStringOrDefault(oneHourSummary, "precipType", null);
+						
+						if (isMorning){
+							//TODO: use it to give more info?
+						}
 						
 						//Details
 						JSONObject thisDetail = new JSONObject();
@@ -552,6 +623,7 @@ public class WeatherMeteoNorway implements ServiceInterface {
 						JSON.put(thisDetail, "icon", icon);
 						JSON.put(thisDetail, "precipRelative", precipRelative);
 						JSON.put(thisDetail, "precipType", precipType);		//rain, snow, sleet or null
+						JSON.put(thisDetail, "warning", dayWarning);		//strong_wind, wind
 						JSON.add(detailsArray, thisDetail);
 						
 						//first entry - now time
@@ -587,10 +659,10 @@ public class WeatherMeteoNorway implements ServiceInterface {
 							JSON.put(dataOut, "tagC", tags[2]);
 						}
 						
-					//NEXT 48h
+					//A day within NEXT 48h
 					}else if (days <= 2){
 						String predictTime = FUTURE;
-						JSONObject oneHourSummary = getOneHourSummary(predictTime, dayJson, service);
+						JSONObject oneHourSummary = getOneHourSummary(predictTime, dayJson, dayWarning, service);
 						String icon = JSON.getString(oneHourSummary, ICON);
 						double precipRelative = JSON.getDoubleOrDefault(oneHourSummary, "precipRelative", -1.0d);
 						String precipType = JSON.getStringOrDefault(oneHourSummary, "precipType", null);
@@ -603,6 +675,7 @@ public class WeatherMeteoNorway implements ServiceInterface {
 						JSON.put(thisDetail, "icon", icon);
 						JSON.put(thisDetail, "precipRelative", precipRelative);
 						JSON.put(thisDetail, "precipType", precipType);		//rain, snow, sleet or null
+						JSON.put(thisDetail, "warning", dayWarning);		//strong_wind, wind
 						JSON.add(detailsArray, thisDetail);
 						
 						//we collect daily summary when we have afternoon data 
@@ -649,7 +722,7 @@ public class WeatherMeteoNorway implements ServiceInterface {
 							service.resultInfoPut("context1", tempMin);
 						}
 						
-					//FUTURE
+					//FUTURE (Day or week summaries)
 					}else{
 						//we collect daily summary when we have afternoon data 
 						if (isAfternoon){
@@ -676,37 +749,64 @@ public class WeatherMeteoNorway implements ServiceInterface {
 							String iconMorning = JSON.getString(morningSummary, ICON);
 							double precipRelativeMorning = JSON.getDoubleOrDefault(morningSummary, "precipRelative", -1.0d);
 							String precipTypeMorning = JSON.getStringOrDefault(morningSummary, "precipType", null);
+							String morningTime = JSON.getStringOrDefault(morningSummary, "time", "")
+									.replaceFirst(":.*", "").replaceFirst("^0", "").trim();
+							String morningTimeAdd = "";
+							if (!morningTime.matches("(5|6|7|8|9)")){
+								morningTimeAdd = " " + morningTime + "+";		//this will only be shown when time is strangely off
+							}
 							//add
 							JSONObject thisDetailMorning = new JSONObject();
-							//JSON.put(thisDetailMorning, "tag", dayShort + ". " + partOfDay.get("morning").get(service.language));
-							JSON.put(thisDetailMorning, "tag", dayShort + ". " + JSON.getStringOrDefault(morningSummary, "time", ""));
+							if (!isWholeWeek){
+								JSON.put(thisDetailMorning, "tag", partOfDay.get("morning").get(service.language) 
+										+ morningTimeAdd);
+							}else{
+								JSON.put(thisDetailMorning, "tag", dayShort + ". (" 
+										+ partOfDay.get("morning_short").get(service.language) + ")"
+										+ morningTimeAdd);
+								//JSON.put(thisDetailMorning, "tag", dayShort + ". " + JSON.getStringOrDefault(morningSummary, "time", ""));
+							}
 							JSON.put(thisDetailMorning, "timeUNIX", unixTime);
-							JSON.put(thisDetailMorning, "tempA", tempMinMorning);
-							JSON.put(thisDetailMorning, "tempB", tempMaxMorning);
+							JSON.put(thisDetailMorning, "tempA", (int) Math.round(tempMinMorning));
+							JSON.put(thisDetailMorning, "tempB", (int) Math.round(tempMaxMorning));
 							JSON.put(thisDetailMorning, "icon", iconMorning);
 							JSON.put(thisDetailMorning, "precipRelative", precipRelativeMorning);
 							JSON.put(thisDetailMorning, "precipType", precipTypeMorning);		//rain, snow, sleet or null
 							JSON.add(detailsArray, thisDetailMorning);
 							
+							//Details afternoon
+							//String descriptionAfternoon = JSON.getString(afternoonSummary, DESC);
+							String iconAfternoon = JSON.getString(afternoonSummary, ICON);
+							double precipRelativeAfternoon = JSON.getDoubleOrDefault(afternoonSummary, "precipRelative", -1.0d);
+							String precipTypeAfternoon = JSON.getStringOrDefault(afternoonSummary, "precipType", null);
+							String afternoonTime = JSON.getStringOrDefault(afternoonSummary, "time", "")
+									.replaceFirst(":.*", "").replaceFirst("^0", "").trim();
+							String afternoonTimeAdd = "";
+							if (!afternoonTime.matches("(11|12|13|14)")){
+								afternoonTimeAdd = " " + afternoonTime + "+";		//this will only be shown when time is strangely off
+							}
+							//add
+							JSONObject thisDetailAfternoon = new JSONObject();
+							if (!isWholeWeek){
+								JSON.put(thisDetailAfternoon, "tag", partOfDay.get("afternoon").get(service.language) 
+										+ afternoonTimeAdd);
+							}else{
+								JSON.put(thisDetailAfternoon, "tag", dayShort + ". (" 
+										+ partOfDay.get("afternoon_short").get(service.language) + ")" 
+										+ afternoonTimeAdd);
+								//JSON.put(thisDetailMorning, "tag", dayShort + ". " + JSON.getStringOrDefault(morningSummary, "time", ""));
+							}
+							//JSON.put(thisDetailAfternoon, "tag", dayShort + ". " + JSON.getStringOrDefault(afternoonSummary, "time", ""));
+							JSON.put(thisDetailAfternoon, "timeUNIX", unixTime);
+							JSON.put(thisDetailAfternoon, "tempA", (int) Math.round(tempMinAfternoon));
+							JSON.put(thisDetailAfternoon, "tempB", (int) Math.round(tempMaxAfternoon));
+							JSON.put(thisDetailAfternoon, "icon", iconAfternoon);
+							JSON.put(thisDetailAfternoon, "precipRelative", precipRelativeAfternoon);
+							JSON.put(thisDetailAfternoon, "precipType", precipTypeAfternoon);	//rain, snow, sleet or null
+							JSON.add(detailsArray, thisDetailAfternoon);
+							
 							//SPECIFIC DAY 
 							if (!isWholeWeek){
-								//Details afternoon
-								String descriptionAfternoon = JSON.getString(afternoonSummary, DESC);
-								String iconAfternoon = JSON.getString(afternoonSummary, ICON);
-								double precipRelativeAfternoon = JSON.getDoubleOrDefault(afternoonSummary, "precipRelative", -1.0d);
-								String precipTypeAfternoon = JSON.getStringOrDefault(afternoonSummary, "precipType", null);
-								//add
-								JSONObject thisDetailAfternoon = new JSONObject();
-								//JSON.put(thisDetailAfternoon, "tag", dayShort + ". " + partOfDay.get("afternoon").get(service.language));
-								JSON.put(thisDetailAfternoon, "tag", dayShort + ". " + JSON.getStringOrDefault(afternoonSummary, "time", ""));
-								JSON.put(thisDetailAfternoon, "timeUNIX", unixTime);
-								JSON.put(thisDetailAfternoon, "tempA", tempMinAfternoon);
-								JSON.put(thisDetailAfternoon, "tempB", tempMaxAfternoon);
-								JSON.put(thisDetailAfternoon, "icon", iconAfternoon);
-								JSON.put(thisDetailAfternoon, "precipRelative", precipRelativeAfternoon);
-								JSON.put(thisDetailAfternoon, "precipType", precipTypeAfternoon);	//rain, snow, sleet or null
-								JSON.add(detailsArray, thisDetailAfternoon);
-								
 								//main block
 								JSON.put(dataOut, "place", place);
 								JSON.put(dataOut, "dateTag", dayLong);
@@ -730,25 +830,42 @@ public class WeatherMeteoNorway implements ServiceInterface {
 							
 							//WEEK
 							}else{
-								//main block - TODO: how to adapt this for WHOLE WEEK ??
-								JSON.put(dataOut, "place", place);
-								JSON.put(dataOut, "dateTag", "week");		//TODO: translate
-								JSON.put(dataOut, "date", "");
-								JSON.put(dataOut, "time", "");
-								JSON.put(dataOut, "timeUNIX", unixTime);
-								JSON.put(dataOut, "desc", "overview");		//TODO: translate
-								JSON.put(dataOut, "icon", "default");	//clear-day, clear-night,...
-								JSON.put(dataOut, "tempA", "");				//TODO: missing
-								JSON.put(dataOut, "tagA", "min");			//TODO: missing
-								JSON.put(dataOut, "tempB", "");
-								JSON.put(dataOut, "tagB", "max");
-								JSON.put(dataOut, "units", "°" + tempUnitUsed);
+								if (tempMax > bestSummaryTemp){
+									bestSummaryTemp = tempMax;
+									bestSummaryDay = JSON.getStringOrDefault(morningSummary, "day", "");
+									//update:
+									JSON.put(dataOut, "tempA", bestSummaryTemp);
+									JSON.put(dataOut, "tagA", bestSummaryDay);		//TODO: improve
+								}
 								
-								//response info
-								service.resultInfoPut("place", place);
-								service.resultInfoPut("temp", "");
-								service.resultInfoPut("description", "");	//TODO: missing
-								service.resultInfoPut("day", "");
+								//this should happen only once:
+								if (!wholeWeekBaseSet){
+									wholeWeekBaseSet = true;
+									
+									String description = AnswerStatics.get(AnswerStatics.OVERVIEW, service.language, true) 
+											+ " " + AnswerStatics.get(AnswerStatics.FOR, service.language) + " " + place;
+									String dateTag = AnswerStatics.get(AnswerStatics.WEEK, service.language, true);
+									
+									//main block
+									JSON.put(dataOut, "place", place);
+									JSON.put(dataOut, "dateTag", dateTag);
+									JSON.put(dataOut, "date", "");
+									JSON.put(dataOut, "time", "");
+									JSON.put(dataOut, "timeUNIX", unixTime);	//NOTE: this will always be from the FIRST day. OK?
+									JSON.put(dataOut, "desc", description);
+									JSON.put(dataOut, "icon", "default");
+									//JSON.put(dataOut, "tempA", bestSummaryTemp);	//will be update above
+									//JSON.put(dataOut, "tagA", bestSummaryDay);
+									//JSON.put(dataOut, "tempB", "");
+									//JSON.put(dataOut, "tagB", "max");
+									JSON.put(dataOut, "units", "°" + tempUnitUsed);
+									
+									//response info
+									service.resultInfoPut("place", place);
+									service.resultInfoPut("temp", "");
+									service.resultInfoPut("description", description);
+									service.resultInfoPut("day", dateTag);
+								}
 							}
 						}
 					}
@@ -821,14 +938,14 @@ public class WeatherMeteoNorway implements ServiceInterface {
 	//--------------------- Data Builder -----------------------
 	
 	//collect data in 'dataOut' and 'detailsArray' objects
-	private static JSONObject getOneHourSummary(String predictTime,	JSONObject dayJson, ServiceBuilder service){
+	private static JSONObject getOneHourSummary(String predictTime,	JSONObject dayJson, String warning, ServiceBuilder service){
 		
 		JSONObject nextHour = JSON.getJObject(dayJson, new String[]{"data", "next_1_hours"});
 		JSONObject oneHourSummary = JSON.getJObject(nextHour, "summary");
 		JSONObject oneHourDetails = JSON.getJObject(nextHour, "details");
 		
 		String summarySymbol = JSON.getStringOrDefault(oneHourSummary, "symbol_code", "default");
-		JSONObject summaryDescAndIcon = getIconWithDescription(summarySymbol, service.language, predictTime);
+		JSONObject summaryDescAndIcon = getIconWithDescription(summarySymbol, warning, service.language, predictTime);
 		String description = (String) summaryDescAndIcon.get(DESC);
 		String icon = (String) summaryDescAndIcon.get(ICON);
 		
@@ -859,7 +976,7 @@ public class WeatherMeteoNorway implements ServiceInterface {
 	}
 	
 	//get 6 hour prediction at point in time
-	private static JSONObject getSixHoursSummary(JSONObject dayJson, String time, ServiceBuilder service){
+	private static JSONObject getSixHoursSummary(JSONObject dayJson, String warning, String time, String day, ServiceBuilder service){
 		
 		JSONObject nextSixHours = JSON.getJObject(dayJson, new String[]{"data", "next_6_hours"});
 		if (nextSixHours == null){
@@ -869,7 +986,7 @@ public class WeatherMeteoNorway implements ServiceInterface {
 		JSONObject nextDetails = JSON.getJObject(nextSixHours, "details");
 		
 		String summarySymbol = JSON.getStringOrDefault(nextSummary, "symbol_code", "default");
-		JSONObject summaryDescAndIcon = getIconWithDescription(summarySymbol, service.language, FUTURE);
+		JSONObject summaryDescAndIcon = getIconWithDescription(summarySymbol, warning, service.language, FUTURE);
 		String description = (String) summaryDescAndIcon.get(DESC);
 		String icon = (String) summaryDescAndIcon.get(ICON);
 		
@@ -898,7 +1015,8 @@ public class WeatherMeteoNorway implements ServiceInterface {
 			ICON, icon,
 			"precipRelative", precipAmountRelative,
 			"precipType", precipType,
-			"time", time
+			"time", time,
+			"day", day
 		);
 		if (tempMax != Double.MIN_VALUE) JSON.put(res, "tempMax", tempMax);
 		if (tempMin != Double.MIN_VALUE) JSON.put(res, "tempMin", tempMin);

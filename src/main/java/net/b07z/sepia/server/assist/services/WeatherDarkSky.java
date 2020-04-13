@@ -93,7 +93,7 @@ public class WeatherDarkSky implements ServiceInterface {
 	
 	/**
 	 * Get a localized name for a day of the week (1-7), today (0) and now (-1) or short localized name for a day (monday - Mon, montag - Mo).
-	 * @param tag - numbers from -1 to 7 as string, days in different formats like "monday", "montag" or "Mon", "Mo", "Tue", "Die" etc.
+	 * @param tag - numbers from -1 to 7 as string, days in different formats like "monday", "montag" or "Mon", "Mo", "Tue", "Die" etc., "week"
 	 * @param language - ISO code
 	 */
 	public static String getTimeName(String tag, String language){
