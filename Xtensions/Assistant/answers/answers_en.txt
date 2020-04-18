@@ -30,6 +30,9 @@ ok_0b;;		rep=0|mood=5;;		Ok, it will be done.	;;char=neutral
 ok_0b;;		rep=0|mood=5;;		Ok, I'll take care of it.	;;char=neutral
 ok_0c;;		rep=0|mood=5;;		Ok, it's done.		;;char=neutral
 done_0a;;		rep=0|mood=5;;		Done.		;;char=neutral
+look_0a;;		rep=0|mood=5;;		Have a look.		;;char=neutral
+look_0a;;		rep=0|mood=5;;		Take a look please.	;;char=neutral
+look_0b;;		rep=0|mood=5;;		Here you go.		;;char=neutral
 default_ask_parameter_0a;;		rep=0|mood=5;;		Hmm the request seems incomplete, what is the missing parameter? ;;char=neutral
 default_ask_parameter_0a;;		rep=1|mood=5;;		And the next missing parameter? ;;char=neutral
 default_ask_parameter_0a;;		rep=2|mood=5;;		And another missing parameter? ;;char=neutral
@@ -177,12 +180,12 @@ music_1c;;		rep=0|mood=5;;		One second, searching music. ;;char=cool,polite,neut
 music_radio_0a;;		rep=0|mood=5;;		<user_name>, I can't find any radio station. Seems there is some problem. ;;char=neutral
 music_radio_0b;;		rep=0|mood=5;;		<user_name>, I haven't found any radio station for this. ;;char=neutral
 music_radio_ask_0a;;	rep=0|mood=5;;		What's the name of the radio station, genre or band you want to hear? ;;char=neutral
-music_radio_1a;;		rep=0|mood=5;;		I've found <1> radio stations. Starting <4>.<br><br><3> ;;char=neutral
+music_radio_1a;;		rep=0|mood=5;;		I've found <1> radio stations. Starting <4>. The others are <3> ;;char=neutral
 music_radio_1b;;		rep=0|mood=5;;		I've found one station for <2>. One second, I'm going to start it now. ;;char=neutral
-music_radio_1c;;		rep=0|mood=5;;		I've found these top <1> radio stations.<br><br><3><br>Gonna start the first now. ;;char=neutral
+music_radio_1c;;		rep=0|mood=5;;		I've found these top <1> radio stations <3>. Gonna start the first now. ;;char=neutral
 music_radio_1d;;		rep=0|mood=5;;		Ok, I'll start the <1> stream. ;;char=neutral
 music_radio_1e;;		rep=0|mood=5;;		Starting radio.
-music_radio_1f;;		rep=0|mood=5;;		Starting radio.<br>I've found <1> station(s):<br><br><3> ;;char=neutral
+music_radio_1f;;		rep=0|mood=5;;		Starting radio. I've found <1> station(s): <3> ;;char=neutral
 music_radio_2a;;		rep=0|mood=5;;		Done, <user_name>. ;;char=neutral
 server_music_0a;;		rep=0|mood=5;;		<user_name>, I can't find any music. ;;char=neutral,cool
 server_music_0a;;		rep=0|mood=5;;		I'm sorry, but I can't find any music. ;;char=polite,neutral
@@ -342,9 +345,9 @@ mobility_ask_start_0a;;		rep=0|mood=5;;		and where do we start? ;;char=neutral
 mobility_ask_start_0a;;		rep=1|mood=5;;		Can you repeat that please? ;;char=neutral,polite
 mobility_ask_start_0a;;		rep=2|mood=5;;		I think I actually don't know that place. ;;char=neutral
 movies_0a;;		rep=0|mood=5;;		Sorry <user_name> I couldn't find any movies related to <1>. ;;char=neutral,polite
-movies_1a;;		rep=0|mood=5;;		I've found <1> movies related to <2>.<br> Here are the first <3>: <br><br> <4> ;;char=neutral
-movies_1b;;		rep=0|mood=5;;		I've found <1> movie related to <2>. Here it is:<br><br> <4> ;;char=neutral
-movies_1c;;		rep=0|mood=5;;		I've found quite a few movies related to <2>.<br> Here are the first <3>: <br><br> <4> ;;char=neutral
+movies_1a;;		rep=0|mood=5;;		I've found <1> movies related to <2>. Here are the first <3>: <4> ;;char=neutral
+movies_1b;;		rep=0|mood=5;;		I've found <1> movie related to <2>. Here it is: <4> ;;char=neutral
+movies_1c;;		rep=0|mood=5;;		I've found quite a few movies related to <2>. Here are the first <3>: <4> ;;char=neutral
 news_1a;;		rep=0|mood=5;;		I'll quickly open the news for you <user_name>. ;;char=neutral
 news_1a;;		rep=0|mood=5;;		Have a look, I just opened the news page for you. ;;char=neutral
 news_1a;;		rep=0|mood=5;;		One moment, I'll open the news. ;;char=neutral

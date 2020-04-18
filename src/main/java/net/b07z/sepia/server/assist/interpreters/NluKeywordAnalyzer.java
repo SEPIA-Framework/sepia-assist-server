@@ -220,7 +220,8 @@ public class NluKeywordAnalyzer implements NluInterface {
 		
 		//---------------------------
 								
-		//SLASH Commands and specials - will overwrite all other commands! - TODO: we should put all slash-command searches in one extra place
+		//SLASH Commands and specials - will overwrite all other commands! - TODO: we should put all slash-commands in one extra place
+		//NOTE: use 'RegexParameterSearch.containsSlashCMD' (again - this class was triggered by it) here?
 		
 		//Repeat me
 		if (NluTools.stringContains(text, "(^saythis|^\\\\saythis|" + Pattern.quote(Config.assistantName) + " saythis)")){
@@ -258,6 +259,7 @@ public class NluKeywordAnalyzer implements NluInterface {
 			Map<String, String> pv = new HashMap<String, String>();
 				pv.put(PARAMETERS.URL, link);
 				pv.put(OpenCustomLink.TITLE, title);
+				pv.put(PARAMETERS.DATA, JSON.make("source", "chat").toJSONString());
 			possibleParameters.add(pv);
 		}
 		

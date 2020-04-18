@@ -76,7 +76,7 @@ public interface InterpretationStep {
 	 * Check if its a slash command, aka a command given as text input or return null.
 	 */
 	public static NluResult getSlashCommand(NluInput input){
-		boolean is_slashCMD = RegexParameterSearch.contains_slashCMD(input.textRaw);
+		boolean is_slashCMD = RegexParameterSearch.containsSlashCMD(input.textRaw);
 		//TODO: add better slash command handler - should the user be allowed to overwrite this with a personal command?
 		if (is_slashCMD){
 			//define NL-Processor for slash CMDs

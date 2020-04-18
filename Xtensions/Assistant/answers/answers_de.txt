@@ -30,6 +30,9 @@ ok_0b;;		rep=0|mood=5;;		Ok, wird erledigt.		;;char=neutral
 ok_0b;;		rep=0|mood=5;;		Ok, wird gemacht.		;;char=neutral
 ok_0c;;		rep=0|mood=5;;		Ok, ist erledigt.		;;char=neutral
 done_0a;;		rep=0|mood=5;;		Erledigt.		;;char=neutral
+look_0a;;		rep=0|mood=5;;		Schau mal.		;;char=neutral
+look_0a;;		rep=0|mood=5;;		Schau mal hier.	;;char=neutral
+look_0b;;		rep=0|mood=5;;		Hier bitte.		;;char=neutral
 default_ask_parameter_0a;;		rep=0|mood=5;;		Hmm, die Anfrage ist scheinbar unvollständig, was ist der fehlende Parameter? ;;char=polite,neutral
 default_ask_parameter_0a;;		rep=1|mood=5;;		Und der nächste fehlende Parameter? ;;char=cool,rude,neutral
 default_ask_parameter_0a;;		rep=2|mood=5;;		Und noch einen Parameter bitte! ;;char=cool,rude
@@ -190,12 +193,12 @@ music_radio_0a;;		rep=0|mood=5;;		<user_name>, ich kann gerade leider kein Radio
 music_radio_0b;;		rep=0|mood=5;;		<user_name>, zu diesem Suchbegriff habe ich leider kein Radio gefunden. ;;char=polite,neutral
 music_radio_ask_0a;;	rep=0|mood=5;;		Welchen Radiosender, welches Genre oder welche Band soll ich für dich suchen? ;;char=cool,polite,neutral 
 music_radio_ask_0a;;	rep=0|mood=5;;		Wie heißt die Radiostation, das Genre oder die Band, die ich suchen soll? ;;char=neutral
-music_radio_1a;;		rep=0|mood=5;;		Habe eine Auswahl von <1> Radio Stationen gefunden und starte schon mal <4>.<br><br><3> ;;char=neutral
+music_radio_1a;;		rep=0|mood=5;;		Habe eine Auswahl von <1> Radio Stationen gefunden und starte schon mal <4>. Die anderen sind <3> ;;char=neutral
 music_radio_1b;;		rep=0|mood=5;;		Habe eine Radio Station gefunden namens <4>. Sekunde, ich starte sie mal. ;;char=polite,neutral
-music_radio_1c;;		rep=0|mood=5;;		Hab folgende top <1> Radio Stationen gefunden.<br><br><3><br>Ich starte mal die erste. ;;char=cool,polite,neutral
+music_radio_1c;;		rep=0|mood=5;;		Hab folgende top <1> Radio Stationen gefunden <3>. Ich starte mal die erste. ;;char=cool,polite,neutral
 music_radio_1d;;		rep=0|mood=5;;		Sekunde, ich starte den <1> Stream. ;;char=cool,rude,neutral
 music_radio_1e;;		rep=0|mood=5;;		Radio wird gestartet.
-music_radio_1f;;		rep=0|mood=5;;		Radio wird gestartet.<br>Habe diese <1> Sender gefunden:<br><br><3> ;;char=cool,rude
+music_radio_1f;;		rep=0|mood=5;;		Radio wird gestartet. Habe diese <1> Sender gefunden: <3> ;;char=cool,rude
 music_radio_2a;;		rep=0|mood=5;;		Erledigt <user_name>. ;;char=neutral
 server_music_0a;;		rep=0|mood=5;;		<user_name>, ich kann die Musik leider nicht finden. ;;char=cool,polite,neutral
 server_music_0a;;		rep=0|mood=5;;		Tut mir leid, aber ich kann die Musik nicht finden. ;;char=cool,polite,neutral
@@ -361,9 +364,9 @@ mobility_ask_start_0a;;		rep=1|mood=5;;		Kannst du das noch mal wiederholen bitt
 mobility_ask_start_0a;;		rep=2|mood=5;;		Ich glaub ich kenne diesen Ort noch nicht. ;;char=cool,neutral
 mobility_ask_start_0a;;		rep=2|mood=5;;		Es könnte tatsächlich sein, dass ich diesen Ort noch nicht kenne. ;;char=polite,neutral
 movies_0a;;		rep=0|mood=5;;		Sorry <user_name>, hab keine Filme gefunden zu <1>. ;;char=cool,rude,neutral
-movies_1a;;		rep=0|mood=5;;		Hab <1> Filme gefunden zu <2>.<br> Hier sind die ersten <3>: <br><br> <4> ;;char=cool,rude,neutral
-movies_1b;;		rep=0|mood=5;;		Hab <1> Film gefunden zu <2>, nämlich diesen hier: <br><br> <4> ;;char=rude
-movies_1c;;		rep=0|mood=5;;		Habe einige Filme gefunden zu <2>.<br> Hier sind die ersten <3>: <br><br> <4> ;;char=polite,neutral
+movies_1a;;		rep=0|mood=5;;		Hab <1> Filme gefunden zu <2>. Hier sind die ersten <3>: <4> ;;char=cool,rude,neutral
+movies_1b;;		rep=0|mood=5;;		Hab <1> Film gefunden zu <2>, nämlich diesen hier: <4> ;;char=rude
+movies_1c;;		rep=0|mood=5;;		Habe einige Filme gefunden zu <2>. Hier sind die ersten <3>: <4> ;;char=polite,neutral
 news_1a;;		rep=0|mood=5;;		Ich öffne mal die News-Seite für dich, <user_name>. ;;char=cool,neutral
 news_1a;;		rep=0|mood=5;;		Guck mal hier, hab die News Seite geöffnet für dich. ;;char=cool,rude
 news_1a;;		rep=0|mood=5;;		Sekunde, ich öffne die News. ;;char=polite,neutral

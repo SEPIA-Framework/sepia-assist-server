@@ -45,7 +45,7 @@ public class RegexParameterSearch {
 	 * @param input - user input
 	 * @return true/false
 	 */
-	public static boolean contains_slashCMD(String input){
+	public static boolean containsSlashCMD(String input){
 		//TODO: improve all slash commands and introduce some static variables for them!
 		if (input.toLowerCase().matches("(" + Pattern.quote(Config.assistantName.toLowerCase()) + " |^|^\\\\)(saythis|linkshare|http(s|)://)\\b.*")){
 			return true;
