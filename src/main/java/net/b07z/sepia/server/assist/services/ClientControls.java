@@ -133,7 +133,7 @@ public class ClientControls implements ServiceInterface{
 		Parameter actionP = nluResult.getRequiredParameter(PARAMETERS.ACTION);
 		String action = actionP.getValueAsString().replaceAll("^<|>$", "").trim();
 		Parameter mediaControlsP = nluResult.getOptionalParameter(PARAMETERS.MEDIA_CONTROLS, "");
-		String mediaControls = mediaControlsP.getValueAsString().replaceAll("^<|>$", "").trim();
+		String mediaControls = mediaControlsP.getValueAsString().replaceAll("^<|>$", "").trim();	//note: < and > are typically already removed
 		boolean isActionOpen = (action.equals(Action.Type.show.name()) || action.equals(Action.Type.on.name()));
 		boolean isActionClose = (action.equals(Action.Type.remove.name()) || action.equals(Action.Type.off.name()));
 		boolean isActionIncrease = (action.equals(Action.Type.increase.name()) || action.equals(Action.Type.add.name()));
@@ -141,7 +141,7 @@ public class ClientControls implements ServiceInterface{
 		boolean isActionEdit = (action.equals(Action.Type.set.name()) || action.equals(Action.Type.edit.name()));
 		
 		Parameter controlFunP = nluResult.getRequiredParameter(PARAMETERS.CLIENT_FUN);
-		String controlFun = controlFunP.getValueAsString().replaceAll("^<|>$", "").trim();
+		String controlFun = controlFunP.getValueAsString().replaceAll("^<|>$", "").trim(); 			//note: < and > are typically already removed
 		
 		boolean isSettings = controlFun.equals(ClientFunction.Type.settings.name());
 		boolean isAlwaysOn = controlFun.equals(ClientFunction.Type.alwaysOn.name());

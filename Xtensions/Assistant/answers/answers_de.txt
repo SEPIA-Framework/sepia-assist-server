@@ -15,9 +15,13 @@ error_region_not_supported_0a;;		rep=0|mood=5;;		Es tut mir leid, aber dieser Se
 error_client_control_0a;;		rep=0|mood=5;;		<user_name>, die Steuerungsfunktion konnte nicht ausgeführt werden. Ich weiß leider nicht warum. 		;;char=neutral
 error_client_control_0b;;		rep=0|mood=5;;		<user_name>, die Steuerungsfunktion konnte nicht ausgeführt werden. 		;;char=neutral
 error_client_support_0a;;		rep=0|mood=5;;		Sorry, aber diese Version der App unterstütz die aufgerufene Aktion nicht. 		;;char=neutral
-error_missing_display_0a;;		rep=0|mood=5;;		Sorry, aber dafür benötige ich ein aktiviertes Display. ;;char=neutral
-error_missing_display_0a;;		rep=1|mood=5;;		Ohne ein aktiviertes Display kann ich das Ergebnis nicht anzeigen. ;;char=neutral
+error_missing_display_0a;;		rep=0|mood=5;;		Sorry, aber dafür benötige ich ein aktives Display. ;;char=neutral
+error_missing_display_0a;;		rep=1|mood=5;;		Ohne ein aktives Display kann ich das Ergebnis nicht anzeigen. ;;char=neutral
 error_missing_display_0a;;		rep=2|mood=5;;		<user_name>, ohne angeschlossenes und aktiviertes Display kommen wir hier leider nicht weiter. ;;char=neutral
+error_missing_display_0b;;		rep=0|mood=5;;		Das Ergebnis kann ich dir zur Zeit leider nur auf einem Bildschirm anzeigen. ;;char=neutral
+error_missing_display_0b;;		rep=0|mood=5;;		Die Antwort auf deine Anfrage müsste ich dir auf einem Display zeigen. ;;char=neutral
+error_missing_display_0b;;		rep=1|mood=5;;		Ohne Display kann ich dir dazu leider keine weiteren Infos geben. ;;char=neutral
+error_missing_display_0b;;		rep=2|mood=5;;		Das Ergebnis wird zur Zeit nur auf einem Display angezeigt. ;;char=neutral
 abort_0a;;		rep=0|mood=5;;		Ok, lass noch mal neu anfangen. ;;char=cool,neutral
 abort_0a;;		rep=0|mood=5;;		Ok, habs abgebrochen. ;;char=cool,neutral
 abort_0b;;		rep=0|mood=5;;		Ich glaube wir kommen gerade nicht weiter. Lass es uns später noch mal probieren. ;;char=neutral
@@ -367,11 +371,13 @@ movies_0a;;		rep=0|mood=5;;		Sorry <user_name>, hab keine Filme gefunden zu <1>.
 movies_1a;;		rep=0|mood=5;;		Hab <1> Filme gefunden zu <2>. Hier sind die ersten <3>: <4> ;;char=cool,rude,neutral
 movies_1b;;		rep=0|mood=5;;		Hab <1> Film gefunden zu <2>, nämlich diesen hier: <4> ;;char=rude
 movies_1c;;		rep=0|mood=5;;		Habe einige Filme gefunden zu <2>. Hier sind die ersten <3>: <4> ;;char=polite,neutral
+news_0a;;		rep=0|mood=5;;		Komisch, ich habe scheinbar keine News gefunden. ;;char=cool,neutral
 news_1a;;		rep=0|mood=5;;		Ich öffne mal die News-Seite für dich, <user_name>. ;;char=cool,neutral
 news_1a;;		rep=0|mood=5;;		Guck mal hier, hab die News Seite geöffnet für dich. ;;char=cool,rude
 news_1a;;		rep=0|mood=5;;		Sekunde, ich öffne die News. ;;char=polite,neutral
 news_1b;;		rep=0|mood=5;;		Schau mal <user_name>, hier sind die Ergebnisse vom Fussball. ;;char=neutral
 news_1c;;		rep=0|mood=5;;		Guck mal <user_name>, hier ist die Fussballtabelle. ;;char=neutral
+news_1d;;		rep=0|mood=5;;		Hier ist die erste Schlagzeile. <2>. Erledigt. Mehr News könnte ich dir auf einem Bildschirm zeigen. ;;char=neutral
 repeat_0a;;		rep=0|mood=5;;		Hmm, ich finde grad nix was man wiederholen könnte. ;;char=cool,rude,neutral
 repeat_0a;;		rep=0|mood=5;;		Ich wüsste jetzt nicht was ich wiederholen könnte, sorry. ;;char=cool,polite,neutral
 test_0a;;		rep=0|mood=5;;		Läuft! ;;char=cool,rude,neutral

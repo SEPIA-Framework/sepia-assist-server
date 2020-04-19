@@ -263,6 +263,7 @@ public class ClientFunction implements ParameterHandler {
 			ex = input;
 		}
 		//is accepted result?
+		String commonVal = ex.replaceAll("^<|>$", "").trim();
 		String inputLocal = getLocal(ex, language);
 		if (inputLocal.isEmpty()){
 			return "";
@@ -270,7 +271,7 @@ public class ClientFunction implements ParameterHandler {
 		//build default result
 		JSONObject itemResultJSON = new JSONObject();
 			//JSON.add(itemResultJSON, InterviewData.INPUT_RAW, nluInput.textRaw);
-			JSON.add(itemResultJSON, InterviewData.VALUE, ex);
+			JSON.add(itemResultJSON, InterviewData.VALUE, commonVal);
 			JSON.add(itemResultJSON, InterviewData.VALUE_LOCAL, inputLocal);
 			JSON.add(itemResultJSON, InterviewData.FOUND, found);
 		

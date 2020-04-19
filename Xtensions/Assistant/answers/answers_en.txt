@@ -18,6 +18,10 @@ error_client_support_0a;;		rep=0|mood=5;;		Sorry, but this version of the app do
 error_missing_display_0a;;		rep=0|mood=5;;		Sorry, but I need an active display to do that. ;;char=neutral
 error_missing_display_0a;;		rep=1|mood=5;;		Without an active display I cannot show the result. ;;char=neutral
 error_missing_display_0a;;		rep=2|mood=5;;		<user_name>, without a connected and active display we cannot continue, sorry. ;;char=neutral
+error_missing_display_0b;;		rep=0|mood=5;;		I could show you the result on a display <user_name>. ;;char=neutral
+error_missing_display_0b;;		rep=0|mood=5;;		I need a display to show you the results. ;;char=neutral
+error_missing_display_0b;;		rep=1|mood=5;;		Without a display I can't give you the info, sorry. ;;char=neutral
+error_missing_display_0b;;		rep=2|mood=5;;		The result can only be shown on a display at the moment. ;;char=neutral
 abort_0a;;		rep=0|mood=5;;		Ok, let's start over. ;;char=cool,neutral
 abort_0a;;		rep=0|mood=5;;		Ok, I've aborted the action. ;;char=neutral
 abort_0b;;		rep=0|mood=5;;		I think we are stuck right now. Let's try again later please. ;;char=neutral
@@ -348,11 +352,13 @@ movies_0a;;		rep=0|mood=5;;		Sorry <user_name> I couldn't find any movies relate
 movies_1a;;		rep=0|mood=5;;		I've found <1> movies related to <2>. Here are the first <3>: <4> ;;char=neutral
 movies_1b;;		rep=0|mood=5;;		I've found <1> movie related to <2>. Here it is: <4> ;;char=neutral
 movies_1c;;		rep=0|mood=5;;		I've found quite a few movies related to <2>. Here are the first <3>: <4> ;;char=neutral
+news_0a;;		rep=0|mood=5;;		Strange, it looks like I couldn't find any news. ;;char=cool,neutral
 news_1a;;		rep=0|mood=5;;		I'll quickly open the news for you <user_name>. ;;char=neutral
 news_1a;;		rep=0|mood=5;;		Have a look, I just opened the news page for you. ;;char=neutral
 news_1a;;		rep=0|mood=5;;		One moment, I'll open the news. ;;char=neutral
 news_1b;;		rep=0|mood=5;;		Let me open the soccer results for you <user_name>. ;;char=neutral
 news_1c;;		rep=0|mood=5;;		Let me open the soccer table for you <user_name>. ;;char=neutral
+news_1d;;		rep=0|mood=5;;		Here is the first headline. <2>. Done. I could show you more news on a display if you like. ;;char=neutral
 repeat_0a;;		rep=0|mood=5;;		Hmm, I can't find anything to repeat somehow. ;;char=neutral
 repeat_0a;;		rep=0|mood=5;;		Sorry but I don't know what I could repeat. ;;char=neutral,polite
 test_0a;;		rep=0|mood=5;;		It's working! ;;char=neutral
