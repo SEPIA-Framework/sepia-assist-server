@@ -27,12 +27,12 @@
   	<repositories>
 	  	<!-- For MaryTTS -->
 	  	<repository>
-	    	<id>spring-repo</id>
+	    	<id>spring-repo-plugins</id>
 	    	<name>Spring Plugin Repository</name>
 	    	<url>https://repo.spring.io/plugins-release/</url>
 		</repository>
 		<repository>
-	    	<id>spring-repo</id>
+	    	<id>spring-repo-libs</id>
 	    	<name>Spring Libs Repository</name>
 	    	<url>https://repo.spring.io/libs-release/</url>
 		</repository>
