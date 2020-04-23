@@ -342,6 +342,7 @@ public class Config {
 	public static String deutscheBahnOpenApi_key = "";
 	
 	//API URLs - loaded from config file
+	public static String marytts_server = "";
 	public static String smarthome_hub_host = "";
 	public static String smarthome_hub_name = "";
 	public static String smarthome_hub_auth_type = "";
@@ -596,6 +597,7 @@ public class Config {
 			affilinet_key = settings.getProperty("affilinet_key");
 			deutscheBahnOpenApi_key = settings.getProperty("deutscheBahnOpenApi_key");
 			//API URLs
+			marytts_server = settings.getProperty("marytts_server", "http://127.0.0.1:59125").replaceAll("/$", "");
 			smarthome_hub_host = settings.getProperty("smarthome_hub_host");
 			smarthome_hub_name = settings.getProperty("smarthome_hub_name");
 			if (Is.nullOrEmpty(smarthome_hub_host)){

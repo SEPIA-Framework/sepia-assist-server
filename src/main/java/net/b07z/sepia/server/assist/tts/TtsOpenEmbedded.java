@@ -1,5 +1,6 @@
 package net.b07z.sepia.server.assist.tts;
 import java.io.File;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,14 +11,19 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.io.FileUtils;
+import org.json.simple.JSONObject;
+
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.FilesAndStreams;
 import net.b07z.sepia.server.core.tools.Is;
+import net.b07z.sepia.server.core.tools.JSON;
 import net.b07z.sepia.server.core.tools.RuntimeInterface;
 import net.b07z.sepia.server.core.tools.Security;
 import net.b07z.sepia.server.core.tools.ThreadManager;
+import net.b07z.sepia.server.core.tools.URLBuilder;
 import net.b07z.sepia.server.core.tools.RuntimeInterface.RuntimeResult;
 
 /**
@@ -31,7 +37,8 @@ public class TtsOpenEmbedded implements TtsInterface {
 	public static enum Type {
 		espeak,
 		flite,
-		pico
+		pico,
+		marytts
 	}
 	
 	//support lists
@@ -44,21 +51,38 @@ public class TtsOpenEmbedded implements TtsInterface {
 	//voices
 	
 	//espeak de-DE male (default, happy, sad)
-	private static TtsVoiceTrait deDE_espeak_m_0 = new TtsVoiceTrait("gmw/de", Type.espeak.name(), "de", "male", 160, 50, 100);
-	private static TtsVoiceTrait deDE_espeak_m_1 = new TtsVoiceTrait("gmw/de", Type.espeak.name(), "de", "male", 160, 60, 100);
-	private static TtsVoiceTrait deDE_espeak_m_2 = new TtsVoiceTrait("gmw/de", Type.espeak.name(), "de", "male", 160, 30, 100);
+	private static TtsVoiceTrait deDE_espeak_m1_0 = new TtsVoiceTrait("gmw/de", Type.espeak.name(), "de", "male", 160, 50, 100);
+	private static TtsVoiceTrait deDE_espeak_m1_1 = new TtsVoiceTrait("gmw/de", Type.espeak.name(), "de", "male", 160, 60, 100);
+	private static TtsVoiceTrait deDE_espeak_m1_2 = new TtsVoiceTrait("gmw/de", Type.espeak.name(), "de", "male", 160, 30, 100);
+	//marytts de-DE
+	private static TtsVoiceTrait deDE_marytts_m1_0 = new TtsVoiceTrait("bits3-hsmm", Type.marytts.name(), "de", "male", 
+			JSON.make("LOCALE", "de")
+	);
+	private static TtsVoiceTrait deDE_marytts_f1_0 = new TtsVoiceTrait("bits1-hsmm", Type.marytts.name(), "de", "female", 
+			JSON.make("LOCALE", "de", "effect_FIRFilter_parameters", "type:4;fc1:240.0;fc2:1000.0;tbw:1000.0", "effect_FIRFilter_selected", "on")
+	);
+	private static TtsVoiceTrait deDE_marytts_s1_0 = new TtsVoiceTrait("bits3-hsmm", Type.marytts.name(), "de", "male", 
+			JSON.make("LOCALE", "de", "effect_Robot_selected=", "on", "effect_Robot_parameters", "amount:100.0;")
+	);
 	
 	//espeak en-GB male (default, happy, sad)
-	private static TtsVoiceTrait enGB_espeak_m_0 = new TtsVoiceTrait("gmw/en", Type.espeak.name(), "en", "male", 160, 50, 100);
-	private static TtsVoiceTrait enGB_espeak_m_1 = new TtsVoiceTrait("gmw/en", Type.espeak.name(), "en", "male", 160, 60, 100);
-	private static TtsVoiceTrait enGB_espeak_m_2 = new TtsVoiceTrait("gmw/en", Type.espeak.name(), "en", "male", 160, 30, 100);
-	
-	//espeak en-US male (default, happy, sad)
-	/*
-	private static TtsVoiceTrait enUS_espeak_m_0 = new TtsVoiceTrait("gmw/en-US", Type.espeak.name(), "en", "male", 160, 50, 100);
-	private static TtsVoiceTrait enUS_espeak_m_1 = new TtsVoiceTrait("gmw/en-US", Type.espeak.name(), "en", "male", 160, 60, 100);
-	private static TtsVoiceTrait enUS_espeak_m_2 = new TtsVoiceTrait("gmw/en-US", Type.espeak.name(), "en", "male", 160, 30, 100);
-	*/
+	private static TtsVoiceTrait enGB_espeak_m1_0 = new TtsVoiceTrait("gmw/en", Type.espeak.name(), "en", "male", 160, 50, 100);
+	private static TtsVoiceTrait enGB_espeak_m1_1 = new TtsVoiceTrait("gmw/en", Type.espeak.name(), "en", "male", 160, 60, 100);
+	private static TtsVoiceTrait enGB_espeak_m1_2 = new TtsVoiceTrait("gmw/en", Type.espeak.name(), "en", "male", 160, 30, 100);
+	//marytts en-GB
+	private static TtsVoiceTrait enGB_marytts_m1_0 = new TtsVoiceTrait("dfki-spike-hsmm", Type.marytts.name(), "en", "male", 
+			JSON.make("LOCALE", "en_GB", 
+					"effect_F0Scale_selected", "on", "effect_F0Scale_parameters", "f0Scale:0.66;",
+					"effect_F0Add_selected", "on", "effect_F0Add_parameters", "f0Add:-15.0;")
+	);
+	private static TtsVoiceTrait enGB_marytts_f1_0 = new TtsVoiceTrait("dfki-prudence-hsmm", Type.marytts.name(), "en", "female", 
+			JSON.make("LOCALE", "en_GB", 
+					"effect_F0Scale_selected", "on", "effect_F0Scale_parameters", "f0Scale:0.33;",
+					"effect_F0Add_selected", "on", "effect_F0Add_parameters", "f0Add:-50.0;")
+	);
+	private static TtsVoiceTrait enGB_marytts_s1_0 = new TtsVoiceTrait("dfki-prudence-hsmm", Type.marytts.name(), "en", "female", 
+			JSON.make("LOCALE", "en_GB", "effect_Robot_selected=", "on", "effect_Robot_parameters", "amount:100.0;")
+	);
 	
 	//track files
 	private static int MAX_FILES = 30;
@@ -71,6 +95,14 @@ public class TtsOpenEmbedded implements TtsInterface {
 	Queue<File> fileCleanUpQueue = new ConcurrentLinkedQueue<>();
 	Runnable cleanUpTask = () -> {
 		File f = fileCleanUpQueue.poll();
+		cleanUpFile(f);
+		int n = fileCleanUpQueue.size();
+		if (n > MAX_FILES * 10){
+			Debugger.println(TtsOpenEmbedded.class.getSimpleName() + " - TTS clean-up queue is too large (" + n + ")! Deactivating TTS until server restart.", 1);
+			Config.ttsModuleEnabled = false;
+		}
+	};
+	private static void cleanUpFile(File f){
 		if (f != null && f.exists()){
 			try{
 				f.delete();
@@ -79,20 +111,15 @@ public class TtsOpenEmbedded implements TtsInterface {
 				Debugger.println(TtsOpenEmbedded.class.getSimpleName() + " - error in clean-up task: " + e.getMessage(), 1);
 			}
 		}
-		int n = fileCleanUpQueue.size();
-		if (n > MAX_FILES * 10){
-			Debugger.println(TtsOpenEmbedded.class.getSimpleName() + " - TTS clean-up queue is too large (" + n + ")! Deactivating TTS until server restart.", 1);
-			Config.ttsModuleEnabled = false;
-		}
-	};
+	}
         
     //defaults
     private String language = "en";
 	private String gender = "male";
 	private String activeVoice = "en-GB espeak m";		//name of voice set as seen in get_voices (not necessarily the same as the actual selected voice (enu_will != will22k)
 	private int mood_index=0;			//0 - neutral/default, 1 - happy, 2 - sad, 3 - angry, 4 - shout, 5 - whisper, 6 - fun1 (e.g. old), 7 - fun2 (e.g. Yoda)
-	private double speedFactor = 1.0d;	//multiply speed with this 	
-	private double toneFactor = 1.0d;	//multiply tone with this
+	private double speedFactor = 1.0d;	//global modifier - multiply speed with this 	
+	private double toneFactor = 1.0d;	//global modifier - multiply tone with this
 	
 	int charLimit = 600;				//limit text length
 	String soundFormat = "WAV";
@@ -116,9 +143,19 @@ public class TtsOpenEmbedded implements TtsInterface {
 		//genderList.add("female");
 		
 		//supported voices:
-		voices.put("de-DE espeak m", new TtsVoiceTrait[]{ deDE_espeak_m_0, deDE_espeak_m_1, deDE_espeak_m_2 });
-		voices.put("en-GB espeak m", new TtsVoiceTrait[]{ enGB_espeak_m_0, enGB_espeak_m_1, enGB_espeak_m_2 });
-		//voices.put("en-US espeak m", new TtsVoiceTrait[]{ enUS_espeak_m_0, enUS_espeak_m_1, enUS_espeak_m_2 });
+		if (Is.systemWindows()){
+			//TODO: test if voices are really there
+		}else{
+			//TODO: test if voices are really there
+		}
+		voices.put("de-DE espeak m", new TtsVoiceTrait[]{ deDE_espeak_m1_0, deDE_espeak_m1_1, deDE_espeak_m1_2 });
+		voices.put("en-GB espeak m", new TtsVoiceTrait[]{ enGB_espeak_m1_0, enGB_espeak_m1_1, enGB_espeak_m1_2 });
+		voices.put("de-DE marytts m", new TtsVoiceTrait[]{ deDE_marytts_m1_0, deDE_marytts_m1_0, deDE_marytts_m1_0 });
+		voices.put("de-DE marytts f", new TtsVoiceTrait[]{ deDE_marytts_f1_0, deDE_marytts_f1_0, deDE_marytts_f1_0 });
+		voices.put("de-DE marytts r", new TtsVoiceTrait[]{ deDE_marytts_s1_0, deDE_marytts_s1_0, deDE_marytts_s1_0 });
+		voices.put("en-GB marytts m", new TtsVoiceTrait[]{ enGB_marytts_m1_0, enGB_marytts_m1_0, enGB_marytts_m1_0 });
+		voices.put("en-GB marytts f", new TtsVoiceTrait[]{ enGB_marytts_f1_0, enGB_marytts_f1_0, enGB_marytts_f1_0 });
+		voices.put("en-GB marytts r", new TtsVoiceTrait[]{ enGB_marytts_s1_0, enGB_marytts_s1_0, enGB_marytts_s1_0 });
 		
 		//supported maximum mood index
 		maxMoodIndex = 3;
@@ -299,6 +336,14 @@ public class TtsOpenEmbedded implements TtsInterface {
 		//optimize pronunciation
 		readThis = TtsTools.optimizePronunciation(readThis, language);
 		
+		// - get new ID and prepare files
+		int ID = fileID.addAndGet(1);
+		if (ID >= MAX_FILES){
+			fileID.set(1);
+		}
+		String audioFileName = ID + "-speak-" + Security.getRandomUUID().replace("-", "") + ".wav";
+		String audioFilePath = ttsOutFolder + audioFileName;
+		
 		try{
 			//set parameters
 			TtsVoiceTrait voiceTrait = voices.get(this.activeVoice)[modMoodIndex];		//in theory this cannot fail because all has been validated before
@@ -307,49 +352,45 @@ public class TtsOpenEmbedded implements TtsInterface {
 			this.language = voiceTrait.getLanguageCode();
 			this.gender = voiceTrait.getGenderCode();
 			
-			//create files
-			
-			// - get new ID and prepare files
-			int ID = fileID.addAndGet(1);
-			if (ID >= MAX_FILES){
-				fileID.set(1);
-			}
-			String audioFileName = ID + "-speak-" + Security.getRandomUUID().replace("-", "") + ".wav";
-			String audioFilePath = ttsOutFolder + audioFileName;
+			//create files:
 						
 			// - try to write file
 			String audioURL = Config.ttsWebServerUrl + audioFileName;
 			Debugger.println("TTS LOG - URL: " + audioURL, 2);		//debug
 			
 			//build command line action
-			String[] command;
+			boolean generatedFile;
+			//ESPEAK
 			if (voiceTrait.getType().equals(Type.espeak.name())){
-				command = buildEspeakCmd(readThis, voiceTrait, this.speedFactor, this.toneFactor, audioFilePath);
+				//run process - note: its thread blocking but this should be considered "intended" here ;-)
+				String[] command = buildEspeakCmd(readThis, voiceTrait, this.speedFactor, this.toneFactor, audioFilePath);
+				generatedFile = runRuntimeProcess(command, audioFilePath);
+			//MARY-TTS
+			}else if (voiceTrait.getType().equals(Type.marytts.name())){
+				//call server
+				String url = buildMaryTtsUrl(readThis, voiceTrait, this.speedFactor, this.toneFactor);
+				generatedFile = callServerProcess(url, audioFilePath);
+			//UNKNOWN
 			}else{
 				throw new RuntimeException("TTS voice type not known: " + voiceTrait.getType());
 			}
-			Debugger.println("TTS LOG - Command: " + String.join(" ", command), 2);		//debug
-			//run process - note: its thread blocking but this should be considered "intended" here ;-)
-			RuntimeResult res = RuntimeInterface.runCommand(command, PROCESS_TIMEOUT_MS);
-			if (res.getStatusCode() != 0){
-				//Error
-				Exception e = res.getException();
-				if (res.getStatusCode() == 3){
-					throw new RuntimeException("TTS procces took too long!");
-				}else{
-					throw new RuntimeException("TTS procces failed! Msg: " + ((e != null)? e.getMessage() : "unknown"));
-				}
-			}else{
+			//successfully generated file?
+			if (generatedFile){
 				//Success
 				fileCleanUpQueue.add(new File(audioFilePath));
 				ThreadManager.scheduleTaskToRunOnceInBackground(CLEAN_UP_DELAY_MS, cleanUpTask);
 				return audioURL;
+			}else{
+				//Error (failed without exception)
+				cleanUpFile(new File(audioFilePath));		//make sure its not left over
+				return "";
 			}
 
 		//ERROR
 		}catch (Exception e){
 			Debugger.printStackTrace(e, 4);
 			Debugger.println("TTS FAILED: " + e.toString(), 1);
+			cleanUpFile(new File(audioFilePath));		//make sure its not left over
 			return "";
 		}
 	}
@@ -383,17 +424,73 @@ public class TtsOpenEmbedded implements TtsInterface {
 		return settings;
 	}
 	
-	//--------Process command builder--------
+	//-------- Speech server command builder and execution --------
 	
-	public static String[] buildEspeakCmd(String text, TtsVoiceTrait voiceTrait, double speedFactor, double toneFactor, String filePath){
+	private boolean callServerProcess(String url, String audioFilePath){
+		try{
+			FileUtils.copyURLToFile(
+					new URL(url), 
+					new File(audioFilePath), 
+					7500, 7500
+			);
+			return true;
+		}catch(Exception e){
+			Debugger.println("TTS server call FAILED. URL: " + url.replaceFirst("\\?.*", "") + " - Msg.: " + e.getMessage(), 1);
+			Debugger.printStackTrace(e, 3);
+			return false;
+		}
+	}
+	
+	public static String buildMaryTtsUrl(String text, TtsVoiceTrait voiceTrait, double globalSpeedFactor, double globalToneFactor){
+		String serverUrl = Config.marytts_server + "/process";
+		String fullUrl = URLBuilder.getStringP20(serverUrl, 
+				"?INPUT_TEXT=", text,
+				"&INPUT_TYPE=", "TEXT",
+				"&OUTPUT_TYPE=", "AUDIO",
+				"&AUDIO=", "WAVE_FILE",
+				//"&LOCALE=", "en_GB",	//this is in data
+				"&VOICE=", voiceTrait.getSystemName()
+				//TODO: global speed and tone ignored
+		);
+		JSONObject dataMod = voiceTrait.getData();
+		for (Object key : dataMod.keySet()){
+			fullUrl += URLBuilder.getStringP20(fullUrl, "&" + key + "=", (String) dataMod.get(key));
+		}
+		return fullUrl;
+	}
+	
+	//------- Runtime command process builder and execution -------
+	
+	private boolean runRuntimeProcess(String[] command, String audioFilePath){
+		Debugger.println("TTS LOG - Command: " + String.join(" ", command), 2);		//debug
+		RuntimeResult res = RuntimeInterface.runCommand(command, PROCESS_TIMEOUT_MS);
+		if (res.getStatusCode() != 0){
+			//Error
+			Exception e = res.getException();
+			if (res.getStatusCode() == 3){
+				throw new RuntimeException("TTS procces took too long!");
+			}else{
+				throw new RuntimeException("TTS procces failed! Msg: " + ((e != null)? e.getMessage() : "unknown"));
+			}
+		}else{
+			//Success
+			fileCleanUpQueue.add(new File(audioFilePath));
+			ThreadManager.scheduleTaskToRunOnceInBackground(CLEAN_UP_DELAY_MS, cleanUpTask);
+			return true;
+		}
+	}
+	
+	public static String[] buildEspeakCmd(String text, TtsVoiceTrait voiceTrait, double globalSpeedFactor, double globalToneFactor, String filePath){
 		String systemVoiceName = voiceTrait.getSystemName();
-		int speed = (int) (voiceTrait.getSpeed() * speedFactor);
-		int tone = (int) (voiceTrait.getPitch() * toneFactor);
+		int speed = (int) (voiceTrait.getSpeed() * globalSpeedFactor);
+		int tone = (int) (voiceTrait.getPitch() * globalToneFactor);
 		int volume = voiceTrait.getVolume();
 		String cmd;
 		if (Is.systemWindows()){
 			//Windows
 			cmd = (Config.ttsEngines + "espeak-ng/espeak-ng.exe").replace("/", File.separator);
+			//check text safety (prevent any injections) for Windows
+			//TODO
 			//encoding conversion
 			text = new String(text.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1);
 			/* -- this should work .. but does not --
@@ -403,6 +500,9 @@ public class TtsOpenEmbedded implements TtsInterface {
 		}else{
 			//Other
 			cmd = "espeak-ng";
+			//check text safety (prevent any injections) for UNIX
+			//TODO
+			//e.g. ?? text = "'" + text.replaceAll("'", "\\'") + "'";
 		}
 		return new String[]{ cmd,
 				"-a", Integer.toString(volume), 
