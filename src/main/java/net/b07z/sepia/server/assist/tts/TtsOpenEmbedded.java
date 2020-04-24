@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -16,6 +17,8 @@ import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.server.Config;
+import net.b07z.sepia.server.assist.tts.TtsTools.EngineType;
+import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.FilesAndStreams;
 import net.b07z.sepia.server.core.tools.Is;
@@ -34,15 +37,8 @@ import net.b07z.sepia.server.core.tools.RuntimeInterface.RuntimeResult;
  */
 public class TtsOpenEmbedded implements TtsInterface {
 	
-	public static enum Type {
-		espeak,
-		flite,
-		pico,
-		marytts
-	}
-	
 	//support lists
-	private static Map<String, TtsVoiceTrait[]> voices = new HashMap<>();
+	private static Map<String, TtsVoiceTrait[]> voices = new TreeMap<>();
 	private static List<String> genderList = new ArrayList<String>();
 	private static List<String> languageList = new ArrayList<String>();
 	private static List<String> soundFormatList = new ArrayList<String>();
@@ -51,38 +47,69 @@ public class TtsOpenEmbedded implements TtsInterface {
 	//voices
 	
 	//espeak de-DE male (default, happy, sad)
-	private static TtsVoiceTrait deDE_espeak_m1_0 = new TtsVoiceTrait("gmw/de", Type.espeak.name(), "de", "male", 160, 50, 100);
-	private static TtsVoiceTrait deDE_espeak_m1_1 = new TtsVoiceTrait("gmw/de", Type.espeak.name(), "de", "male", 160, 60, 100);
-	private static TtsVoiceTrait deDE_espeak_m1_2 = new TtsVoiceTrait("gmw/de", Type.espeak.name(), "de", "male", 160, 30, 100);
-	//marytts de-DE
-	private static TtsVoiceTrait deDE_marytts_m1_0 = new TtsVoiceTrait("bits3-hsmm", Type.marytts.name(), "de", "male", 
-			JSON.make("LOCALE", "de")
-	);
-	private static TtsVoiceTrait deDE_marytts_f1_0 = new TtsVoiceTrait("bits1-hsmm", Type.marytts.name(), "de", "female", 
-			JSON.make("LOCALE", "de", "effect_FIRFilter_parameters", "type:4;fc1:240.0;fc2:1000.0;tbw:1000.0", "effect_FIRFilter_selected", "on")
-	);
-	private static TtsVoiceTrait deDE_marytts_s1_0 = new TtsVoiceTrait("bits3-hsmm", Type.marytts.name(), "de", "male", 
-			JSON.make("LOCALE", "de", "effect_Robot_selected=", "on", "effect_Robot_parameters", "amount:100.0;")
-	);
-	
+	private static TtsVoiceTrait deDE_espeak_m1_0 = new TtsVoiceTrait("gmw/de", EngineType.espeak.name(), LANGUAGES.DE, "male", 160, 50, 100);
+	private static TtsVoiceTrait deDE_espeak_m1_1 = new TtsVoiceTrait("gmw/de", EngineType.espeak.name(), LANGUAGES.DE, "male", 160, 60, 100);
+	private static TtsVoiceTrait deDE_espeak_m1_2 = new TtsVoiceTrait("gmw/de", EngineType.espeak.name(), LANGUAGES.DE, "male", 160, 30, 100);
 	//espeak en-GB male (default, happy, sad)
-	private static TtsVoiceTrait enGB_espeak_m1_0 = new TtsVoiceTrait("gmw/en", Type.espeak.name(), "en", "male", 160, 50, 100);
-	private static TtsVoiceTrait enGB_espeak_m1_1 = new TtsVoiceTrait("gmw/en", Type.espeak.name(), "en", "male", 160, 60, 100);
-	private static TtsVoiceTrait enGB_espeak_m1_2 = new TtsVoiceTrait("gmw/en", Type.espeak.name(), "en", "male", 160, 30, 100);
+	private static TtsVoiceTrait enGB_espeak_m1_0 = new TtsVoiceTrait("gmw/en", EngineType.espeak.name(), LANGUAGES.EN, "male", 160, 50, 100);
+	private static TtsVoiceTrait enGB_espeak_m1_1 = new TtsVoiceTrait("gmw/en", EngineType.espeak.name(), LANGUAGES.EN, "male", 160, 60, 100);
+	private static TtsVoiceTrait enGB_espeak_m1_2 = new TtsVoiceTrait("gmw/en", EngineType.espeak.name(), LANGUAGES.EN, "male", 160, 30, 100);
+	
+	//marytts de-DE
+	private static TtsVoiceTrait deDE_marytts_m1_0 = new TtsVoiceTrait("bits3-hsmm", EngineType.marytts.name(), LANGUAGES.DE, "male",
+			maryTtsData("de", "amount:1.2;", null, null, null, null)
+	);
+	private static TtsVoiceTrait deDE_marytts_f1_0 = new TtsVoiceTrait("bits1-hsmm", EngineType.marytts.name(), LANGUAGES.DE, "female",
+			maryTtsData("de", "amount:1.4;", null, null, "type:4;fc1:240.0;fc2:1000.0;tbw:800.0", null)
+	);
+	private static TtsVoiceTrait deDE_marytts_s1_0 = new TtsVoiceTrait("bits1-hsmm", EngineType.marytts.name(), LANGUAGES.DE, "female",
+			maryTtsData("de", "amount:1.7;", null, null, null, "amount:100.0;")
+	);
 	//marytts en-GB
-	private static TtsVoiceTrait enGB_marytts_m1_0 = new TtsVoiceTrait("dfki-spike-hsmm", Type.marytts.name(), "en", "male", 
-			JSON.make("LOCALE", "en_GB", 
-					"effect_F0Scale_selected", "on", "effect_F0Scale_parameters", "f0Scale:0.66;",
-					"effect_F0Add_selected", "on", "effect_F0Add_parameters", "f0Add:-15.0;")
+	private static TtsVoiceTrait enGB_marytts_m1_0 = new TtsVoiceTrait("dfki-spike-hsmm", EngineType.marytts.name(), LANGUAGES.EN, "male",
+			maryTtsData("en_GB", null, null, "f0Scale:0.66;", null, null)
 	);
-	private static TtsVoiceTrait enGB_marytts_f1_0 = new TtsVoiceTrait("dfki-prudence-hsmm", Type.marytts.name(), "en", "female", 
-			JSON.make("LOCALE", "en_GB", 
-					"effect_F0Scale_selected", "on", "effect_F0Scale_parameters", "f0Scale:0.33;",
-					"effect_F0Add_selected", "on", "effect_F0Add_parameters", "f0Add:-50.0;")
+	private static TtsVoiceTrait enGB_marytts_f1_0 = new TtsVoiceTrait("dfki-prudence-hsmm", EngineType.marytts.name(), LANGUAGES.EN, "female",
+			maryTtsData("en_GB", "amount:1.2;", "f0Add:-50.0;", "f0Scale:0.33;", null, null)
 	);
-	private static TtsVoiceTrait enGB_marytts_s1_0 = new TtsVoiceTrait("dfki-prudence-hsmm", Type.marytts.name(), "en", "female", 
-			JSON.make("LOCALE", "en_GB", "effect_Robot_selected=", "on", "effect_Robot_parameters", "amount:100.0;")
+	private static TtsVoiceTrait enGB_marytts_s1_0 = new TtsVoiceTrait("dfki-prudence-hsmm", EngineType.marytts.name(), LANGUAGES.EN, "female",
+			maryTtsData("en_GB", "amount:1.8;", null, null, null, "amount:100.0;")
 	);
+	//marytts en-US
+	private static TtsVoiceTrait enUS_marytts_m1_0 = new TtsVoiceTrait("cmu-bdl-hsmm", EngineType.marytts.name(), LANGUAGES.EN, "male", 
+			maryTtsData("en_US", null, "f0Add:-15.0;", "f0Scale:0.66;", null, null)
+	);
+	private static TtsVoiceTrait enUS_marytts_f1_0 = new TtsVoiceTrait("cmu-slt-hsmm", EngineType.marytts.name(), LANGUAGES.EN, "female",
+			maryTtsData("en_US", null, null, null, null, null)
+	);
+	//marytts MAPPING
+	private static Map<String, TtsVoiceTrait[]> maryTtsVoices = new HashMap<>();
+	private static Map<String, String[]> maryTtsVoicesMap = new HashMap<>();
+	static {
+		maryTtsVoices.put("de-DE marytts m", new TtsVoiceTrait[]{ deDE_marytts_m1_0, deDE_marytts_m1_0, deDE_marytts_m1_0 });
+		maryTtsVoices.put("de-DE marytts f", new TtsVoiceTrait[]{ deDE_marytts_f1_0, deDE_marytts_f1_0, deDE_marytts_f1_0 });
+		maryTtsVoices.put("de-DE marytts r", new TtsVoiceTrait[]{ deDE_marytts_s1_0, deDE_marytts_s1_0, deDE_marytts_s1_0 });
+		maryTtsVoices.put("en-GB marytts m", new TtsVoiceTrait[]{ enGB_marytts_m1_0, enGB_marytts_m1_0, enGB_marytts_m1_0 });
+		maryTtsVoices.put("en-GB marytts f", new TtsVoiceTrait[]{ enGB_marytts_f1_0, enGB_marytts_f1_0, enGB_marytts_f1_0 });
+		maryTtsVoices.put("en-GB marytts r", new TtsVoiceTrait[]{ enGB_marytts_s1_0, enGB_marytts_s1_0, enGB_marytts_s1_0 });
+		maryTtsVoices.put("en-US marytts m", new TtsVoiceTrait[]{ enUS_marytts_m1_0, enUS_marytts_m1_0, enUS_marytts_m1_0 });
+		maryTtsVoices.put("en-US marytts f", new TtsVoiceTrait[]{ enUS_marytts_f1_0, enUS_marytts_f1_0, enUS_marytts_f1_0 });
+		
+		maryTtsVoicesMap.put("bits1-hsmm", 			new String[]{"de-DE marytts f", "de-DE marytts r"});
+		maryTtsVoicesMap.put("bits3-hsmm", 			new String[]{"de-DE marytts m"});
+		maryTtsVoicesMap.put("dfki-prudence-hsmm", 	new String[]{"en-GB marytts f", "en-GB marytts r"});
+		maryTtsVoicesMap.put("dfki-spike-hsmm", 	new String[]{"en-GB marytts m"});
+		maryTtsVoicesMap.put("cmu-slt-hsmm", 		new String[]{"en-US marytts f"});
+		maryTtsVoicesMap.put("cmu-bdl-hsmm", 		new String[]{"en-US marytts m"});
+	}
+	/*
+	dfki-spike-hsmm en_GB male hmm
+	dfki-prudence-hsmm en_GB female hmm
+	cmu-slt-hsmm en_US female hmm
+	cmu-bdl-hsmm en_US male hmm
+	bits3-hsmm de male hmm
+	bits1-hsmm de female hmm
+	*/
 	
 	//track files
 	private static int MAX_FILES = 30;
@@ -143,19 +170,53 @@ public class TtsOpenEmbedded implements TtsInterface {
 		//genderList.add("female");
 		
 		//supported voices:
-		if (Is.systemWindows()){
-			//TODO: test if voices are really there
-		}else{
-			//TODO: test if voices are really there
+		
+		//MARY-TTS
+		String[] maryTtsVoicesRes = null;
+		try{
+			//get voices from MaryTTS server
+			maryTtsVoicesRes = Connectors.simpleHtmlGet(Config.marytts_server + "/voices").split("(\\r\\n|\\n)");
+		}catch (Exception e){
+			Debugger.println("TTS module - MaryTTS server did not answer or had no voices installed. Support has been deactivated for now.", 1);
+			maryTtsVoicesRes = null;
 		}
+		//map voices from MaryTTS
+		if (maryTtsVoicesRes != null){
+			int n = 0;
+			try{
+				for (int i=0; i<maryTtsVoicesRes.length; i++){
+					String[] voiceInfo = maryTtsVoicesRes[i].split("\\s+");		//example - 0:cmu-slt-hsmm, 1:en_US 2:female, 3:hmm
+					//System.out.println(voiceInfo[0]); 		//DEBUG
+					String[] voicesForName = maryTtsVoicesMap.get(voiceInfo[0]);
+					if (voicesForName != null){
+						//use known MaryTTS voice configuration
+						for (String v : voicesForName){
+							voices.put(v, maryTtsVoices.get(v));
+							n++;
+						}
+					}else if (voiceInfo.length >= 3){
+						//build basic voice configuration - NOTE: expects the format given above (name locale gender other)
+						TtsVoiceTrait vt = new TtsVoiceTrait(voiceInfo[0], EngineType.marytts.name(), 
+								voiceInfo[1].split("_")[0].toLowerCase(), voiceInfo[2], JSON.make("LOCALE", voiceInfo[1]));
+						voices.put(voiceInfo[1].replace("_", "-") + " marytts " + voiceInfo[0], new TtsVoiceTrait[]{vt, vt, vt});
+						Debugger.println("TTS module - Mapped this MaryTTS voice via default: " + maryTtsVoicesRes[i], 3);
+						n++;
+					}else{
+						Debugger.println("TTS module - Don't know how to map this MaryTTS voice: " + maryTtsVoicesRes[i], 1);
+					}
+				}
+			}catch (Exception e){
+				Debugger.println("TTS module - Failed to map MaryTTS voices. Error: " + e.getMessage(), 1);
+				Debugger.printStackTrace(e, 3);
+			}
+			Debugger.println("TTS module - Added " + n + " MaryTTS voices.", 3);
+		}
+		
+		//ESPEAK	- TODO: test support
+		int n = 2;
 		voices.put("de-DE espeak m", new TtsVoiceTrait[]{ deDE_espeak_m1_0, deDE_espeak_m1_1, deDE_espeak_m1_2 });
 		voices.put("en-GB espeak m", new TtsVoiceTrait[]{ enGB_espeak_m1_0, enGB_espeak_m1_1, enGB_espeak_m1_2 });
-		voices.put("de-DE marytts m", new TtsVoiceTrait[]{ deDE_marytts_m1_0, deDE_marytts_m1_0, deDE_marytts_m1_0 });
-		voices.put("de-DE marytts f", new TtsVoiceTrait[]{ deDE_marytts_f1_0, deDE_marytts_f1_0, deDE_marytts_f1_0 });
-		voices.put("de-DE marytts r", new TtsVoiceTrait[]{ deDE_marytts_s1_0, deDE_marytts_s1_0, deDE_marytts_s1_0 });
-		voices.put("en-GB marytts m", new TtsVoiceTrait[]{ enGB_marytts_m1_0, enGB_marytts_m1_0, enGB_marytts_m1_0 });
-		voices.put("en-GB marytts f", new TtsVoiceTrait[]{ enGB_marytts_f1_0, enGB_marytts_f1_0, enGB_marytts_f1_0 });
-		voices.put("en-GB marytts r", new TtsVoiceTrait[]{ enGB_marytts_s1_0, enGB_marytts_s1_0, enGB_marytts_s1_0 });
+		Debugger.println("TTS module - Added " + n + " Espeak voices.", 3);
 		
 		//supported maximum mood index
 		maxMoodIndex = 3;
@@ -233,11 +294,11 @@ public class TtsOpenEmbedded implements TtsInterface {
 	
 	//set language and default voice sets (voice, speed, tune, vol)
 	public boolean setLanguage(String language) {
-		if (language.matches(LANGUAGES.DE)){
+		if (language.equals(LANGUAGES.DE)){
 			setVoice("de-DE espeak m");
 			this.language = language;
 			return true;
-		}else if (language.matches(LANGUAGES.EN)){
+		}else if (language.equals(LANGUAGES.EN)){
 			setVoice("en-GB espeak m");
 			this.language = language;
 			return true;
@@ -249,14 +310,14 @@ public class TtsOpenEmbedded implements TtsInterface {
 	
 	//set a voice according to default gender selection
 	public boolean setGender(String gender) {
-		if (language.matches(LANGUAGES.DE)){
-			if (gender.matches("male")){
+		if (language.equals(LANGUAGES.DE)){
+			if (gender.equalsIgnoreCase("male")){
 				setVoice("de-DE espeak m");
 				this.gender = gender;
 				return true;
 			}
-		}else if (language.matches(LANGUAGES.EN)){
-			if (gender.matches("male")){
+		}else if (language.equals(LANGUAGES.EN)){
+			if (gender.equalsIgnoreCase("male")){
 				setVoice("en-GB espeak m");
 				this.gender = gender;
 				return true;
@@ -333,9 +394,6 @@ public class TtsOpenEmbedded implements TtsInterface {
 		//trim text - removing emojis etc.
 		readThis = TtsTools.trimText(readThis);
 		
-		//optimize pronunciation
-		readThis = TtsTools.optimizePronunciation(readThis, language);
-		
 		// - get new ID and prepare files
 		int ID = fileID.addAndGet(1);
 		if (ID >= MAX_FILES){
@@ -352,6 +410,9 @@ public class TtsOpenEmbedded implements TtsInterface {
 			this.language = voiceTrait.getLanguageCode();
 			this.gender = voiceTrait.getGenderCode();
 			
+			//optimize pronunciation
+			readThis = TtsTools.optimizePronunciation(readThis, language, voiceTrait.getType());
+			
 			//create files:
 						
 			// - try to write file
@@ -361,12 +422,12 @@ public class TtsOpenEmbedded implements TtsInterface {
 			//build command line action
 			boolean generatedFile;
 			//ESPEAK
-			if (voiceTrait.getType().equals(Type.espeak.name())){
+			if (voiceTrait.getType().equals(EngineType.espeak.name())){
 				//run process - note: its thread blocking but this should be considered "intended" here ;-)
 				String[] command = buildEspeakCmd(readThis, voiceTrait, this.speedFactor, this.toneFactor, audioFilePath);
 				generatedFile = runRuntimeProcess(command, audioFilePath);
 			//MARY-TTS
-			}else if (voiceTrait.getType().equals(Type.marytts.name())){
+			}else if (voiceTrait.getType().equals(EngineType.marytts.name())){
 				//call server
 				String url = buildMaryTtsUrl(readThis, voiceTrait, this.speedFactor, this.toneFactor);
 				generatedFile = callServerProcess(url, audioFilePath);
@@ -454,9 +515,37 @@ public class TtsOpenEmbedded implements TtsInterface {
 		);
 		JSONObject dataMod = voiceTrait.getData();
 		for (Object key : dataMod.keySet()){
-			fullUrl += URLBuilder.getStringP20(fullUrl, "&" + key + "=", (String) dataMod.get(key));
+			fullUrl += URLBuilder.getStringP20("", "&" + key + "=", (String) dataMod.get(key));
 		}
+		//System.out.println("fullURL: " + fullUrl); 		//DEBUG
 		return fullUrl;
+	}
+	private static JSONObject maryTtsData(String locale, String volume, String f0add, String f0scale, String firFilter, String robot){
+		JSONObject data = new JSONObject();
+		if (Is.notNullOrEmpty(locale)){
+			JSON.put(data, "LOCALE", locale);
+		}
+		if (Is.notNullOrEmpty(volume)){
+			JSON.put(data, "effect_Volume_selected", "on");
+			JSON.put(data, "effect_Volume_parameters", volume);
+		}
+		if (Is.notNullOrEmpty(firFilter)){
+			JSON.put(data, "effect_FIRFilter_selected", "on");
+			JSON.put(data, "effect_FIRFilter_parameters", firFilter);
+		}
+		if (Is.notNullOrEmpty(f0add)){
+			JSON.put(data, "effect_F0Add_selected", "on");
+			JSON.put(data, "effect_F0Add_parameters", f0add);
+		}
+		if (Is.notNullOrEmpty(f0scale)){
+			JSON.put(data, "effect_F0Scale_selected", "on");
+			JSON.put(data, "effect_F0Scale_parameters", f0scale);
+		}
+		if (Is.notNullOrEmpty(robot)){
+			JSON.put(data, "effect_Robot_selected", "on");
+			JSON.put(data, "effect_Robot_parameters", robot);
+		}
+		return data;
 	}
 	
 	//------- Runtime command process builder and execution -------

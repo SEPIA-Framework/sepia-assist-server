@@ -63,10 +63,16 @@ public class TtsVoiceTrait {
 		return this.data;
 	}
 
+	/**
+	 * Name of the voice, usually given by voice engine.
+	 */
 	public String getSystemName(){
 		return systemName;
 	}
 	
+	/**
+	 * Type of voice aka voice engine (e.g. 'espeak').
+	 */
 	public String getType(){
 		return type;
 	}

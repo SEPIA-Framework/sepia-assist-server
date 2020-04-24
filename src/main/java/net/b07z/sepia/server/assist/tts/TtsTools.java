@@ -1,6 +1,7 @@
 package net.b07z.sepia.server.assist.tts;
 
-import java.util.regex.Matcher;
+import net.b07z.sepia.server.assist.assistant.LANGUAGES;
+import net.b07z.sepia.server.core.tools.Is;
 
 /**
  * Tools to edit text, pronunciation, etc. ..
@@ -10,6 +11,15 @@ import java.util.regex.Matcher;
  */
 public class TtsTools {
 	
+	public static enum EngineType {
+		undefined,
+		espeak,
+		flite,
+		pico,
+		marytts,
+		acapela
+	}
+
 	/**
 	 * Gets mood according to text in sentence. Checks for example for smileys in the text.
 	 * 
@@ -31,16 +41,15 @@ public class TtsTools {
 	}
 	
 	/**
-	 * Trim text before sending to TTS engine. Includes things like removing smileys etc.
+	 * Trim text before sending to TTS engine. Includes things like removing emojis etc.
 	 * 
 	 * @param text - text to trim
 	 * @return trimmed/cleaned text
 	 */
 	public  static String trimText(String text){
-		//remove smileys
+		//remove emojis
 		text=text.trim().replaceAll("(:\\-\\)|;\\-\\)|:\\-\\(|:\\-\\|)", "");
-		text=text.trim();
-		return text;
+		return text.trim();
 	}
 	
 	/**
@@ -48,23 +57,39 @@ public class TtsTools {
 	 * 
 	 * @param input - input text
 	 * @param language - input language
+	 * @param engine - e.g. "marytts", "espeak" or null. See {@link EngineType}.
 	 * @return text with optimized pronunciation
 	 */
-	public static String optimizePronunciation(String input, String language){
-		if (language.matches("en")){
-			if (input.matches(".*\\d{4}\\.\\d{1,2}\\.\\d{1,2}.*") || input.matches(".*\\d{1,2}\\.\\d{1,2}\\.\\d{2,4}+.*")){
-				input = input.replaceAll("(\\d)\\.(\\d)(\\d){0,1}\\.", "$1/$2$3/");
-			}
-			input = input.replaceAll("\\b(rewe|Rewe|REWE)\\b", "Re-We");
-			
-		}else if (language.matches("de")){
-			input = input.replaceAll("(\\d)\\.(\\d)", "$1,$2");
-			input = input.replaceAll("\\b(moin|Moin)\\b", Matcher.quoteReplacement("\\prn=m OY n\\"));
-			input = input.replaceAll("\\b(die ersten 2)\\b", "die ersten zwei");
-			input = input.replaceAll("\\b(die ersten 3)\\b", "die ersten drei");
-			input = input.replaceAll("\\b(sin |Sin )\\b", "ßinn "); 					//very funny: Sin City !!!
-			input = input.replaceAll("\\b(rewe|Rewe|REWE)\\b", Matcher.quoteReplacement("\\prn=R e:1 v @\\"));
+	public static String optimizePronunciation(String input, String language, String engine){
+		//common
+		if (!input.matches(".*(!|\\?|\\.)$")){
+			//make sure it ends with something
+			input = input + ".";
 		}
+		input = input.replaceAll("(?i)\\b(SEPIA)\\b", "Sepia").trim();
+		
+		//specific
+		if (language.equals(LANGUAGES.EN)){
+			//temp.
+			input = input.replaceAll("(?i)(°C)\\b", " degrees Celsius");
+			input = input.replaceAll("(?i)(°F)\\b", " degrees Fahrenheit");
+			
+			//time
+			input = input.replaceAll("\\b(\\d\\d|\\d)\\.(\\d\\d|\\d)\\.(\\d\\d\\d\\d|\\d\\d)\\b", "$2/$1/$3");	//reorder date - prevents crash for German dates in MaryTTS!
+			
+			//other
+			if (Is.typeEqual(engine, EngineType.marytts)){
+				input = input.replaceAll("\\b(?i)(I('|´|`)m)\\b", "I am");	//fix I'm
+			}
+			
+		}else if (language.equals(LANGUAGES.DE)){
+			//temp
+			input = input.replaceAll("(?i)(°C)\\b", " Grad Celsius");
+			input = input.replaceAll("(?i)(°F)\\b", " Grad Fahrenheit");
+			//input = input.replaceAll("(\\d)\\.(\\d)", "$1,$2");
+		}
+		
+		input = input.replaceAll("\\s+", " ").trim();
 		return input;
 	}
 

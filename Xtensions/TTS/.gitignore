@@ -4,4 +4,6 @@ acapela/voices/*
 espeak-ng/*
 !espeak-ng/README.md
 marytts/*
-!marytts/README.md
+!marytts/INSTALL.md
+!marytts/download*
+!marytts/unzip*
