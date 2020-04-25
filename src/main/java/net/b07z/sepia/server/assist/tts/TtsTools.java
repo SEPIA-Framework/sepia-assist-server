@@ -30,11 +30,11 @@ public class TtsTools {
 	public static int getMoodIndex(String text, int current_mood_index){
 		int mood_index = current_mood_index;
 		//overwrite current
-		if (text.matches(".*(:\\-\\)).*")){
+		if (text.matches(".*(^|\\s)((:|;)(-|)(\\)|\\])|\\^_\\^)(\\?|!|,|\\.|)($|\\s).*")){
 			mood_index=1;
-		}else if (text.matches(".*(:\\-\\().*")){
+		}else if (text.matches(".*(^|\\s)(:|;)(-|)(\\(|\\[)(\\?|!|,|\\.|)($|\\s).*")){
 			mood_index=2;
-		}else if (text.matches(".*(:\\-\\|).*")){
+		}else if (text.matches(".*(^|\\s)((:|;)(-|)(\\|)|\\-_\\-)(\\?|!|,|\\.|)($|\\s).*")){
 			mood_index=0;
 		}
 		return mood_index;
@@ -48,8 +48,11 @@ public class TtsTools {
 	 */
 	public  static String trimText(String text){
 		//remove emojis
-		text=text.trim().replaceAll("(:\\-\\)|;\\-\\)|:\\-\\(|:\\-\\|)", "");
-		return text.trim();
+		text = text.trim()
+			.replaceAll("(^|\\s)(((:|;)(-|)(\\)|\\(|\\||\\]|\\[)+)(?<sym>\\?|!|,|\\.|)($|\\s))+", "${sym} ")
+			.replaceAll("(?i)(^|\\s)((\\^_\\^|\\-_\\-|o_o)(?<sym>\\?|!|,|\\.|)($|\\s))+", "${sym} ")
+		;
+		return text.replaceAll("\\s+", " ").trim();
 	}
 	
 	/**
@@ -62,17 +65,23 @@ public class TtsTools {
 	 */
 	public static String optimizePronunciation(String input, String language, String engine){
 		//common
+		input = input.replaceAll("(?i)\\b(SEPIA)\\b", "Sepia").trim();
 		if (!input.matches(".*(!|\\?|\\.)$")){
 			//make sure it ends with something
 			input = input + ".";
 		}
-		input = input.replaceAll("(?i)\\b(SEPIA)\\b", "Sepia").trim();
+		input = input.replaceAll("\\[|\\]", " ").trim();
 		
 		//specific
 		if (language.equals(LANGUAGES.EN)){
-			//temp.
+			//units
 			input = input.replaceAll("(?i)(°C)\\b", " degrees Celsius");
 			input = input.replaceAll("(?i)(°F)\\b", " degrees Fahrenheit");
+			input = input.replaceAll("%", " percent ");			//Note: this prevents variable expansion in Windows as well
+			input = input.replaceAll("(?:^|\\s)\\$(\\d+(\\.|,)\\d+|\\d+)(\\b)", " $1 dollar ");
+			input = input.replaceAll("(?:^|\\s)€(\\d+(\\.|,)\\d+|\\d+)(\\b)", " $1 euro ");
+			input = input.replaceAll("\\$", " dollar ");		//Note: this  prevents variable expansion in Linux as well
+			input = input.replaceAll("€", " euro ");
 			
 			//time
 			input = input.replaceAll("\\b(\\d\\d|\\d)\\.(\\d\\d|\\d)\\.(\\d\\d\\d\\d|\\d\\d)\\b", "$2/$1/$3");	//reorder date - prevents crash for German dates in MaryTTS!
@@ -83,13 +92,22 @@ public class TtsTools {
 			}
 			
 		}else if (language.equals(LANGUAGES.DE)){
-			//temp
+			//units
 			input = input.replaceAll("(?i)(°C)\\b", " Grad Celsius");
 			input = input.replaceAll("(?i)(°F)\\b", " Grad Fahrenheit");
-			//input = input.replaceAll("(\\d)\\.(\\d)", "$1,$2");
+			input = input.replaceAll("%", " Prozent ");			//Note: this prevents variable expansion in Windows as well
+			//input = input.replaceAll("(?:^|\\s)\\$(\\d+)", " $1 Dollar ");
+			input = input.replaceAll("(?:^|\\s)\\$(\\d+(\\.|,)\\d+|\\d+)(\\b)", " $1 Dollar ");
+			input = input.replaceAll("(?:^|\\s)€(\\d+(\\.|,)\\d+|\\d+)(\\b)", " $1 Euro ");
+			input = input.replaceAll("€(\\d+(\\.|,)\\d+|\\d+)", "$1 Euro");
+			input = input.replaceAll("\\$", " Dollar ");		//Note: this  prevents variable expansion in Linux as well
+			input = input.replaceAll("€", " Euro ");
+			
+			//numbers
+			input = input.replaceAll("(\\d)\\.(\\d)", "$1,$2");
 		}
 		
-		input = input.replaceAll("\\s+", " ").trim();
+		input = input.replaceAll("\\s+", " ").replaceAll(" \\?$", "?").replaceAll(" \\.$", ".").trim();
 		return input;
 	}
 

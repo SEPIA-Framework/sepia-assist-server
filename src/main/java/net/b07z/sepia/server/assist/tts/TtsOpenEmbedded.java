@@ -54,6 +54,12 @@ public class TtsOpenEmbedded implements TtsInterface {
 	private static TtsVoiceTrait enGB_espeak_m1_0 = new TtsVoiceTrait("gmw/en", EngineType.espeak.name(), LANGUAGES.EN, "male", 160, 50, 100);
 	private static TtsVoiceTrait enGB_espeak_m1_1 = new TtsVoiceTrait("gmw/en", EngineType.espeak.name(), LANGUAGES.EN, "male", 160, 60, 100);
 	private static TtsVoiceTrait enGB_espeak_m1_2 = new TtsVoiceTrait("gmw/en", EngineType.espeak.name(), LANGUAGES.EN, "male", 160, 30, 100);
+	//espeak mapping
+	private static Map<String, TtsVoiceTrait[]> espeakTtsVoices = new HashMap<>();
+	static {
+		espeakTtsVoices.put("de-DE espeak m", new TtsVoiceTrait[]{ deDE_espeak_m1_0, deDE_espeak_m1_1, deDE_espeak_m1_2 });
+		espeakTtsVoices.put("en-GB espeak m", new TtsVoiceTrait[]{ enGB_espeak_m1_0, enGB_espeak_m1_1, enGB_espeak_m1_2 });
+	}
 	
 	//marytts de-DE
 	private static TtsVoiceTrait deDE_marytts_m1_0 = new TtsVoiceTrait("bits3-hsmm", EngineType.marytts.name(), LANGUAGES.DE, "male",
@@ -143,8 +149,8 @@ public class TtsOpenEmbedded implements TtsInterface {
     //defaults
     private String language = "en";
 	private String gender = "male";
-	private String activeVoice = "en-GB espeak m";		//name of voice set as seen in get_voices (not necessarily the same as the actual selected voice (enu_will != will22k)
-	private int mood_index=0;			//0 - neutral/default, 1 - happy, 2 - sad, 3 - angry, 4 - shout, 5 - whisper, 6 - fun1 (e.g. old), 7 - fun2 (e.g. Yoda)
+	private String activeVoice = null; 	//name of voice set as seen in get_voices (not necessarily the same as the actual selected voice (enu_will != will22k)
+	private int mood_index = 0;			//0 - neutral/default, 1 - happy, 2 - sad, 3 - angry, 4 - shout, 5 - whisper, 6 - fun1 (e.g. old), 7 - fun2 (e.g. Yoda)
 	private double speedFactor = 1.0d;	//global modifier - multiply speed with this 	
 	private double toneFactor = 1.0d;	//global modifier - multiply tone with this
 	
@@ -212,11 +218,39 @@ public class TtsOpenEmbedded implements TtsInterface {
 			Debugger.println("TTS module - Added " + n + " MaryTTS voices.", 3);
 		}
 		
-		//ESPEAK	- TODO: test support
-		int n = 2;
-		voices.put("de-DE espeak m", new TtsVoiceTrait[]{ deDE_espeak_m1_0, deDE_espeak_m1_1, deDE_espeak_m1_2 });
-		voices.put("en-GB espeak m", new TtsVoiceTrait[]{ enGB_espeak_m1_0, enGB_espeak_m1_1, enGB_espeak_m1_2 });
-		Debugger.println("TTS module - Added " + n + " Espeak voices.", 3);
+		//ESPEAK
+		boolean hasEspeakSupport = false;
+		if (Is.systemWindows()){
+			//test support
+			if (new File(Config.ttsEngines + "espeak-ng/espeak-ng.exe").exists()){
+				hasEspeakSupport = true;
+			}
+		}else{
+			//test support
+			RuntimeResult rtr = RuntimeInterface.runCommand(new String[]{"command", "-v", "espeak-ng"}, 5000, false);
+			int code = rtr.getStatusCode();
+			if (code == 0 && Is.notNullOrEmpty(rtr.getOutput())){
+				hasEspeakSupport = true;
+			}
+		}
+		if (hasEspeakSupport){
+			int n = 0;
+			for (String v : espeakTtsVoices.keySet()){
+				voices.put(v, espeakTtsVoices.get(v));
+				n++;
+			}
+			Debugger.println("TTS module - Added " + n + " Espeak voices.", 3);
+		}else{
+			Debugger.println("TTS module - Espeak engine not found. Support has been deactivated for now.", 1);
+		}
+		
+		//get defaults
+		if (voices.keySet().size() > 0){
+			this.activeVoice = voices.keySet().iterator().next();
+			TtsVoiceTrait vt = voices.get(this.activeVoice)[0];
+			this.language = vt.getLanguageCode();
+			this.gender = vt.getGenderCode();
+		}
 		
 		//supported maximum mood index
 		maxMoodIndex = 3;
@@ -379,6 +413,12 @@ public class TtsOpenEmbedded implements TtsInterface {
 	//create sound file from text
 	public String getAudioURL(String readThis) {
 		
+		//test available voice
+		if (Is.nullOrEmpty(this.activeVoice) || voices.isEmpty() || voices.get(this.activeVoice) == null){
+			Debugger.println("TTS FAILED: voice NOT found!", 1);
+			return "";
+		}
+		
 		//characters limit
 		if (readThis.length() > charLimit){
 			readThis = readThis.substring(0, charLimit);
@@ -490,9 +530,9 @@ public class TtsOpenEmbedded implements TtsInterface {
 	private boolean callServerProcess(String url, String audioFilePath){
 		try{
 			FileUtils.copyURLToFile(
-					new URL(url), 
-					new File(audioFilePath), 
-					7500, 7500
+				new URL(url), 
+				new File(audioFilePath), 
+				7500, 7500
 			);
 			return true;
 		}catch(Exception e){
@@ -552,7 +592,8 @@ public class TtsOpenEmbedded implements TtsInterface {
 	
 	private boolean runRuntimeProcess(String[] command, String audioFilePath){
 		Debugger.println("TTS LOG - Command: " + String.join(" ", command), 2);		//debug
-		RuntimeResult res = RuntimeInterface.runCommand(command, PROCESS_TIMEOUT_MS);
+		boolean restrictVar = false;		//NOTE: we remove ENV variables in advance, but is this safe enough?
+		RuntimeResult res = RuntimeInterface.runCommand(command, PROCESS_TIMEOUT_MS, restrictVar);
 		if (res.getStatusCode() != 0){
 			//Error
 			Exception e = res.getException();
@@ -575,11 +616,12 @@ public class TtsOpenEmbedded implements TtsInterface {
 		int tone = (int) (voiceTrait.getPitch() * globalToneFactor);
 		int volume = voiceTrait.getVolume();
 		String cmd;
+		//check text safety (prevent any injections) for Windows
+		//text = RuntimeInterface.escapeVar(text);		//note: we replace critical characters in "optimizePronunciation"
+		//get cmd
 		if (Is.systemWindows()){
 			//Windows
 			cmd = (Config.ttsEngines + "espeak-ng/espeak-ng.exe").replace("/", File.separator);
-			//check text safety (prevent any injections) for Windows
-			//TODO
 			//encoding conversion
 			text = new String(text.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1);
 			/* -- this should work .. but does not --
@@ -589,9 +631,6 @@ public class TtsOpenEmbedded implements TtsInterface {
 		}else{
 			//Other
 			cmd = "espeak-ng";
-			//check text safety (prevent any injections) for UNIX
-			//TODO
-			//e.g. ?? text = "'" + text.replaceAll("'", "\\'") + "'";
 		}
 		return new String[]{ cmd,
 				"-a", Integer.toString(volume), 
