@@ -25,6 +25,7 @@ import net.b07z.sepia.server.assist.server.Statistics;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.assist.tools.DateTimeConverters;
+import net.b07z.sepia.server.core.assistant.ACTIONS;
 import net.b07z.sepia.server.core.assistant.ENVIRONMENTS;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Connectors;
@@ -350,6 +351,12 @@ public class WeatherMeteoNorway implements ServiceInterface {
 			//build the API_Result and goodbye
 			service.setStatusOkay();
 			service.setCustomAnswer(missingGeoData);
+			
+			//add button that links to help
+			service.addAction(ACTIONS.BUTTON_IN_APP_BROWSER);
+			service.putActionInfo("url", "https://github.com/SEPIA-Framework/sepia-docs/wiki/API-keys");
+			service.putActionInfo("title", "Info: API-Keys");
+			
 			ServiceResult result = service.buildResult(); 
 			return result;
 		}
@@ -417,6 +424,11 @@ public class WeatherMeteoNorway implements ServiceInterface {
 				//Units
 				JSONObject unitsFound = JSON.getJObject(weatherData, new String[]{"properties", "meta", "units"});
 				String tempUnitFound = JSON.getStringOrDefault(unitsFound, "air_temperature", "C");
+				if (tempUnitFound.equalsIgnoreCase("celsius")){
+					tempUnitFound = "C";
+				}else if (tempUnitFound.equalsIgnoreCase("fahrenheit")){
+					tempUnitFound = "F";
+				}
 				String tempUnitUsed = tempUnitFound;
 				boolean convertToCelsius = false;
 				boolean convertToFahrenheit = false;
