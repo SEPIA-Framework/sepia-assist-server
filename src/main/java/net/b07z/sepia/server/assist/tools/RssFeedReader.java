@@ -141,7 +141,12 @@ public class RssFeedReader {
         	if (httpRes.content == null || httpRes.content.isEmpty()){
         		throw new RuntimeException("Feed content not found. Code: " + httpRes.statusCode + ", Status: " + httpRes.statusLine);
         	}
-			//System.out.println(content.substring(0, 50));
+			//System.out.println(httpRes.content.substring(0, 50));
+        	
+        	//clean-up before parsing
+        	httpRes.content = httpRes.content.replaceAll("[^\\u0009\\u000A\\u000D\\u0020-\\uD7FF\\uE000-\\uFFFD\\u10000-\\u10FFF]", "");
+        	//NOTE: I think we could optimize performance using FilterInputStream at HTTP call to filter this 
+        	
 			InputStream stream;
 			if (httpRes.encoding != null){
 				stream = new ByteArrayInputStream(httpRes.content.getBytes(httpRes.encoding));
