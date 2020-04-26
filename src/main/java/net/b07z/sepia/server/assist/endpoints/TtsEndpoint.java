@@ -231,23 +231,23 @@ public class TtsEndpoint {
 		
 		//build
 		TtsInput input = new TtsInput(text);
-		if (client_info!=null)		input.client_info = client_info;
-		if (env!=null)				input.environment = env;
-		if (language!=null)			input.language = language;
-		if (voice!=null)			input.voice = voice;
-		if (gender!=null)			input.gender = gender;
-		input.playOn = (playOn == null)? "client" : playOn;		//default is client
-		if (format!=null)			input.format = format;		//default is "default"
+		if (Is.notNullOrEmpty(client_info))		input.client_info = client_info;
+		if (Is.notNullOrEmpty(env))				input.environment = env;
+		if (Is.notNullOrEmpty(language))		input.language = language;
+		if (Is.notNullOrEmpty(voice))			input.voice = voice;
+		if (Is.notNullOrEmpty(gender))			input.gender = gender;
+		input.playOn = Is.notNullOrEmpty(playOn)? playOn : "client";		//default is client
+		if (Is.notNullOrEmpty(format))			input.format = format;		//default is "default"
 		//
-		if (speed_str!=null){
+		if (Is.notNullOrEmpty(speed_str)){
 			try {					speed = Double.parseDouble(speed_str);			input.speed = speed;
 			}catch (Exception e){	input.speed = -1.0d;							e.printStackTrace();			}
 		}
-		if (tone_str!=null){
+		if (Is.notNullOrEmpty(tone_str)){
 			try {					tone = Double.parseDouble(tone_str);			input.tone = tone;
 			}catch (Exception e){	input.tone = -1.0d;								e.printStackTrace();			}
 		}
-		if (mood_str!=null){
+		if (Is.notNullOrEmpty(mood_str)){
 			try {					mood = Integer.parseInt(mood_str);				input.mood = mood;
 			}catch (Exception e){	input.mood = -1;								e.printStackTrace();			}
 		}

@@ -73,7 +73,22 @@ public class TtsTools {
 		input = input.replaceAll("\\[|\\]", " ").trim();
 		
 		//specific
-		if (language.equals(LANGUAGES.EN)){
+		if (language.equals(LANGUAGES.DE)){
+			//units
+			input = input.replaceAll("(?i)(°C)\\b", " Grad Celsius");
+			input = input.replaceAll("(?i)(°F)\\b", " Grad Fahrenheit");
+			input = input.replaceAll("%", " Prozent ");			//Note: this prevents variable expansion in Windows as well
+			//input = input.replaceAll("(?:^|\\s)\\$(\\d+)", " $1 Dollar ");
+			input = input.replaceAll("(?:^|\\s)\\$(\\d+(\\.|,)\\d+|\\d+)(\\b)", " $1 Dollar ");
+			input = input.replaceAll("(?:^|\\s)€(\\d+(\\.|,)\\d+|\\d+)(\\b)", " $1 Euro ");
+			input = input.replaceAll("€(\\d+(\\.|,)\\d+|\\d+)", "$1 Euro");
+			input = input.replaceAll("\\$", " Dollar ");		//Note: this  prevents variable expansion in Linux as well
+			input = input.replaceAll("€", " Euro ");
+			
+			//numbers
+			input = input.replaceAll("(\\d)\\.(\\d)", "$1,$2");
+			
+		}else{
 			//units
 			input = input.replaceAll("(?i)(°C)\\b", " degrees Celsius");
 			input = input.replaceAll("(?i)(°F)\\b", " degrees Fahrenheit");
@@ -90,21 +105,6 @@ public class TtsTools {
 			if (Is.typeEqual(engine, EngineType.marytts)){
 				input = input.replaceAll("\\b(?i)(I('|´|`)m)\\b", "I am");	//fix I'm
 			}
-			
-		}else if (language.equals(LANGUAGES.DE)){
-			//units
-			input = input.replaceAll("(?i)(°C)\\b", " Grad Celsius");
-			input = input.replaceAll("(?i)(°F)\\b", " Grad Fahrenheit");
-			input = input.replaceAll("%", " Prozent ");			//Note: this prevents variable expansion in Windows as well
-			//input = input.replaceAll("(?:^|\\s)\\$(\\d+)", " $1 Dollar ");
-			input = input.replaceAll("(?:^|\\s)\\$(\\d+(\\.|,)\\d+|\\d+)(\\b)", " $1 Dollar ");
-			input = input.replaceAll("(?:^|\\s)€(\\d+(\\.|,)\\d+|\\d+)(\\b)", " $1 Euro ");
-			input = input.replaceAll("€(\\d+(\\.|,)\\d+|\\d+)", "$1 Euro");
-			input = input.replaceAll("\\$", " Dollar ");		//Note: this  prevents variable expansion in Linux as well
-			input = input.replaceAll("€", " Euro ");
-			
-			//numbers
-			input = input.replaceAll("(\\d)\\.(\\d)", "$1,$2");
 		}
 		
 		input = input.replaceAll("\\s+", " ").replaceAll(" \\?$", "?").replaceAll(" \\.$", ".").trim();

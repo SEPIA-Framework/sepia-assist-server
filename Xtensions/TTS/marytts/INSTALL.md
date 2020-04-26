@@ -1,16 +1,21 @@
 # TTS Engine: Mary-TTS
 
-Original: https://github.com/marytts
+Original: https://github.com/marytts  
 Fork release: https://github.com/fquirin/marytts/releases/latest/download/marytts.zip  
   
 This is the folder for MaryTTS (Text-To-Speech) voice server that can be used by the TTS module of SEPIA to generate speech.
 It has been integrated as server extension due to it's memory requirements of around 250MB that will not be available on all supported hardware (e.g. RPi3 or smaller).  
+
+## Installation
+
+Note: It is required to use a system with 2GB memory or more to add this extension, but you can run the server on a different machine as well (see SEPIA settings 'marytts_server'). 
   
-To install the extension simply use one of the dowload scripts. The start scripts of SEPIA will automatically load the server if the downloaded files are available.
+* To install the extension simply use one of the dowload scripts. The start scripts of SEPIA will automatically load the server if the downloaded files are available.  
+* To remove the server simply delete the downloaded files.
 
 ## Server endpoints
 
-Some useful endpoints of the original MaryTTS server. 
+Some useful endpoints of the original MaryTTS server in case you want to use it for other projects. 
 Default address is "http://localhost:59125/" followed e.g. by:
 
 * version - requests the version of the MARY server

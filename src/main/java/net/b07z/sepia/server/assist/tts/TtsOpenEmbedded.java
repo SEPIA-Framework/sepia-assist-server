@@ -61,6 +61,18 @@ public class TtsOpenEmbedded implements TtsInterface {
 		espeakTtsVoices.put("en-GB espeak m", new TtsVoiceTrait[]{ enGB_espeak_m1_0, enGB_espeak_m1_1, enGB_espeak_m1_2 });
 	}
 	
+	//pico - available languages: en-US en-GB de-DE es-ES fr-FR it-IT
+	private static TtsVoiceTrait deDE_pico_f1_0 = new TtsVoiceTrait("", EngineType.pico.name(), LANGUAGES.DE, "female", JSON.make("l", "de-DE"));
+	private static TtsVoiceTrait enGB_pico_f1_0 = new TtsVoiceTrait("", EngineType.pico.name(), LANGUAGES.EN, "female", JSON.make("l", "en-GB"));
+	private static TtsVoiceTrait enUS_pico_f1_0 = new TtsVoiceTrait("", EngineType.pico.name(), LANGUAGES.EN, "female", JSON.make("l", "en-US"));
+	//pico mapping
+	private static Map<String, TtsVoiceTrait[]> picoTtsVoices = new HashMap<>();
+	static {
+		picoTtsVoices.put("de-DE pico f", new TtsVoiceTrait[]{ deDE_pico_f1_0, deDE_pico_f1_0, deDE_pico_f1_0 });
+		picoTtsVoices.put("en-GB pico f", new TtsVoiceTrait[]{ enGB_pico_f1_0, enGB_pico_f1_0, enGB_pico_f1_0 });
+		picoTtsVoices.put("en-US pico f", new TtsVoiceTrait[]{ enUS_pico_f1_0, enUS_pico_f1_0, enUS_pico_f1_0 });
+	}
+	
 	//marytts de-DE
 	private static TtsVoiceTrait deDE_marytts_m1_0 = new TtsVoiceTrait("bits3-hsmm", EngineType.marytts.name(), LANGUAGES.DE, "male",
 			maryTtsData("de", "amount:1.2;", null, null, null, null)
@@ -69,7 +81,7 @@ public class TtsOpenEmbedded implements TtsInterface {
 			maryTtsData("de", "amount:1.4;", null, null, "type:4;fc1:240.0;fc2:1000.0;tbw:800.0", null)
 	);
 	private static TtsVoiceTrait deDE_marytts_s1_0 = new TtsVoiceTrait("bits1-hsmm", EngineType.marytts.name(), LANGUAGES.DE, "female",
-			maryTtsData("de", "amount:1.7;", null, null, null, "amount:100.0;")
+			maryTtsData("de", "amount:1.7;", null, null, "type:4;fc1:240.0;fc2:1000.0;tbw:1600.0", "amount:100.0;")
 	);
 	//marytts en-GB
 	private static TtsVoiceTrait enGB_marytts_m1_0 = new TtsVoiceTrait("dfki-spike-hsmm", EngineType.marytts.name(), LANGUAGES.EN, "male",
@@ -164,6 +176,12 @@ public class TtsOpenEmbedded implements TtsInterface {
 	
 	@Override
 	public boolean setup(){
+		//clean - in case of server reload
+		languageList.clear();
+		soundFormatList.clear();
+		genderList.clear();
+		voices.clear();
+		
 		//supported languages:
 		languageList.add("de");
 		languageList.add("en");
@@ -227,7 +245,8 @@ public class TtsOpenEmbedded implements TtsInterface {
 			}
 		}else{
 			//test support
-			RuntimeResult rtr = RuntimeInterface.runCommand(new String[]{"command", "-v", "espeak-ng"}, 5000, false);
+			//RuntimeResult rtr = RuntimeInterface.runCommand(new String[]{"command", "-v", "espeak-ng"}, 5000, false);		//TODO: why not working?
+			RuntimeResult rtr = RuntimeInterface.runCommand(new String[]{"command -v espeak-ng"}, 5000, false);
 			int code = rtr.getStatusCode();
 			if (code == 0 && Is.notNullOrEmpty(rtr.getOutput())){
 				hasEspeakSupport = true;
@@ -243,6 +262,34 @@ public class TtsOpenEmbedded implements TtsInterface {
 		}else{
 			Debugger.println("TTS module - Espeak engine not found. Support has been deactivated for now.", 1);
 		}
+		//PICO
+		boolean hasPicoSupport = false;
+		if (Is.systemWindows()){
+			//test support
+			hasPicoSupport = false;
+		}else{
+			//test support
+			//RuntimeResult rtr = RuntimeInterface.runCommand(new String[]{"command", "-v", "pico2wave"}, 5000, false);		//TODO: why not working?
+			RuntimeResult rtr = RuntimeInterface.runCommand(new String[]{"command -v pico2wave"}, 5000, false);
+			int code = rtr.getStatusCode();
+			if (code == 0 && Is.notNullOrEmpty(rtr.getOutput())){
+				hasPicoSupport = true;
+			}
+		}
+		if (hasPicoSupport){
+			int n = 0;
+			for (String v : picoTtsVoices.keySet()){
+				voices.put(v, picoTtsVoices.get(v));
+				n++;
+			}
+			Debugger.println("TTS module - Added " + n + " Pico voices.", 3);
+		}else{
+			if (Is.systemWindows()){
+				Debugger.println("TTS module - Pico engine is not support on Windows and has been deactivated.", 3);
+			}else{
+				Debugger.println("TTS module - Pico engine not found. Support has been deactivated for now.", 1);
+			}
+		}
 		
 		//get defaults
 		if (voices.keySet().size() > 0){
@@ -250,6 +297,10 @@ public class TtsOpenEmbedded implements TtsInterface {
 			TtsVoiceTrait vt = voices.get(this.activeVoice)[0];
 			this.language = vt.getLanguageCode();
 			this.gender = vt.getGenderCode();
+		}else{
+			this.activeVoice = null;
+			this.language = LANGUAGES.EN;
+			this.gender = "male";
 		}
 		
 		//supported maximum mood index
@@ -466,6 +517,11 @@ public class TtsOpenEmbedded implements TtsInterface {
 				//run process - note: its thread blocking but this should be considered "intended" here ;-)
 				String[] command = buildEspeakCmd(readThis, voiceTrait, this.speedFactor, this.toneFactor, audioFilePath);
 				generatedFile = runRuntimeProcess(command, audioFilePath);
+			//PICO
+			}else if (voiceTrait.getType().equals(EngineType.pico.name())){
+				//run process - note: its thread blocking but this should be considered "intended" here ;-)
+				String[] command = buildPicoCmd(readThis, voiceTrait, this.speedFactor, this.toneFactor, audioFilePath);
+				generatedFile = runRuntimeProcess(command, audioFilePath);
 			//MARY-TTS
 			}else if (voiceTrait.getType().equals(EngineType.marytts.name())){
 				//call server
@@ -591,6 +647,9 @@ public class TtsOpenEmbedded implements TtsInterface {
 	//------- Runtime command process builder and execution -------
 	
 	private boolean runRuntimeProcess(String[] command, String audioFilePath){
+		if (command == null){
+			throw new RuntimeException("TTS procces failed! Msg: Command was 'null', probably because the engine or engine-settings are not supported.");
+		}
 		Debugger.println("TTS LOG - Command: " + String.join(" ", command), 2);		//debug
 		boolean restrictVar = false;		//NOTE: we remove ENV variables in advance, but is this safe enough?
 		RuntimeResult res = RuntimeInterface.runCommand(command, PROCESS_TIMEOUT_MS, restrictVar);
@@ -648,8 +707,22 @@ public class TtsOpenEmbedded implements TtsInterface {
 		return cmd;
 	}
 	
-	public static String[] buildPicoCmd(){
-		String[] cmd = new String[]{};
-		return cmd;
+	public static String[] buildPicoCmd(String text, TtsVoiceTrait voiceTrait, double globalSpeedFactor, double globalToneFactor, String filePath){
+		JSONObject dataMod = voiceTrait.getData();
+		//TODO: global volume, speed and tone not supported yet
+		String cmd;
+		//get cmd
+		if (Is.systemWindows()){
+			return null;		//NOT AVAILABLE
+		}else{
+			//Other
+			cmd = "pico2wave";
+		}
+		//Languages: en-US en-GB de-DE es-ES fr-FR it-IT
+		return new String[]{ cmd,
+				"-l", JSON.getStringOrDefault(dataMod, "l", "en-GB"),
+				"-w", filePath,
+				text
+		};
 	}
 }
