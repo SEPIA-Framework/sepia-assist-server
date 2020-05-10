@@ -1,16 +1,27 @@
 error_0a;;		rep=0|mood=5;;		Sorry, da gab es wohl einen Fehler. Versuch es doch noch mal bitte. ;;char=neutral
 error_0a;;		rep=1|mood=5;;		Nein, es tut mir leid, das scheint gerade nicht zu funktionieren. 	;;char=neutral
 error_0a;;		rep=2|mood=5;;		Es tut mir leid, das scheint gerade nicht zu funktionieren. 		;;char=neutral
-error_geo_location_0a;;		rep=0|mood=5;;		Sorry, da gab es wohl einen Fehler. Versuch es doch noch mal bitte. ;;char=neutral
+error_geo_location_0a;;		rep=0|mood=5;;		Sorry, da gab es wohl einen Fehler mit den Geodaten. Versuch es doch noch mal bitte. ;;char=neutral
 error_geo_location_0a;;		rep=1|mood=5;;		Es kann sein, dass die Adresse falsch oder unvollständig ist, ich kann sie einfach nicht finden. 		;;char=neutral
 error_geo_location_0a;;		rep=2|mood=5;;		Es tut mir leid, da komme ich wohl gerade nicht weiter. Entweder kann ich die Adresse nicht finden oder es gibt einen Fehler irgendwo.		;;char=neutral
+error_geo_location_0b;;		rep=0|mood=5;;		Sorry, aber ich konnte die passenden Geodaten nicht finden. Versuch es doch noch mal bitte. ;;char=neutral
+error_geo_location_0b;;		rep=1|mood=5;;		Sorry, die Geodaten sind immer noch unvollständig. Vielleicht gibt es einen Fehler in der Suchfunktion. 		;;char=neutral
+error_geo_location_0b;;		rep=2|mood=5;;		Es tut mir leid, da komme ich wohl gerade nicht weiter, habe keine passenden Geodaten.		;;char=neutral
 error_geo_location_personal_0a;;		rep=0|mood=5;;		Es tut mir leid, ich kann den Ort wohl nicht bestimmen, kannst du bitte die Einstellungen prüfen. 		;;char=neutral
 error_geo_location_personal_0a;;		rep=1|mood=5;;		Es kann sein, dass die Adresse falsch oder unvollständig ist, ich kann sie einfach nicht finden. 		;;char=neutral
 error_geo_location_personal_0a;;		rep=2|mood=5;;		Es tut mir leid, da komme ich wohl gerade nicht weiter, kann diese Adresse einfach nicht nutzen.		;;char=neutral
 error_language_not_supported_0a;;	rep=0|mood=5;;		Es tut mir leid, aber dieser Service unterstützt die aktive Sprache nicht. 		;;char=neutral
 error_region_not_supported_0a;;		rep=0|mood=5;;		Es tut mir leid, aber dieser Service unterstützt die aktive Region nicht. 		;;char=neutral
 error_client_control_0a;;		rep=0|mood=5;;		<user_name>, die Steuerungsfunktion konnte nicht ausgeführt werden. Ich weiß leider nicht warum. 		;;char=neutral
+error_client_control_0b;;		rep=0|mood=5;;		<user_name>, die Steuerungsfunktion konnte nicht ausgeführt werden. 		;;char=neutral
 error_client_support_0a;;		rep=0|mood=5;;		Sorry, aber diese Version der App unterstütz die aufgerufene Aktion nicht. 		;;char=neutral
+error_missing_display_0a;;		rep=0|mood=5;;		Sorry, aber dafür benötige ich ein aktives Display. ;;char=neutral
+error_missing_display_0a;;		rep=1|mood=5;;		Ohne ein aktives Display kann ich das Ergebnis nicht anzeigen. ;;char=neutral
+error_missing_display_0a;;		rep=2|mood=5;;		<user_name>, ohne angeschlossenes und aktiviertes Display kommen wir hier leider nicht weiter. ;;char=neutral
+error_missing_display_0b;;		rep=0|mood=5;;		Das Ergebnis kann ich dir zur Zeit leider nur auf einem Bildschirm anzeigen. ;;char=neutral
+error_missing_display_0b;;		rep=0|mood=5;;		Die Antwort auf deine Anfrage müsste ich dir auf einem Display zeigen. ;;char=neutral
+error_missing_display_0b;;		rep=1|mood=5;;		Ohne Display kann ich dir dazu leider keine weiteren Infos geben. ;;char=neutral
+error_missing_display_0b;;		rep=2|mood=5;;		Das Ergebnis wird zur Zeit nur auf einem Display angezeigt. ;;char=neutral
 abort_0a;;		rep=0|mood=5;;		Ok, lass noch mal neu anfangen. ;;char=cool,neutral
 abort_0a;;		rep=0|mood=5;;		Ok, habs abgebrochen. ;;char=cool,neutral
 abort_0b;;		rep=0|mood=5;;		Ich glaube wir kommen gerade nicht weiter. Lass es uns später noch mal probieren. ;;char=neutral
@@ -22,6 +33,10 @@ ok_0a;;		rep=0|mood=5;;		Ok.		;;char=neutral
 ok_0b;;		rep=0|mood=5;;		Ok, wird erledigt.		;;char=neutral
 ok_0b;;		rep=0|mood=5;;		Ok, wird gemacht.		;;char=neutral
 ok_0c;;		rep=0|mood=5;;		Ok, ist erledigt.		;;char=neutral
+done_0a;;		rep=0|mood=5;;		Erledigt.		;;char=neutral
+look_0a;;		rep=0|mood=5;;		Schau mal.		;;char=neutral
+look_0a;;		rep=0|mood=5;;		Schau mal hier.	;;char=neutral
+look_0b;;		rep=0|mood=5;;		Hier bitte.		;;char=neutral
 default_ask_parameter_0a;;		rep=0|mood=5;;		Hmm, die Anfrage ist scheinbar unvollständig, was ist der fehlende Parameter? ;;char=polite,neutral
 default_ask_parameter_0a;;		rep=1|mood=5;;		Und der nächste fehlende Parameter? ;;char=cool,rude,neutral
 default_ask_parameter_0a;;		rep=2|mood=5;;		Und noch einen Parameter bitte! ;;char=cool,rude
@@ -59,6 +74,9 @@ client_controls_ask_fun_0a;;		rep=1|mood=5;;		Sorry, wie heißt die Funktion? ;;
 client_controls_ask_fun_0a;;		rep=2|mood=5;;		Mir fehlt leider der Name einer Funktion wie z.B. Einstellungen, sag noch mal bitte!;;char=neutral
 client_controls_volume_eleven_0a;;		rep=0|mood=5;;		Tonight I'm Gonna Rock You Tonight! ;;char=neutral
 client_controls_volume_exceeded_0a;;		rep=0|mood=5;;		Bisschen laut, ich stelle die Lautstärke mal auf 10. ;;char=neutral
+client_controls_runtime_command_0a;;		rep=0|mood=5;;		Ein geplanter OS-Befehl wurde erfolgreich ausgeführt. ;;char=neutral
+client_controls_runtime_command_0b;;		rep=0|mood=5;;		Der OS-Befehl <1> wurde erfolgreich ausgeführt. ;;char=neutral
+client_controls_runtime_command_0c;;		rep=0|mood=5;;		Der OS-Befehl wurde erfolgreich ausgeführt. ;;char=neutral
 alarms_0a;;	rep=0|mood=5;;		Der nächste Alarm ist in <1>. ;;char=neutral
 alarms_0b;;	rep=0|mood=5;;		Es gibt scheinbar keinen aktiven <3> zur Zeit. ;;char=neutral
 alarms_0c;;	rep=0|mood=5;;		Dazu kann ich gerade nix finden irgendwie, versuch es bitte gleich noch mal. ;;char=neutral
@@ -179,12 +197,12 @@ music_radio_0a;;		rep=0|mood=5;;		<user_name>, ich kann gerade leider kein Radio
 music_radio_0b;;		rep=0|mood=5;;		<user_name>, zu diesem Suchbegriff habe ich leider kein Radio gefunden. ;;char=polite,neutral
 music_radio_ask_0a;;	rep=0|mood=5;;		Welchen Radiosender, welches Genre oder welche Band soll ich für dich suchen? ;;char=cool,polite,neutral 
 music_radio_ask_0a;;	rep=0|mood=5;;		Wie heißt die Radiostation, das Genre oder die Band, die ich suchen soll? ;;char=neutral
-music_radio_1a;;		rep=0|mood=5;;		Habe eine Auswahl von <1> Radio Stationen gefunden und starte schon mal <4>.<br><br><3> ;;char=neutral
+music_radio_1a;;		rep=0|mood=5;;		Habe eine Auswahl von <1> Radio Stationen gefunden und starte schon mal <4>. Die anderen sind <3> ;;char=neutral
 music_radio_1b;;		rep=0|mood=5;;		Habe eine Radio Station gefunden namens <4>. Sekunde, ich starte sie mal. ;;char=polite,neutral
-music_radio_1c;;		rep=0|mood=5;;		Hab folgende top <1> Radio Stationen gefunden.<br><br><3><br>Ich starte mal die erste. ;;char=cool,polite,neutral
+music_radio_1c;;		rep=0|mood=5;;		Hab folgende top <1> Radio Stationen gefunden <3>. Ich starte mal die erste. ;;char=cool,polite,neutral
 music_radio_1d;;		rep=0|mood=5;;		Sekunde, ich starte den <1> Stream. ;;char=cool,rude,neutral
 music_radio_1e;;		rep=0|mood=5;;		Radio wird gestartet.
-music_radio_1f;;		rep=0|mood=5;;		Radio wird gestartet.<br>Habe diese <1> Sender gefunden:<br><br><3> ;;char=cool,rude
+music_radio_1f;;		rep=0|mood=5;;		Radio wird gestartet. Habe diese <1> Sender gefunden: <3> ;;char=cool,rude
 music_radio_2a;;		rep=0|mood=5;;		Erledigt <user_name>. ;;char=neutral
 server_music_0a;;		rep=0|mood=5;;		<user_name>, ich kann die Musik leider nicht finden. ;;char=cool,polite,neutral
 server_music_0a;;		rep=0|mood=5;;		Tut mir leid, aber ich kann die Musik nicht finden. ;;char=cool,polite,neutral
@@ -350,14 +368,16 @@ mobility_ask_start_0a;;		rep=1|mood=5;;		Kannst du das noch mal wiederholen bitt
 mobility_ask_start_0a;;		rep=2|mood=5;;		Ich glaub ich kenne diesen Ort noch nicht. ;;char=cool,neutral
 mobility_ask_start_0a;;		rep=2|mood=5;;		Es könnte tatsächlich sein, dass ich diesen Ort noch nicht kenne. ;;char=polite,neutral
 movies_0a;;		rep=0|mood=5;;		Sorry <user_name>, hab keine Filme gefunden zu <1>. ;;char=cool,rude,neutral
-movies_1a;;		rep=0|mood=5;;		Hab <1> Filme gefunden zu <2>.<br> Hier sind die ersten <3>: <br><br> <4> ;;char=cool,rude,neutral
-movies_1b;;		rep=0|mood=5;;		Hab <1> Film gefunden zu <2>, nämlich diesen hier: <br><br> <4> ;;char=rude
-movies_1c;;		rep=0|mood=5;;		Habe einige Filme gefunden zu <2>.<br> Hier sind die ersten <3>: <br><br> <4> ;;char=polite,neutral
+movies_1a;;		rep=0|mood=5;;		Hab <1> Filme gefunden zu <2>. Hier sind die ersten <3>: <4> ;;char=cool,rude,neutral
+movies_1b;;		rep=0|mood=5;;		Hab <1> Film gefunden zu <2>, nämlich diesen hier: <4> ;;char=rude
+movies_1c;;		rep=0|mood=5;;		Habe einige Filme gefunden zu <2>. Hier sind die ersten <3>: <4> ;;char=polite,neutral
+news_0a;;		rep=0|mood=5;;		Komisch, ich habe scheinbar keine News gefunden. ;;char=cool,neutral
 news_1a;;		rep=0|mood=5;;		Ich öffne mal die News-Seite für dich, <user_name>. ;;char=cool,neutral
 news_1a;;		rep=0|mood=5;;		Guck mal hier, hab die News Seite geöffnet für dich. ;;char=cool,rude
 news_1a;;		rep=0|mood=5;;		Sekunde, ich öffne die News. ;;char=polite,neutral
 news_1b;;		rep=0|mood=5;;		Schau mal <user_name>, hier sind die Ergebnisse vom Fussball. ;;char=neutral
 news_1c;;		rep=0|mood=5;;		Guck mal <user_name>, hier ist die Fussballtabelle. ;;char=neutral
+news_1d;;		rep=0|mood=5;;		Hier ist die erste Schlagzeile. <2>. Erledigt. Mehr News könnte ich dir auf einem Bildschirm zeigen. ;;char=neutral
 repeat_0a;;		rep=0|mood=5;;		Hmm, ich finde grad nix was man wiederholen könnte. ;;char=cool,rude,neutral
 repeat_0a;;		rep=0|mood=5;;		Ich wüsste jetzt nicht was ich wiederholen könnte, sorry. ;;char=cool,polite,neutral
 test_0a;;		rep=0|mood=5;;		Läuft! ;;char=cool,rude,neutral
@@ -378,9 +398,15 @@ weather_ask_place_1a;;		rep=1|mood=5;;		Sorry, sag noch mal, wo soll ich gucken?
 weather_ask_place_1a;;		rep=2|mood=5;;		Hmm ich glaub es gibt ein Problem, ein mal bitte noch. ;;char=polite,neutral
 weather_ask_place_1a;;		rep=2|mood=5;;		Es könnte tatsächlich sein, dass ich diesen Ort noch nicht kenne. Sag noch einmal bitte.;;char=polite,neutral
 weather_today_1a;;		rep=0|mood=5;;		Das Wetter in <1> ist <3> bei einer Temperatur von <2> Grad. ;;char=neutral
+weather_today_1b;;		rep=0|mood=5;;		Hier ist das Wetter für <1>. <3> bei einer Temperatur von <2> Grad <7>. ;;char=neutral
 weather_tomorrow_1a;;	rep=0|mood=5;;		Das Wetter für Morgen in <1> ist <3> bei Temperaturen von bis zu <2> Grad.
+weather_tomorrow_1b;;	rep=0|mood=5;;		Hier ist das Wetter für Morgen in <1>. <3> am Vormittag und die Temperatur liegt zwischen <5> und <2> Grad <7>.
+weather_tomorrow_1c;;	rep=0|mood=5;;		Hier ist das Wetter für Morgen in <1>. <3> am Vormittag und <5> am Nachmittag bei Temperaturen von <2> bis <6> Grad <7>.
 weather_day_1a;;		rep=0|mood=5;;		Das Wetter am <4> in <1> ist <3> bei Temperaturen von bis zu <2> Grad.
+weather_day_1b;;		rep=0|mood=5;;		Hier ist das Wetter für <4> in <1>. <3> am Vormittag und die Temperatur liegt zwischen <5> und <2> Grad <7>.
+weather_week_0a;;		rep=0|mood=5;;		Die Übersicht der Woche kann zur Zeit leider nur auf dem Display angezeigt werden. Frag mich doch nach einem bestimmten Tag. ;;char=neutral
 weather_week_1a;;		rep=0|mood=5;;		Hmm ich wäre da vorsichtig aber was man sagt für diese Woche ist <3>. ;;char=neutral
+weather_week_1b;;		rep=0|mood=5;;		Schau mal, hier ist eine Übersicht der nächsten 7 Tage für <1>. ;;char=neutral
 websearch_1a;;		rep=0|mood=5;;		Ok, lass mich eine Seite öffnen für dich. ;;char=cool,rude,neutral
 websearch_1a;;		rep=0|mood=5;;		Einen Moment, ich such schnell im Web nach <1>. ;;char=polite,neutral
 websearch_ask_search_0a;;		rep=0|mood=5;;		Wonach soll ich suchen? ;;char=cool,rude,neutral

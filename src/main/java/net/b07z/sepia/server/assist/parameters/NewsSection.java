@@ -22,11 +22,13 @@ public class NewsSection implements ParameterHandler{
 		sports,
 		soccer,
 		economy,
+		health,
 		games,
 		music,
 		cinema,
 		tv,
-		startup;
+		startup,
+		corona
 		//entertainment
 		//style
 	}
@@ -79,18 +81,21 @@ public class NewsSection implements ParameterHandler{
 		String type = "";
 		//German
 		if (language.matches(LANGUAGES.DE)){
-			type = NluTools.stringFindFirst(input, "(politik|wirtschaft|wissenschaft|sport|technologie|technik\\w*|tech|kultur)\\w*|it news|pc games|pc news|computer|"
+			type = NluTools.stringFindFirst(input, "(politik|wirtschaft|wissenschaft|sport|technologie|technik|tech|kultur|gesundheit)\\w*|"
+							+ "it news|pc games|pc news|computer|"
 							+ "(fussball|bundesliga|regionalliga|handball|baseball|football|basketball|golf|eishockey|tennis|wrestling)\\w*|"
 							+ "champions( |)league|europaliga|euro( |)league|europa( |)league|premier league|primera division|"
 							+ "wm|em|(europa|welt)(meister| meister)(schaft|)|"
 							+ "racing|auto rennen|rennen|race|raceing|formel 1|formel eins|"
 							+ "games|lol|league of legends|dota|overwatch|heroes|"
 							+ "musik(er|)|music|band(s|)|kino(s|)|cinema(s|)|film(e|)|movie(s|)|serie(n|)|tv|television|fernseh(serie(n|)|sendung(en|))|fernseh|shows|"
-							+ "start( |-|)up(s|)|gruender|gruenderszene");
+							+ "start( |-|)up(s|)|gruender|gruenderszene|"
+							+ "corona(( |)virus|)|covid(-19|)|sars-cov-2");
 			
 		//English and other
 		}else{
-			type = NluTools.stringFindFirst(input, "politics|economy|science|technology|tech|culture|cultural|sport|sports|computer|it news|pc news|pc games|"
+			type = NluTools.stringFindFirst(input, "politics|economy|science|technology|tech|culture|cultural|sport|sports|health|"
+							+ "computer|it news|pc news|pc games|"
 							+ "soccer|"
 							+ "bundesliga|champions( |)league|europaliga|euro( |)league|europa( |)league|premier league|primera division|"
 							+ "wm|em|(european|world)(champion| champion)(ship|)|"
@@ -98,7 +103,8 @@ public class NewsSection implements ParameterHandler{
 							+ "racing|race|formula one|formula 1|"
 							+ "games|lol|league of legends|dota|overwatch|heroes|"
 							+ "music|band(s|)|cinema(s|)|movie(s|)|film(s|)|tv|series|serial|television|shows|"
-							+ "start( |-|)up(s|)|founder(s|)");
+							+ "start( |-|)up(s|)|founder(s|)|"
+							+ "corona(( |)virus|)|covid(-19|)|sars-cov-2");
 			
 		}
 		//System.out.println("NewsType: " + type); 		//debug
@@ -130,12 +136,16 @@ public class NewsSection implements ParameterHandler{
 			return "<" + NSection.games + ">";
 		}else if (NluTools.stringContains(newsFound, "music|musik(er|)|band(s|)")){
 			return "<" + NSection.music + ">";
+		}else if (NluTools.stringContains(newsFound, "gesundheit\\w*|health")){
+			return "<" + NSection.health.name() + ">";
 		}else if (NluTools.stringContains(newsFound, "start( |-|)up(s|)|gruender|gruenderszene|founder(s|)")){
 			return "<" + NSection.startup + ">";
 		}else if (NluTools.stringContains(newsFound, "kino(s|)|cinema(s|)|film(e|s|)|movie(s|)")){
 			return "<" + NSection.cinema + ">";
 		}else if (NluTools.stringContains(newsFound, "serie(n|)|tv|fernseh(serie(n|)|sendung(en|))|fernseh|series|serial|television")){
 			return "<" + NSection.tv + ">";
+		}else if (NluTools.stringContains(newsFound, "corona(( |)virus|)|covid(-19|)|sars-cov-2")){
+			return "<" + NSection.corona + ">";
 		}else{
 			return "";
 		}

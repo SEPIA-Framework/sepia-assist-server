@@ -1,16 +1,27 @@
 error_0a;;		rep=0|mood=5;;		Sorry there has been an error, please try again. ;;char=neutral
 error_0a;;		rep=1|mood=5;;		No sorry, for some reason this does not work right now. ;;char=neutral
 error_0a;;		rep=2|mood=5;;		For some reason this does not work right now. ;;char=neutral
-error_geo_location_0a;;		rep=0|mood=5;;		Sorry there has been an error, please try again. ;;char=neutral
+error_geo_location_0a;;		rep=0|mood=5;;		Sorry there has been an error in the geo data, please try again. ;;char=neutral
 error_geo_location_0a;;		rep=1|mood=5;;		Maybe the address is wrong or incomplete, but I can't seem to find it. 		;;char=neutral
 error_geo_location_0a;;		rep=2|mood=5;;		I'm sorry, I think I'm stuck here. I can't use this address somehow or there is an error somewhere.		;;char=neutral
+error_geo_location_0b;;		rep=0|mood=5;;		Sorry, but I cant find the required geo data. Please try again. ;;char=neutral
+error_geo_location_0b;;		rep=1|mood=5;;		Sorry, the geo data is still incomplete. Maybe there is an error in the search function. 		;;char=neutral
+error_geo_location_0b;;		rep=2|mood=5;;		I'm sorry, I think I'm stuck here. I don't have the required geo data.		;;char=neutral
 error_geo_location_personal_0a;;		rep=0|mood=5;;		I'm sorry but I can't determine the location of this place, can you check your settings please. 		;;char=neutral
 error_geo_location_personal_0a;;		rep=1|mood=5;;		Maybe the address is wrong or incomplete, but I can't seem to find it. 		;;char=neutral
 error_geo_location_personal_0a;;		rep=2|mood=5;;		I'm sorry, I think I'm stuck here. I can't use this address somehow.		;;char=neutral
 error_language_not_supported_0a;;	rep=0|mood=5;;		I'm sorry but this service does not support the active language.		;;char=neutral
 error_region_not_supported_0a;;		rep=0|mood=5;;		I'm sorry but this service does not support the active region. 			;;char=neutral
 error_client_control_0a;;		rep=0|mood=5;;		<user_name>, the control function could not be executed. I don't know why, sorry. 		;;char=neutral
+error_client_control_0b;;		rep=0|mood=5;;		<user_name>, the control function could not be executed. 		;;char=neutral
 error_client_support_0a;;		rep=0|mood=5;;		Sorry, but this version of the app does not support the requested action. 		;;char=neutral
+error_missing_display_0a;;		rep=0|mood=5;;		Sorry, but I need an active display to do that. ;;char=neutral
+error_missing_display_0a;;		rep=1|mood=5;;		Without an active display I cannot show the result. ;;char=neutral
+error_missing_display_0a;;		rep=2|mood=5;;		<user_name>, without a connected and active display we cannot continue, sorry. ;;char=neutral
+error_missing_display_0b;;		rep=0|mood=5;;		I could show you the result on a display <user_name>. ;;char=neutral
+error_missing_display_0b;;		rep=0|mood=5;;		I need a display to show you the results. ;;char=neutral
+error_missing_display_0b;;		rep=1|mood=5;;		Without a display I can't give you the info, sorry. ;;char=neutral
+error_missing_display_0b;;		rep=2|mood=5;;		The result can only be shown on a display at the moment. ;;char=neutral
 abort_0a;;		rep=0|mood=5;;		Ok, let's start over. ;;char=cool,neutral
 abort_0a;;		rep=0|mood=5;;		Ok, I've aborted the action. ;;char=neutral
 abort_0b;;		rep=0|mood=5;;		I think we are stuck right now. Let's try again later please. ;;char=neutral
@@ -22,6 +33,10 @@ ok_0a;;		rep=0|mood=5;;		Ok.		;;char=neutral
 ok_0b;;		rep=0|mood=5;;		Ok, it will be done.	;;char=neutral
 ok_0b;;		rep=0|mood=5;;		Ok, I'll take care of it.	;;char=neutral
 ok_0c;;		rep=0|mood=5;;		Ok, it's done.		;;char=neutral
+done_0a;;		rep=0|mood=5;;		Done.		;;char=neutral
+look_0a;;		rep=0|mood=5;;		Have a look.		;;char=neutral
+look_0a;;		rep=0|mood=5;;		Take a look please.	;;char=neutral
+look_0b;;		rep=0|mood=5;;		Here you go.		;;char=neutral
 default_ask_parameter_0a;;		rep=0|mood=5;;		Hmm the request seems incomplete, what is the missing parameter? ;;char=neutral
 default_ask_parameter_0a;;		rep=1|mood=5;;		And the next missing parameter? ;;char=neutral
 default_ask_parameter_0a;;		rep=2|mood=5;;		And another missing parameter? ;;char=neutral
@@ -60,6 +75,9 @@ client_controls_ask_fun_0a;;		rep=1|mood=5;;		Sorry, which function was that? ;;
 client_controls_ask_fun_0a;;		rep=2|mood=5;;		I'm missing a function name like settings, say again please!;;char=neutral
 client_controls_volume_eleven_0a;;		rep=0|mood=5;;		Tonight I'm Gonna Rock You Tonight! ;;char=neutral
 client_controls_volume_exceeded_0a;;		rep=0|mood=5;;		A bit loud, I'll set the volume to 10. ;;char=neutral
+client_controls_runtime_command_0a;;		rep=0|mood=5;;		A scheduled OS command has been successfully completed. ;;char=neutral
+client_controls_runtime_command_0b;;		rep=0|mood=5;;		The OS command <1> has been successfully executed. ;;char=neutral
+client_controls_runtime_command_0c;;		rep=0|mood=5;;		The OS command has been successfully executed. ;;char=neutral
 alarms_0a;;	rep=0|mood=5;;		The next alarm is in <1>. ;;char=neutral
 alarms_0b;;	rep=0|mood=5;;		There seems to be no active <3> at the moment. ;;char=neutral
 alarms_0c;;	rep=0|mood=5;;		I can't find anything right now, please try again in a few moments. ;;char=neutral
@@ -166,12 +184,12 @@ music_1c;;		rep=0|mood=5;;		One second, searching music. ;;char=cool,polite,neut
 music_radio_0a;;		rep=0|mood=5;;		<user_name>, I can't find any radio station. Seems there is some problem. ;;char=neutral
 music_radio_0b;;		rep=0|mood=5;;		<user_name>, I haven't found any radio station for this. ;;char=neutral
 music_radio_ask_0a;;	rep=0|mood=5;;		What's the name of the radio station, genre or band you want to hear? ;;char=neutral
-music_radio_1a;;		rep=0|mood=5;;		I've found <1> radio stations. Starting <4>.<br><br><3> ;;char=neutral
+music_radio_1a;;		rep=0|mood=5;;		I've found <1> radio stations. Starting <4>. The others are <3> ;;char=neutral
 music_radio_1b;;		rep=0|mood=5;;		I've found one station for <2>. One second, I'm going to start it now. ;;char=neutral
-music_radio_1c;;		rep=0|mood=5;;		I've found these top <1> radio stations.<br><br><3><br>Gonna start the first now. ;;char=neutral
+music_radio_1c;;		rep=0|mood=5;;		I've found these top <1> radio stations <3>. Gonna start the first now. ;;char=neutral
 music_radio_1d;;		rep=0|mood=5;;		Ok, I'll start the <1> stream. ;;char=neutral
 music_radio_1e;;		rep=0|mood=5;;		Starting radio.
-music_radio_1f;;		rep=0|mood=5;;		Starting radio.<br>I've found <1> station(s):<br><br><3> ;;char=neutral
+music_radio_1f;;		rep=0|mood=5;;		Starting radio. I've found <1> station(s): <3> ;;char=neutral
 music_radio_2a;;		rep=0|mood=5;;		Done, <user_name>. ;;char=neutral
 server_music_0a;;		rep=0|mood=5;;		<user_name>, I can't find any music. ;;char=neutral,cool
 server_music_0a;;		rep=0|mood=5;;		I'm sorry, but I can't find any music. ;;char=polite,neutral
@@ -331,14 +349,16 @@ mobility_ask_start_0a;;		rep=0|mood=5;;		and where do we start? ;;char=neutral
 mobility_ask_start_0a;;		rep=1|mood=5;;		Can you repeat that please? ;;char=neutral,polite
 mobility_ask_start_0a;;		rep=2|mood=5;;		I think I actually don't know that place. ;;char=neutral
 movies_0a;;		rep=0|mood=5;;		Sorry <user_name> I couldn't find any movies related to <1>. ;;char=neutral,polite
-movies_1a;;		rep=0|mood=5;;		I've found <1> movies related to <2>.<br> Here are the first <3>: <br><br> <4> ;;char=neutral
-movies_1b;;		rep=0|mood=5;;		I've found <1> movie related to <2>. Here it is:<br><br> <4> ;;char=neutral
-movies_1c;;		rep=0|mood=5;;		I've found quite a few movies related to <2>.<br> Here are the first <3>: <br><br> <4> ;;char=neutral
+movies_1a;;		rep=0|mood=5;;		I've found <1> movies related to <2>. Here are the first <3>: <4> ;;char=neutral
+movies_1b;;		rep=0|mood=5;;		I've found <1> movie related to <2>. Here it is: <4> ;;char=neutral
+movies_1c;;		rep=0|mood=5;;		I've found quite a few movies related to <2>. Here are the first <3>: <4> ;;char=neutral
+news_0a;;		rep=0|mood=5;;		Strange, it looks like I couldn't find any news. ;;char=cool,neutral
 news_1a;;		rep=0|mood=5;;		I'll quickly open the news for you <user_name>. ;;char=neutral
 news_1a;;		rep=0|mood=5;;		Have a look, I just opened the news page for you. ;;char=neutral
 news_1a;;		rep=0|mood=5;;		One moment, I'll open the news. ;;char=neutral
 news_1b;;		rep=0|mood=5;;		Let me open the soccer results for you <user_name>. ;;char=neutral
 news_1c;;		rep=0|mood=5;;		Let me open the soccer table for you <user_name>. ;;char=neutral
+news_1d;;		rep=0|mood=5;;		Here is the first headline. <2>. Done. I could show you more news on a display if you like. ;;char=neutral
 repeat_0a;;		rep=0|mood=5;;		Hmm, I can't find anything to repeat somehow. ;;char=neutral
 repeat_0a;;		rep=0|mood=5;;		Sorry but I don't know what I could repeat. ;;char=neutral,polite
 test_0a;;		rep=0|mood=5;;		It's working! ;;char=neutral
@@ -358,9 +378,14 @@ weather_ask_place_1a;;		rep=0|mood=5;;		Where do you want me to search for the w
 weather_ask_place_1a;;		rep=1|mood=5;;		Sorry, say again, where should I look? ;;char=neutral,polite
 weather_ask_place_1a;;		rep=2|mood=5;;		Hmm I think there is a problem, one more time please. ;;char=neutral,polite
 weather_today_1a;;		rep=0|mood=5;;		The weather in <1> is <3> at a temperature of <2> degrees. ;;char=neutral
-weather_day_1a;;		rep=0|mood=5;;		The weather on <4> in <1> is <3> at temperatures up to <2> degrees. ;;char=neutral
+weather_today_1b;;		rep=0|mood=5;;		Here is the weather for <1>. <3> at a temperature of <2> degrees <7>. ;;char=neutral
 weather_tomorrow_1a;;	rep=0|mood=5;;		The weather in <1> for tomorrow is <3> at temperatures up to <2> degrees. ;;char=neutral
+weather_tomorrow_1b;;	rep=0|mood=5;;		Here is the weather for tomorrow in <1>. <3> in the morning and the temperature will be between <5> and <2> degrees <7>. ;;char=neutral
+weather_day_1a;;		rep=0|mood=5;;		The weather on <4> in <1> is <3> at temperatures up to <2> degrees. ;;char=neutral
+weather_day_1b;;		rep=0|mood=5;;		Here is the weather for <1> on <4>. <3> in the morning and the temperature will be between <5> and <2> degrees <7>. ;;char=neutral
+weather_week_0a;;		rep=0|mood=5;;		The overview of the week can currently only be shown on the display, but you could ask me for a specific day. ;;char=neutral
 weather_week_1a;;		rep=0|mood=5;;		Hmm I'd be careful but what they say for this week is <3>. ;;char=neutral
+weather_week_1b;;		rep=0|mood=5;;		Here is an overview of the next 7 days for <1>. ;;char=neutral
 websearch_1a;;		rep=0|mood=5;;		Ok, let me open a page for you. ;;char=neutral
 websearch_1a;;		rep=0|mood=5;;		Just a second while I search the web for <1>. ;;char=neutral
 websearch_ask_search_0a;;		rep=0|mood=5;;		What should I look for? ;;char=neutral

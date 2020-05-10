@@ -6,6 +6,7 @@ import java.util.Map;
 
 import net.b07z.sepia.server.assist.assistant.LOCATION;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
+import net.b07z.sepia.server.assist.tools.DateTimeConverters;
 import net.b07z.sepia.server.assist.users.Authenticator;
 import net.b07z.sepia.server.assist.users.ID;
 import net.b07z.sepia.server.assist.users.User;
@@ -89,14 +90,48 @@ public class ConfigTestServer {
 	 * Make a fake input with current local time, a defined user_location and some other default parameters. 
 	 */
 	public static NluInput getFakeInput(String text, String language){
+		return getFakeInput(text, language, null, null, null);
+	}
+	/**
+	 * Make a fake input with current local time, a defined user_location and some other default parameters. 
+	 */
+	public static NluInput getFakeInput(String text, String language, String userLocation){
+		return getFakeInput(text, language, userLocation, null, null);
+	}
+	/**
+	 * Make a fake input with current local time, a defined user_location and some other default parameters. 
+	 */
+	public static NluInput getFakeInput(String text, String language, String userLocation, String userDateGMT){
+		Long unixTime = null;
+		if (userDateGMT != null){
+			unixTime = DateTimeConverters.getUnixTimeOfDateGMT(userDateGMT, Config.defaultSdf);
+		}
+		return getFakeInput(text, language, userLocation, unixTime, userDateGMT);
+	}
+	/**
+	 * Make a fake input with current local time, a defined user_location and some other default parameters. 
+	 */
+	public static NluInput getFakeInput(String text, String language, String userLocation, Long userTime, String userTimeLocal){
 		String context = "default";
 		int mood = 5;
 		String environment = "web_app";
 		NluInput input = new NluInput(text, language, context, mood, environment);
-		input.userLocation = LOCATION.makeLocation("Germany", "NRW", "Munich", "80331", "Platzl", "9", "48.137", "11.580").toJSONString();
-		//input.user_location = "<city>Berlin City<latitude>52.518616<longitude>13.404636";
-		input.userTime = System.currentTimeMillis();
-		input.userTimeLocal = DateTime.getFormattedDate(Config.defaultSdf);
+		if (userLocation != null){
+			input.userLocation = userLocation;
+		}else{
+			input.userLocation = LOCATION.makeLocation("Germany", "NRW", "Munich", "80331", "Platzl", "9", "48.137", "11.580").toJSONString();
+			//input.user_location = "<city>Berlin City<latitude>52.518616<longitude>13.404636";
+		}
+		if (userTime != null){
+			input.userTime = userTime;
+		}else{
+			input.userTime = System.currentTimeMillis();
+		}
+		if (userTimeLocal != null){
+			input.userTimeLocal = userTimeLocal;
+		}else{
+			input.userTimeLocal = DateTime.getFormattedDate(Config.defaultSdf);
+		}
 		User user = getTestUser(ConfigTestServer.email_id1, input, false, false);
 		input.user = user;
 		return input;

@@ -220,11 +220,12 @@ public class NluKeywordAnalyzer implements NluInterface {
 		
 		//---------------------------
 								
-		//SLASH Commands and specials - will overwrite all other commands! - TODO: we should put all slash-command searches in one extra place
+		//SLASH Commands and specials - will overwrite all other commands! - TODO: we should put all slash-commands in one extra place
+		//NOTE: use 'RegexParameterSearch.containsSlashCMD' (again - this class was triggered by it) here?
 		
 		//Repeat me
 		if (NluTools.stringContains(text, "(^saythis|^\\\\saythis|" + Pattern.quote(Config.assistantName) + " saythis)")){
-			String thisText = input.textRaw.replaceFirst(".*?\\bsaythis|.*?\\bSaythis", "").trim();
+			String thisText = input.textRaw.replaceFirst("(?i).*?\\bsaythis", "").trim();
 			//make it THE command
 			possibleCMDs.add(CMD.REPEAT_ME);
 			possibleScore.add(1);	index++;
@@ -235,7 +236,7 @@ public class NluKeywordAnalyzer implements NluInterface {
 		
 		//Link share
 		}else if (NluTools.stringContains(text, "(^linkshare|^\\\\linkshare|" + Pattern.quote(Config.assistantName) + " linkshare)")){
-			String link = input.textRaw.replaceFirst(".*?\\blinkshare|.*?\\bLinkshare", "").trim().replaceFirst("\\s.*", "");
+			String link = input.textRaw.replaceFirst("(?i).*?\\blinkshare", "").trim().replaceFirst("\\s.*", "");
 			String title = link.substring(0, Math.min(link.length(), 22));
 			if (link.length() > 21) title += "...";
 			possibleCMDs.add(CMD.OPEN_LINK);
@@ -258,6 +259,7 @@ public class NluKeywordAnalyzer implements NluInterface {
 			Map<String, String> pv = new HashMap<String, String>();
 				pv.put(PARAMETERS.URL, link);
 				pv.put(OpenCustomLink.TITLE, title);
+				pv.put(PARAMETERS.DATA, JSON.make("source", "chat").toJSONString());
 			possibleParameters.add(pv);
 		}
 		

@@ -31,6 +31,7 @@ public class TestHub implements SmartHomeHub {
 	}
 	
 	private JSONObject info;
+	private String hubId;
 	
 	//------ test devices ------
 	
@@ -87,6 +88,26 @@ public class TestHub implements SmartHomeHub {
 	);
 	
 	//--------------------------
+	
+	@Override
+	public JSONObject toJson(){
+		return JSON.make(
+			"id", this.hubId,
+			"type", NAME,
+			"host", "SEPIA",
+			"authType", "",
+			"authData", "",
+			"info", this.info
+		);
+	}
+	@Override
+	public void setId(String id){
+		this.hubId = id; 
+	}
+	@Override
+	public String getId(){
+		return this.hubId;
+	}
 
 	@Override
 	public void setHostAddress(String hostUrl){

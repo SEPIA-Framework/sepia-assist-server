@@ -32,13 +32,17 @@ public interface SmartDevicesDb {
 	 * @return Map with interface IDs as keys, empty map or null (error during load)
 	 */
 	public Map<String, SmartHomeHub> loadInterfaces();
+	/**
+	 * Return a cached map of interfaces (to reduce database i/o).	
+	 */
+	public Map<String, SmartHomeHub> getCachedInterfaces();
 	
 	/**
 	 * Add a custom smart device.
 	 * @param data - object with e.g. name, type, room, custom_commands, etc.
-	 * @return result code
+	 * @return JSON with device (doc) "id" (if new) and result "code" (0=good, 1=connection err, 2=other err)
 	 */
-	public int addOrUpdateCustomDevice(JSONObject data);
+	public JSONObject addOrUpdateCustomDevice(JSONObject data);
 	/**
 	 * Remove custom smart device with given ID.
 	 * @param id - ID of the device

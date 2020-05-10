@@ -5,6 +5,7 @@ import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.server.Config;
+import net.b07z.sepia.server.assist.tts.TtsTools.EngineType;
 import net.b07z.sepia.server.core.assistant.CLIENTS;
 import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Debugger;
@@ -286,7 +287,7 @@ public class TtsAcapelaWeb implements TtsInterface {
 		read_this = TtsTools.trimText(read_this);
 		
 		//optimize pronunciation
-		read_this = TtsTools.optimizePronunciation(read_this, language);
+		read_this = TtsTools.optimizePronunciation(read_this, language, EngineType.acapela.name());
 		
 		try
 		{

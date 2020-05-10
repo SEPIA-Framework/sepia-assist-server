@@ -5,9 +5,12 @@ import java.util.List;
 
 import org.json.simple.JSONObject;
 
+import net.b07z.sepia.server.assist.assistant.LANGUAGES;
+import net.b07z.sepia.server.assist.assistant.LOCATION;
 import net.b07z.sepia.server.assist.data.Name;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluInterface;
+import net.b07z.sepia.server.assist.interpreters.NluKeywordAnalyzer;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interviews.AbstractInterview;
 import net.b07z.sepia.server.assist.interviews.InterviewInterface;
@@ -21,17 +24,43 @@ import net.b07z.sepia.server.core.tools.JSONWriter;
 
 public class ServiceTestTools {
 	
+	/**
+	 * Test a sentence by searching the command via {@link NluKeywordAnalyzer} and then executing the found service. 
+	 * @param errors - errors will be collected here
+	 * @param doAnswer - create answer via service or just get NLU results
+	 * @param text - Input text
+	 * @param language - Language code from {@link LANGUAGES}
+	 * @param shouldBeCMD - expected command
+	 * @param parameterRegExpMatches - expected parameter matches
+	 */
+	public static void testSentenceViaKeywordAnalyzer(List<String> errors, boolean doAnswer, 
+			String text, String language, String shouldBeCMD, JSONObject parameterRegExpMatches) {
+		testSentenceViaKeywordAnalyzer(errors, doAnswer, 
+				text, language, shouldBeCMD, parameterRegExpMatches, null, null);
+	}
 	
-	public static void testSentenceViaKeywordAnalyzer(List<String> errors, boolean doAnswer, String text, String language, String shouldBeCMD, JSONObject parameterRegExpMatches){
+	/**
+	 * Test a sentence by searching the command via {@link NluKeywordAnalyzer} and then executing the found service. 
+	 * @param errors - errors will be collected here
+	 * @param doAnswer - create answer via service or just get NLU results
+	 * @param text - Input text
+	 * @param language - Language code from {@link LANGUAGES}
+	 * @param shouldBeCMD - expected command
+	 * @param parameterRegExpMatches - expected parameter matches
+	 * @param customDateDefaultSdf - custom local time string (yyyy.MM.dd_HH:mm:ss)
+	 * @param customLocation - custom location, e.g. via {@link LOCATION#makeLocation}
+	 */
+	public static void testSentenceViaKeywordAnalyzer(List<String> errors, boolean doAnswer, 
+			String text, String language, String shouldBeCMD, JSONObject parameterRegExpMatches, 
+			String customDateDefaultSdf, String customLocation) {
 		if (errors == null) errors = new ArrayList<>();
 		
 		//load "fake" input with some defaults
-		NluInput input = ConfigTestServer.getFakeInput(text, language);		//default test user 1
+		NluInput input = ConfigTestServer.getFakeInput(text, language, customLocation, customDateDefaultSdf);		//default test user 1
 		
 		//set some values explicitly
 		input.user.userName = new Name("Mister", "Tester", "Testy");
-		input.setTimeGMT("2019.01.14_13:00:00");
-		
+				
 		//time
 		//System.out.println("\nChosen UNIX time (s): " + Math.round(input.userTime/1000));
 		//System.out.println("Now (for testing): " + DateTimeConverters.getSpeakableDateSpecial(input.userTimeLocal, 5l, Config.defaultSdf, input) + ", " + input.userTimeLocal + "\n");

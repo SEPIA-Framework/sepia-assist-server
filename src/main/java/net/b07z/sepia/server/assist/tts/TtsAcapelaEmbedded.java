@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import net.b07z.sepia.server.assist.server.Config;
+import net.b07z.sepia.server.assist.tts.TtsTools.EngineType;
 import net.b07z.sepia.server.core.tools.Debugger;
 
 /**
@@ -206,7 +207,7 @@ public class TtsAcapelaEmbedded implements TtsInterface {
 		read_this = TtsTools.trimText(read_this);
 		
 		//optimize pronunciation
-		read_this = TtsTools.optimizePronunciation(read_this, language);
+		read_this = TtsTools.optimizePronunciation(read_this, language, EngineType.acapela.name());
 		
 		try
 		{

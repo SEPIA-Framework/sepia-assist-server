@@ -16,7 +16,7 @@ public class Test_StringCompare {
 		for (int i=0; i<1000; i++){
 			test(true);
 		}
-		System.out.println("\nTook (ms): " + (System.currentTimeMillis() - tic)); 	//~650ms with xdrop
+		System.out.println("\nTook (ms): " + (System.currentTimeMillis() - tic)); 	//~650ms with xdrop, ~500ms with Kotlin
 	}
 
 	public static void test(boolean skipPrint){

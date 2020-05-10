@@ -2,6 +2,7 @@ package net.b07z.sepia.server.assist.tools;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
@@ -25,11 +26,11 @@ import net.b07z.sepia.server.core.tools.Debugger;
  */
 public class DateTimeConverters {
 	
-	public static long DAY_MS = (1000l * 60l * 60l * 24l);
-	public static long HOUR_MS = (1000l * 60l * 60l);
-	public static long MINUTE_MS = (1000l * 60l);
-	public static long SECOND_MS = (1000l);
-	
+	public static final long DAY_MS = (1000l * 60l * 60l * 24l);
+	public static final long HOUR_MS = (1000l * 60l * 60l);
+	public static final long MINUTE_MS = (1000l * 60l);
+	public static final long SECOND_MS = (1000l);
+		
 	//Note: some base-methods for dates are in core-tools 'DateTime'
 	
 	/**
@@ -366,6 +367,16 @@ public class DateTimeConverters {
 		}
 	}
 	
+	/**
+	 * Get the UNIX time of the given UTC date string of ISO format 2007-12-03T10:15:30.00Z in milliseconds
+	 * BUT with second precision (its actually: seconds * 1000).  
+	 * @param dateString - any string containing a date that can be parsed
+	 * @return UNIX time in ms
+	 */
+	public static long getUnixTimeOfUtcDateString(String dateString){
+		Instant instant = Instant.parse(dateString);
+		return instant.getEpochSecond() * 1000l;
+	}
 	/**
 	 * Get the UNIX time (ms) of the given GMT date in the given format.
 	 * @param dateString - any string containing a date that can be parsed

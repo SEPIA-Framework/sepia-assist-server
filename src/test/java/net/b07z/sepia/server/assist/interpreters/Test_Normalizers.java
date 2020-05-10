@@ -23,6 +23,17 @@ public class Test_Normalizers {
 		System.out.println("n2: " + tn2);
 		System.out.println("match: " + match.equals(tn2));
 		System.out.println("-----------------");
+		text = "Satz eins. Satz zwei? Satz 3.";
+		System.out.println("Norm. this: " + text);
+		match = "satz eins. satz zwei? satz 3";
+		System.out.println("Result: " + normalizer_light.normalizeText(text));
+		System.out.println("-----------------");
+		text = "Zahl 3.1? Satz zwei?";
+		System.out.println("Norm. this: " + text);
+		match = "zahl 3.1? satz zwei";
+		System.out.println("Result: " + normalizer_light.normalizeText(text));
+		
+		System.out.println("-----------------");
 		String raw = "München";
 		String test = "muenchen";
 		String recon = normalizer_light.reconstructPhrase(raw, test);

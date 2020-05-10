@@ -65,7 +65,7 @@ public class ConfigServer {
 			if (restartServer != null && restartServer.equals("true")){
 				JSONObject msg = JSON.make(
 						"result", "success",
-						"msg", "scheduled server restart, plz wait a bit."
+						"msg", "scheduled server restart, plz wait 10-20s until you continue."
 				);
 				Start.restartServer(3000l); 	//will run in separate thread after 3s
 				return SparkJavaFw.returnResult(request, response, msg.toJSONString(), 200);

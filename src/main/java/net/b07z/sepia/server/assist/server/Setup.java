@@ -168,13 +168,13 @@ public class Setup {
 				System.out.println("\nPlease define safe passwords for SEPIA admin and assistant (and remember them well!).");
 				System.out.println("Use AT LEAST 8 characters and combine lower/upper case letters with numbers and special characters:");
 				while (adminPwd.length() < 8){
-					adminPwd = InputPrompt.askString("Admin: ", false);
+					adminPwd = InputPrompt.askString("Admin password: ", false);
 					if (adminPwd.length() < 8){
 						System.out.println("Password is too short! Try again. (CRTL+C to abort)");
 					}
 				}
 				while (assistantPwd.length() < 8){
-					assistantPwd = InputPrompt.askString("Assistant: ", false);
+					assistantPwd = InputPrompt.askString("Assistant password: ", false);
 					if (assistantPwd.length() < 8){
 						System.out.println("Password is too short! Try again. (CRTL+C to abort)");
 					}

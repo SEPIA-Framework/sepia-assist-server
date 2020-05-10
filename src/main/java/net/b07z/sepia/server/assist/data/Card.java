@@ -27,9 +27,7 @@ public class Card {
 		mobilityR, mobilityD,
 		fashion,
 		news,
-		weatherNow,
-		weatherTmo,
-		weatherWeek,
+		weatherNow, weatherTmo, weatherDay, weatherWeek,
 		radio,
 		userDataList
 	}

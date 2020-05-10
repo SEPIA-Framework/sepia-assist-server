@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import org.json.simple.JSONObject;
+import org.owasp.encoder.Encode;
 
 import net.b07z.sepia.server.assist.answers.AnswerTools;
 import net.b07z.sepia.server.assist.answers.Answers;
@@ -47,15 +48,19 @@ public class OpenCustomLink {
 		//initialize result
 		ServiceBuilder api = new ServiceBuilder(nluResult);
 		
-		//get parameters
-		String url = nluResult.getParameter(PARAMETERS.URL);				//the url to call (can include wildcards in the form ***)
+		//get parameters:
+		
+		//URL
+		String url = nluResult.getParameter(PARAMETERS.URL);		//the URL to call (can include wildcards in the form ***)
+		url = url.replaceAll("^javascript:", "").trim();			//we don't allow JavaScript
 		
 		String parameter_set = nluResult.getParameter("parameter_set");		//the parameters filling the wildcards connected by "&&"
-		String question_set = nluResult.getParameter("question_set");			//a set of questions to the wildcards connected by "&&"
-		String answer_set = nluResult.getParameter("answer_set");				//a set of answers to complete the command, if there is more than one (separated by "||") a random one will be chosen
+		String question_set = nluResult.getParameter("question_set");		//a set of questions to the wildcards connected by "&&"
+		String answer_set = nluResult.getParameter("answer_set");			//a set of answers to complete the command, if there is more than one (separated by "||") a random one will be chosen
 		
-		String title = nluResult.getParameter(TITLE);					//title of link-card
+		String title = nluResult.getParameter(TITLE);		//title of link-card
 		if (title.isEmpty()) title = "Link";
+		title = Encode.forHtml(title);						//since this might be user input we should make it more secure
 		
 		String description = nluResult.getParameter(DESCRIPTION);		//description of link-card
 		if (description.isEmpty()) description = ActionBuilder.getDefaultButtonText(api.language);
@@ -70,8 +75,8 @@ public class OpenCustomLink {
 		if (Is.notNullOrEmpty(addedData) && addedData.startsWith("{")){
 			addedDataJson = JSON.parseString(addedData);
 		}
-		boolean isSourceLinkshareSlashCmd = Is.notNullOrEmpty(addedDataJson)? 
-				JSON.getString(addedDataJson, "source").equalsIgnoreCase("linkshare") : false; 
+		String linkSource = Is.notNullOrEmpty(addedDataJson)? JSON.getString(addedDataJson, "source") : "";		//linkshare, chat
+		boolean isSourceLinkshareSlashCmd = linkSource.equalsIgnoreCase("linkshare");
 		
 		//handle parameters/answers/questions
 		//p
@@ -98,7 +103,13 @@ public class OpenCustomLink {
 		}
 		//a
 		if (answer_set.matches("")){
-			answer_set = "<default_open_link_1a>";		//if there is no parameter for answers set the default open_link answer
+			if (isSourceLinkshareSlashCmd){
+				//just confirm
+				answer_set = "<look_0a>";
+			}else{
+				//if there is no parameter for answers set the default open_link answer
+				answer_set = "<default_open_link_1a>";
+			}
 		}
 		//q
 		String[] questions;
@@ -188,32 +199,11 @@ public class OpenCustomLink {
 		}
 		api.addCard(card.getJSON());
 		
-		//build card
-		/*
-		JSONObject element = new JSONObject();
-		if (!link_info.matches("")){
-			for (String p : params){
-				link_info = link_info.replaceFirst("<\\d+>", p);
-			}							element.put("text", "<b>info:</b><br><br>" + link_info);				}
-		else{							element.put("text", "<b>result:</b><br><br>" + api.answer);				}
-		element.put("url", call_url);
-		if (!link_ico.matches("")){		element.put("image", link_ico);											}
-		else{							element.put("image", Config.url_web_images + "icons/mixed/" + "link-logo.png");	}
-		//add it
-		api.cardInfo.add(element);
-		api.hasCard = false;
-		*/
-
+		//done
 		api.status = "success";
-		
-		//anything else?
-		//...api.more
-		//...api.context ?
 		
 		//finally build the API_Result
 		ServiceResult result = api.buildResult();
-		
-		//return result_JSON.toJSONString();
 		return result;
 	}
 }
