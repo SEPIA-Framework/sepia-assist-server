@@ -31,6 +31,7 @@ public class Fhem implements SmartHomeHub {
 	
 	public static final String NAME = "fhem";
 	
+	private String hubId;
 	private String host;
 	private String authType;
 	private String authData;
@@ -94,6 +95,26 @@ public class Fhem implements SmartHomeHub {
 	}
 	
 	//-------INTERFACE IMPLEMENTATIONS---------
+	
+	@Override
+	public JSONObject toJson(){
+		return JSON.make(
+			"id", this.hubId,
+			"type", NAME,
+			"host", this.host,
+			"authType", this.authType,
+			"authData", this.authData,
+			"info", this.info
+		);
+	}
+	@Override
+	public void setId(String id){
+		this.hubId = id; 
+	}
+	@Override
+	public String getId(){
+		return this.hubId;
+	}
 	
 	@Override
 	public void setHostAddress(String hostUrl){

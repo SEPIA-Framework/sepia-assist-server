@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.parameters.Room;
@@ -13,8 +14,26 @@ import net.b07z.sepia.server.assist.services.SmartHomeHubConnector;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
+import net.b07z.sepia.server.core.tools.JSON;
 
+/**
+ * A Smart Home HUB is the software abstraction layer between physical and virtual devices/items. This class represents the interface
+ * that connects SEPIA to one of these HUBs. Implementations of the interface need to translate SEPIA items and actions into requests 
+ * to the HUB. Typically the HUB's HTTP REST API is used to do so but MQTT or custom connections can be used as well.   
+ *  
+ * @author Florian Quirin
+ *
+ */
 public interface SmartHomeHub {
+	
+	//possible custom interfaces
+	public static JSONArray interfaceTypes  = JSON.makeArray(
+		JSON.make("value", "openhab", 	"name", "openHAB"),
+		JSON.make("value", "fhem", 		"name", "FHEM"),
+		JSON.make("value", "iobroker", 	"name", "ioBroker"),
+		JSON.make("value", "mqtt", 		"name", "MQTT"),
+		JSON.make("value", "test", 		"name", "Test")
+	);
 	
 	/**
 	 * Get HUB from server config (smarthome_hub_name, smarthome_hub_host).
@@ -35,15 +54,18 @@ public interface SmartHomeHub {
 	 */
 	public static SmartHomeHub getHub(String hubName, String hubHost){
 		SmartHomeHub smartHomeHUB;
+		hubName = hubName.trim();
 		if (Is.nullOrEmpty(hubName)){
 			return null;
-		}else if (hubName.trim().equalsIgnoreCase(OpenHAB.NAME)){
+		}else if (hubName.equalsIgnoreCase(OpenHAB.NAME)){
 			smartHomeHUB = new OpenHAB(hubHost);
-		}else if (hubName.trim().equalsIgnoreCase(Fhem.NAME)){
+		}else if (hubName.equalsIgnoreCase(Fhem.NAME)){
 			smartHomeHUB = new Fhem(hubHost);
-		}else if (hubName.trim().equalsIgnoreCase(IoBroker.NAME)){
+		}else if (hubName.equalsIgnoreCase(IoBroker.NAME)){
 			smartHomeHUB = new IoBroker(hubHost);
-		}else if (hubName.trim().equalsIgnoreCase(TestHub.NAME)){
+		}else if (hubName.equalsIgnoreCase(InternalHub.NAME) || hubName.equalsIgnoreCase("sepia")){
+			smartHomeHUB = new InternalHub();
+		}else if (hubName.equalsIgnoreCase(TestHub.NAME)){
 			smartHomeHUB = new TestHub(hubHost);
 		}else{
 			try {
@@ -56,6 +78,35 @@ public interface SmartHomeHub {
 			}
 		}
 		return smartHomeHUB;
+	}
+	
+	/**
+	 * Convert HUB data to JSON. This must conform to the format: {<br>
+	 *  "id": ..,<br>
+	 *  "type": ..,<br>
+	 *  "host": ..,<br>
+	 *  "authType": ..,<br>
+	 *  "authData": ..<br>,
+	 *  "info": {...}
+	 * }
+	 */
+	public JSONObject toJson();
+	/**
+	 * Import JSON data to create HUB. 
+	 * @param jsonData - HUB data previously exported
+	 */
+	public static SmartHomeHub importJson(JSONObject jsonData){
+		//re-mapping (mostly to validate code - add importJson method?)
+		String id = JSON.getString(jsonData, "id");
+		String type = JSON.getString(jsonData, "type");
+		String host = JSON.getString(jsonData, "host");
+		SmartHomeHub shh = SmartHomeHub.getHub(type, host);
+		if (shh != null){
+			shh.setId(id);
+			shh.setAuthenticationInfo(JSON.getString(jsonData, "authType"), JSON.getString(jsonData, "authData"));
+			shh.setInfo(JSON.getJObject(jsonData, "info"));
+		}
+		return shh;
 	}
 	
 	/**
@@ -72,6 +123,15 @@ public interface SmartHomeHub {
 	 * @param authData - data for auth. type e.g. a base64 encoded user:password combination 
 	 */
 	public void setAuthenticationInfo(String authType, String authData);
+	
+	/**
+	 * Add an ID for this HUB if you're using multiple ones of same type or what to use it in custom setups.
+	 */
+	public void setId(String id);
+	/**
+	 * Get ID of this HUB.
+	 */
+	public String getId();
 	
 	/**
 	 * Add any kind of extra info via the info-object, e.g. "name", "description" etc.
@@ -151,5 +211,5 @@ public interface SmartHomeHub {
 	 * @return set of device names by type
 	 */
 	public Map<String, Set<String>> getBufferedDeviceNamesByType();
-	
+
 }

@@ -34,6 +34,7 @@ public class SmartHomeDevice {
 	private String stateType;	//e.g.: STATE_TYPE_NUMBER_PERCENT
 	private String stateMemory;		//state storage for e.g. default values after restart etc.
 	private String link;		//e.g. HTTP direct URL to device
+	private String interfaceId;	//e.g. openhab, fhem
 	private JSONObject meta;	//space for custom stuff
 	
 	//global tags used to store SEPIA specific device data in other HUB systems
@@ -45,6 +46,8 @@ public class SmartHomeDevice {
 	public static final String SEPIA_TAG_MEM_STATE = "sepia-mem-state";
 	public static final String SEPIA_TAG_STATE_TYPE = "sepia-state-type";
 	public static final String SEPIA_TAG_SET_CMDS = "sepia-set-cmds";
+	
+	public static final String SEPIA_TAG_INTERFACE = "sepia-interface";
 	
 	//generalized device states
 	public static enum State {
@@ -155,6 +158,20 @@ public class SmartHomeDevice {
 	}
 	
 	/**
+	 * Device interface id
+	 * @return
+	 */
+	public String getInterface() {
+		return interfaceId;
+	}
+	/**
+	 * Set class variable 'interfaceId' (no write to HUB!)
+	 */
+	public void setInterface(String interfaceId) {
+		this.interfaceId = interfaceId;
+	}
+	
+	/**
 	 * Device name
 	 * @return
 	 */
@@ -162,7 +179,7 @@ public class SmartHomeDevice {
 		return name;
 	}
 	/**
-	 * Set object variable (no write to HUB!)
+	 * Set class variable 'name' (no write to HUB!)
 	 */
 	public void setName(String name) {
 		this.name = name;
@@ -176,7 +193,7 @@ public class SmartHomeDevice {
 		return type;
 	}
 	/**
-	 * Set object variable (no write to HUB!)
+	 * Set class variable 'type' (no write to HUB!)
 	 */
 	public void setType(String type) {
 		this.type = type;
@@ -190,7 +207,7 @@ public class SmartHomeDevice {
 		return room;
 	}
 	/**
-	 * Set object variable (no write to HUB!)
+	 * Set class variable 'room' (no write to HUB!)
 	 */
 	public void setRoom(String room) {
 		this.room = room;
@@ -203,7 +220,7 @@ public class SmartHomeDevice {
 		return roomIndex;
 	}
 	/**
-	 * Set object variable (no write to HUB!)
+	 * Set class variable 'roomIndex' (no write to HUB!)
 	 */
 	public void setRoomIndex(String roomIndex) {
 		this.roomIndex = roomIndex;
@@ -217,7 +234,7 @@ public class SmartHomeDevice {
 		return state;
 	}
 	/**
-	 * Set object variable (no write to HUB!)
+	 * Set class variable 'state' (no write to HUB!)
 	 */
 	public void setState(String state) {
 		this.state = state;
@@ -343,6 +360,7 @@ public class SmartHomeDevice {
 	public JSONObject getDeviceAsJson(){
 		//create common object
 		JSONObject newDeviceObject = JSON.make(
+				"interface", interfaceId,
 				"name", name, 
 				"type", type, 
 				"room", room, 
@@ -360,6 +378,7 @@ public class SmartHomeDevice {
 	 * @param deviceJson
 	 */
 	public SmartHomeDevice importJsonDevice(JSONObject deviceJson){
+		this.interfaceId = JSON.getString(deviceJson, "interface");
 		this.name = JSON.getString(deviceJson, "name");
 		this.type = JSON.getString(deviceJson, "type");
 		this.room = JSON.getString(deviceJson, "room");
