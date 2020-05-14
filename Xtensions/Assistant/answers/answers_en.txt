@@ -56,6 +56,7 @@ default_no_access_0a;;		rep=0|mood=5;;		Sorry <user_name> but I have no access r
 default_get_permission_0a;;		rep=0|mood=5;;		Sorry <user_name>, but you need a permission to use this service. ;;char=neutral
 default_get_permission_0a;;		rep=1|mood=5;;		If you want to use this service please ask your administrator first. ;;char=neutral
 default_get_permission_0a;;		rep=2|mood=5;;		No seriously <user_name>, you have to get permission first to access this service! ;;char=neutral
+default_not_with_admin_0a;;		rep=0|mood=5;;		This action should not be executed via the administrator account. Please create a separate user. ;;char=neutral
 default_open_link_0a;;		rep=0|mood=5;;		Oh, something is wrong with the link I think. ;;char=neutral,polite
 default_open_link_0a;;		rep=0|mood=5;;		I'm afraid there seems to be a problem with that link. ;;char=neutral
 default_open_link_1a;;		rep=0|mood=5;;		Ok, let me open that link for you. ;;char=neutral

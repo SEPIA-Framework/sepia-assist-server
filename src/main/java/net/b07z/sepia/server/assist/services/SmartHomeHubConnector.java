@@ -138,6 +138,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 	private static final String showDeviceState = "smartdevice_2c";
 	private static final String showDeviceStateWithRoom = "smartdevice_2d";
 	private static final String notAllowed = "smartdevice_0d";
+	private static final String notWithAdmin = "default_not_with_admin_0a";
 	private static final String notYetControllable = "smartdevice_0e";
 	private static final String noDeviceMatchesFound = "smartdevice_0f";
 	private static final String actionNotPossible = "default_not_possible_0a";
@@ -154,7 +155,24 @@ public class SmartHomeHubConnector implements ServiceInterface {
 				getInfoFreshOrCache(nluResult.input, this.getClass().getCanonicalName()));
 		
 		//check user role 'smarthomeguest' for this skill (because it controls devices in the server's network)
-		if (!nluResult.input.user.hasRole(Role.smarthomeguest)){
+		if (nluResult.input.user.hasRole(Role.superuser)){
+			//allow or not?
+			
+			//add button that links to help
+			service.addAction(ACTIONS.BUTTON_IN_APP_BROWSER);
+			service.putActionInfo("url", "https://github.com/SEPIA-Framework/sepia-docs/wiki/Create-and-Edit-Users");
+			service.putActionInfo("title", "Info: Create Users");
+			
+			service.setStatusOkay();
+			service.setCustomAnswer(notWithAdmin);			//"soft"-fail with "not allowed" answer
+			return service.buildResult();
+			
+		}else if (!nluResult.input.user.hasRole(Role.smarthomeguest) && !nluResult.input.user.hasRole(Role.smarthomeadmin)){
+			//add button that links to help
+			service.addAction(ACTIONS.BUTTON_IN_APP_BROWSER);
+			service.putActionInfo("url", "https://github.com/SEPIA-Framework/sepia-docs/wiki/Smart-Home-Controls");
+			service.putActionInfo("title", "Info: Smart Home Setup");
+			
 			service.setStatusOkay();
 			service.setCustomAnswer(notAllowed);			//"soft"-fail with "not allowed" answer
 			return service.buildResult();

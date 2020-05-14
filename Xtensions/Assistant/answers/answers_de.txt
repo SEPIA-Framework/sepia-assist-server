@@ -56,6 +56,7 @@ default_no_access_0a;;		rep=0|mood=5;;		Sorry <user_name> aber dafür fehlen mir
 default_get_permission_0a;;		rep=0|mood=5;;		Sorry <user_name>, aber du brauchst erst eine Erlaubnis, um diesen Service zu nutzen. ;;char=neutral
 default_get_permission_0a;;		rep=1|mood=5;;		Frage bitte den Administrator, wenn du diesen Service nutzen willst. ;;char=neutral
 default_get_permission_0a;;		rep=2|mood=5;;		Ernsthaft <user_name>, du brauchst erst eine Erlaubnis um diesen Service nutzen zu können! ;;char=neutral
+default_not_with_admin_0a;;		rep=0|mood=5;;		Diese Aktion sollte nicht über den Administrator Account ausgeführt werden. Bitte erstelle einen separaten Benutzer. ;;char=neutral
 default_open_link_0a;;		rep=0|mood=5;;		Oh, irgendwas ist nicht in Ordnung mit diesem Link. ;;char=cool,rude,neutral
 default_open_link_0a;;		rep=0|mood=5;;		Mist, da gibts scheinbar ein Problem mit dem Link. ;;char=cool,rude
 default_open_link_1a;;		rep=0|mood=5;;		Ok, ich öffne den Link für dich. ;;char=neutral
