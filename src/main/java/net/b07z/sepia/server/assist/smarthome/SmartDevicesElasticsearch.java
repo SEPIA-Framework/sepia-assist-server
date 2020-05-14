@@ -1,6 +1,8 @@
 package net.b07z.sepia.server.assist.smarthome;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -12,6 +14,7 @@ import net.b07z.sepia.server.core.database.DatabaseInterface;
 import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.EsQueryBuilder;
+import net.b07z.sepia.server.core.tools.EsQueryBuilder.QueryElement;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 
@@ -108,13 +111,23 @@ public class SmartDevicesElasticsearch implements SmartDevicesDb {
 		SmartHomeDevice shd = new SmartHomeDevice();
 		shd.importJsonDevice(data);
 		//store
-		String id = JSON.getString(data, "id");
+		JSONObject meta = JSON.getJObject(data, "meta");
+		String id;
+		if (meta != null){
+			//first choice and fallback
+			id = JSON.getStringOrDefault(meta, "sepiaId", JSON.getString(meta, "id"));
+		}else{
+			//fallback 2
+			id = JSON.getString(data, "id");
+		}
 		if (Is.nullOrEmpty(id)){
 			JSONObject res = getDB().setAnyItemData(SmartDevicesDb.DEVICES, DEFAULT_TYPE, shd.getDeviceAsJson());
 			int code = JSON.getIntegerOrDefault(res, "code", 2);
 			String newId = JSON.getString(res, "_id");
 			if (code == 0){
 				Debugger.println("Smart Devices - Created new device (item) with ID: " + newId, 3);
+			}else{
+				Debugger.println("Smart Devices - FAILED to create device (item) with ID: " + id, 1);
 			}
 			return JSON.make(
 				"id", newId, 
@@ -123,6 +136,9 @@ public class SmartDevicesElasticsearch implements SmartDevicesDb {
 			);
 		}else{
 			int code = getDB().updateItemData(SmartDevicesDb.DEVICES, DEFAULT_TYPE, id, shd.getDeviceAsJson());
+			if (code != 0){
+				Debugger.println("Smart Devices - FAILED to updated device (item) with ID: " + id, 1);
+			}
 			return JSON.make( 
 				"code", code	//0 - all good, 1 - no connection or some error, 2 - unknown error
 			);
@@ -166,12 +182,20 @@ public class SmartDevicesElasticsearch implements SmartDevicesDb {
 	@Override
 	public Map<String, SmartHomeDevice> getCustomDevices(Map<String, Object> filters){
 		String query;
-		if (filters != null){
-			//TODO: use filters
-			query = EsQueryBuilder.matchAll.toJSONString();
+		if (filters != null && !filters.isEmpty()){
+			//use filters
+			List<QueryElement> qes = new ArrayList<>();
+			filters.entrySet().forEach(e -> {
+				Object v = e.getValue();
+				if (v != null){
+					qes.add(new QueryElement(e.getKey(), v));
+				}
+			});
+			query = EsQueryBuilder.getBoolShouldMatch(qes).toJSONString();
 		}else{
 			query = EsQueryBuilder.matchAll.toJSONString();
 		}
+		//System.out.println("query: " + query); 			//DEBUG
 		//request
 		JSONObject result = getDB().searchByJson(SmartDevicesDb.DEVICES + "/" + DEFAULT_TYPE + "/", query);
 		if (Connectors.httpSuccess(result)){
@@ -189,6 +213,7 @@ public class SmartDevicesElasticsearch implements SmartDevicesDb {
 							SmartHomeDevice shd = new SmartHomeDevice();
 							shd.importJsonDevice(data);
 							shd.setMetaValue("id", id);
+							shd.setMetaValue("sepiaId", id);	//in case "id" gets overwritten
 							customDevices.put(id, shd);
 						}else{
 							Debugger.println("Smart Devices - failed to load device due to missing 'id' or data! Obj.: " + jo, 1);

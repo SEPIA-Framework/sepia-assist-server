@@ -56,7 +56,8 @@ public interface SmartDevicesDb {
 	 */
 	public SmartHomeDevice getCustomDevice(String id);
 	/**
-	 * Get all custom smart devices that correspond to filter set.
+	 * Get all custom smart devices that correspond to filter set.<br>
+	 * NOTE: If you add multiple filters the method will try to get the best fit but may return partial fits! Be sure to check the result again afterwards.  
 	 * @param filters - Map with filters, e.g. type=light, room=livingroom, etc.
 	 * @return
 	 */
