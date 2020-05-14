@@ -63,7 +63,10 @@ public interface WorkerInterface {
 	 * This usually works as follows:<br>
 	 * Set a flag that tells the worker loop to end (e.g. abort=true),
 	 * wait until the worker has finished last cycle (optional),
-	 * stop worker and wait a given max. time for success (true/false).
+	 * stop worker and wait a given max. time for success (true/false).<br>
+	 * <br>
+	 * NOTE: Once killed a worker can usually not be restarted but you must create a new instance!
+	 * <br>
 	 * @return true: if the worker stopped within the max. wait-time
 	 */
 	public boolean kill();

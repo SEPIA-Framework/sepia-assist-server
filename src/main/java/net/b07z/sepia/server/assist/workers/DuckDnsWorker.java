@@ -20,10 +20,12 @@ import net.b07z.sepia.server.core.tools.URLBuilder;
  *
  */
 public class DuckDnsWorker implements WorkerInterface {
+	//TODO: there is some inconsistency in ALL worker classes about how to use static and instance variables :-| 
 	
 	//DuckDNS settings - worker will only run if token and domain are set
 	public static String configFile = Config.xtensionsFolder + "DynamicDNS/duck-dns.properties"; 
 	public static String workerName = "DuckDNS-worker"; 
+	
 	private String token = "";
 	private String domain = "";
 	
@@ -47,7 +49,7 @@ public class DuckDnsWorker implements WorkerInterface {
 	long customWaitInterval = 5000;			//custom wait time until the worker checks for an abort request and status changes
 	public static long customRefreshInterval = (5*60*1000);		//every 5min - can be set in config file
 	public static long errorRefreshInterval = (10*60*1000);		//every 10min
-	public long minTimeToLog = (60*60*1000);	//minimum time to wait until next log entry (handy when refreshes are made frequently, errors are logged always)
+	public long minTimeToLog = (60*60*1000);	//minimum time to wait until next log entry (handy when refreshes are made frequently, errors are always logged)
 	public static long lastLog = 0;
 	
 	//variables
@@ -99,7 +101,7 @@ public class DuckDnsWorker implements WorkerInterface {
 	
 	@Override
 	public boolean kill(){
-		abort = true;
+		abort = true;	 	//NOTE: once this flag is set it remains false and the worker is basically dead! Create a new instance afterwards.
 		long thisWait = 0; 
 		if (executedRefreshs != 0){
 			while (workerStatus > 0){

@@ -118,7 +118,7 @@ public class OpenLigaWorker implements WorkerInterface {
 	
 	@Override
 	public boolean kill(){
-		abort = true;
+		abort = true;		//NOTE: once this flag is set it remains false and the worker is basically dead! Create a new instance afterwards.
 		long thisWait = 0; 
 		if (executedRefreshs != 0){
 			while (workerStatus > 0){
