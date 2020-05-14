@@ -127,6 +127,10 @@ public class OpenHAB implements SmartHomeHub {
 	}
 	
 	@Override
+	public boolean requiresRegistration(){
+		return false;
+	}
+	@Override
 	public boolean registerSepiaFramework(){
 		//Currently no action required - just return true
 		return true;

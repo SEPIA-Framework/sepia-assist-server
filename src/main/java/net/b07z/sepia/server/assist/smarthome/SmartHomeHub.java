@@ -28,11 +28,11 @@ public interface SmartHomeHub {
 	
 	//possible custom interfaces
 	public static JSONArray interfaceTypes  = JSON.makeArray(
-		JSON.make("value", "openhab", 	"name", "openHAB"),
-		JSON.make("value", "fhem", 		"name", "FHEM"),
-		JSON.make("value", "iobroker", 	"name", "ioBroker"),
-		JSON.make("value", "mqtt", 		"name", "MQTT"),
-		JSON.make("value", "test", 		"name", "Test")
+		JSON.make("value", OpenHAB.NAME, 	"name", "openHAB"),
+		JSON.make("value", Fhem.NAME, 		"name", "FHEM"),
+		JSON.make("value", IoBroker.NAME, 	"name", "ioBroker"),
+		JSON.make("value", MqttHub.NAME,	"name", "MQTT"),
+		JSON.make("value", TestHub.NAME, 	"name", "Test")
 	);
 	
 	/**
@@ -63,6 +63,8 @@ public interface SmartHomeHub {
 			smartHomeHUB = new Fhem(hubHost);
 		}else if (hubName.equalsIgnoreCase(IoBroker.NAME)){
 			smartHomeHUB = new IoBroker(hubHost);
+		}else if (hubName.equalsIgnoreCase(MqttHub.NAME)){
+			smartHomeHUB = new MqttHub(hubHost);
 		}else if (hubName.equalsIgnoreCase(InternalHub.NAME) || hubName.equalsIgnoreCase("sepia")){
 			smartHomeHUB = new InternalHub();
 		}else if (hubName.equalsIgnoreCase(TestHub.NAME)){
@@ -152,6 +154,12 @@ public interface SmartHomeHub {
 	public boolean registerSepiaFramework();
 	
 	/**
+	 * Check if the HUB implementation requires registration (usually once).
+	 * @return true if registration is required (in general) 
+	 */
+	public boolean requiresRegistration();
+	
+	/**
 	 * Get devices from HUB and convert them to SEPIA compatible {@link SmartHomeDevice}. Apply optional filters to reduce results in advance.
 	 * @return devices, empty (no devices received) or null (request error)
 	 */
@@ -171,7 +179,8 @@ public interface SmartHomeHub {
 	
 	/**
 	 * Write attribute of specific device. This is usually used to register the SEPIA Framework and to tag devices as SEPIA items.
-	 * @param device - generalized SEPIA smart home device
+	 * Attribute name and value should be included in 'device' but are given as separate parameters to optimize write process (if possible). 
+	 * @param device - generalized SEPIA smart home device (with most recent state, that means including attrName with attrValue)
 	 * @param attrName - name of attribute, e.g. "sepia-name" (SmartHomeDevice.SEPIA_TAG_...)
 	 * @param attrValue - simple string as value
 	 * @return success/fail (due to any error, e.g. connection or missing data)

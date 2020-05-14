@@ -59,7 +59,7 @@ public class IoBroker implements SmartHomeHub {
 		}
 	}
 	
-	//-------INTERFACE IMPLEMENTATIONS---------
+	//-------INTERFACE IMPLEMENTATIONS-------
 	
 	@Override
 	public JSONObject toJson(){
@@ -101,6 +101,10 @@ public class IoBroker implements SmartHomeHub {
 		return this.info;
 	}
 
+	@Override
+	public boolean requiresRegistration(){
+		return false;
+	}
 	@Override
 	public boolean registerSepiaFramework(){
 		// TODO Auto-generated method stub

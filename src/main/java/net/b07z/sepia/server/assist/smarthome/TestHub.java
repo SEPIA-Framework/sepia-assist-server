@@ -129,6 +129,10 @@ public class TestHub implements SmartHomeHub {
 	}
 
 	@Override
+	public boolean requiresRegistration(){
+		return false;
+	}
+	@Override
 	public boolean registerSepiaFramework(){
 		return true;
 	}
@@ -207,13 +211,14 @@ public class TestHub implements SmartHomeHub {
 
 	@Override
 	public SmartHomeDevice loadDeviceData(SmartHomeDevice device){
-		return getDevices().get(device.getName());
+		String id = device.getId();
+		return getDevices().get(id);
 	}
 
 	@Override
 	public boolean setDeviceState(SmartHomeDevice device, String state, String stateType){
 		//get reference to stored object from internal list (the given 'device' can be imported from JSON or created)
-		SmartHomeDevice deviceFound = getDevices().get(device.getMetaValueAsString("id"));
+		SmartHomeDevice deviceFound = getDevices().get(device.getId());
 		//modify object reference
 		Debugger.println(TestHub.class.getSimpleName() + " - setDeviceState - name: " 
 				+ device.getName() + ", stateType: " + stateType + ", state: " + state, 3);
@@ -241,7 +246,7 @@ public class TestHub implements SmartHomeHub {
 
 	@Override
 	public boolean setDeviceStateMemory(SmartHomeDevice device, String stateMemory){
-		SmartHomeDevice deviceFound = getDevices().get(device.getName());
+		SmartHomeDevice deviceFound = getDevices().get(device.getId());
 		if (deviceFound != null){
 			deviceFound.setStateMemory(stateMemory);
 			return true;

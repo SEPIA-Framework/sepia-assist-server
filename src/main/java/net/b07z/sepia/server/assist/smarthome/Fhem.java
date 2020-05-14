@@ -137,6 +137,10 @@ public class Fhem implements SmartHomeHub {
 	}
 	
 	@Override
+	public boolean requiresRegistration(){
+		return true;
+	}
+	@Override
 	public boolean registerSepiaFramework(){
 		//Find attributes first
 		String foundAttributes = "";

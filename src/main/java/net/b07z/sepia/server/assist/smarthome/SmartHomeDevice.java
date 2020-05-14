@@ -48,6 +48,7 @@ public class SmartHomeDevice {
 	public static final String SEPIA_TAG_SET_CMDS = "sepia-set-cmds";
 	
 	public static final String SEPIA_TAG_INTERFACE = "sepia-interface";
+	public static final String SEPIA_TAG_LINK = "sepia-link";
 	
 	//generalized device states
 	public static enum State {
@@ -310,7 +311,7 @@ public class SmartHomeDevice {
 	/**
 	 * Get certain value of meta data as string.
 	 * @param key
-	 * @return
+	 * @return value or null
 	 */
 	public String getMetaValueAsString(String key){
 		if (meta != null){
@@ -320,19 +321,41 @@ public class SmartHomeDevice {
 		}
 	}
 	/**
-	 * Set object variable (no write to HUB!)
+	 * Set whole meta object (no write to HUB!)
 	 */
-	public void setMeta(JSONObject meta) {
+	public void setMeta(JSONObject meta){
 		this.meta = meta;
 	}
 	/**
-	 * Set object variable (no write to HUB!)
+	 * Set field of meta data (no write to HUB!)
 	 */
-	public void setMetaValue(String key, Object value) {
+	public void setMetaValue(String key, Object value){
 		if (meta == null){
 			meta = new JSONObject();
 		}
 		JSON.put(meta, key, value);
+	}
+	/**
+	 * Delete field from meta data (no write to HUB!)
+	 */
+	public void removeMetaField(String key){
+		if (meta != null){
+			meta.remove(key);
+		}
+	}
+	
+	/**
+	 * Get the ID usually used to identify the device in the internal database or external HUB.
+	 * The method will check for 'interface' first and return 'interfaceDeviceId' if available (or null).
+	 * If no interface is defined it will return the "normal" ID (meta.id).
+	 * @return
+	 */
+	public String getId(){
+		if (Is.notNullOrEmpty(this.interfaceId)){
+			return getMetaValueAsString("interfaceDeviceId");
+		}else{
+			return getMetaValueAsString("id");
+		}
 	}
 	
 	/**
