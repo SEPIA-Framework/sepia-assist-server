@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.json.simple.JSONArray;
@@ -28,7 +29,9 @@ public class SmartDevicesElasticsearch implements SmartDevicesDb {
 	
 	private static String DEFAULT_TYPE = "all";
 	
-	private static Map<String, SmartHomeHub> customInterfacesCached = new ConcurrentHashMap<>();
+	private static Map<String, SmartHomeHub> customInterfacesCached; // = new ConcurrentHashMap<>()	//<interfaceId, Hub>
+	private static Map<String, Set<String>> bufferedDevicesByType = new ConcurrentHashMap<>();  	//<type, Set<name>>
+	private static boolean isBufferedDeviceNameListRecent = false;
 
 	/**
 	 * Get the database to query. Loads the Elasticsearch connection defined by settings. 
@@ -50,10 +53,15 @@ public class SmartDevicesElasticsearch implements SmartDevicesDb {
 			JSON.put(data, "id", cleanId);
 			//import to check validity
 			SmartHomeHub shh = SmartHomeHub.importJson(data);
-			//update cache
-			customInterfacesCached.put(cleanId, shh);
 			//and write it (this will export shh back to JSON, kind of redundant but save)			
 			int code = getDB().updateItemData(SmartDevicesDb.INTERFACES, DEFAULT_TYPE, cleanId, shh.toJson());
+			if (code == 0){
+				Debugger.println("Smart Interfaces - Created or updated interface with ID: " + id + " (type: " + type + ")", 3);
+				//update cache
+				getCachedInterfaces().put(cleanId, shh);
+			}else{
+				Debugger.println("Smart Interfaces - FAILED to create or update interface with ID: " + id, 1);
+			}
 			return code;	//0 - all good, 1 - no connection or some error 
 		}
 	}
@@ -62,8 +70,11 @@ public class SmartDevicesElasticsearch implements SmartDevicesDb {
 	public int removeInterface(String id){
 		int code = getDB().deleteItem(SmartDevicesDb.INTERFACES, DEFAULT_TYPE, id);
 		if (code == 0){
+			Debugger.println("Smart Interfaces - Removed interface with ID: " + id, 3);
 			//update cache
-			customInterfacesCached.remove(id);
+			getCachedInterfaces().remove(id);
+		}else{
+			Debugger.println("Smart Interfaces - FAILED to removed interface with ID: " + id, 1);
 		}
 		return code;
 	}
@@ -102,6 +113,9 @@ public class SmartDevicesElasticsearch implements SmartDevicesDb {
 	}
 	@Override
 	public Map<String, SmartHomeHub> getCachedInterfaces(){
+		if (customInterfacesCached == null){
+			loadInterfaces();
+		}
 		return customInterfacesCached;
 	}
 
@@ -116,16 +130,20 @@ public class SmartDevicesElasticsearch implements SmartDevicesDb {
 		if (meta != null){
 			//first choice and fallback
 			id = JSON.getStringOrDefault(meta, "sepiaId", JSON.getString(meta, "id"));
+			//check some formats - NOTE: we rely on 'importJsonDevice' for now
 		}else{
 			//fallback 2
 			id = JSON.getString(data, "id");
 		}
+		//JSON.prettyPrint(shd.getDeviceAsJson()); 		//DEBUG
 		if (Is.nullOrEmpty(id)){
 			JSONObject res = getDB().setAnyItemData(SmartDevicesDb.DEVICES, DEFAULT_TYPE, shd.getDeviceAsJson());
 			int code = JSON.getIntegerOrDefault(res, "code", 2);
 			String newId = JSON.getString(res, "_id");
 			if (code == 0){
 				Debugger.println("Smart Devices - Created new device (item) with ID: " + newId, 3);
+				//update buffer
+				updateDeviceTypeAndNameBuffer(shd, false);
 			}else{
 				Debugger.println("Smart Devices - FAILED to create device (item) with ID: " + id, 1);
 			}
@@ -135,7 +153,8 @@ public class SmartDevicesElasticsearch implements SmartDevicesDb {
 				//0 - all good, 1 - no connection or some error, 2 - unknown error
 			);
 		}else{
-			int code = getDB().updateItemData(SmartDevicesDb.DEVICES, DEFAULT_TYPE, id, shd.getDeviceAsJson());
+			int code = getDB().setItemData(SmartDevicesDb.DEVICES, DEFAULT_TYPE, id, shd.getDeviceAsJson());
+			//int code = getDB().updateItemData(SmartDevicesDb.DEVICES, DEFAULT_TYPE, id, shd.getDeviceAsJson());	//this will not overwrite deleted fields :-(
 			if (code != 0){
 				Debugger.println("Smart Devices - FAILED to updated device (item) with ID: " + id, 1);
 			}
@@ -150,6 +169,8 @@ public class SmartDevicesElasticsearch implements SmartDevicesDb {
 		int code = getDB().deleteItem(SmartDevicesDb.DEVICES, DEFAULT_TYPE, id);
 		if (code == 0){
 			Debugger.println("Smart Devices - Removed device (item) with ID: " + id, 3);
+			//update buffer
+			clearDeviceTypeAndNameBuffer();
 		}
 		return code;
 	}
@@ -215,6 +236,8 @@ public class SmartDevicesElasticsearch implements SmartDevicesDb {
 							shd.setMetaValue("id", id);
 							shd.setMetaValue("sepiaId", id);	//in case "id" gets overwritten
 							customDevices.put(id, shd);
+							//buffer
+							updateDeviceTypeAndNameBuffer(shd, false);
 						}else{
 							Debugger.println("Smart Devices - failed to load device due to missing 'id' or data! Obj.: " + jo, 1);
 						}
@@ -228,6 +251,58 @@ public class SmartDevicesElasticsearch implements SmartDevicesDb {
 		}else{
 			Debugger.println("Smart Devices - failed to load custom devices (items)! Msg.: " + result, 1);
 			return null;
+		}
+	}
+
+	@Override
+	public Map<String, Set<String>> getBufferedDeviceNamesByType(){
+		if (!isBufferedDeviceNameListRecent){
+			//clean reload
+			bufferedDevicesByType = new ConcurrentHashMap<>();
+			if (getCustomDevices(null) != null){
+				isBufferedDeviceNameListRecent = true;
+			}
+		}
+		//DEBUG
+		/* bufferedDevicesByType.entrySet().forEach(e -> {
+			System.out.println("Type: " + e.getKey() + " - Names: " + e.getValue());
+		}); */
+		return bufferedDevicesByType;
+	}
+	
+	//---- HELPERS ----
+	
+	/**
+	 * Clear all buffered device type-name combinations and set flag so it will be reloaded when needed.
+	 */
+	public static void clearDeviceTypeAndNameBuffer(){
+		isBufferedDeviceNameListRecent = false;
+		bufferedDevicesByType = new ConcurrentHashMap<>();
+	}
+	/**
+	 * Store the type-name combination in the buffer for fast access.
+	 * @param shd - the {@link SmartHomeDevice}
+	 * @param remove - set this to true to remove entry instead of add
+	 */
+	public static void updateDeviceTypeAndNameBuffer(SmartHomeDevice shd, boolean remove){
+		String deviceType = shd.getType();
+		String deviceName = shd.getName();
+		if (Is.notNullOrEmpty(deviceName) && Is.notNullOrEmpty(deviceType)){
+			//System.out.println("Device Type-Name Buffer Update: " + deviceType + "=" + deviceName);		//DEBUG
+			Set<String> namesOfType = bufferedDevicesByType.get(shd.getType());
+			if (namesOfType == null){
+				if (remove){
+					return;
+				}else{
+					namesOfType = ConcurrentHashMap.newKeySet();
+					bufferedDevicesByType.put(deviceType, namesOfType);
+				}
+			}
+			if (remove){
+				namesOfType.remove(deviceName);
+			}else{
+				namesOfType.add(deviceName);
+			}
 		}
 	}
 }

@@ -330,6 +330,7 @@ public class SmartDevice implements ParameterHandler{
 		//can we improve the result with known smart device names for the found type?
 		SmartHomeHub smartHomeHUB = SmartHomeHub.getHubFromSeverConfig(); 
 		String[] deviceNameMatchResult = null;
+		String deviceNameMatch = null;
 		if (smartHomeHUB != null){
 			//make sure this procedure does not seriously influence NLU chain performance: 
 			deviceNameMatchResult = ParameterTools.runOrSkipPerformanceCriticalMethod(parameterToolsId, (in) -> {
@@ -342,13 +343,13 @@ public class SmartDevice implements ParameterHandler{
 								input, new ArrayList<>(deviceNames), this.language
 						);
 						int bestScore = scr.getResultPercent();
-						//System.out.println("bestScore: " + bestScore); 		//DEBUG
-						//System.out.println("bestMatch: " + scr.getResultString()); 		//DEBUG
+						//System.out.println("bestScore: " + bestScore); 				//DEBUG
+						//System.out.println("bestMatch: " + scr.getResultString()); 	//DEBUG
 						if (bestScore == 100){			//allow more "fuzziness" ?? - NOTE: we can't do this unless we fix smart device value too
 							String bestMatch = scr.getResultString();
 							String bestMatchNorm = scr.getResultStringNormalized();
-							return new String[]{bestMatch, bestMatchNorm};
 							//System.out.println("Best tag: " + bestMatch); 		//DEBUG
+							return new String[]{bestMatch, bestMatchNorm};
 						}
 					}
 					return new String[]{};		//return empty to prevent error
@@ -357,6 +358,10 @@ public class SmartDevice implements ParameterHandler{
 				}
 			}, null);
 			if (deviceNameMatchResult != null && deviceNameMatchResult.length == 2){
+				//remember match
+				if (Is.notNullOrEmpty(deviceNameMatchResult[0])){
+					deviceNameMatch = deviceNameMatchResult[0];
+				}
 				//can we combine the found name with previous result?
 				if (!deviceNameMatchResult[1].contains(device)){	//NOTE: this is the norm. 'name' because 'device' is norm.
 					if (input.contains(deviceNameMatchResult[1] + " " + device)){
@@ -388,9 +393,13 @@ public class SmartDevice implements ParameterHandler{
 		
 		//reconstruct original phrase to get proper item names
 		Normalizer normalizer = Config.inputNormalizers.get(this.language);
-		String tag = normalizer.reconstructPhrase(nluInput.textRaw, this.found);
+		String fullFoundTag = normalizer.reconstructPhrase(nluInput.textRaw, this.found);
 		
-		typeAndTag = "<" + deviceType + ">;;" + tag;
+		if (deviceNameMatch != null){
+			typeAndTag = "<" + deviceType + ">;;" + fullFoundTag + ";;" + deviceNameMatch;
+		}else{
+			typeAndTag = "<" + deviceType + ">;;" + fullFoundTag;
+		}
 		
 		//store it
 		pr = new ParameterResult(PARAMETERS.SMART_DEVICE, typeAndTag, this.found);
@@ -440,10 +449,16 @@ public class SmartDevice implements ParameterHandler{
 		
 		//expects a type!
 		String deviceNameFound = "";
+		String deviceNameFoundClean = null;
 		String deviceIndexStr = "";
 		if (input.contains(";;")){
 			String[] typeAndName = input.split(";;");
-			if (typeAndName.length == 2){
+			if (typeAndName.length == 3){
+				deviceNameFound = typeAndName[1];
+				deviceNameFoundClean = typeAndName[2];
+				deviceIndexStr = NluTools.stringFindFirst(deviceNameFound, "\\b\\d+\\b");
+				input = typeAndName[0];
+			}else if (typeAndName.length == 2){
 				deviceNameFound = typeAndName[1];
 				deviceIndexStr = NluTools.stringFindFirst(deviceNameFound, "\\b\\d+\\b");
 				input = typeAndName[0];
@@ -454,11 +469,12 @@ public class SmartDevice implements ParameterHandler{
 		String commonValue = input.replaceAll("^<|>$", "").trim();
 		String localValue = getLocal(commonValue, language);
 		
-		String deviceNameFoundClean;
-		if (language.matches(LANGUAGES.DE)){
-			deviceNameFoundClean = deviceNameFound.replaceFirst("(?i)( (mit der |mit |)nummer|) \\d+", "").trim();
-		}else{
-			deviceNameFoundClean = deviceNameFound.replaceFirst("(?i)( (with the |with |)number|) \\d+", "").trim();
+		if (deviceNameFoundClean == null){
+			if (language.matches(LANGUAGES.DE)){
+				deviceNameFoundClean = deviceNameFound.replaceFirst("(?i)( (mit der |mit |)nummer|) \\d+", "").trim();
+			}else{
+				deviceNameFoundClean = deviceNameFound.replaceFirst("(?i)( (with the |with |)number|) \\d+", "").trim();
+			}
 		}
 		
 		//build default result

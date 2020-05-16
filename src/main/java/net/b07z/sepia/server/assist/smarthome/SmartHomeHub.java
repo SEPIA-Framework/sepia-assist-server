@@ -28,11 +28,11 @@ public interface SmartHomeHub {
 	
 	//possible custom interfaces
 	public static JSONArray interfaceTypes  = JSON.makeArray(
-		JSON.make("value", OpenHAB.NAME, 	"name", "openHAB"),
-		JSON.make("value", Fhem.NAME, 		"name", "FHEM"),
-		JSON.make("value", IoBroker.NAME, 	"name", "ioBroker"),
-		JSON.make("value", MqttHub.NAME,	"name", "MQTT"),
-		JSON.make("value", TestHub.NAME, 	"name", "Test")
+		JSON.make("value", OpenHAB.NAME, 			"name", "openHAB"),
+		JSON.make("value", Fhem.NAME, 				"name", "FHEM"),
+		JSON.make("value", IoBrokerConnector.NAME, 	"name", "ioBroker Simple-api"),
+		//JSON.make("value", MqttHub.NAME,			"name", "MQTT"),
+		JSON.make("value", TestHub.NAME, 			"name", "Test")
 	);
 	
 	/**
@@ -61,8 +61,8 @@ public interface SmartHomeHub {
 			smartHomeHUB = new OpenHAB(hubHost);
 		}else if (hubName.equalsIgnoreCase(Fhem.NAME)){
 			smartHomeHUB = new Fhem(hubHost);
-		}else if (hubName.equalsIgnoreCase(IoBroker.NAME)){
-			smartHomeHUB = new IoBroker(hubHost);
+		}else if (hubName.equalsIgnoreCase(IoBrokerConnector.NAME)){
+			smartHomeHUB = new IoBrokerConnector(hubHost);
 		}else if (hubName.equalsIgnoreCase(MqttHub.NAME)){
 			smartHomeHUB = new MqttHub(hubHost);
 		}else if (hubName.equalsIgnoreCase(InternalHub.NAME) || hubName.equalsIgnoreCase("sepia")){

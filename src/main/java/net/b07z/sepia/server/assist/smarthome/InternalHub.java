@@ -108,9 +108,39 @@ public class InternalHub implements SmartHomeHub {
 			//get data of each device from HUB interface
 			List<SmartHomeDevice> filteredDevices = new ArrayList<>();
 			for (SmartHomeDevice shd : devices.values()){
-				//TODO: filter again!
-				shd = loadDeviceData(shd);
-				filteredDevices.add(shd);
+				//filter again! (because the DB is more tolerant)
+				boolean filterMatch = true;
+				if (filters != null){
+					//currently we only check these filters
+					for (String filter : filters.keySet()){
+						//System.out.println("filter: " + filter + ", val.: " + filters.get(filter));		//DEBUG
+						if (filter.equals(SmartHomeDevice.FILTER_TYPE)){
+							if (!((String) filters.get(filter)).equals(shd.getType())){
+								filterMatch = false;
+								break;
+							}
+						}else if (filter.equals(SmartHomeDevice.FILTER_ROOM)){
+							if (!((String) filters.get(filter)).equals(shd.getRoom())){
+								filterMatch = false;
+								break;
+							}
+						}else if (filter.equals(SmartHomeDevice.FILTER_ROOM_INDEX)){
+							if (!((String) filters.get(filter)).equals(shd.getRoomIndex())){
+								filterMatch = false;
+								break;
+							}
+						}else if (filter.equals(SmartHomeDevice.FILTER_NAME)){
+							if (!((String) filters.get(filter)).equals(shd.getName())){
+								filterMatch = false;
+								break;
+							}
+						}
+					}
+				}
+				if (filterMatch){
+					shd = loadDeviceData(shd);
+					filteredDevices.add(shd);
+				}
 			}
 			return filteredDevices;
 		}
@@ -143,8 +173,13 @@ public class InternalHub implements SmartHomeHub {
 				SmartHomeDevice shdFromHub = shh.loadDeviceData(device);		
 				//NOTE: the HUB is responsible for checking and using interfaceId and interfaceDeviceId
 				//import data
-				importHubDeviceDataToInternal(device, shdFromHub);
-				isIncompleteOrFaulty = false;
+				if (importHubDeviceDataToInternal(device, shdFromHub)){
+					isIncompleteOrFaulty = false;
+				}else{
+					Debugger.println("Smart Home HUB Interface - loadDeviceData"
+							+ " - Failed to get device data: " + interfaceId + " " + interfaceDeviceId, 1);
+					isIncompleteOrFaulty = true;
+				}
 			
 			}catch (Exception e){
 				Debugger.println("Smart Home HUB Interface - loadDeviceData"
@@ -185,29 +220,14 @@ public class InternalHub implements SmartHomeHub {
 
 	@Override
 	public boolean setDeviceStateMemory(SmartHomeDevice device, String stateMemory){
-		String interfaceId = device.getInterface();
-		String interfaceDeviceId = device.getMetaValueAsString("interfaceDeviceId");
-		if (Is.nullOrEmpty(interfaceId) || Is.nullOrEmpty(interfaceDeviceId)){
-			return false;
-		}else{
-			try{
-				SmartHomeHub shh = DB.getSmartDevicesDb().getCachedInterfaces().get(interfaceId);
-				//NOTE: the HUB is responsible for checking and using interfaceId and interfaceDeviceId
-				return shh.setDeviceStateMemory(device, stateMemory);		
-			
-			}catch (Exception e){
-				Debugger.println("Smart Home HUB Interface - setDeviceStateMemory"
-						+ " - Failed to set state for device: " + interfaceId + " " + interfaceDeviceId + " - msg: " + e, 1);
-				Debugger.printStackTrace(e, 3);
-				return false;
-			}
-		}
+		//we store this in the internal database
+		device.setStateMemory(stateMemory);
+		return writeDeviceAttribute(device, "stateMemory", stateMemory);
 	}
 
 	@Override
 	public Map<String, Set<String>> getBufferedDeviceNamesByType(){
-		// TODO Auto-generated method stub
-		return null;
+		return DB.getSmartDevicesDb().getBufferedDeviceNamesByType();
 	}
 	
 	//----- internal HUB specific helpers -----
@@ -217,10 +237,17 @@ public class InternalHub implements SmartHomeHub {
 	 * This method imports the missing data from the external HUB (or any HUB given by the HUB interface).
 	 * @param internalDevice - device loaded from internal DB
 	 * @param hubDevice - device loaded via HUB interface (usually external HUB)
+	 * return true if import worked (which does not mean there was actual data)
 	 */
-	public static void importHubDeviceDataToInternal(SmartHomeDevice internalDevice, SmartHomeDevice hubDevice){
-		internalDevice.setState(hubDevice.getState());
-		//internalDevice.setStateType(hubDevice.getStateType());
+	public static boolean importHubDeviceDataToInternal(SmartHomeDevice internalDevice, SmartHomeDevice hubDevice){
+		if (internalDevice != null && hubDevice != null){
+			internalDevice.setState(hubDevice.getState());
+			//internalDevice.setStateType(hubDevice.getStateType());
+			//memory state?
+			return true;
+		}else{
+			return false;
+		}
 	}
 
 }

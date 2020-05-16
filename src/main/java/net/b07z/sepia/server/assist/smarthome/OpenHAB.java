@@ -242,6 +242,7 @@ public class OpenHAB implements SmartHomeHub {
 	public boolean writeDeviceAttribute(SmartHomeDevice device, String attrName, String attrValue){
 		String deviceURL = device.getLink();
 		if (Is.nullOrEmpty(deviceURL)){
+			Debugger.println("OpenHAB - 'writeDeviceAttribute' FAILED with msg.: Missing device link!", 1);
 			return false;
 		}
 		//get fresh data first
@@ -272,7 +273,7 @@ public class OpenHAB implements SmartHomeHub {
 						}
 					}
 				} catch (Exception e) {
-					Debugger.println("Service:OpenHAB - failed to delete item tag: " + delTag + " - Msg: " + e.getMessage(), 1);
+					Debugger.println("OpenHAB - 'writeDeviceAttribute' FAILED to delete item tag: " + delTag + " - Msg: " + e.getMessage(), 1);
 					return false;
 				}
 			}
@@ -280,7 +281,7 @@ public class OpenHAB implements SmartHomeHub {
 			try {
 				deviceURL += ("/tags/" + URLEncoder.encode(newTag, "UTF-8").replace("+", "%20"));
 			} catch (UnsupportedEncodingException e) {
-				Debugger.println("Service:OpenHAB - failed to set item tag: " + newTag + " - Msg: " + e.getMessage(), 1);
+				Debugger.println("OpenHAB - 'writeDeviceAttribute' FAILED to set item tag: " + newTag + " - Msg: " + e.getMessage(), 1);
 				return false;
 			}
 			//set tag
@@ -292,7 +293,7 @@ public class OpenHAB implements SmartHomeHub {
 			//System.out.println("RESPONSE: " + response); 		//this is usually empty if there was no error
 			boolean success = Connectors.httpSuccess(responseWrite); 
 			if (!success){
-				Debugger.println("OpenHAB interface error in 'writeDeviceAttribute' - Device: " + device.getName() + " - Response: " + responseWrite, 1);
+				Debugger.println("OpenHAB - 'writeDeviceAttribute' FAILED - Device: " + device.getName() + " - Response: " + responseWrite, 1);
 			}
 			return success;
 			
@@ -303,10 +304,15 @@ public class OpenHAB implements SmartHomeHub {
 
 	@Override
 	public boolean setDeviceState(SmartHomeDevice device, String state, String stateType) {
+		String id = device.getId();
 		String deviceURL = device.getLink();
+		if (Is.nullOrEmpty(deviceURL) && Is.notNullOrEmpty(id)){
+			deviceURL = this.host + "/rest/items/" + id;
+		}
 		//System.out.println("state: " + state); 				//DEBUG
 		//System.out.println("stateType: " + stateType); 		//DEBUG
 		if (Is.nullOrEmpty(deviceURL)){
+			Debugger.println("OpenHAB - 'setDeviceState' FAILED with msg.: Missing device link!", 1);
 			return false;
 		}else{
 			//set command overwrite?
@@ -347,7 +353,7 @@ public class OpenHAB implements SmartHomeHub {
 			//System.out.println("RESPONSE: " + response); 		//this is usually empty if there was no error
 			boolean success = Connectors.httpSuccess(response); 
 			if (!success){
-				Debugger.println("OpenHAB interface error in 'setDeviceState' - Sent '" + state + "' got response: " + response, 1);
+				Debugger.println("OpenHAB - 'setDeviceState' FAILED - Sent '" + state + "' got response: " + response, 1);
 			}
 			return success;
 		}
@@ -360,8 +366,13 @@ public class OpenHAB implements SmartHomeHub {
 
 	@Override
 	public SmartHomeDevice loadDeviceData(SmartHomeDevice device) {
+		String id = device.getId();
 		String deviceURL = device.getLink();
+		if (Is.nullOrEmpty(deviceURL) && Is.notNullOrEmpty(id)){
+			deviceURL = this.host + "/rest/items/" + id;
+		}
 		if (Is.nullOrEmpty(deviceURL)){
+			Debugger.println("OpenHAB - 'loadDeviceData' FAILED with msg.: Missing device link", 1);
 			return null;
 		}else{
 			JSONObject response = httpGET(deviceURL);
@@ -370,6 +381,7 @@ public class OpenHAB implements SmartHomeHub {
 				SmartHomeDevice shd = buildDeviceFromResponse(response);
 				return shd;
 			}else{
+				Debugger.println("OpenHAB - 'loadDeviceData' FAILED with msg.: " + response, 1);
 				return null;
 			}
 		}

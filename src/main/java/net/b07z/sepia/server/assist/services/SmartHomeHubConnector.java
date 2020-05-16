@@ -239,11 +239,11 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		
 		//find device - NOTE: the HUB implementation is responsible for caching the data
 		Map<String, Object> filters = new HashMap<>();
-		//filters.put("name", deviceName);
-		filters.put("type", deviceType);
-		filters.put("room", roomType);
+		//if (Is.notNullOrEmpty(deviceName)) filters.put(SmartHomeDevice.FILTER_NAME, deviceName);
+		if (Is.notNullOrEmpty(deviceType)) filters.put(SmartHomeDevice.FILTER_TYPE, deviceType);
+		if (Is.notNullOrEmpty(roomType)) filters.put(SmartHomeDevice.FILTER_ROOM, roomType);
 		if (roomNumber != Integer.MIN_VALUE){
-			filters.put("roomIndex", roomNumber);
+			filters.put(SmartHomeDevice.FILTER_ROOM_INDEX, Integer.toString(roomNumber));		//NOTE: we use String because actually room-index is not restricted to numbers
 		}
 		filters.put("limit", -1);
 		List<SmartHomeDevice> matchingDevices = smartHomeHUB.getFilteredDevicesList(filters);

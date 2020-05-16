@@ -37,6 +37,12 @@ public class SmartHomeDevice {
 	private String interfaceId;	//e.g. openhab, fhem
 	private JSONObject meta;	//space for custom stuff
 	
+	//filter options
+	public static final String FILTER_NAME = "name";
+	public static final String FILTER_TYPE = "type";
+	public static final String FILTER_ROOM = "room";
+	public static final String FILTER_ROOM_INDEX = "roomIndex";
+	
 	//global tags used to store SEPIA specific device data in other HUB systems
 	public static final String SEPIA_TAG_NAME = "sepia-name";
 	public static final String SEPIA_TAG_TYPE = "sepia-type";
@@ -411,6 +417,10 @@ public class SmartHomeDevice {
 		this.stateMemory = JSON.getString(deviceJson, "stateMemory");
 		this.link = JSON.getString(deviceJson, "link");
 		this.meta = JSON.getJObject(deviceJson, "meta");
+		//fix some formats
+		if (this.meta != null){
+			this.setCustomCommands(this.getCustomCommands());
+		}
 		return this;
 	}
 	
@@ -714,18 +724,18 @@ public class SmartHomeDevice {
 	public static String getStateFromCustomSetCommands(String state, String stateType, JSONObject setCmds){
 		if (stateType != null){
 			if (stateType.matches(REGEX_STATE_TYPE_NUMBER)){
-				String cmd = (String) setCmds.get("number");
+				String cmd = Converters.obj2StringOrDefault(setCmds.get("number"), null);
 				if (Is.notNullOrEmpty(cmd)){
 					return cmd.replaceAll("<val>|<value>", state);
 				}
 			}else if (stateType.matches(REGEX_STATE_TYPE_TEXT)){
 				if (state.matches(REGEX_STATE_ENABLE)){
-					String cmd = (String) setCmds.get("enable");
+					String cmd = Converters.obj2StringOrDefault(setCmds.get("enable"), null);
 					if (Is.notNullOrEmpty(cmd)){
 						return cmd;
 					}
 				}else if (state.matches(REGEX_STATE_DISABLE)){
-					String cmd = (String) setCmds.get("disable");
+					String cmd = Converters.obj2StringOrDefault(setCmds.get("disable"), null);
 					if (Is.notNullOrEmpty(cmd)){
 						return cmd;
 					}

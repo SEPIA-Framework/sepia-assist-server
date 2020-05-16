@@ -1,12 +1,8 @@
 package net.b07z.sepia.server.assist.smarthome;
 
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.core.tools.Connectors;
@@ -16,14 +12,15 @@ import net.b07z.sepia.server.core.tools.JSON;
 import net.b07z.sepia.server.core.tools.URLBuilder;
 
 /**
- * IoBroker integration for smart home HUB interface.
+ * Basic ioBroker connector, implementing parts of the smart home HUB interface to get and set states.<br>
+ * Device management is handled by SEPIA internal HUB.
  * 
  * @author Florian Quirin
  *
  */
-public class IoBroker implements SmartHomeHub {
+public class IoBrokerConnector implements SmartHomeHub {
 	
-	public static final String NAME = "iobroker";
+	public static final String NAME = "iobroker_sapi";
 	
 	private String hubId;
 	private String host;
@@ -31,19 +28,16 @@ public class IoBroker implements SmartHomeHub {
 	private String authData;
 	private JSONObject info;
 	
-	private static Map<String, Map<String, Set<String>>> bufferedDevicesOfHostByType = new ConcurrentHashMap<>();
-	private Map<String, Set<String>> bufferedDevicesByType;
 
 	/**
 	 * Build ioBroker connector with given host address.
 	 * @param host - e.g. http://localhost:8080
 	 */
-	public IoBroker(String hubHost){
-		if (Is.nullOrEmpty(this.host)){
+	public IoBrokerConnector(String hubHost){
+		if (Is.nullOrEmpty(hubHost)){
 			throw new RuntimeException("No host address found for ioBroker integration!");
 		}else{
 			this.host = hubHost;
-			this.bufferedDevicesByType = bufferedDevicesOfHostByType.get(this.host);
 		}
 	}
 	
@@ -107,12 +101,98 @@ public class IoBroker implements SmartHomeHub {
 	}
 	@Override
 	public boolean registerSepiaFramework(){
-		// TODO Auto-generated method stub
-		return false;
+		return true;
+	}
+	
+	@Override
+	public SmartHomeDevice loadDeviceData(SmartHomeDevice device){
+		String iobId = device.getId();
+		if (Is.nullOrEmpty(iobId)){
+			return null;
+		}else{
+			String url = URLBuilder.getStringP20(this.host + "/get/",
+					"", iobId
+			);
+			//System.out.println("URL: " + url); 				//DEBUG
+			JSONObject result = httpGET(url);
+			//System.out.println("RESPONSE: " + result);		//DEBUG
+			if (Connectors.httpSuccess(result)){
+				try{
+					/* simplified result example
+					 {
+					    "val": 0,
+					    "common": {
+					        "name": "Hue white lamp 1.level",
+					        "read": true,
+					        "write": true,
+					        "type": "number",
+					        "role": "level.dimmer",
+					        "min": 0,
+					        "max": 100,
+					        "def": 0
+					    }
+					}*/
+					if (result.containsKey("val")){
+						device.setState(JSON.getString(result, "val"));
+						return device;
+					}else{
+						return null;
+					}
+				}catch (Exception e){
+					Debugger.println("IoBrokerConnector - loadDeviceData FAILED with msg.: " + e.getMessage(), 1);
+					Debugger.printStackTrace(e, 3);
+					return null;
+				}
+			}else{
+				return null;
+			}
+		}
 	}
 
 	@Override
+	public boolean setDeviceState(SmartHomeDevice device, String state, String stateType){
+		String iobId = device.getId(); 
+		if (Is.nullOrEmpty(iobId)){
+			return false;
+		}else{
+			//set command overwrite?
+			JSONObject setCmds = device.getCustomCommands();
+			//System.out.println("setCmds: " + setCmds);		//DEBUG
+			if (Is.notNullOrEmpty(setCmds)){
+				String newState = SmartHomeDevice.getStateFromCustomSetCommands(state, stateType, setCmds);
+				if (newState != null){
+					state = newState;
+				}
+				//System.out.println("state: " + state);		//DEBUG
+				
+			//check deviceType to find correct set command
+			}else{
+				//TODO: change?
+			}
+		}
+		String cmdUrl = URLBuilder.getStringP20(this.host + "/set/",
+				"", iobId,
+				"?value=", state
+		);
+		System.out.println("URL: " + cmdUrl); 				//DEBUG
+		JSONObject response = httpGET(cmdUrl);
+		System.out.println("RESPONSE: " + response);		//DEBUG
+		if (Connectors.httpSuccess(response) && response.containsKey("value")){
+			//String returnVal = JSON.getString(response, "value");		//check if it is identical to requested value?
+			return true;
+		}else{
+			Debugger.println("IoBrokerConnector interface error in 'setDeviceState': " + response, 1);
+			return false;
+		}
+	}
+
+	//---- below you will find parts of the interface that have not been implemented for this connector ----
+
+	@Override
 	public Map<String, SmartHomeDevice> getDevices(){
+		return null;
+		/*
+		//TODO: this is not enough - currently I see no way to get only relevant devices automatically
 		//http://192.168.178.10:8087/objects?pattern=*.command&prettyPrint
 		String url = URLBuilder.getString(this.host, 
 				"/objects?pattern=", "*.command"
@@ -163,6 +243,7 @@ public class IoBroker implements SmartHomeHub {
 			Debugger.println("ioBroker - getDevices FAILED with msg.: " + result.toJSONString(), 1);
 			return null;
 		}
+		*/
 	}
 
 	@Override
@@ -178,52 +259,24 @@ public class IoBroker implements SmartHomeHub {
 	}
 
 	@Override
-	public SmartHomeDevice loadDeviceData(SmartHomeDevice device){
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean setDeviceState(SmartHomeDevice device, String state, String stateType){
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean setDeviceStateMemory(SmartHomeDevice device, String stateMemory){
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public Map<String, Set<String>> getBufferedDeviceNamesByType(){
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	@Override
+	public boolean setDeviceStateMemory(SmartHomeDevice device, String stateMemory){
+		// TODO Auto-generated method stub
+		return true;
 	}
 
 	//------------- ioBroker specific helper methods --------------
 	
 	//build device from JSON response
+	/*
 	private SmartHomeDevice buildDeviceFromResponse(JSONObject hubDevice){
-		/*Object linkObj = (fhemObjName != null)? (this.host + "?cmd." + fhemObjName) : null;
-		JSONObject meta = JSON.make(
-				"id", fhemObjName,
-				"origin", NAME,
-				"setOptions", JSON.getStringOrDefault(hubDevice, "PossibleSets", null), 		//FHEM specific
-				"setCmds", setCmds,
-				"typeGuessed", typeGuessed
-		);
-		JSON.put(meta, "namedBySepia", namedBySepia);
-		//note: we need 'id' for commands although it is basically already in 'link'
-		SmartHomeDevice shd = new SmartHomeDevice(name, type, room, 
-				state, stateType, memoryState, 
-				(linkObj != null)? linkObj.toString() : null, meta);
-		//specify more
-		if (Is.notNullOrEmpty(roomIndex)){
-			shd.setRoomIndex(roomIndex);
-		}
-		return shd;
-		*/
+		//TODO: implement ... if possible ... data is very complex and has to be splitted into categories with same format ...
 		return null;
 	}
+	*/
 }

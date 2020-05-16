@@ -310,8 +310,9 @@ public class Fhem implements SmartHomeHub {
 
 	@Override
 	public SmartHomeDevice loadDeviceData(SmartHomeDevice device){
-		String fhemId = device.getMetaValueAsString("id");
+		String fhemId = device.getId();
 		if (Is.nullOrEmpty(fhemId)){
+			Debugger.println("FHEM - loadDeviceData FAILED with msg.: Missing ID!", 1);
 			return null;
 		}else{
 			String deviceURL = URLBuilder.getString(this.host, 
@@ -338,6 +339,7 @@ public class Fhem implements SmartHomeHub {
 					return null;
 				}
 			}else{
+				Debugger.println("FHEM - loadDeviceData FAILED with msg.: " + response, 1);
 				return null;
 			}
 		}
@@ -345,14 +347,19 @@ public class Fhem implements SmartHomeHub {
 
 	@Override
 	public boolean setDeviceState(SmartHomeDevice device, String state, String stateType){
-		String fhemId = device.getMetaValueAsString("id");
+		String fhemId = device.getId();
 		String setOptions = device.getMetaValueAsString("setOptions");
 		if (Is.nullOrEmpty(setOptions)){
-			//this is required info
-			return false;
+			//this is required info ... but before we don't even try ...
+			setOptions = "";
+			//return false;
 		}
-		String deviceCmdLink = device.getLink(); 
+		String deviceCmdLink = device.getLink();
+		if (Is.nullOrEmpty(deviceCmdLink)){
+			deviceCmdLink = (this.host + "?cmd." + fhemId);
+		}
 		if (Is.nullOrEmpty(fhemId) || Is.nullOrEmpty(deviceCmdLink)){
+			Debugger.println("FHEM - setDeviceState FAILED with msg.: Missing ID or device link!", 1);
 			return false;
 		}else{
 			//set command overwrite?
@@ -405,7 +412,8 @@ public class Fhem implements SmartHomeHub {
 							}
 						}else if(stateType.equals(SmartHomeDevice.StateType.number_temperature_c.name()) 
 								|| stateType.equals(SmartHomeDevice.StateType.number_temperature_f.name())){
-							String cmd = NluTools.stringFindFirst(setOptions, "\\b(desired-temperature|desired-temp|desiredTemperature|desiredTemp|temperature)(?=(\\b|\\d))");
+							String cmd = NluTools.stringFindFirst(setOptions, 
+									"\\b(desired-temperature|desired-temp|desiredTemperature|desiredTemp|temperature)(?=(\\b|\\d))");
 							//temp. via desired-temp, temperature, desiredTemp, desired-temperature 
 							if (!cmd.isEmpty()){
 								state = cmd + " " + state;
@@ -436,8 +444,11 @@ public class Fhem implements SmartHomeHub {
 					Debugger.println("FHEM interface error in 'setDeviceState': " + msg, 1);
 				}
 			}
-			
-			return (Connectors.httpSuccess(response) && !gotErrorMessage);
+			boolean callSuccess = Connectors.httpSuccess(response);
+			if (!callSuccess){
+				Debugger.println("FHEM - setDeviceState FAILED with msg.: " + response, 1);
+			}
+			return (callSuccess && !gotErrorMessage);
 		}
 	}
 

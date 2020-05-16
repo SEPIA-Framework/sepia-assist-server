@@ -1,5 +1,6 @@
 package net.b07z.sepia.server.assist.endpoints;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,6 +19,7 @@ import net.b07z.sepia.server.core.data.Role;
 import net.b07z.sepia.server.core.server.RequestParameters;
 import net.b07z.sepia.server.core.server.RequestPostParameters;
 import net.b07z.sepia.server.core.server.SparkJavaFw;
+import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
@@ -160,7 +162,7 @@ public class IntegrationsEndpoint {
 					);
 					return SparkJavaFw.returnResult(request, response, msg.toJSONString(), 200);
 				}
-				int code = DB.getSmartDevicesDb().removeCustomDevice(interfaceId);
+				int code = DB.getSmartDevicesDb().removeInterface(interfaceId);
 				if (code == 0){
 					msg = JSON.make(
 						"result", "success",
@@ -213,18 +215,32 @@ public class IntegrationsEndpoint {
 				if (deviceTypeFilter != null && deviceTypeFilter.trim().isEmpty()){
 					deviceTypeFilter = null; 	//make sure this is null not empty
 				}
-				Map<String, SmartHomeDevice> devicesMap = shh.getDevices();		//TODO: we can optimize here by using 'getFilteredDevicesList'
-				if (Is.nullOrEmptyMap(devicesMap)){
+				Collection<SmartHomeDevice> devicesList = null;
+				
+				//we try optimizing here by using 'getFilteredDevicesList'
+				Map<String, Object> filters = null;
+				if (deviceTypeFilter != null){
+					filters = new HashMap<>();
+					filters.put("type", deviceTypeFilter);
+				}
+				devicesList = shh.getFilteredDevicesList(filters);
+				/* alternatively we could load all:
+				Map<String, SmartHomeDevice> devicesMap = shh.getDevices();
+				if (Is.notNullOrEmptyMap(devicesMap)){
+					devicesList = devicesMap.values();
+				} */
+				
+				if (devicesList == null || devicesList.isEmpty()){
 					//FAIL
 					return SparkJavaFw.returnResult(request, response, JSON.make(
 							"result", "fail", 
 							"error", "no devices found or failed to contact HUB"
 					).toJSONString(), 200);
 				}
-				//filter and convert to JSONArray
+				
+				//filter and convert to JSONArray - NOTE: we filter again because 'getFilteredDevicesList' is not guaranteed to filter correctly
 				JSONArray devicesArray = new JSONArray();
-				for (Map.Entry<String, SmartHomeDevice> entry : devicesMap.entrySet()){
-					SmartHomeDevice data = entry.getValue();
+				for (SmartHomeDevice data : devicesList){
 					if (deviceTypeFilter != null){
 						String shdType = data.getType();
 						if (shdType != null && shdType.equalsIgnoreCase(deviceTypeFilter)){
@@ -289,7 +305,8 @@ public class IntegrationsEndpoint {
 				if (goodN != expectedGood){
 					return SparkJavaFw.returnResult(request, response,JSON.make(
 							"result", "fail", 
-							"error", ("one or more attributes could not be set! Success: " + goodN + " of " + expectedGood + " - Did you 'register' SEPIA already?")
+							"error", ("one or more attributes could not be set! Success: " + goodN + " of " + expectedGood 
+									+ (shh.requiresRegistration()? " - Did you 'register' SEPIA already?" : " - see server log"))
 					).toJSONString(), 200);
 				}else{
 					//respond
@@ -311,7 +328,8 @@ public class IntegrationsEndpoint {
 					).toJSONString(), 200);
 				}
 				//set attributes
-				String stateValue = JSON.getStringOrDefault(stateJson, "value", null);
+				String stateValue = Converters.obj2StringOrDefault(stateJson.get("value"), null);
+				//String stateValue = JSON.getStringOrDefault(stateJson, "value", null); 	//this can fail for numbers
 				String stateType = JSON.getStringOrDefault(stateJson, "type", null);
 				if (stateValue == null){
 					//FAIL
