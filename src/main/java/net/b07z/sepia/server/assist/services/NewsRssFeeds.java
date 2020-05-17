@@ -6,6 +6,7 @@ import net.b07z.sepia.server.assist.data.Card;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.data.Card.ElementType;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
+import net.b07z.sepia.server.assist.interviews.ConvertResult;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.parameters.NewsSection;
 import net.b07z.sepia.server.assist.parameters.NewsSection.NSection;
@@ -280,7 +281,9 @@ public class NewsRssFeeds implements ServiceInterface{
 		//soccer results?
 		if (section.equals(NSection.soccer.name()) && (type.equals(NType.results.name()) || type.equals(NType.table.name()))){
 			//TODO: this is the first step of separating news and soccer results, ... next is to get rid of this by splitting the regEx
-			return new SoccerBundesligaInfo().getResult(nluResult);
+			ServiceResult serviceResult = new SoccerBundesligaInfo().getResult(nluResult);
+			ConvertResult.adjustAnswerParameters(serviceResult, JSON.make("firstTitle", ""), null);
+			return serviceResult;
 		}
 		
 		//articles

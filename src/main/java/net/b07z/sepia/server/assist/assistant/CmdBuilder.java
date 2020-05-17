@@ -39,7 +39,7 @@ public class CmdBuilder {
 	}
 
 	public static String getSoccerResults(String league, String team){
-		String cmdSum = "news;;news_type={\"value\":\"results\"};;news_section={\"value\":\"soccer\"};;";
+		String cmdSum = CMD.NEWS + ";;news_type={\"value\":\"results\"};;news_section={\"value\":\"soccer\"};;";
 		if (team != null && !team.isEmpty()){
 			cmdSum += "sports_team={\"value\":\"" + team + "\"};;";
 		}

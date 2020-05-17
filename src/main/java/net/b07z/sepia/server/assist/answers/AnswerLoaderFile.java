@@ -135,7 +135,7 @@ public class AnswerLoaderFile implements AnswerLoader {
 				//System.out.println("AnswerLoader: " + answer); 		//debug
 				Object wco = wildcards[i];
 				if (wco == null){
-					Debugger.println("AnswerLoader - missing answerParameter in answer: '" + answer + "'", 1);
+					Debugger.println("AnswerLoader - missing answerParameter " + (i+1) + " in answer: '" + answer + "'", 1);
 					answer = answer.replaceFirst("<" + (i+1) + ">" , "null");
 				}else{
 					answer = answer.replaceFirst("<" + (i+1) + ">" , wco.toString());

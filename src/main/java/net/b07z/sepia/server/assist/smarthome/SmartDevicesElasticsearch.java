@@ -154,7 +154,7 @@ public class SmartDevicesElasticsearch implements SmartDevicesDb {
 			);
 		}else{
 			int code = getDB().setItemData(SmartDevicesDb.DEVICES, DEFAULT_TYPE, id, shd.getDeviceAsJson());
-			//int code = getDB().updateItemData(SmartDevicesDb.DEVICES, DEFAULT_TYPE, id, shd.getDeviceAsJson());	//this will not overwrite deleted fields :-(
+			//int code = getDB().updateItemData(SmartDevicesDb.DEVICES, DEFAULT_TYPE, id, shd.getDeviceAsJson());	//this will not work as expected :-(
 			if (code != 0){
 				Debugger.println("Smart Devices - FAILED to updated device (item) with ID: " + id, 1);
 			}
