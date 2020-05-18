@@ -292,6 +292,7 @@ public class NewsRssFeeds implements ServiceInterface{
 			sectionGroupsForLanguage = outletGroupsByLanguage.get(LANGUAGES.EN);
 		}
 		List<String> feeds = sectionGroupsForLanguage.get(section);
+		//TODO: check feeds == null
 		List<String> top3Titles = new ArrayList<>();
 		
 		Card card = new Card(Card.TYPE_GROUPED_LIST);

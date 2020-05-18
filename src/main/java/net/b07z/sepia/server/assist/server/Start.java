@@ -57,6 +57,7 @@ public class Start {
 
 	//stuff
 	public static String startGMT = "";
+	public static long lastStartUNIX = 0l;
 	public static String serverType = "";
 	public static String[] startUpArgs = null;
 	
@@ -360,6 +361,8 @@ public class Start {
 	 * MAIN METHOD TO START SERVER
 	 */
 	public static void main(String[] args) {
+		//activation timestamp
+		lastStartUNIX = System.currentTimeMillis();
 		
 		//load settings
 		loadSettings(args);

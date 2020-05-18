@@ -85,6 +85,8 @@ public class DB {
 		accounts = (AccountInterface) ClassBuilder.construct(Config.accountModule);
 		knowledge = (DatabaseInterface) ClassBuilder.construct(Config.knowledgeDbModule);
 		smartDevices = (SmartDevicesDb) ClassBuilder.construct(Config.smartDevicesModule);
+		//load smart-devices cache
+		smartDevices.loadInterfaces();
 	}
 	
 	private static AuthenticationInterface getAuthDb(){

@@ -58,6 +58,7 @@ public class SmartDevicesElasticsearch implements SmartDevicesDb {
 			if (code == 0){
 				Debugger.println("Smart Interfaces - Created or updated interface with ID: " + id + " (type: " + type + ")", 3);
 				//update cache
+				shh.activate();
 				getCachedInterfaces().put(cleanId, shh);
 			}else{
 				Debugger.println("Smart Interfaces - FAILED to create or update interface with ID: " + id, 1);
@@ -72,7 +73,12 @@ public class SmartDevicesElasticsearch implements SmartDevicesDb {
 		if (code == 0){
 			Debugger.println("Smart Interfaces - Removed interface with ID: " + id, 3);
 			//update cache
-			getCachedInterfaces().remove(id);
+			try{
+				getCachedInterfaces().get(id).deactivate();
+				getCachedInterfaces().remove(id);
+			}catch (Exception e){
+				///ignore
+			}
 		}else{
 			Debugger.println("Smart Interfaces - FAILED to removed interface with ID: " + id, 1);
 		}
@@ -93,6 +99,7 @@ public class SmartDevicesElasticsearch implements SmartDevicesDb {
 						String id = JSON.getStringOrDefault(jo, "_id", "");
 						JSONObject data = JSON.getJObject(jo, "_source");
 						SmartHomeHub shh = SmartHomeHub.importJson(data);
+						shh.activate();
 						if (Is.notNullOrEmpty(id) && shh != null){
 							interfacesMap.put(id, shh);
 						}

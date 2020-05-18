@@ -2,6 +2,7 @@ package net.b07z.sepia.server.assist.workers;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.core.tools.Debugger;
@@ -13,6 +14,11 @@ import net.b07z.sepia.server.core.tools.Debugger;
  *
  */
 public class Workers {
+	//A map with all available workers.
+	public static Map<String, WorkerInterface> workers;
+	
+	//A map with all available connections
+	private static Map<String, DuplexConnectionInterface> connections;
 	
 	//RSS reader and worker
 	public static WorkerInterface rssWorker;
@@ -28,14 +34,12 @@ public class Workers {
 	//DuckDNS worker
 	public static WorkerInterface duckDnsWorker;
 	
-	//A map with all available workers.
-	public static Map<String, WorkerInterface> workers;
-	
 	/**
 	 * Setup all workers. First get the list from the config-file then construct the workers.<br>
 	 * NOTE: Add new workers here to make them available in the framework.
 	 */
 	public static void setupWorkers(){
+		
 		//----NOTE: Add new ones here:
 		workers = new HashMap<>();
 		
@@ -71,9 +75,43 @@ public class Workers {
 	}
 	
 	/**
-	 * Try to stop workers that have been started with last setup.
+	 * Register a connection so it can be managed by workers.
+	 * @param conn - connection to be added
+	 */
+	public static void registerConnection(DuplexConnectionInterface conn){
+		if (connections == null){
+			connections = new ConcurrentHashMap<>();
+		}
+		connections.put(conn.getName(), conn);
+	}
+	/**
+	 * Try to stop connections that have been registered.
+	 */
+	public static void closeConnections(){
+		if (connections != null){
+			for (DuplexConnectionInterface dCon : connections.values()){
+				String connName = dCon.getName();
+				Debugger.println("Closing connection: " + connName, 3);
+				if (dCon.getStatus() == 0){
+					dCon.disconnect();
+					if (dCon.waitForState(2, -1)){
+						Debugger.println("Success: " + connName + " closed", 3);
+					}else{
+						Debugger.println("Fail: " + connName + " could not be closed in time.", 1);
+					}
+				}else{
+					Debugger.println("Fail: " + connName + " was not connected - status: " + dCon.getStatusDescription(), 3);
+				}
+				connections.remove(connName);
+			}
+		}
+	}
+	
+	/**
+	 * Try to stop workers and connections that have been started with last setup or during runtime.
 	 */
 	public static void stopWorkers(){
+		//classic workers
 		for (String workerName : Config.backgroundWorkers){
 			WorkerInterface worker = workers.get(workerName.trim());
 			if (worker != null){
@@ -85,6 +123,8 @@ public class Workers {
 				}
 			}
 		}
+		//duplex connections
+		closeConnections();
 	}
 	
 	/**
@@ -92,6 +132,7 @@ public class Workers {
 	 */
 	public static String getStatsReport(){
 		String report = "";
+		long now = System.currentTimeMillis();
 		for (String workerName : Config.backgroundWorkers){
 			WorkerInterface worker = workers.get(workerName.trim());
 			if (worker != null){
@@ -99,6 +140,14 @@ public class Workers {
 						"Worker report: " + worker.getName() 
 						+ ", status: " + worker.getStatus() + ": " + worker.getStatusDescription() 
 						+ ", next refresh: " + Math.round((double)worker.getNextRefreshTime()/(1000)) + "s<br>";
+			}
+		}
+		if (connections != null){
+			for (DuplexConnectionInterface dCon : connections.values()){
+				report += 
+						"Connection report: " + dCon.getName() 
+						+ ", status: " + dCon.getStatus() + ": " + dCon.getStatusDescription() 
+						+ ", last activity: " + (now - dCon.getLastActivity()) + "ms ago<br>";
 			}
 		}
 		return report;
