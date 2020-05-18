@@ -31,7 +31,7 @@ public interface SmartHomeHub {
 		JSON.make("value", OpenHAB.NAME, 			"name", "openHAB"),
 		JSON.make("value", Fhem.NAME, 				"name", "FHEM"),
 		JSON.make("value", IoBrokerConnector.NAME, 	"name", "ioBroker Simple-api"),
-		//JSON.make("value", MqttHub.NAME,			"name", "MQTT"),
+		JSON.make("value", MqttPublisher.NAME,		"name", "MQTT Publisher"),
 		JSON.make("value", TestHub.NAME, 			"name", "Test")
 	);
 	
@@ -44,6 +44,7 @@ public interface SmartHomeHub {
 		if (Is.notNullOrEmpty(Config.smarthome_hub_auth_data)){
 			shh.setAuthenticationInfo(Config.smarthome_hub_auth_type, Config.smarthome_hub_auth_data);
 		}
+		shh.activate();
 		return shh;
 	}
 	/**
@@ -63,8 +64,8 @@ public interface SmartHomeHub {
 			smartHomeHUB = new Fhem(hubHost);
 		}else if (hubName.equalsIgnoreCase(IoBrokerConnector.NAME)){
 			smartHomeHUB = new IoBrokerConnector(hubHost);
-		}else if (hubName.equalsIgnoreCase(MqttHub.NAME)){
-			smartHomeHUB = new MqttHub(hubHost);
+		}else if (hubName.equalsIgnoreCase(MqttPublisher.NAME)){
+			smartHomeHUB = new MqttPublisher(hubHost);
 		}else if (hubName.equalsIgnoreCase(InternalHub.NAME) || hubName.equalsIgnoreCase("sepia")){
 			smartHomeHUB = new InternalHub();
 		}else if (hubName.equalsIgnoreCase(TestHub.NAME)){
@@ -102,7 +103,7 @@ public interface SmartHomeHub {
 		String id = JSON.getString(jsonData, "id");
 		String type = JSON.getString(jsonData, "type");
 		String host = JSON.getString(jsonData, "host");
-		SmartHomeHub shh = SmartHomeHub.getHub(type, host);
+		SmartHomeHub shh = getHub(type, host);
 		if (shh != null){
 			shh.setId(id);
 			shh.setAuthenticationInfo(JSON.getString(jsonData, "authType"), JSON.getString(jsonData, "authData"));
@@ -110,6 +111,15 @@ public interface SmartHomeHub {
 		}
 		return shh;
 	}
+	/**
+	 * If the class/connection/HUB needs to be activated use this method. For most interfaces it will simply return true.<br>
+	 * The framework will call this method after e.g. JSON import or after a new instance was created and configured.
+	 */
+	public boolean activate();
+	/**
+	 * The framework will call this method before e.g. the HUB is removed from the list of available custom interfaces.
+	 */
+	public boolean deactivate();
 	
 	/**
 	 * Set or overwrite host address.

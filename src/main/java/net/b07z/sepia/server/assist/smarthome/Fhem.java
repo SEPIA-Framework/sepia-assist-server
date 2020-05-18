@@ -97,6 +97,15 @@ public class Fhem implements SmartHomeHub {
 	//-------INTERFACE IMPLEMENTATIONS---------
 	
 	@Override
+	public boolean activate(){
+		return true;
+	}
+	@Override
+	public boolean deactivate(){
+		return true;
+	}
+	
+	@Override
 	public JSONObject toJson(){
 		return JSON.make(
 			"id", this.hubId,

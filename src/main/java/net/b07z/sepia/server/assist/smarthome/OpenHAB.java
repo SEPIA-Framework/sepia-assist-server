@@ -97,10 +97,21 @@ public class OpenHAB implements SmartHomeHub {
 			"info", this.info
 		);
 	}
+	
+	@Override
+	public boolean activate(){
+		return true;
+	}
+	@Override
+	public boolean deactivate(){
+		return true;
+	}
+	
 	@Override
 	public void setId(String id){
 		this.hubId = id; 
 	}
+	
 	@Override
 	public String getId(){
 		return this.hubId;

@@ -66,10 +66,21 @@ public class IoBrokerConnector implements SmartHomeHub {
 			"info", this.info
 		);
 	}
+	
+	@Override
+	public boolean activate(){
+		return true;
+	}
+	@Override
+	public boolean deactivate(){
+		return true;
+	}
+	
 	@Override
 	public void setId(String id){
 		this.hubId = id; 
 	}
+	
 	@Override
 	public String getId(){
 		return this.hubId;
@@ -133,7 +144,15 @@ public class IoBrokerConnector implements SmartHomeHub {
 					    }
 					}*/
 					if (result.containsKey("val")){
-						device.setState(JSON.getString(result, "val"));
+						String state = JSON.getString(result, "val");
+						String stateType = device.getStateType();
+						if (state != null){
+							if (stateType != null){
+								//generalize state according to stateType
+								state = SmartHomeDevice.convertAnyStateToGeneralizedState(state, stateType);
+							}
+							device.setState(state);
+						}
 						return device;
 					}else{
 						return null;
@@ -167,7 +186,8 @@ public class IoBrokerConnector implements SmartHomeHub {
 				
 			//check deviceType to find correct set command
 			}else{
-				//TODO: change?
+				//TODO: change/adapt?
+				//compare: 'loadDeviceData' -> 'SmartHomeDevice.convertAnyStateToGeneralizedState'
 			}
 		}
 		String cmdUrl = URLBuilder.getStringP20(this.host + "/set/",
