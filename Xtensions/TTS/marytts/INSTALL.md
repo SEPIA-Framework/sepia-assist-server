@@ -13,7 +13,15 @@ Note: It is required to use a system with 2GB memory or more to add this extensi
 * To install the extension simply use one of the dowload scripts. The start scripts of SEPIA will automatically load the server if the downloaded files are available.  
 * To remove the server simply delete the downloaded files.
 
-## Server endpoints
+## Mary-TTS info and endpoints
+
+### Direct access to server
+
+When you run Mary-TTS via SEPIA setup direct access to the Mary-TTS server is only possible via `localhost`. You can open up Mary-TTS for direct access from any machine and apply some other settings via then environmental variable `MARYTTS_SERVER_OPTS`.
+Here is an example command that will remove the localhost restriction, to be run BEFORE the SEPIA server starts up Mary-TTS: `export MARYTTS_SERVER_OPTS="-Dsocket.addr=0.0.0.0 -Dsocket.port=59125"`.  
+Keep in mind that you can of cause always use the SEPIA TTS endpoint to access Mary-TTS from anywhere ... with the proper authentication.
+
+### Server endpoints
 
 Some useful endpoints of the original MaryTTS server in case you want to use it for other projects. 
 Default address is "http://localhost:59125/" followed e.g. by:
