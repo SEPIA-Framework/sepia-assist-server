@@ -172,25 +172,24 @@ public class MqttConnection implements DuplexConnectionInterface {
 				if (mqttClient.isConnected()){
 					connectionStatus = 0;
 					statusInfo = "";
-					Statistics.addOtherApiHit("DuplexCon: " + name + " connect");
-					Statistics.addOtherApiTime("DuplexCon: " + name + " connect", tic);
+					Statistics.addOtherApiHit("DuplexConn.: " + name + " connect");
+					Statistics.addOtherApiTime("DuplexConn.: " + name + " connect", tic);
 					if (onConnected != null){
 						onConnected.run();
 					}
 				}else{
 					connectionStatus = -1;
 					statusInfo = "connect error; client was not connected after 'connect' request but did not trigger error";
-					Statistics.addOtherApiHit("DuplexCon ERRORS: " + name + " connect");
-					Statistics.addOtherApiTime("DuplexCon ERRORS: " + name + " connect", tic);
+					Statistics.addOtherApiHit("DuplexConn. ERRORS: " + name + " connect");
+					Statistics.addOtherApiTime("DuplexConn. ERRORS: " + name + " connect", tic);
 				}
 			}catch (Exception e){
 				connectionStatus = -1;
 				statusInfo = "connect error; " + e.getMessage();
 				Debugger.println("DuplexConnection: " + name + " - 'connect' error: " + e.getMessage(), 1);
-				e.printStackTrace();
 				//Debugger.printStackTrace(e, 3);
-				Statistics.addOtherApiHit("DuplexCon ERRORS: " + name + " connect");
-				Statistics.addOtherApiTime("DuplexCon ERRORS: " + name + " connect", tic);
+				Statistics.addOtherApiHit("DuplexConn. ERRORS: " + name + " connect");
+				Statistics.addOtherApiTime("DuplexConn. ERRORS: " + name + " connect", tic);
 			}
 		});
 		worker.start();
@@ -206,8 +205,8 @@ public class MqttConnection implements DuplexConnectionInterface {
 				.setQos(0)
 				.setRetained(false)
 			);
-			Statistics.addOtherApiHit("DuplexCon: " + name + " send");
-			Statistics.addOtherApiTime("DuplexCon: " + name + " send", tic);
+			Statistics.addOtherApiHit("DuplexConn.: " + name + " send");
+			Statistics.addOtherApiTime("DuplexConn.: " + name + " send", tic);
 			return true;
 			
 		}catch (Exception e){
@@ -215,8 +214,8 @@ public class MqttConnection implements DuplexConnectionInterface {
 			statusInfo = "sendMessage error; " + e.getMessage();
 			Debugger.println("DuplexConnection: " + name + " - 'sendMessage' error: " + e.getMessage(), 1);
 			//Debugger.printStackTrace(e, 3);
-			Statistics.addOtherApiHit("DuplexCon ERRORS: " + name + " send");
-			Statistics.addOtherApiTime("DuplexCon ERRORS: " + name + " send", tic);
+			Statistics.addOtherApiHit("DuplexConn. ERRORS: " + name + " send");
+			Statistics.addOtherApiTime("DuplexConn. ERRORS: " + name + " send", tic);
 			return false;
 		}
 	}
@@ -259,16 +258,16 @@ public class MqttConnection implements DuplexConnectionInterface {
 			mqttClient.close();
 			connectionStatus = 2;
 			statusInfo = "";
-			Statistics.addOtherApiHit("DuplexCon: " + name + " disconnect");
-			Statistics.addOtherApiTime("DuplexCon: " + name + " disconnect", tic);
+			Statistics.addOtherApiHit("DuplexConn.: " + name + " disconnect");
+			Statistics.addOtherApiTime("DuplexConn.: " + name + " disconnect", tic);
 			
 		}catch (Exception e){
 			connectionStatus = -1;
 			statusInfo = "disconnect error; " + e.getMessage();
 			Debugger.println("DuplexConnection: " + name + " - 'disconnect' error: " + e.getMessage(), 1);
 			//Debugger.printStackTrace(e, 3);
-			Statistics.addOtherApiHit("DuplexCon ERRORS: " + name + " disconnect");
-			Statistics.addOtherApiTime("DuplexCon ERRORS: " + name + " disconnect", tic);
+			Statistics.addOtherApiHit("DuplexConn. ERRORS: " + name + " disconnect");
+			Statistics.addOtherApiTime("DuplexConn. ERRORS: " + name + " disconnect", tic);
 		}
 	}
 	

@@ -83,8 +83,20 @@ public class TestHub implements SmartHomeHub {
 					"namedBySepia", true
 			)
 	);
+	private static SmartHomeDevice genericDevice = new SmartHomeDevice(
+			"Device 1", 
+			SmartDevice.Types.device.name(), 
+			Room.Types.garage.name(), 
+			SmartHomeDevice.State.off.name(), SmartHomeDevice.StateType.text_binary.name(), "", 
+			"link", JSON.make(
+					"id", "Device_Test_A",
+					"origin", NAME,
+					"typeGuessed", false,
+					"namedBySepia", true
+			)
+	);
 	private static List<SmartHomeDevice> devicesList = Arrays.asList(
-			light, light2, heater, rollerShutter
+			light, light2, heater, rollerShutter, genericDevice
 	);
 	
 	//--------------------------

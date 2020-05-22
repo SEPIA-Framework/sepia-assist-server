@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 import org.json.simple.JSONObject;
 
+import net.b07z.sepia.server.assist.server.Statistics;
 import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
@@ -21,6 +22,8 @@ import net.b07z.sepia.server.core.tools.URLBuilder;
 public class IoBrokerConnector implements SmartHomeHub {
 	
 	public static final String NAME = "iobroker_sapi";
+	
+	public static int CONNECT_TIMEOUT = 4000;
 	
 	private String hubId;
 	private String host;
@@ -47,9 +50,9 @@ public class IoBrokerConnector implements SmartHomeHub {
 	}
 	private JSONObject httpGET(String url){
 		if (Is.notNullOrEmpty(this.authData)){
-			return Connectors.httpGET(url, null, addAuthHeader(null));
+			return Connectors.httpGET(url, null, addAuthHeader(null), CONNECT_TIMEOUT);
 		}else{
-			return Connectors.httpGET(url);
+			return Connectors.httpGET(url, null, null, CONNECT_TIMEOUT);
 		}
 	}
 	
@@ -117,6 +120,7 @@ public class IoBrokerConnector implements SmartHomeHub {
 	
 	@Override
 	public SmartHomeDevice loadDeviceData(SmartHomeDevice device){
+		long tic = System.currentTimeMillis();
 		String iobId = device.getId();
 		if (Is.nullOrEmpty(iobId)){
 			return null;
@@ -128,6 +132,8 @@ public class IoBrokerConnector implements SmartHomeHub {
 			JSONObject result = httpGET(url);
 			//System.out.println("RESPONSE: " + result);		//DEBUG
 			if (Connectors.httpSuccess(result)){
+				Statistics.addExternalApiHit("ioBroker loadDevice");
+				Statistics.addExternalApiTime("ioBroker loadDevice", tic);
 				try{
 					/* simplified result example
 					 {
@@ -163,6 +169,12 @@ public class IoBrokerConnector implements SmartHomeHub {
 					return null;
 				}
 			}else{
+				Statistics.addExternalApiHit("ioBroker loadDevice ERROR");
+				Statistics.addExternalApiTime("ioBroker loadDevice ERROR", tic);
+				String error = JSON.getStringOrDefault(result, "error", "");
+				if (error.contains("java.security")){
+					Debugger.println("IoBrokerConnector - loadDeviceData FAILED with msg.: " + result, 1);
+				}
 				return null;
 			}
 		}
@@ -170,6 +182,7 @@ public class IoBrokerConnector implements SmartHomeHub {
 
 	@Override
 	public boolean setDeviceState(SmartHomeDevice device, String state, String stateType){
+		long tic = System.currentTimeMillis();
 		String iobId = device.getId(); 
 		if (Is.nullOrEmpty(iobId)){
 			return false;
@@ -194,13 +207,17 @@ public class IoBrokerConnector implements SmartHomeHub {
 				"", iobId,
 				"?value=", state
 		);
-		System.out.println("URL: " + cmdUrl); 				//DEBUG
+		//System.out.println("URL: " + cmdUrl); 				//DEBUG
 		JSONObject response = httpGET(cmdUrl);
-		System.out.println("RESPONSE: " + response);		//DEBUG
+		//System.out.println("RESPONSE: " + response);		//DEBUG
 		if (Connectors.httpSuccess(response) && response.containsKey("value")){
 			//String returnVal = JSON.getString(response, "value");		//check if it is identical to requested value?
+			Statistics.addExternalApiHit("ioBroker setDeviceState");
+			Statistics.addExternalApiTime("ioBroker setDeviceState", tic);
 			return true;
 		}else{
+			Statistics.addExternalApiHit("ioBroker setDeviceState ERROR");
+			Statistics.addExternalApiTime("ioBroker setDeviceState ERROR", tic);
 			Debugger.println("IoBrokerConnector interface error in 'setDeviceState': " + response, 1);
 			return false;
 		}

@@ -14,6 +14,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.parameters.SmartDevice;
+import net.b07z.sepia.server.assist.server.Statistics;
 import net.b07z.sepia.server.assist.smarthome.SmartHomeDevice.StateType;
 import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Converters;
@@ -30,6 +31,8 @@ import net.b07z.sepia.server.core.tools.JSON;
 public class OpenHAB implements SmartHomeHub {
 	
 	public static final String NAME = "openhab";
+	
+	public static int CONNECT_TIMEOUT = 4000;
 	
 	private String hubId;
 	private String host;
@@ -59,16 +62,16 @@ public class OpenHAB implements SmartHomeHub {
 	}
 	private JSONObject httpGET(String url){
 		if (Is.notNullOrEmpty(this.authData)){
-			return Connectors.httpGET(url, null, addAuthHeader(null));
+			return Connectors.httpGET(url, null, addAuthHeader(null), CONNECT_TIMEOUT);
 		}else{
-			return Connectors.httpGET(url);
+			return Connectors.httpGET(url, null, null, CONNECT_TIMEOUT);
 		}
 	}
 	private JSONObject httpPOST(String url, String queryJson, Map<String, String> headers){
 		if (Is.notNullOrEmpty(this.authData)){
 			headers = addAuthHeader(headers);
 		}
-		return Connectors.httpPOST(url, queryJson, headers);
+		return Connectors.httpPOST(url, queryJson, headers, CONNECT_TIMEOUT);
 	}
 	private JSONObject httpPUT(String url, String queryJson, Map<String, String> headers){
 		if (Is.notNullOrEmpty(this.authData)){
@@ -314,7 +317,8 @@ public class OpenHAB implements SmartHomeHub {
 	}
 
 	@Override
-	public boolean setDeviceState(SmartHomeDevice device, String state, String stateType) {
+	public boolean setDeviceState(SmartHomeDevice device, String state, String stateType){
+		long tic = System.currentTimeMillis();
 		String id = device.getId();
 		String deviceURL = device.getLink();
 		if (Is.nullOrEmpty(deviceURL) && Is.notNullOrEmpty(id)){
@@ -364,19 +368,25 @@ public class OpenHAB implements SmartHomeHub {
 			//System.out.println("RESPONSE: " + response); 		//this is usually empty if there was no error
 			boolean success = Connectors.httpSuccess(response); 
 			if (!success){
+				Statistics.addExternalApiHit("openHAB setDeviceState ERROR");
+				Statistics.addExternalApiTime("openHAB setDeviceState ERROR", tic);
 				Debugger.println("OpenHAB - 'setDeviceState' FAILED - Sent '" + state + "' got response: " + response, 1);
+			}else{
+				Statistics.addExternalApiHit("openHAB setDeviceState");
+				Statistics.addExternalApiTime("openHAB setDeviceState", tic);
 			}
 			return success;
 		}
 	}
 
 	@Override
-	public boolean setDeviceStateMemory(SmartHomeDevice device, String stateMemory) {
+	public boolean setDeviceStateMemory(SmartHomeDevice device, String stateMemory){
 		return writeDeviceAttribute(device, SmartHomeDevice.SEPIA_TAG_MEM_STATE, stateMemory);
 	}
 
 	@Override
-	public SmartHomeDevice loadDeviceData(SmartHomeDevice device) {
+	public SmartHomeDevice loadDeviceData(SmartHomeDevice device){
+		long tic = System.currentTimeMillis();
 		String id = device.getId();
 		String deviceURL = device.getLink();
 		if (Is.nullOrEmpty(deviceURL) && Is.notNullOrEmpty(id)){
@@ -388,10 +398,14 @@ public class OpenHAB implements SmartHomeHub {
 		}else{
 			JSONObject response = httpGET(deviceURL);
 			if (Connectors.httpSuccess(response)){
+				Statistics.addExternalApiHit("openHAB loadDevice");
+				Statistics.addExternalApiTime("openHAB loadDevice", tic);
 				//build device from result
 				SmartHomeDevice shd = buildDeviceFromResponse(response);
 				return shd;
 			}else{
+				Statistics.addExternalApiHit("openHAB loadDevice ERROR");
+				Statistics.addExternalApiTime("openHAB loadDevice ERROR", tic);
 				Debugger.println("OpenHAB - 'loadDeviceData' FAILED with msg.: " + response, 1);
 				return null;
 			}

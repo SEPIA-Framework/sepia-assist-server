@@ -14,6 +14,7 @@ import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.parameters.SmartDevice;
+import net.b07z.sepia.server.assist.server.Statistics;
 import net.b07z.sepia.server.assist.smarthome.SmartHomeDevice.StateType;
 import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Converters;
@@ -30,6 +31,8 @@ import net.b07z.sepia.server.core.tools.URLBuilder;
 public class Fhem implements SmartHomeHub {
 	
 	public static final String NAME = "fhem";
+	
+	public static int CONNECT_TIMEOUT = 4000;
 	
 	private String hubId;
 	private String host;
@@ -88,9 +91,9 @@ public class Fhem implements SmartHomeHub {
 		headers.put(Connectors.HEADER_ACCEPT_CONTENT, "application/json");
 		headers.put(Connectors.HEADER_ACCEPT_ENCODING, "gzip");
 		if (Is.notNullOrEmpty(this.authData)){
-			return Connectors.httpGET(url, null, addAuthHeader(headers));
+			return Connectors.httpGET(url, null, addAuthHeader(headers), CONNECT_TIMEOUT);
 		}else{
-			return Connectors.httpGET(url, null, headers);
+			return Connectors.httpGET(url, null, headers, CONNECT_TIMEOUT);
 		}
 	}
 	
@@ -319,6 +322,7 @@ public class Fhem implements SmartHomeHub {
 
 	@Override
 	public SmartHomeDevice loadDeviceData(SmartHomeDevice device){
+		long tic = System.currentTimeMillis();
 		String fhemId = device.getId();
 		if (Is.nullOrEmpty(fhemId)){
 			Debugger.println("FHEM - loadDeviceData FAILED with msg.: Missing ID!", 1);
@@ -333,6 +337,8 @@ public class Fhem implements SmartHomeHub {
 			//System.out.println("RESPONSE: " + response); 		//this is usually empty if there was no error
 			if (Connectors.httpSuccess(response)){
 				try {
+					Statistics.addExternalApiHit("FHEM loadDevice");
+					Statistics.addExternalApiTime("FHEM loadDevice", tic);
 					JSONArray devicesArray = JSON.getJArray(response, "Results");
 					if (devicesArray.size() != 1){
 						throw new RuntimeException("Result was null or not unique! Result size: " + devicesArray.size());
@@ -348,6 +354,8 @@ public class Fhem implements SmartHomeHub {
 					return null;
 				}
 			}else{
+				Statistics.addExternalApiHit("FHEM loadDevice ERROR");
+				Statistics.addExternalApiTime("FHEM loadDevice ERROR", tic);
 				Debugger.println("FHEM - loadDeviceData FAILED with msg.: " + response, 1);
 				return null;
 			}
@@ -356,6 +364,7 @@ public class Fhem implements SmartHomeHub {
 
 	@Override
 	public boolean setDeviceState(SmartHomeDevice device, String state, String stateType){
+		long tic = System.currentTimeMillis();
 		String fhemId = device.getId();
 		String setOptions = device.getMetaValueAsString("setOptions");
 		if (Is.nullOrEmpty(setOptions)){
@@ -455,7 +464,12 @@ public class Fhem implements SmartHomeHub {
 			}
 			boolean callSuccess = Connectors.httpSuccess(response);
 			if (!callSuccess){
+				Statistics.addExternalApiHit("FHEM setDeviceState ERROR");
+				Statistics.addExternalApiTime("FHEM setDeviceState ERROR", tic);
 				Debugger.println("FHEM - setDeviceState FAILED with msg.: " + response, 1);
+			}else{
+				Statistics.addExternalApiHit("FHEM setDeviceState");
+				Statistics.addExternalApiTime("FHEM setDeviceState", tic);
 			}
 			return (callSuccess && !gotErrorMessage);
 		}
