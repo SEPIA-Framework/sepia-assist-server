@@ -13,6 +13,7 @@ import org.json.simple.JSONObject;
 import net.b07z.sepia.server.assist.database.Elasticsearch;
 import net.b07z.sepia.server.core.database.DatabaseInterface;
 import net.b07z.sepia.server.core.tools.Connectors;
+import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.EsQueryBuilder;
 import net.b07z.sepia.server.core.tools.EsQueryBuilder.QueryElement;
@@ -28,6 +29,9 @@ import net.b07z.sepia.server.core.tools.JSON;
 public class SmartDevicesElasticsearch implements SmartDevicesDb {
 	
 	private static String DEFAULT_TYPE = "all";
+	
+	private static final int INTERFACE_LOAD_LIMIT = 100;
+	private static final int DEVICES_LOAD_LIMIT = 2000;
 	
 	private static Map<String, SmartHomeHub> customInterfacesCached; // = new ConcurrentHashMap<>()	//<interfaceId, Hub>
 	private static Map<String, Set<String>> bufferedDevicesByType = new ConcurrentHashMap<>();  	//<type, Set<name>>
@@ -87,7 +91,10 @@ public class SmartDevicesElasticsearch implements SmartDevicesDb {
 
 	@Override
 	public Map<String, SmartHomeHub> loadInterfaces(){
-		JSONObject result = getDB().searchByJson(SmartDevicesDb.INTERFACES + "/" + DEFAULT_TYPE + "/", EsQueryBuilder.matchAll.toJSONString());
+		JSONObject queryJson = EsQueryBuilder.matchAll;
+		JSON.put(queryJson, "from", 0);
+		JSON.put(queryJson, "size", INTERFACE_LOAD_LIMIT);		//LIMIT! 
+		JSONObject result = getDB().searchByJson(SmartDevicesDb.INTERFACES + "/" + DEFAULT_TYPE + "/", queryJson.toJSONString());
 		if (Connectors.httpSuccess(result)){
 			Map<String, SmartHomeHub> interfacesMap = new ConcurrentHashMap<>();
 			JSONArray hits = JSON.getJArray(result, new String[]{"hits", "hits"});
@@ -209,23 +216,37 @@ public class SmartDevicesElasticsearch implements SmartDevicesDb {
 
 	@Override
 	public Map<String, SmartHomeDevice> getCustomDevices(Map<String, Object> filters){
-		String query;
-		if (filters != null && !filters.isEmpty()){
-			//use filters
-			List<QueryElement> qes = new ArrayList<>();
-			filters.entrySet().forEach(e -> {
-				Object v = e.getValue();
-				if (v != null){
-					qes.add(new QueryElement(e.getKey(), v));
-				}
-			});
-			query = EsQueryBuilder.getBoolShouldMatch(qes).toJSONString();
+		JSONObject query;
+		int loadLimit = DEVICES_LOAD_LIMIT;
+		if (filters == null){
+			query = EsQueryBuilder.matchAll;
 		}else{
-			query = EsQueryBuilder.matchAll.toJSONString();
+			//remove limit
+			if (filters.containsKey("limit")){
+				loadLimit = Converters.obj2IntOrDefault(filters.get("limit"), DEVICES_LOAD_LIMIT);
+				if (loadLimit == -1) loadLimit = DEVICES_LOAD_LIMIT;
+				filters.remove("limit");
+			}
+			if (!filters.isEmpty()){
+				//use filters
+				List<QueryElement> qes = new ArrayList<>();
+				filters.entrySet().forEach(e -> {
+					Object v = e.getValue();
+					if (v != null){
+						qes.add(new QueryElement(e.getKey(), v));
+					}
+				});
+				query = EsQueryBuilder.getBoolShouldMatch(qes);
+			}else{
+				query = EsQueryBuilder.matchAll;
+			}
 		}
-		//System.out.println("query: " + query); 			//DEBUG
+		JSON.put(query, "from", 0);
+		JSON.put(query, "size", loadLimit);		//LIMIT! 
+		//System.out.println("query: " + query.toJSONString()); 			//DEBUG
 		//request
-		JSONObject result = getDB().searchByJson(SmartDevicesDb.DEVICES + "/" + DEFAULT_TYPE + "/", query);
+		JSONObject result = getDB().searchByJson(SmartDevicesDb.DEVICES + "/" + DEFAULT_TYPE + "/", query.toJSONString());
+		//JSON.prettyPrint(result); 		//DEBUG
 		if (Connectors.httpSuccess(result)){
 			//build Map<id, item>
 			Map<String, SmartHomeDevice> customDevices = new HashMap<>();
