@@ -137,7 +137,7 @@ public class Workers {
 			WorkerInterface worker = workers.get(workerName.trim());
 			if (worker != null){
 				report += 
-						"Worker report: " + worker.getName() 
+						"- Worker report: " + worker.getName() 
 						+ ", status: " + worker.getStatus() + ": " + worker.getStatusDescription() 
 						+ ", next refresh: " + Math.round((double)worker.getNextRefreshTime()/(1000)) + "s<br>";
 			}
@@ -145,7 +145,7 @@ public class Workers {
 		if (connections != null){
 			for (DuplexConnectionInterface dCon : connections.values()){
 				report += 
-						"Connection report: " + dCon.getName() 
+						"- Connection report: " + dCon.getName() 
 						+ ", status: " + dCon.getStatus() + ": " + dCon.getStatusDescription() 
 						+ ", last activity: " + (now - dCon.getLastActivity()) + "ms ago<br>";
 			}

@@ -202,12 +202,12 @@ public class StringCompare {
 	 * @param sentence - raw sentence to scan
 	 * @param phrases - collection of raw phrases to scan for
 	 * @param language - ISO language code used for norm. {@link LANGUAGES}
-	 * @return best phrase or empty result (empty string, 0 score)
+	 * @return best phrase or empty result (string = empty, score = 0)
 	 */
 	public static StringCompareResult scanSentenceForBestPhraseMatch(String sentence, Collection<String> phrases, String language){
 		Normalizer normalizer = Config.inputNormalizersLight.get(language);
-		String bestPhrase = null;
-		String bestPhraseNorm = null;
+		String bestPhrase = "";
+		String bestPhraseNorm = "";
 		int bestScore = 0;
 		String sentenceNorm = normalizer.normalizeText(sentence);
 		if (normalizer != null){

@@ -71,6 +71,19 @@ public class ParameterTools {
 	 * @return result of 'fun' or null if skipped
 	 */
 	public static <T, R> R runOrSkipPerformanceCriticalMethod(Long idForProfiling, Function<T, R> fun, T argument){
+		return runOrSkipPerformanceCriticalMethod(idForProfiling, performanceThreshold, fun, argument);
+	}
+	/**
+	 * Run a method if performance is OK or skip it for a certain time. Behavior depends on {@link Config}.parameterPerformanceMode.<br>
+	 * Info: Parameter extraction is performance critical, any undesired delay will slow down the whole NLU chain.
+	 * Use this method to make sure that undesired delays don't happen too often.   
+	 * @param idForProfiling - a unique ID for the run method. Use {@link #getNewIdForPerformanceProfiling} to get one and store it.
+	 * @param performanceThresholdMs - time that should normally not be exceeded for this call (ms)
+	 * @param fun - a method to run and profile. IMPORTANT: a result of 'null' will be handled as error by the profiler (will lead to skip events)
+	 * @param argument - argument for the method
+	 * @return result of 'fun' or null if skipped
+	 */
+	public static <T, R> R runOrSkipPerformanceCriticalMethod(Long idForProfiling, long performanceThresholdMs, Function<T, R> fun, T argument){
 		R result;
 		if (Config.parameterPerformanceMode == 2){
 			//never run
@@ -95,7 +108,7 @@ public class ParameterTools {
 			try {
 				result = fun.apply(argument);
 			} catch (Exception e){
-				Debugger.println(ParameterTools.class.getSimpleName() + " - Error in method with ID: " + idForProfiling, 1);
+				Debugger.println(ParameterTools.class.getSimpleName() + " - Error in method with ID: " + idForProfiling + " - msg.: " + e.getMessage(), 1);
 				Debugger.printStackTrace(e, 3);
 				result = null;
 			}

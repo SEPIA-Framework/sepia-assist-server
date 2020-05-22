@@ -71,6 +71,7 @@ public class Statistics extends BasicStatistics {
 		msg += getBasicInfo();
 		
 		//add workers
+		msg += "Workers and Connections:<br>";
 		msg += Workers.getStatsReport();
 		
 		return msg;
