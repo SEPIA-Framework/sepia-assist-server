@@ -103,7 +103,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		//required
 		Parameter p1 = new Parameter(PARAMETERS.SMART_DEVICE)
 				.setRequired(true)
-				.setQuestion("smartdevice_1a");
+				.setQuestion(askDevice);
 		info.addParameter(p1);
 		
 		//optional
@@ -143,6 +143,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 	private static final String noDeviceMatchesFound = "smartdevice_0f";
 	private static final String actionNotPossible = "default_not_possible_0a";
 	private static final String actionCurrentlyNotWorking = "error_0a";
+	private static final String askDevice = "smartdevice_1a";
 	private static final String askRoom = "smartdevice_1c";
 	private static final String askStateValue = "smartdevice_1d";
 	private static final String askFirstOfMany = "default_ask_first_of_many_0a";
@@ -190,9 +191,21 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		//get required parameters:
 		Parameter device = nluResult.getRequiredParameter(PARAMETERS.SMART_DEVICE);
 		String deviceType = device.getValueAsString();
+		String deviceTag = JSON.getStringOrDefault(device.getData(), InterviewData.SMART_DEVICE_TAG, "");
+		boolean isDeviceNameKnownButNoType = false;
+		if (Is.typeEqual(deviceType, SmartDevice.Types.unknown)){
+			//unknown type with known tag/name?
+			if (Is.nullOrEmpty(deviceTag)){
+				//Abort - THIS should NEVER happen!
+				service.setStatusFail();
+				service.setCustomAnswer(noDeviceMatchesFound);
+				return service.buildResult();
+			}else{
+				isDeviceNameKnownButNoType = true;
+			}
+		}
 		String deviceTypeLocal = JSON.getStringOrDefault(device.getData(), InterviewData.VALUE_LOCAL, deviceType);
 		int deviceNumber = JSON.getIntegerOrDefault(device.getData(), InterviewData.ITEM_INDEX, Integer.MIN_VALUE);
-		String deviceTag = JSON.getStringOrDefault(device.getData(), InterviewData.SMART_DEVICE_TAG, "");
 		
 		//get optional parameters:
 		Parameter action = nluResult.getOptionalParameter(PARAMETERS.ACTION, "");
@@ -239,8 +252,8 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		
 		//find device - NOTE: the HUB implementation is responsible for caching the data
 		Map<String, Object> filters = new HashMap<>();
-		//if (Is.notNullOrEmpty(deviceName)) filters.put(SmartHomeDevice.FILTER_NAME, deviceName);
-		if (Is.notNullOrEmpty(deviceType)) filters.put(SmartHomeDevice.FILTER_TYPE, deviceType);
+		//if (Is.notNullOrEmpty(deviceName)) filters.put(SmartHomeDevice.FILTER_NAME, deviceName);  //not supported by all HUBs! Need to filter ourself
+		if (!isDeviceNameKnownButNoType) filters.put(SmartHomeDevice.FILTER_TYPE, deviceType);
 		if (Is.notNullOrEmpty(roomType)) filters.put(SmartHomeDevice.FILTER_ROOM, roomType);
 		if (roomNumber != Integer.MIN_VALUE){
 			filters.put(SmartHomeDevice.FILTER_ROOM_INDEX, Integer.toString(roomNumber));		//NOTE: we use String because actually room-index is not restricted to numbers
@@ -253,9 +266,15 @@ public class SmartHomeHubConnector implements ServiceInterface {
 			Debugger.println(SmartHomeHub.class.getSimpleName() + " failed to get devices! Connection to smart home HUB might be broken.", 1);		//debug
 			service.setStatusFail(); 						//"hard"-fail (probably HUB connection error)
 			return service.buildResult();
+		}
+		
+		//check device name if type was unknown
+		if (isDeviceNameKnownButNoType && !matchingDevices.isEmpty()){
+			matchingDevices = SmartHomeDevice.findDevicesWithMatchingTagIgnoreCase(matchingDevices, deviceTag);
+		}
 			
 		//check device index number
-		}else if (!matchingDevices.isEmpty()){
+		if (!matchingDevices.isEmpty()){
 			if (deviceNumber != Integer.MIN_VALUE){
 				matchingDevices = SmartHomeDevice.findDevicesWithNumberInName(matchingDevices, deviceNumber);
 			}
@@ -276,8 +295,14 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		boolean didTagMatch = false;
 		String bestTagMatch = null;
 		int bestTagMatchScore = 0;
+		//do we know the tag already?
+		if (isDeviceNameKnownButNoType){
+			didTagMatch = true;
+			bestTagMatchScore = 100;
+			bestTagMatch = deviceTag;
+		
 		//we try to match the tag first
-		if (Is.notNullOrEmpty(deviceTag)){
+		}else if (Is.notNullOrEmpty(deviceTag)){
 			//can we find a known device name in the extracted device tag
 			if (matchesN > 1){
 				Map<String, String> possibleTagsMap = new HashMap<>();
@@ -321,7 +346,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 				//this should be the correct device
 				selectedDevice = matchingDevices.get(0);
 			}else if (matchesN == 1){
-				//this is just a guess
+				//this is just a guess (potentially correct tag, room and index)
 				selectedDevice = matchingDevices.get(0);
 				//teach UI button
 				service.addAction(ACTIONS.BUTTON_TEACH_UI);
