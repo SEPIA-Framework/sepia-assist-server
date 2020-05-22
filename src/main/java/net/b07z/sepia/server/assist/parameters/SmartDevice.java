@@ -2,6 +2,7 @@ package net.b07z.sepia.server.assist.parameters;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -32,7 +33,7 @@ import net.b07z.sepia.server.core.tools.JSON;
  */
 public class SmartDevice implements ParameterHandler{
 	
-	private static final long parameterToolsId = ParameterTools.getNewIdForPerformanceProfiling("SmartDevice#deviceNamesScan");
+	private static final long deviceNameScanToolsId = ParameterTools.getNewIdForPerformanceProfiling("SmartDevice#deviceNamesScan");
 
 	//-----data-----
 	
@@ -53,7 +54,8 @@ public class SmartDevice implements ParameterHandler{
 		device,
 		//no extract methods:
 		other,
-		hidden
+		hidden,
+		unknown 	//NOTE: this should only be used if instead the device tag/name is known
 		//TODO: window, door or use device?
 	}
 	/**
@@ -80,6 +82,7 @@ public class SmartDevice implements ParameterHandler{
 		types_de.put("device", "das Gerät");
 		types_de.put("other", "");
 		types_de.put("hidden", "");
+		types_de.put("unknown", "");
 		
 		types_en.put("light", "the light");
 		types_en.put("heater", "the heater");
@@ -94,6 +97,7 @@ public class SmartDevice implements ParameterHandler{
 		types_en.put("device", "the device");
 		types_en.put("other", "");
 		types_en.put("hidden", "");
+		types_en.put("unknown", "");
 	}
 	
 	/**
@@ -131,7 +135,7 @@ public class SmartDevice implements ParameterHandler{
 	public static final String rollerShutterRegEx_en = "((roller|window|sun)( |-|)|)(shutter(s|)|blind(s|)|louver(s|))|jalousie(s|)";
 	public static final String powerOutletRegEx_en = "((wall|power)( |-|)|)(socket(s|)|outlet(s|))";
 	public static final String sensorRegEx_en = "sensor(s|)";
-	public static final String genericDeviceRegEx_en = "device( |)\\d+";
+	public static final String genericDeviceRegEx_en = "device";
 	
 	public static final String lightRegEx_de = "\\w*(licht(er|es|)|lampe(n|)|beleuchtung|leuchte(n|))|"
 											+ "helligkeit";
@@ -149,7 +153,7 @@ public class SmartDevice implements ParameterHandler{
 	public static final String rollerShutterRegEx_de = "(fenster|rol(l|))(l(a|ae)den)|jalousie(n|)|rollo(s|)|markise";
 	public static final String powerOutletRegEx_de = "(steck|strom)( |-|)dose(n|)|stromanschluss(es|)";
 	public static final String sensorRegEx_de = "sensor(en|s|)";
-	public static final String genericDeviceRegEx_de = "geraet( |)\\d+";
+	public static final String genericDeviceRegEx_de = "geraet";
 	//----------------
 	
 	User user;
@@ -333,30 +337,7 @@ public class SmartDevice implements ParameterHandler{
 		String deviceNameMatch = null;
 		if (smartHomeHUB != null){
 			//make sure this procedure does not seriously influence NLU chain performance: 
-			deviceNameMatchResult = ParameterTools.runOrSkipPerformanceCriticalMethod(parameterToolsId, (in) -> {
-				Map<String, Set<String>> deviceNamesByType = smartHomeHUB.getBufferedDeviceNamesByType();
-				if (deviceNamesByType != null){
-					Set<String> deviceNames = deviceNamesByType.get(deviceType);
-					if (Is.notNullOrEmpty(deviceNames)){
-						//System.out.println("possible tags: " + deviceNames); 		//DEBUG
-						StringCompareResult scr = StringCompare.scanSentenceForBestPhraseMatch(
-								input, new ArrayList<>(deviceNames), this.language
-						);
-						int bestScore = scr.getResultPercent();
-						//System.out.println("bestScore: " + bestScore); 				//DEBUG
-						//System.out.println("bestMatch: " + scr.getResultString()); 	//DEBUG
-						if (bestScore == 100){			//allow more "fuzziness" ?? - NOTE: we can't do this unless we fix smart device value too
-							String bestMatch = scr.getResultString();
-							String bestMatchNorm = scr.getResultStringNormalized();
-							//System.out.println("Best tag: " + bestMatch); 		//DEBUG
-							return new String[]{bestMatch, bestMatchNorm};
-						}
-					}
-					return new String[]{};		//return empty to prevent error
-				}else{
-					return null;				//return null to indicate error
-				}
-			}, null);
+			deviceNameMatchResult = findMatchInKnownDeviceNamesFastOrSkip(input, deviceType, smartHomeHUB, this.language);
 			if (deviceNameMatchResult != null && deviceNameMatchResult.length == 2){
 				//remember match
 				if (Is.notNullOrEmpty(deviceNameMatchResult[0])){
@@ -419,7 +400,7 @@ public class SmartDevice implements ParameterHandler{
 	}
 
 	@Override
-	public String remove(String input, String found) {
+	public String remove(String input, String found){
 		if (language.equals(LANGUAGES.DE)){
 			found = "(der |die |das |)" + found;
 		}else{
@@ -431,19 +412,29 @@ public class SmartDevice implements ParameterHandler{
 	@Override
 	public String responseTweaker(String input){
 		if (language.equals(LANGUAGES.DE)){
-			return input.replaceAll(".*\\b(einen|einem|einer|eine|ein|der|die|das|den|dem|des|ne|ner|meine(r|s|m|))\\b", "").trim();
+			input = input.replaceAll(".*\\b(einen|einem|einer|eine|ein|der|die|das|den|dem|des|ne|ner|meine(r|s|m|))\\b", "").trim();
 		}else{
-			return input.replaceAll(".*\\b(a|the|my)\\b", "").trim();
+			input = input.replaceAll(".*\\b(a|the|my)\\b", "").trim();
 		}
+		return input;
 	}
 
 	@Override
-	public String build(String input) {
-		//extract again/first? - this should only happen via predefined parameters (e.g. from direct triggers)
+	public String build(String input){
+		//extract again/first? - this should only happen via predefined parameters (e.g. from direct triggers) OR as response (via responseTweaker)
 		if (Is.notNullOrEmpty(input) && !input.startsWith("<")){
-			input = extract(input);
-			if (Is.nullOrEmpty(input)){
-				return "";
+			String exIn = extract(input);
+			if (Is.nullOrEmpty(exIn)){
+				//final try is to look for device name in all (cached) names
+				SmartHomeHub smartHomeHUB = SmartHomeHub.getHubFromSeverConfig();
+				String[] deviceNameMatchResult = findMatchInKnownDeviceNamesFastOrSkip(input, null, smartHomeHUB, this.language);
+				if (deviceNameMatchResult != null && deviceNameMatchResult.length == 2){
+					input = "<" + Types.unknown.name() + ">;;" + deviceNameMatchResult[1] + ";;" + deviceNameMatchResult[0];
+				}else{
+					return "";
+				}
+			}else{
+				input = exIn;
 			}
 		}
 		
@@ -506,6 +497,55 @@ public class SmartDevice implements ParameterHandler{
 	@Override
 	public boolean buildSuccess() {
 		return buildSuccess;
+	}
+	
+	//------------------------ helpers ------------------------
+	
+	/**
+	 * Find a match for the input by comparing it to all known (cached) smart device names.<br>
+	 * NOTE: Since this method is performance critical it can occasionally been skipped when taking too long (>250ms).
+	 * @param input - sentence or string to search for device name
+	 * @param deviceType - known device type filter or null (= all types)
+	 * @param smartHomeHUB - HUB that holds the device name info
+	 * @param language - service language code
+	 * @return String array with {bestMatch, bestMatchNorm}
+	 */
+	public static String[] findMatchInKnownDeviceNamesFastOrSkip(String input, String deviceType, SmartHomeHub smartHomeHUB, String language){
+		long thresholdTime = 250; 		//this method has to be super fast!
+		String[] deviceNameMatchResult = ParameterTools.runOrSkipPerformanceCriticalMethod(deviceNameScanToolsId, thresholdTime, (in) -> {
+			Map<String, Set<String>> deviceNamesByType = smartHomeHUB.getBufferedDeviceNamesByType();
+			if (deviceNamesByType != null){
+				Set<String> deviceNames;
+				if (Is.nullOrEmpty(deviceType)){
+					deviceNames = new HashSet<>();
+					deviceNamesByType.values().forEach(set -> {
+						deviceNames.addAll(set);
+					});
+				}else{
+					deviceNames = deviceNamesByType.get(deviceType);
+				}
+				if (Is.notNullOrEmpty(deviceNames)){
+					//System.out.println("input: " + input); 		//DEBUG
+					//System.out.println("possible tags: " + deviceNames); 		//DEBUG
+					StringCompareResult scr = StringCompare.scanSentenceForBestPhraseMatch(
+							input, new ArrayList<>(deviceNames), language
+					);
+					int bestScore = scr.getResultPercent();
+					//System.out.println("bestScore: " + bestScore); 				//DEBUG
+					//System.out.println("bestMatch: " + scr.getResultString()); 	//DEBUG
+					if (bestScore == 100){			//allow more "fuzziness" ?? - NOTE: we can't do this unless we fix smart device value too
+						String bestMatch = scr.getResultString();
+						String bestMatchNorm = scr.getResultStringNormalized();
+						//System.out.println("Best tag: " + bestMatch); 		//DEBUG
+						return new String[]{bestMatch, bestMatchNorm};
+					}
+				}
+				return new String[]{};		//return empty to prevent error
+			}else{
+				return null;				//return null to indicate error
+			}
+		}, null);
+		return deviceNameMatchResult;
 	}
 
 }
