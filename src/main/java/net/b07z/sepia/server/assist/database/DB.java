@@ -427,6 +427,7 @@ public class DB {
 		
 		//this is heavily depending on elasticSearch specific code ...
 		//TODO: replace with EsQueryBuilder.getMixedRootAndNestedBoolMustMatch
+		//NOTE: we deliberately ignore "size" parameter here?
 		
 		StringWriter sw = new StringWriter();
 		try {
