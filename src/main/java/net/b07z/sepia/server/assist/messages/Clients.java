@@ -7,6 +7,8 @@ import org.json.simple.JSONObject;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.services.ServiceResult;
+import net.b07z.sepia.server.assist.workers.ThreadManager;
+import net.b07z.sepia.server.assist.workers.ThreadManager.ThreadInfo;
 import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.FilesAndStreams;
@@ -28,7 +30,7 @@ public class Clients {
 	private static long activeClientId = 0l;
 	
 	public static SocketClientHandler webSocketMessenger;
-	public static Thread webSocketMessengerThread;
+	public static ThreadInfo webSocketMessengerThread;
 	
 	private static AssistantSocketClient assistantSocket;
 	
@@ -41,14 +43,14 @@ public class Clients {
 		activeClientId++;
 		long thisClientId = activeClientId;
 		
-		webSocketMessengerThread = new Thread(() -> {
-			try{ Thread.sleep(waitBeforeClientStart); } catch (InterruptedException e) {}
+		webSocketMessengerThread = ThreadManager.runForever(() -> {
+			Debugger.sleep(waitBeforeClientStart);
 			int fails = 0;
 			long newWait = waitBeforeClientStart;
 			while (thisClientId == activeClientId && !pingSocketMessenger()){
 				fails++;
 				newWait = Math.min(maxWaitOnFail, waitBeforeClientStart * fails); 		//never wait longer than maxWait
-				try{ Thread.sleep(newWait); } catch (InterruptedException e) {}
+				Debugger.sleep(newWait);
 			}
 			if (thisClientId == activeClientId){
 				//note: assistant name has to be stored in the account just like with normal users
@@ -69,7 +71,6 @@ public class Clients {
 				Debugger.println("Clients: Skipped setup of client with ID: " + thisClientId + " (currently active ID: " + activeClientId + ").", 3);
 			}
 		});
-		webSocketMessengerThread.start();
 	}
 	/**
 	 * Kill webSocket messenger and close thread.

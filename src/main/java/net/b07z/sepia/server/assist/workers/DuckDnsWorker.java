@@ -6,6 +6,7 @@ import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.Statistics;
+import net.b07z.sepia.server.assist.workers.ThreadManager.ThreadInfo;
 import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.FilesAndStreams;
@@ -31,7 +32,7 @@ public class DuckDnsWorker implements WorkerInterface {
 	
 	//common
 	String name = workerName;
-	Thread worker;
+	ThreadInfo worker;
 	int workerStatus = -1;				//-1: offline, 0: ready to start, 1: waiting for next action, 2: in action
 	private String statusDesc = "";		//text description of status
 	boolean abort = false;
@@ -105,7 +106,7 @@ public class DuckDnsWorker implements WorkerInterface {
 		long thisWait = 0; 
 		if (executedRefreshs != 0){
 			while (workerStatus > 0){
-				try {	Thread.sleep(waitInterval);	} catch (Exception e){	e.printStackTrace(); return false;	}
+				Debugger.sleep(waitInterval);
 				thisWait += waitInterval;
 				if (thisWait >= maxWait){
 					break;
@@ -124,7 +125,7 @@ public class DuckDnsWorker implements WorkerInterface {
 		//if (nextRefresh > 100){	return;	}
 		long thisWait = 0; 
 		while (workerStatus == 2){
-			try {	Thread.sleep(waitInterval);	} catch (Exception e){	e.printStackTrace(); break;	}
+			Debugger.sleep(waitInterval);
 			thisWait += waitInterval;
 			if (thisWait >= Math.min(upperMaxRefreshWait, averageRefreshTime)){
 				break;
@@ -144,9 +145,9 @@ public class DuckDnsWorker implements WorkerInterface {
 		}
 		
 		//start
-		worker = new Thread(() -> {
+		worker = ThreadManager.runForever(() -> {
 	    	workerStatus = 1;
-	    	try {	Thread.sleep(customStartDelay);	} catch (Exception e){	e.printStackTrace(); }
+	    	Debugger.sleep(customStartDelay);
 	    	totalRefreshTime = 0;
 	    	executedRefreshs = 0;
 	    	if (!abort){
@@ -183,13 +184,12 @@ public class DuckDnsWorker implements WorkerInterface {
 				long thisWait = 0; 
 				while(!abort && (thisWait < refreshInterval)){
 					nextRefresh = refreshInterval-thisWait;
-					try {	Thread.sleep(customWaitInterval);	} catch (Exception e){	e.printStackTrace(); workerStatus=-1; break; }
+					Debugger.sleep(customWaitInterval);
 					thisWait += customWaitInterval;
 				}
 	    	}
 	    	workerStatus = 0;
 		});
-		worker.start();
 	}
 	
 	//---------- WORKER LOGIC -----------

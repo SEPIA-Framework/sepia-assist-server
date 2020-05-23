@@ -289,7 +289,7 @@ public class Setup {
 				int resCode = db.deleteAny(indexToMap);
 				if (resCode == 0){
 					Debugger.println("Elasticsearch: cleaning index '" + indexToMap + "'", 3);
-					Thread.sleep(1500);
+					Debugger.sleep(1500);
 				}else{
 					Debugger.println("Elasticsearch: ERROR in cleaning index '" + indexToMap + "' - maybe because it did not exist before? We'll see!", 1);
 					//throw new RuntimeException("Elasticsearch: communication error!");
@@ -299,7 +299,7 @@ public class Setup {
 				int resCode = db.deleteAny("_all");
 				if (resCode == 0){
 					Debugger.println("Elasticsearch: cleaning old indices ...", 3);
-					Thread.sleep(1500);
+					Debugger.sleep(1500);
 				}else{
 					throw new RuntimeException("Elasticsearch: communication error!");
 				}
@@ -335,7 +335,7 @@ public class Setup {
 				Debugger.println("Elasticsearch: created first entry for '" + GUID.INDEX + "'", 3);
 			}
 		}
-		Thread.sleep(1500);
+		Debugger.sleep(1500);
 		if (writeSingleIndex){
 			Debugger.println("Elasticsearch: Index ready for work.", 3);
 		}else{

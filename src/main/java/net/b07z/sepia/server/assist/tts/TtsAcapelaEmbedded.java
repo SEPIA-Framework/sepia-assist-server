@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.tts.TtsTools.EngineType;
+import net.b07z.sepia.server.assist.workers.ThreadManager;
 import net.b07z.sepia.server.core.tools.Debugger;
 
 /**
@@ -38,7 +39,7 @@ public class TtsAcapelaEmbedded implements TtsInterface {
 	
 	//track process
 	private Process process;
-	private Thread worker;
+	//private ThreadInfo worker;
 	public boolean isProcessing = false;
 	public boolean abortProcess = false;
 	public boolean isTimedOut = false;
@@ -534,27 +535,24 @@ public class TtsAcapelaEmbedded implements TtsInterface {
 		isProcessing = true;
 		abortProcess = false;
 		isTimedOut = false;
-		worker = new Thread(){
-		    public void run(){
-		    	try {
-					ProcessBuilder pb = new ProcessBuilder(command.split("\\s+"));
-					pb.redirectErrorStream(true);
-					process = pb.start();
-					BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-					String line;
-					while ((line = reader.readLine()) != null){
-					    System.out.println("TTS LOG: " + line);
-					}
-					process.waitFor();
-					isProcessing = false;
-					
-				} catch (Exception e) {
-					e.printStackTrace();
-					isProcessing = false;
+		ThreadManager.run(() -> {
+	    	try {
+				ProcessBuilder pb = new ProcessBuilder(command.split("\\s+"));
+				pb.redirectErrorStream(true);
+				process = pb.start();
+				BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+				String line;
+				while ((line = reader.readLine()) != null){
+				    System.out.println("TTS LOG: " + line);
 				}
-		    }
-		};
-		worker.start();
+				process.waitFor();
+				isProcessing = false;
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				isProcessing = false;
+			}
+	    });
 	}
 	
 	//wait for process to end or time-out
@@ -562,7 +560,7 @@ public class TtsAcapelaEmbedded implements TtsInterface {
 		long startTime = System.currentTimeMillis();
 		long currentTime = System.currentTimeMillis();
 		while (isProcessing && !abortProcess){
-			try {	Thread.sleep(50);	} catch (InterruptedException e) {}
+			Debugger.sleep(50);
 			currentTime = System.currentTimeMillis();
 			if ((currentTime-startTime) >= maxiWait_ms){
 				isTimedOut = true;

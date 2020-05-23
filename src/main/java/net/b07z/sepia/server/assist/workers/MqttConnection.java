@@ -130,7 +130,7 @@ public class MqttConnection implements DuplexConnectionInterface {
 		}
 		long thisWait = 0; 
 		while (connectionStatus != state && connectionStatus != -1){
-			try {	Thread.sleep(waitInterval);	} catch (Exception e){	e.printStackTrace(); return false;	}
+			Debugger.sleep(waitInterval);
 			thisWait += waitInterval;
 			if (thisWait >= maxWait){
 				Debugger.println("DuplexConnection, Name: " + getName() + " - 'waitForState' FAILED due to timeout.", 1);
@@ -155,10 +155,10 @@ public class MqttConnection implements DuplexConnectionInterface {
 		//start
 		final long startDelay = (customStartDelay == -1)? defaultStartDelay : customStartDelay;
 		abort = false;
-		Thread worker = new Thread(() -> {
+		ThreadManager.run(() -> {
 	    	connectionStatus = 1;
 	    	statusInfo = "";
-	    	try {	Thread.sleep(startDelay);	} catch (Exception e){	e.printStackTrace(); }
+	    	Debugger.sleep(startDelay);
 	    	lastActivity = System.currentTimeMillis();
 	    	long tic = Debugger.tic();
 	    	if (!abort){
@@ -192,7 +192,6 @@ public class MqttConnection implements DuplexConnectionInterface {
 				Statistics.addOtherApiTime("DuplexConn. ERRORS: " + name + " connect", tic);
 			}
 		});
-		worker.start();
 	}
 	
 	@Override

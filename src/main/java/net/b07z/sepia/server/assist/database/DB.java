@@ -26,6 +26,7 @@ import net.b07z.sepia.server.assist.users.AccountInterface;
 import net.b07z.sepia.server.assist.users.Authenticator;
 import net.b07z.sepia.server.assist.users.ID;
 import net.b07z.sepia.server.assist.users.User;
+import net.b07z.sepia.server.assist.workers.ThreadManager;
 import net.b07z.sepia.server.core.data.Answer;
 import net.b07z.sepia.server.core.data.CmdMap;
 import net.b07z.sepia.server.core.data.Command;
@@ -1156,22 +1157,19 @@ public class DB {
 	 * @param data - JSON string with data objects that should be stored for index/type/item, e.g. {"name":"john"}
 	 */
 	public static void saveKnowledgeAsync(String index, String type, String item_id, JSONObject data){
-		Thread thread = new Thread(){
-		    public void run(){
-		    	//time
-		    	long tic = Debugger.tic();
-		    	
-		    	int code = knowledge.setItemData(index, type, item_id, data);
-				if (code != 0){
-					Debugger.println("KNOWLEDGE DB ERROR! - PATH: " + index + "/" + type + "/" + item_id + " - TIME: " + System.currentTimeMillis(), 1);
-				}else{
-					//Debugger.println("KNOWLEDGE DB UPDATED! - PATH: " + index + "/" + type + "/" + item_id + " - TIME: " + System.currentTimeMillis(), 1);
-					Statistics.add_KDB_write_hit();
-					Statistics.save_KDB_write_total_time(tic);
-				}
-		    }
-		};
-		thread.start();
+		ThreadManager.run(() -> {
+	    	//time
+	    	long tic = Debugger.tic();
+	    	
+	    	int code = knowledge.setItemData(index, type, item_id, data);
+			if (code != 0){
+				Debugger.println("KNOWLEDGE DB ERROR! - PATH: " + index + "/" + type + "/" + item_id + " - TIME: " + System.currentTimeMillis(), 1);
+			}else{
+				//Debugger.println("KNOWLEDGE DB UPDATED! - PATH: " + index + "/" + type + "/" + item_id + " - TIME: " + System.currentTimeMillis(), 1);
+				Statistics.add_KDB_write_hit();
+				Statistics.save_KDB_write_total_time(tic);
+			}
+	    });
 	}
 	/**
 	 * Save stuff to database without waiting for reply, making this save method UNSAVE so keep that in mind when using it.
@@ -1181,22 +1179,19 @@ public class DB {
 	 * @param data - JSON string with data objects that should be stored for index/type/item, e.g. {"name":"john"}
 	 */
 	public static void saveKnowledgeAsyncAnyID(String index, String type, JSONObject data){
-		Thread thread = new Thread(){
-		    public void run(){
-		    	//time
-		    	long tic = Debugger.tic();
-		    	
-		    	int code = JSON.getIntegerOrDefault(knowledge.setAnyItemData(index, type, data), "code", -1);
-				if (code != 0){
-					Debugger.println("KNOWLEDGE DB ERROR! - PATH: " + index + "/" + type + "/[rnd] - TIME: " + System.currentTimeMillis(), 1);
-				}else{
-					//Debugger.println("KNOWLEDGE DB UPDATED! - PATH: " + index + "/" + type + "/[rnd] - TIME: " + System.currentTimeMillis(), 1);
-					Statistics.add_KDB_write_hit();
-					Statistics.save_KDB_write_total_time(tic);
-				}
-		    }
-		};
-		thread.start();
+		ThreadManager.run(() -> {
+	    	//time
+	    	long tic = Debugger.tic();
+	    	
+	    	int code = JSON.getIntegerOrDefault(knowledge.setAnyItemData(index, type, data), "code", -1);
+			if (code != 0){
+				Debugger.println("KNOWLEDGE DB ERROR! - PATH: " + index + "/" + type + "/[rnd] - TIME: " + System.currentTimeMillis(), 1);
+			}else{
+				//Debugger.println("KNOWLEDGE DB UPDATED! - PATH: " + index + "/" + type + "/[rnd] - TIME: " + System.currentTimeMillis(), 1);
+				Statistics.add_KDB_write_hit();
+				Statistics.save_KDB_write_total_time(tic);
+			}
+	    });
 	}
 		
 	//--------------Tools----------------
