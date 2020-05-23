@@ -1,14 +1,14 @@
 package net.b07z.sepia.server.assist.smarthome;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
+import java.util.concurrent.ConcurrentHashMap;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.database.DB;
+import net.b07z.sepia.server.assist.workers.ThreadManager;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
@@ -94,17 +94,23 @@ public class InternalHub implements SmartHomeHub {
 	@Override
 	public Map<String, SmartHomeDevice> getDevices(){
 		//load from database
-		Map<String, SmartHomeDevice> devices = new HashMap<>();
+		Map<String, SmartHomeDevice> devices = new ConcurrentHashMap<>();
 		List<SmartHomeDevice> devicesList = getFilteredDevicesList(null);
 		if (devicesList == null){
 			return null;
+		}else if (devicesList.isEmpty()){
+			return devices;
 		}else{
-			for (SmartHomeDevice shd : devicesList){
+			/* old, non-parallel call:
+			for (SmartHomeDevice shd : devicesList){ ... }
+			*/
+			long timeout = devicesList.size() * 5000; 
+			ThreadManager.runParallelAndWait("InternalHub#getDevices", devicesList, (shd) -> {
 				String id = shd.getMetaValueAsString("id");
 				if (Is.notNullOrEmpty(id)){		//actually this can never be null or empty ... in theory
 					devices.put(shd.getMetaValueAsString("id"), shd);
 				}
-			}
+			}, timeout);
 		}
 		return devices;
 	}
@@ -118,7 +124,11 @@ public class InternalHub implements SmartHomeHub {
 		}else{
 			//get data of each device from HUB interface
 			List<SmartHomeDevice> filteredDevices = new ArrayList<>();
-			for (SmartHomeDevice shd : devices.values()){
+			/* old, non-parallel call:
+			for (SmartHomeDevice shd : devices.values()){ ... }
+			*/
+			long timeout = devices.size() * 5000;
+			ThreadManager.runParallelAndWait("InternalHub#getFilteredDevicesList", devices.values(), (shd) -> {
 				//filter again! (because the DB is more tolerant)
 				boolean filterMatch = true;
 				if (filters != null){
@@ -152,7 +162,7 @@ public class InternalHub implements SmartHomeHub {
 					shd = loadDeviceData(shd);
 					filteredDevices.add(shd);
 				}
-			}
+			}, timeout);
 			return filteredDevices;
 		}
 	}
@@ -181,14 +191,26 @@ public class InternalHub implements SmartHomeHub {
 		}else{
 			try{
 				SmartHomeHub shh = DB.getSmartDevicesDb().getCachedInterfaces().get(interfaceId);
-				SmartHomeDevice shdFromHub = shh.loadDeviceData(device);		
+				long tic = Debugger.tic();
+				SmartHomeDevice shdFromHub = shh.loadDeviceData(device);
 				//NOTE: the HUB is responsible for checking and using interfaceId and interfaceDeviceId
+				long took = Debugger.toc(tic);
+				if (took > 3000){
+					Debugger.println("Smart Home HUB Interface - loadDeviceData"
+							+ " - Connection is SLOW (" + took + "ms)! Plz check interface: " + interfaceId + ", Item: " + interfaceDeviceId, 3);
+				}
 				//import data
-				if (importHubDeviceDataToInternal(device, shdFromHub)){
-					isIncompleteOrFaulty = false;
-				}else{
+				if (shdFromHub == null){
 					Debugger.println("Smart Home HUB Interface - loadDeviceData"
 							+ " - Failed to get device data: " + interfaceId + " " + interfaceDeviceId, 1);
+					isIncompleteOrFaulty = true;
+					
+				}else if (importHubDeviceDataToInternal(device, shdFromHub)){
+					isIncompleteOrFaulty = false;
+					
+				}else{
+					Debugger.println("Smart Home HUB Interface - loadDeviceData"
+							+ " - Failed to import device data: " + interfaceId + " " + interfaceDeviceId, 1);
 					isIncompleteOrFaulty = true;
 				}
 			
