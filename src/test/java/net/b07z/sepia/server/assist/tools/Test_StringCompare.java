@@ -13,7 +13,8 @@ public class Test_StringCompare {
 		try{ Thread.sleep(1000);	}catch (InterruptedException e){}
 		
 		long tic = System.currentTimeMillis();
-		for (int i=0; i<1000; i++){
+		int N = 0; //1000;
+		for (int i=0; i<N; i++){
 			test(true);
 		}
 		System.out.println("\nTook (ms): " + (System.currentTimeMillis() - tic)); 	//~650ms with xdrop, ~500ms with Kotlin
@@ -24,6 +25,9 @@ public class Test_StringCompare {
 		//Test phrase matching
 		matchPhrase("Deckenlampe", "Deckenlampe", 100, skipPrint);
 		matchPhrase("Deckenlampe", "Deckenlampe 1", 100, skipPrint);
+		matchPhrase("Deckenlamp", "Deckenlampe", 99, skipPrint);
+		matchPhrase("wit", "with it", 99, skipPrint);
+		matchPhrase("with", "wit", 86, skipPrint);
 		matchPhrase("Deckenlampe 2", "Deckenlampe 1", 92, skipPrint);
 		matchPhrase("Lampe Ecke", "Schalte die Lampe in der Ecke ein", 60, skipPrint);
 		matchPhrase("Ecke", "Schalte die Lampe in der Ecke ein", 100, skipPrint);

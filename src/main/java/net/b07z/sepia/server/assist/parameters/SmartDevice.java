@@ -525,7 +525,7 @@ public class SmartDevice implements ParameterHandler{
 					deviceNames = deviceNamesByType.get(deviceType);
 				}
 				if (Is.notNullOrEmpty(deviceNames)){
-					//System.out.println("input: " + input); 		//DEBUG
+					//System.out.println("input: " + input); 					//DEBUG
 					//System.out.println("possible tags: " + deviceNames); 		//DEBUG
 					StringCompareResult scr = StringCompare.scanSentenceForBestPhraseMatch(
 							input, new ArrayList<>(deviceNames), language
@@ -533,7 +533,7 @@ public class SmartDevice implements ParameterHandler{
 					int bestScore = scr.getResultPercent();
 					//System.out.println("bestScore: " + bestScore); 				//DEBUG
 					//System.out.println("bestMatch: " + scr.getResultString()); 	//DEBUG
-					if (bestScore == 100){			//allow more "fuzziness" ?? - NOTE: we can't do this unless we fix smart device value too
+					if (bestScore >= 100){			//allow more "fuzziness" ?? - NOTE: we can't do this unless we fix smart device value too
 						String bestMatch = scr.getResultString();
 						String bestMatchNorm = scr.getResultStringNormalized();
 						//System.out.println("Best tag: " + bestMatch); 		//DEBUG

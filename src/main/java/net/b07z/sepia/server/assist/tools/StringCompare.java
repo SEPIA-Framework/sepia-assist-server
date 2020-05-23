@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 import com.willowtreeapps.fuzzywuzzy.diffutils.FuzzySearch;
 
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
+import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.interpreters.Normalizer;
 import net.b07z.sepia.server.assist.server.Config;
 
@@ -181,19 +182,28 @@ public class StringCompare {
 	}
 	
 	/**
-	 * Scan a sentence for a phrase of words.
+	 * Scan a sentence for a phrase of words.<br>
+	 * Score examples:<br>
+	 * phrase="with", sentence="with it" -> score=100 (contains full word)<br>
+	 * phrase="wit", sentence="with it" -> score=99 (contains full string, but not as word)<br>
+	 * phrase="with", sentence="wit" -> score=86
 	 * @param phrase - input words in given order as one string
 	 * @param sentence - sentence to scan
 	 * @return percent match as integer (full phrase in sentence -> 100)
 	 */
 	public static int scanSentenceForPhrase(String phrase, String sentence){
-		if (sentence.contains(phrase)){
-			return 100;
+		int score;
+		//if (sentence.contains(phrase)){
+		if (NluTools.stringContains(sentence, Pattern.quote(phrase))){
+			score = 100;
 		}else if (sentence.length() < phrase.length()){
-			return FuzzySearch.ratio(phrase, sentence);
+			score = FuzzySearch.ratio(phrase, sentence);
+			if (score == 100) score = 99;
 		}else{
-			return FuzzySearch.partialRatio(phrase, sentence);
+			score = FuzzySearch.partialRatio(phrase, sentence);
+			if (score == 100) score = 99;
 		}
+		return score;
 	}
 	/**
 	 * Scan a sentence for a list of phrases and return the best match. If the sentence contains the whole phrase the result is 100.<br>
@@ -236,12 +246,12 @@ public class StringCompare {
 	 * @param baseString - raw string reference (can be a sentence, a few words or a single token)
 	 * @param stringsToCompare - collection of raw strings to compare to base string
 	 * @param language - ISO language code used for norm. {@link LANGUAGES}
-	 * @return best match or empty result (empty string, 0 score)
+	 * @return best match or empty result (string = empty, score = 0)
 	 */
 	public static StringCompareResult findMostSimilarMatch(String baseString, Collection<String> stringsToCompare, String language){
 		Normalizer normalizer = Config.inputNormalizersLight.get(language);
-		String bestMatch = null;
-		String bestMatchNorm = null;
+		String bestMatch = "";
+		String bestMatchNorm = "";
 		int bestScore = 0;
 		String baseStringNorm = normalizer.normalizeText(baseString);
 		if (normalizer != null){
