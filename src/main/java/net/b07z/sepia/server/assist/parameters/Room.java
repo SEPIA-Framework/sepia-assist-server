@@ -73,7 +73,7 @@ public class Room implements ParameterHandler{
 		types_de.put("balcony", "auf dem Balkon");
 		types_de.put("shack", "im Schuppen");
 		types_de.put("hallway", "im Flur");
-		types_de.put("other", "am erwähnten Ort");
+		types_de.put("other", "am Standort");	//"am erwähnten Ort"
 		types_de.put("unassigned", "");
 		
 		types_en.put("livingroom", "in the living room");
@@ -92,7 +92,7 @@ public class Room implements ParameterHandler{
 		types_en.put("balcony", "on the balcony");
 		types_en.put("shack", "in the shack");
 		types_en.put("hallway", "in the hallway");
-		types_en.put("other", "in the mentioned location");
+		types_en.put("other", "at location"); 	//"at the mentioned location"
 		types_en.put("unassigned", "");
 	}
 	
@@ -164,7 +164,7 @@ public class Room implements ParameterHandler{
 					+ "balkon(en|es|e|s|)|"
 					+ "(haus|)flur|korridor|diele|"
 					//+ "andere(n|es|r|)( |-|)(zimmer|raum|raeumen)"
-					+ "(zimmer(n|)|raum|raeumen|kammer(n|))"
+					+ "zimmer(n|)|raum|raeumen|kammer(n|)|(stand|)ort(en|)"
 				+ "");
 			
 		//English and other
@@ -187,7 +187,7 @@ public class Room implements ParameterHandler{
 					+ "balcon(y|ies)|"
 					+ "hallway|corridor|"
 					//+ "other (room|chamber)(s|)|"
-					+ "(room|chamber)(s|)"
+					+ "(room|chamber|location)(s|)"
 				+ "");
 			
 		}
