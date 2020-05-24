@@ -120,15 +120,10 @@ public class TtsOpenEmbedded implements TtsInterface {
 		maryTtsVoicesMap.put("cmu-slt-hsmm", 		new String[]{"en-US marytts f"});
 		maryTtsVoicesMap.put("cmu-bdl-hsmm", 		new String[]{"en-US marytts m"});
 	}
-	/*
-	dfki-spike-hsmm en_GB male hmm
-	dfki-prudence-hsmm en_GB female hmm
-	cmu-slt-hsmm en_US female hmm
-	cmu-bdl-hsmm en_US male hmm
-	bits3-hsmm de male hmm
-	bits1-hsmm de female hmm
-	*/
 	
+	//defaults - filled during setup
+	private static Map<String, String> defaultTtsVoicesForLang = new HashMap<>();
+		
 	//track files
 	private static int MAX_FILES = 30;
 	private static long PROCESS_TIMEOUT_MS = 5000;
@@ -159,7 +154,7 @@ public class TtsOpenEmbedded implements TtsInterface {
 	}
         
     //defaults
-    private String language = "en";
+    private String language = LANGUAGES.EN;
 	private String gender = "male";
 	private String activeVoice = null; 	//name of voice set as seen in get_voices (not necessarily the same as the actual selected voice (enu_will != will22k)
 	private int mood_index = 0;			//0 - neutral/default, 1 - happy, 2 - sad, 3 - angry, 4 - shout, 5 - whisper, 6 - fun1 (e.g. old), 7 - fun2 (e.g. Yoda)
@@ -183,8 +178,8 @@ public class TtsOpenEmbedded implements TtsInterface {
 		voices.clear();
 		
 		//supported languages:
-		languageList.add("de");
-		languageList.add("en");
+		languageList.add(LANGUAGES.DE);
+		languageList.add(LANGUAGES.EN);
 		
 		//supported sound formats
 		soundFormatList.add("WAV");
@@ -196,6 +191,7 @@ public class TtsOpenEmbedded implements TtsInterface {
 		//supported voices:
 		
 		//MARY-TTS
+		boolean hasMaryTtsSupport = false;
 		String[] maryTtsVoicesRes = null;
 		try{
 			//get voices from MaryTTS server
@@ -234,6 +230,9 @@ public class TtsOpenEmbedded implements TtsInterface {
 				Debugger.printStackTrace(e, 3);
 			}
 			Debugger.println("TTS module - Added " + n + " MaryTTS voices.", 3);
+			if (n > 0){
+				hasMaryTtsSupport = true;
+			}
 		}
 		
 		//ESPEAK
@@ -301,6 +300,19 @@ public class TtsOpenEmbedded implements TtsInterface {
 			this.activeVoice = null;
 			this.language = LANGUAGES.EN;
 			this.gender = "male";
+		}
+		if (hasEspeakSupport){
+			defaultTtsVoicesForLang.put(LANGUAGES.EN, "en-GB espeak m");
+			defaultTtsVoicesForLang.put(LANGUAGES.DE, "de-DE espeak m");
+		}else if (hasPicoSupport){
+			defaultTtsVoicesForLang.put(LANGUAGES.EN, "en-US pico f");
+			defaultTtsVoicesForLang.put(LANGUAGES.DE, "de-DE pico f");
+		}else if (hasMaryTtsSupport){
+			defaultTtsVoicesForLang.put(LANGUAGES.EN, "en-US marytts m");
+			defaultTtsVoicesForLang.put(LANGUAGES.DE, "de-DE marytts m");
+		}else{
+			defaultTtsVoicesForLang.put(LANGUAGES.EN, this.activeVoice);
+			defaultTtsVoicesForLang.put(LANGUAGES.DE, this.activeVoice);
 		}
 		
 		//supported maximum mood index
@@ -380,11 +392,11 @@ public class TtsOpenEmbedded implements TtsInterface {
 	//set language and default voice sets (voice, speed, tune, vol)
 	public boolean setLanguage(String language) {
 		if (language.equals(LANGUAGES.DE)){
-			setVoice("de-DE espeak m");
+			setVoice(defaultTtsVoicesForLang.get(LANGUAGES.DE));
 			this.language = language;
 			return true;
 		}else if (language.equals(LANGUAGES.EN)){
-			setVoice("en-GB espeak m");
+			setVoice(defaultTtsVoicesForLang.get(LANGUAGES.EN));
 			this.language = language;
 			return true;
 		}else{
@@ -397,13 +409,13 @@ public class TtsOpenEmbedded implements TtsInterface {
 	public boolean setGender(String gender) {
 		if (language.equals(LANGUAGES.DE)){
 			if (gender.equalsIgnoreCase("male")){
-				setVoice("de-DE espeak m");
+				setVoice(defaultTtsVoicesForLang.get(LANGUAGES.DE));
 				this.gender = gender;
 				return true;
 			}
 		}else if (language.equals(LANGUAGES.EN)){
 			if (gender.equalsIgnoreCase("male")){
-				setVoice("en-GB espeak m");
+				setVoice(defaultTtsVoicesForLang.get(LANGUAGES.EN));
 				this.gender = gender;
 				return true;
 			}
@@ -416,7 +428,7 @@ public class TtsOpenEmbedded implements TtsInterface {
 	//sets the voice set with voice name, speed and tone.
 	public boolean setVoice(String voiceName) {
 		//new voice
-		if (voices.containsKey(voiceName)){
+		if (voiceName != null && voices.containsKey(voiceName)){
 			this.activeVoice = voiceName;
 			return true;
 		//default
