@@ -224,7 +224,7 @@ public class SmartDevicesElasticsearch implements SmartDevicesDb {
 			//remove limit
 			if (filters.containsKey("limit")){
 				loadLimit = Converters.obj2IntOrDefault(filters.get("limit"), DEVICES_LOAD_LIMIT);
-				if (loadLimit == -1) loadLimit = DEVICES_LOAD_LIMIT;
+				if (loadLimit <= 0) loadLimit = DEVICES_LOAD_LIMIT;
 				filters.remove("limit");
 			}
 			if (!filters.isEmpty()){

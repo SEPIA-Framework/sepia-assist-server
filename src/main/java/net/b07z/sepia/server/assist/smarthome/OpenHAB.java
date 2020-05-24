@@ -238,13 +238,19 @@ public class OpenHAB implements SmartHomeHub {
 			return null;
 		}else{
 			//filters
-			String deviceType = (String) filters.get("type");
-			String roomType = (String) filters.get("room");
-			String roomIndex = Converters.obj2StringOrDefault(filters.get("roomIndex"), null);
-			Object limitObj = filters.get("limit");
+			String deviceType = null;
+			String roomType = null;
+			String roomIndex = null;
 			int limit = -1;
-			if (limitObj != null){
-				limit = (int) limitObj;
+			if (filters != null){
+				deviceType = Converters.obj2StringOrDefault(filters.get("type"), null);
+				roomType = Converters.obj2StringOrDefault(filters.get("room"), null);
+				roomIndex = Converters.obj2StringOrDefault(filters.get("roomIndex"), null);
+				Object limitObj = filters.get("limit");
+				limit = -1;
+				if (limitObj != null){
+					limit = (int) limitObj;
+				}
 			}
 			//get all devices with right type and optionally right room
 			List<SmartHomeDevice> matchingDevices = SmartHomeDevice.getMatchingDevices(devices, deviceType, roomType, roomIndex, limit);

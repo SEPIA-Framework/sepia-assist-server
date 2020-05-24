@@ -219,7 +219,7 @@ public class IntegrationsEndpoint {
 				
 				//we try optimizing here by using 'getFilteredDevicesList'
 				Map<String, Object> filters = null;
-				if (deviceTypeFilter != null){
+				if (deviceTypeFilter != null && !deviceTypeFilter.equalsIgnoreCase("all")){
 					filters = new HashMap<>();
 					filters.put("type", deviceTypeFilter);
 				}
