@@ -240,7 +240,7 @@ public class Start {
 	 * All kinds of things that should be loaded on startup.
 	 */
 	public static void setupModules(){
-		Config.setupDatabases(); 		//DB modules
+		Config.setupDatabases(true);	//DB modules
 		Config.setupAnswers();			//answers
 		Config.setupCommands();			//predefined commands
 		Config.setupChats(); 			//predefined chats

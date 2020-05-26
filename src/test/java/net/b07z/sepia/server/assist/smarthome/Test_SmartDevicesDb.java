@@ -13,7 +13,7 @@ public class Test_SmartDevicesDb {
 		
 		//load custom config
 		Start.loadSettings(new String[]{"--test"});
-		Config.setupDatabases();
+		Config.setupDatabases(true);
 		
 		//Load devices
 		System.out.println("\nLOAD ALL ...\n");

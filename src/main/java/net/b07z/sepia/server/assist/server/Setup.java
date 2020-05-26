@@ -657,7 +657,7 @@ public class Setup {
 	private static void loadConfigFile(ServerType st){
 		Start.loadConfigFile(st.name());
 		//setup database(s)
-		Config.setupDatabases();
+		Config.setupDatabases(false);
 		
 		//setup core-tools (especially required for assistant ID)
 		JSONObject coreToolsConfig = JSON.make(

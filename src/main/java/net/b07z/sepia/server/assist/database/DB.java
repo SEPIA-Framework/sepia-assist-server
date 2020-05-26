@@ -86,6 +86,11 @@ public class DB {
 		accounts = (AccountInterface) ClassBuilder.construct(Config.accountModule);
 		knowledge = (DatabaseInterface) ClassBuilder.construct(Config.knowledgeDbModule);
 		smartDevices = (SmartDevicesDb) ClassBuilder.construct(Config.smartDevicesModule);
+	}
+	/**
+	 * Pre-load some data to cache (e.g. smart home interfaces).
+	 */
+	public static void preLoadData(){
 		//load smart-devices cache
 		smartDevices.loadInterfaces();
 	}

@@ -10,7 +10,7 @@ public class Test_DatabaseSetup {
 		
 		//load custom config
 		Start.loadSettings(new String[]{"--test"});
-		Config.setupDatabases();
+		Config.setupDatabases(false);
 		
 		//Setup DynamoDB
 		if (Config.authAndAccountDB.equals("dynamo_db")){

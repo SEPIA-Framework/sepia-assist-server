@@ -352,10 +352,15 @@ public class Config {
 	
 	/**
 	 * Setup the modules for database access.
+	 * @param preLoadData - certain database instances might be able to cache some data (similar to the NLU system)
 	 */
-	public static void setupDatabases(){
-		//refresh stuff
+	public static void setupDatabases(boolean preLoadData){
+		//refresh settings
 		DB.refreshSettings();
+		//pre-load some data
+		if (preLoadData){
+			DB.preLoadData();
+		}
 	}
 	/**
 	 * Test databases, e.g. Elasticsearch mappings etc.
