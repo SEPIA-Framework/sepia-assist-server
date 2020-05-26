@@ -290,7 +290,7 @@ public class MqttConnection implements DuplexConnectionInterface {
 			if (Is.notNullOrEmpty(authType) && Is.notNullOrEmpty(authData)){
 				//currently we only support one auth type: 'plain' - format: username:password
 				try {
-					if (authType.equalsIgnoreCase("plain")){
+					if (authType.equalsIgnoreCase("Plain")){
 						String[] up = authData.split(":", 2);
 						userName = up[0];
 						password = up[1];

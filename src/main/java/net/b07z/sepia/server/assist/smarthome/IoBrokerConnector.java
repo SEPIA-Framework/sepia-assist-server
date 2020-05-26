@@ -29,6 +29,8 @@ public class IoBrokerConnector implements SmartHomeHub {
 	private String host;
 	private String authType;
 	private String authData;
+	private String userName;
+	private String password;
 	private JSONObject info;
 	
 
@@ -50,7 +52,18 @@ public class IoBrokerConnector implements SmartHomeHub {
 	}
 	private JSONObject httpGET(String url){
 		if (Is.notNullOrEmpty(this.authData)){
-			return Connectors.httpGET(url, null, addAuthHeader(null), CONNECT_TIMEOUT);
+			if (this.authType.equalsIgnoreCase("Basic")){
+				return Connectors.httpGET(url, null, addAuthHeader(null), CONNECT_TIMEOUT);
+			}else if (this.authType.equalsIgnoreCase("Plain") && userName != null && password != null){
+				if (url.contains("?")){
+					url += URLBuilder.getStringP20("", "&user=", userName, "&pass=", password); 
+				}else{
+					url += URLBuilder.getStringP20("", "?user=", userName, "&pass=", password);
+				}
+				return Connectors.httpGET(url, null, null, CONNECT_TIMEOUT);
+			}else{
+				throw new RuntimeException("ioBrokerConnector saw invalid auth. type and data. Try type 'Plain' with data 'username:password'.");
+			}
 		}else{
 			return Connectors.httpGET(url, null, null, CONNECT_TIMEOUT);
 		}
@@ -98,6 +111,25 @@ public class IoBrokerConnector implements SmartHomeHub {
 	public void setAuthenticationInfo(String authType, String authData){
 		this.authType = authType;
 		this.authData = authData;
+		if (Is.notNullOrEmpty(this.authType) && Is.notNullOrEmpty(this.authData)){
+			if (authType.equalsIgnoreCase("Basic")){
+				//OK
+			}else if (authType.equalsIgnoreCase("Plain")){
+				try {
+					String[] up = authData.split(":", 2);
+					userName = up[0];
+					password = up[1];
+				}catch (Exception e) {
+					Debugger.println("IoBrokerConnector - 'setAuthenticationInfo' FAILED to add auth. data "
+							+ "- try type 'Plain' and data 'username:password' or 'Basic' with base64 encoding.", 1);
+					Debugger.printStackTrace(e, 3);
+					userName = null;
+					password = null;
+				}
+			}else{
+				throw new RuntimeException("Invalid auth. type. Try 'Plain' or 'Basic'.");
+			}
+		}
 	}
 	
 	@Override
