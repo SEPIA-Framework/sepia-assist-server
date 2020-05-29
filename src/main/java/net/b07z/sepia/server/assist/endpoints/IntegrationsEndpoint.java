@@ -66,18 +66,21 @@ public class IntegrationsEndpoint {
 		if (!token.authenticated()){
 			return SparkJavaFw.returnNoAccess(request, response);
 		}else{
-			//stats
-			Statistics.addOtherApiHit("Integrations endpoint");
-			Statistics.addOtherApiTime("Integrations endpoint", 1);
-			
 			//create user
 			User user = new User(null, token);
 			
 			//integration request
-			return integrationsMap.getOrDefault(integration, (req, res, f, u, p) -> {
+			long tic = System.currentTimeMillis();
+			String re = integrationsMap.getOrDefault(integration, (req, res, f, u, p) -> {
 				//Not found
 				return SparkJavaFw.returnPathNotFound(request, response);
 			}).request(request, response, fun, user, params);
+			
+			//stats
+			Statistics.addOtherApiHit("Integrations endpoint");
+			Statistics.addOtherApiTime("Integrations endpoint", tic);
+			
+			return re;
 		}
 	}
 	

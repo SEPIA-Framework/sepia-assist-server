@@ -41,7 +41,7 @@ public class ServiceBackgroundTaskManager {
 	}
 	
 	/**
-	 * Get the number of scheduled tasks, waiting to be run.
+	 * Get the number of scheduled tasks, waiting to be run or currently running (they are removed after they finish).
 	 */
 	public static int getNumberOfScheduledTasks(){
 		return sbtMap.size();

@@ -76,7 +76,8 @@ public class Statistics extends BasicStatistics {
 		msg += "Processing threads:<br>";
 		msg += "Active threads now: " + ThreadManager.getNumberOfCurrentlyActiveThreads() + "<br>";
 		msg += "Max. active threads: " + ThreadManager.getMaxNumberOfActiveThreads() + "<br>";
-		msg += "Scheduled service tasks: " + ServiceBackgroundTaskManager.getNumberOfScheduledTasks() + "<br>";
+		msg += "Scheduled or active custom tasks: " + ThreadManager.getNumberOfScheduledTasks() + "<br>";
+		msg += "Scheduled or active service tasks: " + ServiceBackgroundTaskManager.getNumberOfScheduledTasks() + "<br>";
 		msg += "<br>";
 		msg += "Workers and Connections:<br>";
 		msg += Workers.getStatsReport();

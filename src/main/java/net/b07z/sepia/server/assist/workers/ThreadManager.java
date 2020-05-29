@@ -1,31 +1,56 @@
 package net.b07z.sepia.server.assist.workers;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
 import net.b07z.sepia.server.core.tools.Debugger;
 
 /**
- * This class aims to manage threads in a central way or at least keep a rough overview of what's going on in the framework.
+ * This class aims to manage threads in a central way or at least keep a rough overview of what's going on in the framework.<br>
+ * NOTE: Don't mistake this for {@link net.b07z.sepia.server.core.tools.ThreadManager} (it is similar but does not track threads for the global overview).
  * 
  * @author Florian Quirin
  *
  */
 public class ThreadManager {
 	
-	private static AtomicInteger activeThreads = new AtomicInteger(0);		//TODO: add ServiceBackgroundTasks
+	private static AtomicInteger activeThreads = new AtomicInteger(0);		//NOTE: ServiceBackgroundTasks are separate, see below
 	private static int maxActiveThreads = 0;
+	private static Map<String, Future<?>> futuresMap = new ConcurrentHashMap<>();
+	private static AtomicLong lastUsedBaseId = new AtomicLong(0); 	//NOTE: this will reset on server start but task don't survive restart anyways
 	
 	/**
 	 * Keep a reference of some sort to the running thread (TBD).
 	 */
 	public static class ThreadInfo {
 		//TBD
+	}
+	
+	//Handling of scheduled tasks
+	private static String getNewFutureId(){
+		return "future" + lastUsedBaseId.incrementAndGet() + "_" + System.currentTimeMillis();
+	}
+	private static void addToFutureMap(String taskId, Future<?> fut){
+		futuresMap.put(taskId, fut);
+	}
+	private static void removeFromFutureMap(String taskId){
+		futuresMap.remove(taskId);
+	}
+	/**
+	 * Get the number of scheduled tasks, waiting to be run or currently running (they are removed after they finish).
+	 */
+	public static int getNumberOfScheduledTasks(){
+		return futuresMap.size();
 	}
 	
 	/**
@@ -118,6 +143,43 @@ public class ThreadManager {
 			try { pool.shutdown(); } catch (Exception ex) { ex.printStackTrace(); }
 		}
 	}
+	
+	/**
+	 * Schedule a task to run in background after certain delay and then forget about it. Keep in mind that this means you cannot stop it once scheduled.<br>
+	 * <br>
+	 * CAREFUL: The user is responsible for the task ESPECIALLY that it will not get stuck in a loop and does not run FOREVER!<br>
+	 * <br>
+	 * For a more advanced version of this check {@link ServiceBackgroundTaskManager#runOnceInBackground}.
+	 * @param delayMs - execute after this time in milliseconds
+	 * @param task - Runnable to run
+	 * @return true if the task was scheduled (NOT executed)
+	 */
+	public static boolean scheduleBackgroundTaskAndForget(long delayMs, Runnable task){
+		String taskId = getNewFutureId();
+		int corePoolSize = 1;
+	    final ScheduledThreadPoolExecutor executor = getNewScheduledThreadPool(corePoolSize);
+	    executor.setRemoveOnCancelPolicy(true);
+	    ScheduledFuture<?> future =	executor.schedule(() -> {
+	    	//run task and...
+	    	try{
+	    		increaseThreadCounter();
+	    		task.run();
+	    		decreaseThreadCounter();
+	    	}catch (Exception e){
+	    		decreaseThreadCounter();
+			}
+	    	//... remove yourself from manager
+	    	removeFromFutureMap(taskId);
+	    	executor.purge();
+	    	executor.shutdown();
+	    	return;
+	    }, delayMs, TimeUnit.MILLISECONDS);
+	    //track
+	    addToFutureMap(taskId, future);
+	    return true;
+	}
+	
+	//---------------------------------------------------------
 	
 	/**
 	 * Return a scheduled thread pool executor.

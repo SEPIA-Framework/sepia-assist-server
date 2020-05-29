@@ -18,6 +18,7 @@ import org.json.simple.JSONObject;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.tts.TtsTools.EngineType;
+import net.b07z.sepia.server.assist.workers.ThreadManager;
 import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.FilesAndStreams;
@@ -25,7 +26,6 @@ import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 import net.b07z.sepia.server.core.tools.RuntimeInterface;
 import net.b07z.sepia.server.core.tools.Security;
-import net.b07z.sepia.server.core.tools.ThreadManager;
 import net.b07z.sepia.server.core.tools.URLBuilder;
 import net.b07z.sepia.server.core.tools.RuntimeInterface.RuntimeResult;
 
@@ -547,7 +547,7 @@ public class TtsOpenEmbedded implements TtsInterface {
 			if (generatedFile){
 				//Success
 				fileCleanUpQueue.add(new File(audioFilePath));
-				ThreadManager.scheduleTaskToRunOnceInBackground(CLEAN_UP_DELAY_MS, cleanUpTask);
+				ThreadManager.scheduleBackgroundTaskAndForget(CLEAN_UP_DELAY_MS, cleanUpTask);
 				return audioURL;
 			}else{
 				//Error (failed without exception)
@@ -675,8 +675,6 @@ public class TtsOpenEmbedded implements TtsInterface {
 			}
 		}else{
 			//Success
-			fileCleanUpQueue.add(new File(audioFilePath));
-			ThreadManager.scheduleTaskToRunOnceInBackground(CLEAN_UP_DELAY_MS, cleanUpTask);
 			return true;
 		}
 	}
