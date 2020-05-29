@@ -72,5 +72,10 @@ public interface SmartDevicesDb {
 	 * @return set of device names by type
 	 */
 	public Map<String, Set<String>> getBufferedDeviceNamesByType();
+	/**
+	 * Clear device name buffer.
+	 * @return success/fail
+	 */
+	public boolean clearDeviceTypeAndNameBuffer();
 	
 }

@@ -236,13 +236,18 @@ public class Fhem implements SmartHomeHub {
 						devices.put(shd.getMetaValueAsString("id"), shd);
 						
 						//fill buffer
-						if ((boolean) shd.getMeta().get("namedBySepia")){
-							Set<String> deviceNamesOfType = this.bufferedDevicesByType.get(shd.getType());
-							if (deviceNamesOfType == null){
-								deviceNamesOfType = new HashSet<>();
-								this.bufferedDevicesByType.put(shd.getType(), deviceNamesOfType);
+						String deviceType = shd.getType();
+						String deviceName = shd.getName();
+						if (Is.notNullOrEmpty(deviceType) && Is.notNullOrEmpty(deviceName)){
+							deviceName = SmartHomeDevice.getCleanedUpName(deviceName);		//NOTE: use "clean" name!
+							if (!deviceName.isEmpty() && (boolean) shd.getMeta().get("namedBySepia")){
+								Set<String> deviceNamesOfType = this.bufferedDevicesByType.get(deviceType);
+								if (deviceNamesOfType == null){
+									deviceNamesOfType = new HashSet<>();
+									this.bufferedDevicesByType.put(deviceType, deviceNamesOfType);
+								}
+								deviceNamesOfType.add(deviceName);
 							}
-							deviceNamesOfType.add(SmartHomeDevice.getCleanedUpName(shd.getName()));		//NOTE: use "clean" name!
 						}
 					}
 				}

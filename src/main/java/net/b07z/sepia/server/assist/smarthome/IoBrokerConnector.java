@@ -204,7 +204,7 @@ public class IoBrokerConnector implements SmartHomeHub {
 				Statistics.addExternalApiHit("ioBroker loadDevice ERROR");
 				Statistics.addExternalApiTime("ioBroker loadDevice ERROR", tic);
 				String error = JSON.getStringOrDefault(result, "error", "");
-				if (error.contains("java.security")){
+				if (error.contains("401") || error.contains("java.security") || error.contains("javax.net.ssl")){
 					Debugger.println("IoBrokerConnector - loadDeviceData FAILED with msg.: " + result, 1);
 				}
 				return null;

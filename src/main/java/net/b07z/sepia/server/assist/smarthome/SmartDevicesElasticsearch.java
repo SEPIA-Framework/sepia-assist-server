@@ -297,22 +297,24 @@ public class SmartDevicesElasticsearch implements SmartDevicesDb {
 		}); */
 		return bufferedDevicesByType;
 	}
-	
-	//---- HELPERS ----
-	
 	/**
 	 * Clear all buffered device type-name combinations and set flag so it will be reloaded when needed.
 	 */
-	public static void clearDeviceTypeAndNameBuffer(){
+	public boolean clearDeviceTypeAndNameBuffer(){
+		//NOTE: this is a global property ... but should be OK
 		isBufferedDeviceNameListRecent = false;
 		bufferedDevicesByType = new ConcurrentHashMap<>();
+		return true;
 	}
+	
+	//---- HELPERS ----
+	
 	/**
 	 * Store the type-name combination in the buffer for fast access.
 	 * @param shd - the {@link SmartHomeDevice}
 	 * @param remove - set this to true to remove entry instead of add
 	 */
-	public static void updateDeviceTypeAndNameBuffer(SmartHomeDevice shd, boolean remove){
+	private static void updateDeviceTypeAndNameBuffer(SmartHomeDevice shd, boolean remove){
 		String deviceType = shd.getType();
 		String deviceName = shd.getName();
 		if (Is.notNullOrEmpty(deviceName) && Is.notNullOrEmpty(deviceType)){
