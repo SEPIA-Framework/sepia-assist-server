@@ -1,0 +1,42 @@
+{
+  "settings":{
+    "index": {
+      "analysis": {
+        "analyzer": {
+          "keylower": {
+            "tokenizer": "keyword",
+            "filter": "lowercase"
+          }
+        }
+      }
+    }
+  },
+  "mappings" : {
+    "all" : {
+      "properties" : {
+        "name" : { "type" : "string" },
+		"type" : { "type" : "string", "analyzer": "keylower" },
+		"room" : { "type" : "string", "analyzer": "keylower" },
+		"roomIndex" : { "type" : "string" },
+		"state" : { "type" : "string" },
+		"stateType" : { "type" : "string", "analyzer": "keylower" },
+		"stateMemory" : { "type" : "string" },
+		"link" : { "type" : "string" },
+		"interface" : { "type" : "string", "analyzer": "keylower" },
+        "meta" : { 
+			"properties" : {
+				"id" : { "type" : "string", "analyzer": "keylower" },
+				"origin" : { "type" : "string", "analyzer": "keylower" },
+				"setCmds" : { 
+					"properties" : {
+						"enable" : { "type" : "string" },
+						"disable" : { "type" : "string" },
+						"number" : { "type" : "string" }
+					}
+				}
+			}
+		}
+      }
+    }
+  }
+}

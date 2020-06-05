@@ -21,6 +21,8 @@ import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.assist.smarthome.SmartHomeDevice;
 import net.b07z.sepia.server.assist.smarthome.SmartHomeHub;
+import net.b07z.sepia.server.assist.tools.StringCompare;
+import net.b07z.sepia.server.assist.tools.StringCompare.StringCompareResult;
 import net.b07z.sepia.server.core.assistant.ACTIONS;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
@@ -101,7 +103,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		//required
 		Parameter p1 = new Parameter(PARAMETERS.SMART_DEVICE)
 				.setRequired(true)
-				.setQuestion("smartdevice_1a");
+				.setQuestion(askDevice);
 		info.addParameter(p1);
 		
 		//optional
@@ -136,10 +138,12 @@ public class SmartHomeHubConnector implements ServiceInterface {
 	private static final String showDeviceState = "smartdevice_2c";
 	private static final String showDeviceStateWithRoom = "smartdevice_2d";
 	private static final String notAllowed = "smartdevice_0d";
+	private static final String notWithAdmin = "default_not_with_admin_0a";
 	private static final String notYetControllable = "smartdevice_0e";
 	private static final String noDeviceMatchesFound = "smartdevice_0f";
 	private static final String actionNotPossible = "default_not_possible_0a";
 	private static final String actionCurrentlyNotWorking = "error_0a";
+	private static final String askDevice = "smartdevice_1a";
 	private static final String askRoom = "smartdevice_1c";
 	private static final String askStateValue = "smartdevice_1d";
 	private static final String askFirstOfMany = "default_ask_first_of_many_0a";
@@ -152,7 +156,24 @@ public class SmartHomeHubConnector implements ServiceInterface {
 				getInfoFreshOrCache(nluResult.input, this.getClass().getCanonicalName()));
 		
 		//check user role 'smarthomeguest' for this skill (because it controls devices in the server's network)
-		if (!nluResult.input.user.hasRole(Role.smarthomeguest)){
+		if (nluResult.input.user.hasRole(Role.superuser)){
+			//allow or not?
+			
+			//add button that links to help
+			service.addAction(ACTIONS.BUTTON_IN_APP_BROWSER);
+			service.putActionInfo("url", "https://github.com/SEPIA-Framework/sepia-docs/wiki/Create-and-Edit-Users");
+			service.putActionInfo("title", "Info: Create Users");
+			
+			service.setStatusOkay();
+			service.setCustomAnswer(notWithAdmin);			//"soft"-fail with "not allowed" answer
+			return service.buildResult();
+			
+		}else if (!nluResult.input.user.hasRole(Role.smarthomeguest) && !nluResult.input.user.hasRole(Role.smarthomeadmin)){
+			//add button that links to help
+			service.addAction(ACTIONS.BUTTON_IN_APP_BROWSER);
+			service.putActionInfo("url", "https://github.com/SEPIA-Framework/sepia-docs/wiki/Smart-Home-Controls");
+			service.putActionInfo("title", "Info: Smart Home Setup");
+			
 			service.setStatusOkay();
 			service.setCustomAnswer(notAllowed);			//"soft"-fail with "not allowed" answer
 			return service.buildResult();
@@ -170,9 +191,21 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		//get required parameters:
 		Parameter device = nluResult.getRequiredParameter(PARAMETERS.SMART_DEVICE);
 		String deviceType = device.getValueAsString();
+		String deviceTag = JSON.getStringOrDefault(device.getData(), InterviewData.SMART_DEVICE_TAG, "");
+		boolean isDeviceNameKnownButNoType = false;
+		if (Is.typeEqual(deviceType, SmartDevice.Types.unknown)){
+			//unknown type with known tag/name?
+			if (Is.nullOrEmpty(deviceTag)){
+				//Abort - THIS should NEVER happen!
+				service.setStatusFail();
+				service.setCustomAnswer(noDeviceMatchesFound);
+				return service.buildResult();
+			}else{
+				isDeviceNameKnownButNoType = true;
+			}
+		}
 		String deviceTypeLocal = JSON.getStringOrDefault(device.getData(), InterviewData.VALUE_LOCAL, deviceType);
 		int deviceNumber = JSON.getIntegerOrDefault(device.getData(), InterviewData.ITEM_INDEX, Integer.MIN_VALUE);
-		String deviceTag = JSON.getStringOrDefault(device.getData(), InterviewData.SMART_DEVICE_TAG, "");
 		
 		//get optional parameters:
 		Parameter action = nluResult.getOptionalParameter(PARAMETERS.ACTION, "");
@@ -210,9 +243,6 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		//get background parameters
 		String reply = nluResult.getParameter(PARAMETERS.REPLY);	//a custom reply (defined via Teach-UI)
 		
-		//TODO: implement in future:
-		//String deviceName = null;
-		
 		//check if device is supported
 		/*if (Is.typeEqual(deviceType, SmartDevice.Types....)){
 			service.setStatusOkay();
@@ -222,99 +252,139 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		
 		//find device - NOTE: the HUB implementation is responsible for caching the data
 		Map<String, Object> filters = new HashMap<>();
-		//filters.put("name", deviceName);
-		filters.put("type", deviceType);
-		filters.put("room", roomType);
+		//if (Is.notNullOrEmpty(deviceName)) filters.put(SmartHomeDevice.FILTER_NAME, deviceName);  //not supported by all HUBs! Need to filter ourself
+		if (!isDeviceNameKnownButNoType) filters.put(SmartHomeDevice.FILTER_TYPE, deviceType);
+		if (Is.notNullOrEmpty(roomType)) filters.put(SmartHomeDevice.FILTER_ROOM, roomType);
 		if (roomNumber != Integer.MIN_VALUE){
-			filters.put("roomIndex", roomNumber);
+			filters.put(SmartHomeDevice.FILTER_ROOM_INDEX, Integer.toString(roomNumber));		//NOTE: we use String because actually room-index is not restricted to numbers
 		}
 		filters.put("limit", -1);
 		List<SmartHomeDevice> matchingDevices = smartHomeHUB.getFilteredDevicesList(filters);
+		
+		//abort with no result?
 		if (matchingDevices == null){
 			Debugger.println(SmartHomeHub.class.getSimpleName() + " failed to get devices! Connection to smart home HUB might be broken.", 1);		//debug
 			service.setStatusFail(); 						//"hard"-fail (probably HUB connection error)
 			return service.buildResult();
 		}
 		
+		//check device name if type was unknown
+		if (isDeviceNameKnownButNoType && !matchingDevices.isEmpty()){
+			matchingDevices = SmartHomeDevice.findDevicesWithMatchingTagIgnoreCase(matchingDevices, deviceTag);
+		}
+			
+		//check device index number
+		if (!matchingDevices.isEmpty()){
+			if (deviceNumber != Integer.MIN_VALUE){
+				matchingDevices = SmartHomeDevice.findDevicesWithNumberInName(matchingDevices, deviceNumber);
+			}
+		}
+		
 		//have found any?
 		if (matchingDevices.isEmpty()){
 			Debugger.println(SmartHomeHub.class.getSimpleName() + " failed to find any match for "
-					+ "device: " + deviceType + ", room: " + roomType, 1);	//debug
+					+ "device: " + deviceType + ", index: " + deviceNumber + ", room: " + roomType, 1);	//debug
 			service.setStatusOkay();
 			service.setCustomAnswer(noDeviceMatchesFound);	//"soft"-fail with "no matching devices found" answer
 			return service.buildResult();
 		}
 		
-		//keep matching number or only the first match for now - TODO: improve
+		//find the best match using the device tag (name)
 		SmartHomeDevice selectedDevice;
-		if (deviceNumber != Integer.MIN_VALUE){
-			selectedDevice = SmartHomeDevice.findFirstDeviceWithNumberInNameOrDefault(matchingDevices, deviceNumber, -1);
-			if (selectedDevice == null){
-				//no device with number
-				Debugger.println(SmartHomeHub.class.getSimpleName() + " failed to find any match for "
-						+ "device: " + deviceType + ", index: " + deviceNumber + ", room: " + roomType, 1);	//debug
-				service.setStatusOkay();
-				service.setCustomAnswer(noDeviceMatchesFound);	//"soft"-fail with "no matching devices found" answer
-				return service.buildResult();
-			}
-		}else{
-			int matchesN = matchingDevices.size();
-			boolean tagMatch = false;
-			//we try to match the tag first
-			if (Is.notNullOrEmpty(deviceTag)){
-				List<SmartHomeDevice> matchingDevicesWithSameTag = SmartHomeDevice.findDevicesWithMatchingTagIgnoreCase(matchingDevices, deviceTag);
-				int matchesWithTagN = matchingDevicesWithSameTag.size();
-				if (matchesWithTagN > 0){
-					matchingDevices = matchingDevicesWithSameTag;
-					tagMatch = true;
-					matchesN = matchesWithTagN;
+		int matchesN = matchingDevices.size();
+		boolean didTagMatch = false;
+		String bestTagMatch = null;
+		int bestTagMatchScore = 0;
+		//do we know the tag already?
+		if (isDeviceNameKnownButNoType){
+			didTagMatch = true;
+			bestTagMatchScore = 100;
+			bestTagMatch = deviceTag;
+		
+		//we try to match the tag first
+		}else if (Is.notNullOrEmpty(deviceTag)){
+			//can we find a known device name in the extracted device tag
+			if (matchesN > 1){
+				Map<String, String> possibleTagsMap = new HashMap<>();
+				for (SmartHomeDevice shd : matchingDevices){
+					String nameTag = shd.getName();
+					possibleTagsMap.put(SmartHomeDevice.getBaseName(nameTag), nameTag);		//NOTE: we assume device index is already applied here				
+				}
+				//System.out.println("deviceTag: " + deviceTag); 							//DEBUG
+				//System.out.println("possibleTags: " + possibleTagsMap.values()); 			//DEBUG
+				StringCompareResult scr = StringCompare.findMostSimilarMatch(
+						deviceTag, possibleTagsMap.keySet(), nluResult.input.language
+				);
+				bestTagMatchScore = scr.getResultPercent();
+				bestTagMatch = possibleTagsMap.get(scr.getResultString());
+				//System.out.println("Best " + bestTagMatchScore + "% tag: " + bestTagMatch); 		//DEBUG
+				if (bestTagMatchScore == 100){
+					//set as new deviceTag
+					deviceTag = bestTagMatch;
 				}
 			}
-			//multiple results but no room?
-			if (matchesN > 1 && roomType.isEmpty()){
-				//RETURN with question
-				service.resultInfoPut("device", deviceTypeLocal);
-				service.setIncompleteAndAsk(PARAMETERS.ROOM, askRoom);
-				return service.buildResult();
-				
-			//run through all? get best result?
+			//find exact tag match
+			List<SmartHomeDevice> matchingDevicesWithSameTag = SmartHomeDevice.findDevicesWithMatchingTagIgnoreCase(matchingDevices, deviceTag);
+			int matchesWithTagN = matchingDevicesWithSameTag.size();
+			if (matchesWithTagN > 0){
+				matchingDevices = matchingDevicesWithSameTag;
+				didTagMatch = true;
+				matchesN = matchesWithTagN;
+			}
+		}
+		
+		//multiple results but no room?
+		if (matchesN > 1 && roomType.isEmpty()){
+			//RETURN with question
+			service.resultInfoPut("device", deviceTypeLocal);
+			service.setIncompleteAndAsk(PARAMETERS.ROOM, askRoom);
+			return service.buildResult();
+			
+		//run through all? get best result?
+		}else{
+			if (didTagMatch && matchesN == 1){
+				//this should be the correct device
+				selectedDevice = matchingDevices.get(0);
+			}else if (matchesN == 1){
+				//this is just a guess (potentially correct tag, room and index)
+				selectedDevice = matchingDevices.get(0);
+				//teach UI button
+				service.addAction(ACTIONS.BUTTON_TEACH_UI);
+				service.putActionInfo("info", JSON.make(
+						"input", nluResult.input.textRaw,
+						"service", CMD.SMARTDEVICE
+				));
 			}else{
-				if (tagMatch && matchesN == 1){
-					//this should be the correct device
-					selectedDevice = matchingDevices.get(0);
-				}else if (matchesN == 1){
-					//this is just a guess
-					selectedDevice = matchingDevices.get(0);
+				//it is not 100% clear which device we should take
+				//TODO: we simplify and take only best match if possible - we should check singular/plural, trigger all or ask for top 3
+				if (bestTagMatchScore > 0){
+					List<SmartHomeDevice> bestMatchingDevices = SmartHomeDevice.findDevicesWithMatchingTagIgnoreCase(matchingDevices, bestTagMatch);
+					if (Is.notNullOrEmpty(bestMatchingDevices)){
+						matchingDevices = bestMatchingDevices;
+						matchesN = bestMatchingDevices.size();
+					}
+				}
+				//selectedDevice = matchingDevices.get(0);
+				int confirmState = service.getConfirmationStatusOf("use_first_device");
+				if (confirmState == 0){
+					//ASK FIRST
+					service.resultInfoPut("device", matchingDevices.get(0).getName());
+					service.confirmActionOrParameter("use_first_device", askFirstOfMany);
 					//teach UI button
 					service.addAction(ACTIONS.BUTTON_TEACH_UI);
 					service.putActionInfo("info", JSON.make(
 							"input", nluResult.input.textRaw,
 							"service", CMD.SMARTDEVICE
 					));
+					return service.buildResult();
+				}else if (confirmState == 1){
+					//OK
+					selectedDevice = matchingDevices.get(0);
 				}else{
-					//TODO: we simplify and take only first - we should check singular/plural, trigger all or ask for top 3
-					//selectedDevice = matchingDevices.get(0);
-					int confirmState = service.getConfirmationStatusOf("use_first_device");
-					if (confirmState == 0){
-						//ASK FIRST
-						service.resultInfoPut("device", matchingDevices.get(0).getName());
-						service.confirmActionOrParameter("use_first_device", askFirstOfMany);
-						//teach UI button
-						service.addAction(ACTIONS.BUTTON_TEACH_UI);
-						service.putActionInfo("info", JSON.make(
-								"input", nluResult.input.textRaw,
-								"service", CMD.SMARTDEVICE
-						));
-						return service.buildResult();
-					}else if (confirmState == 1){
-						//OK
-						selectedDevice = matchingDevices.get(0);
-					}else{
-						//NO selection, abort - TODO: improve
-						service.setStatusOkay();
-						service.setCustomAnswer(okDoNothing);	//"soft"-fail with "ok" answer and just do nothing
-						return service.buildResult();
-					}
+					//NO selection, abort - TODO: improve
+					service.setStatusOkay();
+					service.setCustomAnswer(okDoNothing);	//"soft"-fail with "ok" answer and just do nothing
+					return service.buildResult();
 				}
 			}
 		}
@@ -331,7 +401,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		
 		//assign selected device name - NOTE: we remove info in brackets
 		String selectedDeviceName = selectedDevice.getName().trim();	//cannot be null?
-		selectedDeviceName = selectedDeviceName.replaceAll("\\(.*?\\)", " ").replaceAll("\\s+", " ").trim();
+		selectedDeviceName = SmartHomeDevice.getCleanedUpName(selectedDeviceName);
 		service.resultInfoPut("device", selectedDeviceName);		//TODO: or use deviceTypeLocal? - If the name is not the same language this might sound strange
 		
 		//ACTIONS

@@ -2,7 +2,10 @@ package net.b07z.sepia.server.assist.users;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 import org.json.simple.JSONObject;
 
@@ -155,6 +158,15 @@ public class ACCOUNT {
 				continue;
 			}
 		}
+		//make a data check?
+		for (Object kObj : filteredData.keySet()){
+			if (requiresDataCheck.contains(kObj)){
+				Function<Object, Object> checkerFun = dataCheckers.get(kObj);
+				Object objToCheck = filteredData.get(kObj);
+				Object cleanObj = checkerFun.apply(objToCheck);
+				JSON.put(filteredData, (String) kObj, cleanObj);
+			}
+		}
 		return filteredData;
 	}
 	/**
@@ -196,5 +208,18 @@ public class ACCOUNT {
 			//NOTE: this is applied on top level, don't use nesting here
 			PASSWORD, PWD_SALT, PWD_ITERATIONS, TOKENS, APIS, ROLES
 	);
-
+	//these can be shown to admin, e.g. when listing users
+	public static final List<String> allowedToShowAdmin = Arrays.asList(
+			GUUID, EMAIL, USER_NAME, ROLES, STATISTICS 			//TODO: should be extended?
+	);
+	
+	//requires data check? (e.g. remove characters from user-name that are not allowed)
+	public static final List<String> requiresDataCheck = Arrays.asList(
+			USER_NAME
+	);
+	private static Map<String, Function<Object,Object>> dataCheckers = new HashMap<>();
+	static {
+		//dataCheckers.put(USER_NAME, Name::cleanUpNameJson);
+		dataCheckers.put(USER_NAME, (obj) -> Name.cleanUpNameJson((JSONObject) obj));
+	}
 }

@@ -236,7 +236,7 @@ public class AccountDynamoDB implements AccountInterface{
 
 		String updateExpressionSet = "ADD ";
 		updateExpressionSet += "statistics.totalCalls :val1";	// + ", ";
-		JSON.add(expressionAttributeValues, ":val1", DynamoDB.typeConversionDynamoDB(new Integer(1)));
+		JSON.add(expressionAttributeValues, ":val1", DynamoDB.typeConversionDynamoDB(Integer.valueOf(1)));
 		
 		updateExpressionSet += " SET ";
 		updateExpressionSet += "statistics.lastLogin = :val2";  // + ", ";

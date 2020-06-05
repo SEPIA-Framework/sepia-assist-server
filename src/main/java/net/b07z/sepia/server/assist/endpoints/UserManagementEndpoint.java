@@ -1,5 +1,6 @@
 package net.b07z.sepia.server.assist.endpoints;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.json.simple.JSONArray;
@@ -17,6 +18,7 @@ import net.b07z.sepia.server.core.server.RequestParameters;
 import net.b07z.sepia.server.core.server.RequestPostParameters;
 import net.b07z.sepia.server.core.server.SparkJavaFw;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
+import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
@@ -276,6 +278,46 @@ public class UserManagementEndpoint {
 						return SparkJavaFw.returnResult(request, response, JSON.make(
 								"result", "success", 
 								"message", "account '" + userIdToBeDeleted + "' has been deleted.",
+								"duration_ms", Debugger.toc(tic)
+						).toJSONString(), 200);
+					}
+				
+				//list - get a list of users
+				}else if (action.equals("list")){
+					AuthenticationInterface auth = (AuthenticationInterface) ClassBuilder.construct(Config.authenticationModule);
+					auth.setRequestInfo(request);
+					JSONArray keys = JSON.getJArray(data, "keys");
+					int from = JSON.getIntegerOrDefault(data, "from", 0);
+					int size = JSON.getIntegerOrDefault(data, "size", 50);
+					if (size >= 500){
+						return SparkJavaFw.returnResult(request, response, JSON.make(
+								"result", "fail", 
+								"error", "could not load user list! Size parameter must be smaller than 500."
+						).toJSONString(), 200);
+					}
+					//JSON.prettyPrint(data); 		//DEBUG		
+					JSONArray res;
+					if (Is.nullOrEmpty(keys)){
+						res = auth.listUsers(Arrays.asList(ACCOUNT.GUUID, ACCOUNT.EMAIL, ACCOUNT.ROLES, ACCOUNT.STATISTICS), from, size);
+					}else{
+						res = auth.listUsers(Converters.jsonArrayToStringList(keys), from, size);
+					}
+					//check result
+					if (res == null){
+						//fail
+						int code = auth.getErrorCode();
+						Debugger.println("userManagement - list - could not load user list! Code: " + code, 1);
+						return SparkJavaFw.returnResult(request, response, JSON.make(
+								"result", "fail", 
+								"error", "could not load user list!",
+								"code", code
+						).toJSONString(), 200);
+					}else{
+						//success
+						return SparkJavaFw.returnResult(request, response, JSON.make(
+								"result", "success",
+								"N", res.size(),
+								"list", res,
 								"duration_ms", Debugger.toc(tic)
 						).toJSONString(), 200);
 					}

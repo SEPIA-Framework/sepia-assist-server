@@ -56,7 +56,8 @@ public class AssistantSocketClient extends SepiaSocketClient {
     //Triggered when this client gets a private message.
 	@Override
 	public void replyToMessage(SocketMessage msg){
-    	//JSON.printJSONpretty(msg.getJSON()); 			//debug
+		//JSON.prettyPrint(msg.getJSON()); 			//DEBUG
+		//System.out.println("AssistantSocketClient text: " + msg.text); 		//DEBUG
 		//String deviceId = msg.getDataParameterAsString(AssistEndpoint.InputParameters.device_id.name());
 		boolean isPrivate = true;
 		SocketMessage reply = getReply(msg, isPrivate);

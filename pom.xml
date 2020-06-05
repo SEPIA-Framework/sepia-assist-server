@@ -3,7 +3,7 @@
 	
 	<groupId>net.b07z.sepia.server.assist</groupId>
 	<artifactId>sepia-assist-API</artifactId>
-	<version>2.4.1</version>
+	<version>2.5.0</version>
 	<name>SEPIA Assist API</name>
 	<description>Core server of the SEPIA Framework for personal digital assistants. Responsible for NLU, conversation, smart-service integration, user-accounts and more.</description>
 	<url>https://sepia-framework.github.io</url>
@@ -20,10 +20,76 @@
     	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     	<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
+		<java.version>1.8</java.version>
+		<kotlin.version>1.3.71</kotlin.version>
   	</properties>
       
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.jetbrains.kotlin</groupId>
+				<artifactId>kotlin-maven-plugin</artifactId>
+				<version>${kotlin.version}</version>
+				<executions>
+					<execution>
+						<id>compile</id>
+						<goals> 
+							<goal>compile</goal>
+						</goals>
+						<configuration>
+							<sourceDirs>
+								<sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
+								<sourceDir>${project.basedir}/src/main/java</sourceDir>
+							</sourceDirs>
+						</configuration>
+					</execution>
+					<execution>
+						<id>test-compile</id>
+						<goals>
+							<goal>test-compile</goal>
+						</goals>
+						<configuration>
+							<sourceDirs>
+								<sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
+								<sourceDir>${project.basedir}/src/test/java</sourceDir>
+							</sourceDirs>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-compiler-plugin</artifactId>
+			    <version>3.1</version>
+			    <configuration>
+			        <source>${java.version}</source>
+			        <target>${java.version}</target>
+			    </configuration>
+			    <executions>
+			        <execution>
+			            <id>default-compile</id>
+			            <phase>none</phase>
+			        </execution>
+			        <execution>
+			            <id>default-testCompile</id>
+			            <phase>none</phase>
+			        </execution>
+			        <execution>
+			            <id>java-compile</id>
+			            <phase>compile</phase>
+			            <goals>
+			                <goal>compile</goal>
+			            </goals>
+			        </execution>
+			        <execution>
+			            <id>java-test-compile</id>
+			            <phase>test-compile</phase>
+			            <goals>
+			                <goal>testCompile</goal>
+			            </goals>
+			        </execution>
+			    </executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
@@ -106,7 +172,7 @@
 		<dependency>
 			<groupId>net.b07z.sepia.websockets</groupId>
 			<artifactId>sepia-websockets</artifactId>
-			<version>1.2.3</version>
+			<version>1.3.0</version>
 		</dependency>
 		<!-- included in sepia-websockets 
 		<dependency>
@@ -125,14 +191,33 @@
 			<artifactId>rome</artifactId>
 			<version>1.12.0</version>
 		</dependency>
+
+    	<!-- Kotlin -->
+    	<dependency>
+        	<groupId>org.jetbrains.kotlin</groupId>
+        	<artifactId>kotlin-stdlib-jdk8</artifactId>
+        	<version>${kotlin.version}</version>
+    	</dependency>
 		
-		<!-- Add JUnit but only for testing (scope) -->
+		<!-- Add JUnit and kotlin-test but only for testing (scope) -->
 		<dependency>
       		<groupId>junit</groupId>
       		<artifactId>junit</artifactId>
       		<version>4.12</version>
       		<scope>test</scope>
     	</dependency>
+    	<dependency>
+    		<groupId>org.jetbrains.kotlin</groupId>
+		    <artifactId>kotlin-test</artifactId>
+		    <version>${kotlin.version}</version>
+		    <scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.jetbrains.kotlin</groupId>
+		    <artifactId>kotlin-test-junit</artifactId>
+		    <version>${kotlin.version}</version>
+		    <scope>test</scope>
+		</dependency>
 	</dependencies>
 
 </project>

@@ -10,6 +10,7 @@ import net.b07z.sepia.server.assist.parameters.SportsLeague;
 import net.b07z.sepia.server.assist.parameters.SportsTeam;
 import net.b07z.sepia.server.assist.server.Statistics;
 import net.b07z.sepia.server.assist.tools.DateTimeConverters;
+import net.b07z.sepia.server.assist.workers.ThreadManager.ThreadInfo;
 import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.JSON;
@@ -18,7 +19,7 @@ public class OpenLigaWorker implements WorkerInterface {
 	
 	//common
 	static String name = "OpenLigaDB-worker";
-	Thread worker;
+	ThreadInfo worker;
 	int workerStatus = -1;				//-1: offline, 0: ready to start, 1: waiting for next action, 2: in action
 	private String statusDesc = "";		//text description of status
 	boolean abort = false;
@@ -118,11 +119,11 @@ public class OpenLigaWorker implements WorkerInterface {
 	
 	@Override
 	public boolean kill(){
-		abort = true;
+		abort = true;		//NOTE: once this flag is set it remains false and the worker is basically dead! Create a new instance afterwards.
 		long thisWait = 0; 
 		if (executedRefreshs != 0){
 			while (workerStatus > 0){
-				try {	Thread.sleep(waitInterval);	} catch (Exception e){	e.printStackTrace(); return false;	}
+				Debugger.sleep(waitInterval);
 				thisWait += waitInterval;
 				if (thisWait >= maxWait){
 					break;
@@ -141,7 +142,7 @@ public class OpenLigaWorker implements WorkerInterface {
 		//if (nextRefresh > 100){	return;	}
 		long thisWait = 0; 
 		while (workerStatus == 2){
-			try {	Thread.sleep(waitInterval);	} catch (Exception e){	e.printStackTrace(); break;	}
+			Debugger.sleep(waitInterval);
 			thisWait += waitInterval;
 			if (thisWait >= Math.min(upperMaxRefreshWait, averageRefreshTime)){
 				break;
@@ -155,193 +156,190 @@ public class OpenLigaWorker implements WorkerInterface {
 	}
 	@Override
 	public void start(long customStartDelay){
-		worker = new Thread(){
-		    public void run(){
-		    	workerStatus = 1;
-		    	try {	Thread.sleep(customStartDelay);	} catch (Exception e){	e.printStackTrace(); }
-		    	long totalRefreshTime = 0;
-		    	executedRefreshs = 0;
-		    	long errorMatchDayRetry = 5000; 		//retry getCurrentMatchDay in ...
-		    	long errorLastDbRefreshRetry = 5000;	//retry getLastDbRefresh in ...
-		    	long errorDataRefreshRetry = 5000;		//retry getData in ...
-		    	boolean isMatchDayOk = false;
-		    	boolean isDataUpdatePossible = true;
-		    	String newDbRefreshDate = "";
-		    	if (!abort){
-		    		Debugger.println(name + ": START", 3);
-		    	}else{
-		    		Debugger.println(name + ": CANCELED before start", 3);
-		    	}
-		    	while (!abort){
-		    		workerStatus = 2;
-			    	long tic = Debugger.tic();
-			    	JSONArray newData = new JSONArray();
-			    	
-			    	//get data
-			    	boolean error = false;
-			    	//get current match-day 
-			    	if (currentMatchDay < 1 || ((System.currentTimeMillis() - lastMatchDayUpdate) > matchDayUpdateThreshold)){
-			    		long newMatchDay = getCurrentMatchDay(league);
-			    		if (newMatchDay > 0 && (currentMatchDay != newMatchDay)){
-			    			//load league season so far?
-			    			if (currentMatchDay == -1){
-			    				//this is not guaranteed to give a result but saves all content in league.content.JSONArray
-			    				JSONObject leagueData = getSeasonSoFar((JSONObject) openLigaData.get(league), league, newMatchDay, season);
-			    				JSON.add(openLigaData, league, leagueData);
-			    			}
-			    			//store new match day
-			    			currentMatchDay = newMatchDay;
-			    			//get next matches
-			    			String matchDayID = season + "/" + (currentMatchDay + 1);
-			    			JSONArray nextData = getNextMatchDayData(league, matchDayID);
-			    			if (nextData == null){
-			    				//try again
-			    				errorMatchDayRetry = errorMatchDayRetry + initialErrorInterval;
-				    			error = true;
-				    			isMatchDayOk = false;
-			    			}else{
-			    				//reset error timers and update data + time stamp
-			    				JSONObject leagueData = (JSONObject) openLigaData.get(league);
-				    			if (leagueData == null){
-				    				leagueData = new JSONObject();
-				    			}
-				    			JSON.add(leagueData, matchDayID, nextData);
-				    			JSON.add(openLigaData, league, leagueData);
-			    				//JSON.add(Config.openLigaDataNext, league, nextData.get(league));
-				    			//JSON.add(Config.openLigaDataNext, league + "_info", JSON.make("matchDay", currentMatchDay+1, "leagueName", getLeagueName(league, ""), "leagueTag", league));
-				    			errorMatchDayRetry = initialErrorInterval;
-				    			lastMatchDayUpdate = System.currentTimeMillis();
-				    			isMatchDayOk = true;
-			    			}
-			    		}else if (newMatchDay > 0 && (currentMatchDay == newMatchDay)){
-			    			errorMatchDayRetry = initialErrorInterval;
-			    			lastMatchDayUpdate = System.currentTimeMillis();
-			    			isMatchDayOk = true;
-			    		}else{
-			    			errorMatchDayRetry = errorMatchDayRetry + initialErrorInterval;
+		worker = ThreadManager.runForever(() -> {
+	    	workerStatus = 1;
+	    	Debugger.sleep(customStartDelay);
+	    	long totalRefreshTime = 0;
+	    	executedRefreshs = 0;
+	    	long errorMatchDayRetry = 5000; 		//retry getCurrentMatchDay in ...
+	    	long errorLastDbRefreshRetry = 5000;	//retry getLastDbRefresh in ...
+	    	long errorDataRefreshRetry = 5000;		//retry getData in ...
+	    	boolean isMatchDayOk = false;
+	    	boolean isDataUpdatePossible = true;
+	    	String newDbRefreshDate = "";
+	    	if (!abort){
+	    		Debugger.println(name + ": START", 3);
+	    	}else{
+	    		Debugger.println(name + ": CANCELED before start", 3);
+	    	}
+	    	while (!abort){
+	    		workerStatus = 2;
+		    	long tic = Debugger.tic();
+		    	JSONArray newData = new JSONArray();
+		    	
+		    	//get data
+		    	boolean error = false;
+		    	//get current match-day 
+		    	if (currentMatchDay < 1 || ((System.currentTimeMillis() - lastMatchDayUpdate) > matchDayUpdateThreshold)){
+		    		long newMatchDay = getCurrentMatchDay(league);
+		    		if (newMatchDay > 0 && (currentMatchDay != newMatchDay)){
+		    			//load league season so far?
+		    			if (currentMatchDay == -1){
+		    				//this is not guaranteed to give a result but saves all content in league.content.JSONArray
+		    				JSONObject leagueData = getSeasonSoFar((JSONObject) openLigaData.get(league), league, newMatchDay, season);
+		    				JSON.add(openLigaData, league, leagueData);
+		    			}
+		    			//store new match day
+		    			currentMatchDay = newMatchDay;
+		    			//get next matches
+		    			String matchDayID = season + "/" + (currentMatchDay + 1);
+		    			JSONArray nextData = getNextMatchDayData(league, matchDayID);
+		    			if (nextData == null){
+		    				//try again
+		    				errorMatchDayRetry = errorMatchDayRetry + initialErrorInterval;
 			    			error = true;
 			    			isMatchDayOk = false;
-			    		}
-			    	}else{
-			    		isMatchDayOk = true;
-			    	}
-			    	//get last DB refresh date
-			    	if (!error && isMatchDayOk){
-			    		newDbRefreshDate = getLastDbRefresh(league, season + "/" + currentMatchDay);
-			    		if (newDbRefreshDate == null){
-			    			errorLastDbRefreshRetry = errorLastDbRefreshRetry + initialErrorInterval;
-			    			error = true;
-			    			isDataUpdatePossible = false;
-			    		}else if (!newDbRefreshDate.equals(lastDbRefreshDate)){
-			    			isDataUpdatePossible = true;
-			    			errorLastDbRefreshRetry = initialErrorInterval;
-			    		}else{
-			    			isDataUpdatePossible = false;
-			    			errorLastDbRefreshRetry = initialErrorInterval;
-			    		}
-			    	}
-			    	//get API data
-			    	if (!error && isDataUpdatePossible){
-			    		String matchDayID = season + "/" + currentMatchDay;
-			    		newData = getMatchDayData(league, matchDayID); 
-			    		if (newData == null){
-			    			errorDataRefreshRetry = errorDataRefreshRetry + initialErrorInterval;
-			    			error = true;
-			    		}else{
-				    		//overwrite old data
-			    			JSONObject leagueData = (JSONObject) openLigaData.get(league);
+		    			}else{
+		    				//reset error timers and update data + time stamp
+		    				JSONObject leagueData = (JSONObject) openLigaData.get(league);
 			    			if (leagueData == null){
 			    				leagueData = new JSONObject();
 			    			}
-			    			JSONArray leagueDataContent = (JSONArray) leagueData.get("content");
-			    			if (leagueDataContent == null){
-			    				leagueDataContent = new JSONArray();
-			    			}
-			    			JSON.add(leagueData, matchDayID, newData);
-			    			if (!leagueDataContent.contains(matchDayID)){
-			    				JSON.add(leagueData, "content", JSON.add(leagueDataContent, matchDayID));
-			    			}
+			    			JSON.add(leagueData, matchDayID, nextData);
 			    			JSON.add(openLigaData, league, leagueData);
-			    			JSON.add(openLigaData, league + "_info", JSON.make("matchDay", currentMatchDay, "matchDayID", matchDayID, "leagueName", getLeagueName(league, ""), "leagueTag", league));
-				    		lastUpdated = System.currentTimeMillis();
-				    		lastDbRefreshDate = newDbRefreshDate;
-				    		errorDataRefreshRetry = initialErrorInterval;
-				    		//rebuild table
-				    		JSONArray table = getSoccerLeagueTable(league, season, currentMatchDay);
-				    		if (table != null){
-				    			JSON.add(openLigaData, league + "_table", table);
-				    			JSON.add(openLigaData, league + "_table_info", JSON.make("matchDay", currentMatchDay));
-				    		}
-			    		}
-			    	}
-			    	
-			    	//report
-			    	long thisRefreshTime = (System.currentTimeMillis()-tic); 
-			    	if (error){
-			    		Statistics.addOtherApiHit("Worker ERRORS: " + name);
-						Statistics.addOtherApiTime("Worker ERRORS: " + name, tic);
-			    		Debugger.println(name + ": Data NOT updated! (" + executedRefreshs + " time(s)) Try took (ms): " + thisRefreshTime + ", average (ms): " + averageRefreshTime, 3);
-			    	}else{
-			    		totalRefreshTime += thisRefreshTime;
-				    	executedRefreshs++;
-				    	averageRefreshTime = (long)((double)totalRefreshTime/(double)executedRefreshs);
-				    	Statistics.addOtherApiHit("Worker: " + name);
-						Statistics.addOtherApiTime("Worker: " + name, tic);
-			    		Debugger.println(name + ": Data has been updated! (" + executedRefreshs + " time(s)) It took (ms): " + thisRefreshTime + ", average (ms): " + averageRefreshTime, 3);
-			    		//JSON.printJSONpretty(Config.openLigaData); 		//debug
-			    	}
-					
-					//set next interval
-					long currentInterval = Long.MAX_VALUE;
-					//Error timers
-					if (error){
-						if (!isMatchDayOk){
-							currentInterval = errorMatchDayRetry;
-						}else if (!isDataUpdatePossible){
-							currentInterval = errorLastDbRefreshRetry;
-						}else{
-							currentInterval = errorDataRefreshRetry;
-						}
-					//Normal cycle
-					}else{
-						//TODO: this is a bit tricky and needs more testing
-						long nextMatchTime = activeOrNextMatchTime.get(league);
-						long nextMatchWait = nextMatchTime - System.currentTimeMillis();
-						if (isDataUpdatePossible){
-							currentInterval = matchTimeInterval;
-						}else if (Math.abs(nextMatchWait) < (1000*60*60*3)){
-							currentInterval = matchTimeInterval;
-						}else if (nextMatchWait > 0){
-							currentInterval = Math.min(customRefreshInterval, nextMatchWait);
-						}else{
-							currentInterval = customRefreshInterval;
-						}
-					}
-			    	//debug
-					/*
-			    	System.out.println("OpenLigaDB - error: " + error);
-			    	System.out.println("OpenLigaDB - isMatchDayOk: " + isMatchDayOk);
-			    	System.out.println("OpenLigaDB - currentMatchDay: " + currentMatchDay + ", lastMatchDayUpdate: " + lastMatchDayUpdate);
-			    	System.out.println("OpenLigaDB - isDataUpdatePossible: " + isDataUpdatePossible);
-			    	System.out.println("OpenLigaDB - newDbRefreshDate: " + newDbRefreshDate);
-			    	System.out.println("OpenLigaDB - lastUpdated: " + lastUpdated);
-			    	System.out.println("OpenLigaDB - lastDbRefreshDate: " + lastDbRefreshDate);
-			    	System.out.println("OpenLigaDB - currentInterval: " + currentInterval);
-			    	*/
-					
-					//wait for next interval
-					workerStatus = 1;
-					long thisWait = 0; 
-					while(!abort && (thisWait < currentInterval)){
-						nextRefresh = currentInterval-thisWait;
-						try {	Thread.sleep(customWaitInterval);	} catch (Exception e){	e.printStackTrace(); workerStatus=-1; break; }
-						thisWait += customWaitInterval;
-					}
+		    				//JSON.add(Config.openLigaDataNext, league, nextData.get(league));
+			    			//JSON.add(Config.openLigaDataNext, league + "_info", JSON.make("matchDay", currentMatchDay+1, "leagueName", getLeagueName(league, ""), "leagueTag", league));
+			    			errorMatchDayRetry = initialErrorInterval;
+			    			lastMatchDayUpdate = System.currentTimeMillis();
+			    			isMatchDayOk = true;
+		    			}
+		    		}else if (newMatchDay > 0 && (currentMatchDay == newMatchDay)){
+		    			errorMatchDayRetry = initialErrorInterval;
+		    			lastMatchDayUpdate = System.currentTimeMillis();
+		    			isMatchDayOk = true;
+		    		}else{
+		    			errorMatchDayRetry = errorMatchDayRetry + initialErrorInterval;
+		    			error = true;
+		    			isMatchDayOk = false;
+		    		}
+		    	}else{
+		    		isMatchDayOk = true;
 		    	}
-		    	workerStatus = 0;
-		    }
-		};
-		worker.start();
+		    	//get last DB refresh date
+		    	if (!error && isMatchDayOk){
+		    		newDbRefreshDate = getLastDbRefresh(league, season + "/" + currentMatchDay);
+		    		if (newDbRefreshDate == null){
+		    			errorLastDbRefreshRetry = errorLastDbRefreshRetry + initialErrorInterval;
+		    			error = true;
+		    			isDataUpdatePossible = false;
+		    		}else if (!newDbRefreshDate.equals(lastDbRefreshDate)){
+		    			isDataUpdatePossible = true;
+		    			errorLastDbRefreshRetry = initialErrorInterval;
+		    		}else{
+		    			isDataUpdatePossible = false;
+		    			errorLastDbRefreshRetry = initialErrorInterval;
+		    		}
+		    	}
+		    	//get API data
+		    	if (!error && isDataUpdatePossible){
+		    		String matchDayID = season + "/" + currentMatchDay;
+		    		newData = getMatchDayData(league, matchDayID); 
+		    		if (newData == null){
+		    			errorDataRefreshRetry = errorDataRefreshRetry + initialErrorInterval;
+		    			error = true;
+		    		}else{
+			    		//overwrite old data
+		    			JSONObject leagueData = (JSONObject) openLigaData.get(league);
+		    			if (leagueData == null){
+		    				leagueData = new JSONObject();
+		    			}
+		    			JSONArray leagueDataContent = (JSONArray) leagueData.get("content");
+		    			if (leagueDataContent == null){
+		    				leagueDataContent = new JSONArray();
+		    			}
+		    			JSON.add(leagueData, matchDayID, newData);
+		    			if (!leagueDataContent.contains(matchDayID)){
+		    				JSON.add(leagueData, "content", JSON.add(leagueDataContent, matchDayID));
+		    			}
+		    			JSON.add(openLigaData, league, leagueData);
+		    			JSON.add(openLigaData, league + "_info", JSON.make("matchDay", currentMatchDay, "matchDayID", matchDayID, "leagueName", getLeagueName(league, ""), "leagueTag", league));
+			    		lastUpdated = System.currentTimeMillis();
+			    		lastDbRefreshDate = newDbRefreshDate;
+			    		errorDataRefreshRetry = initialErrorInterval;
+			    		//rebuild table
+			    		JSONArray table = getSoccerLeagueTable(league, season, currentMatchDay);
+			    		if (table != null){
+			    			JSON.add(openLigaData, league + "_table", table);
+			    			JSON.add(openLigaData, league + "_table_info", JSON.make("matchDay", currentMatchDay));
+			    		}
+		    		}
+		    	}
+		    	
+		    	//report
+		    	long thisRefreshTime = (System.currentTimeMillis()-tic); 
+		    	if (error){
+		    		Statistics.addOtherApiHit("Worker ERRORS: " + name);
+					Statistics.addOtherApiTime("Worker ERRORS: " + name, tic);
+		    		Debugger.println(name + ": Data NOT updated! (" + executedRefreshs + " time(s)) Try took (ms): " + thisRefreshTime + ", average (ms): " + averageRefreshTime, 3);
+		    	}else{
+		    		totalRefreshTime += thisRefreshTime;
+			    	executedRefreshs++;
+			    	averageRefreshTime = (long)((double)totalRefreshTime/(double)executedRefreshs);
+			    	Statistics.addOtherApiHit("Worker: " + name);
+					Statistics.addOtherApiTime("Worker: " + name, tic);
+		    		Debugger.println(name + ": Data has been updated! (" + executedRefreshs + " time(s)) It took (ms): " + thisRefreshTime + ", average (ms): " + averageRefreshTime, 3);
+		    		//JSON.printJSONpretty(Config.openLigaData); 		//debug
+		    	}
+				
+				//set next interval
+				long currentInterval = Long.MAX_VALUE;
+				//Error timers
+				if (error){
+					if (!isMatchDayOk){
+						currentInterval = errorMatchDayRetry;
+					}else if (!isDataUpdatePossible){
+						currentInterval = errorLastDbRefreshRetry;
+					}else{
+						currentInterval = errorDataRefreshRetry;
+					}
+				//Normal cycle
+				}else{
+					//TODO: this is a bit tricky and needs more testing
+					long nextMatchTime = activeOrNextMatchTime.get(league);
+					long nextMatchWait = nextMatchTime - System.currentTimeMillis();
+					if (isDataUpdatePossible){
+						currentInterval = matchTimeInterval;
+					}else if (Math.abs(nextMatchWait) < (1000*60*60*3)){
+						currentInterval = matchTimeInterval;
+					}else if (nextMatchWait > 0){
+						currentInterval = Math.min(customRefreshInterval, nextMatchWait);
+					}else{
+						currentInterval = customRefreshInterval;
+					}
+				}
+		    	//debug
+				/*
+		    	System.out.println("OpenLigaDB - error: " + error);
+		    	System.out.println("OpenLigaDB - isMatchDayOk: " + isMatchDayOk);
+		    	System.out.println("OpenLigaDB - currentMatchDay: " + currentMatchDay + ", lastMatchDayUpdate: " + lastMatchDayUpdate);
+		    	System.out.println("OpenLigaDB - isDataUpdatePossible: " + isDataUpdatePossible);
+		    	System.out.println("OpenLigaDB - newDbRefreshDate: " + newDbRefreshDate);
+		    	System.out.println("OpenLigaDB - lastUpdated: " + lastUpdated);
+		    	System.out.println("OpenLigaDB - lastDbRefreshDate: " + lastDbRefreshDate);
+		    	System.out.println("OpenLigaDB - currentInterval: " + currentInterval);
+		    	*/
+				
+				//wait for next interval
+				workerStatus = 1;
+				long thisWait = 0; 
+				while(!abort && (thisWait < currentInterval)){
+					nextRefresh = currentInterval-thisWait;
+					Debugger.sleep(customWaitInterval);
+					thisWait += customWaitInterval;
+				}
+	    	}
+	    	workerStatus = 0;
+	    });
 	}
 	
 	//----------------- API -------------------

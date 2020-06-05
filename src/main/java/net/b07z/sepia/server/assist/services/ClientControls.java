@@ -4,6 +4,7 @@ import java.util.TreeSet;
 
 import org.json.simple.JSONObject;
 
+import net.b07z.sepia.server.assist.answers.AnswerTools;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
@@ -132,7 +133,7 @@ public class ClientControls implements ServiceInterface{
 		Parameter actionP = nluResult.getRequiredParameter(PARAMETERS.ACTION);
 		String action = actionP.getValueAsString().replaceAll("^<|>$", "").trim();
 		Parameter mediaControlsP = nluResult.getOptionalParameter(PARAMETERS.MEDIA_CONTROLS, "");
-		String mediaControls = mediaControlsP.getValueAsString().replaceAll("^<|>$", "").trim();
+		String mediaControls = mediaControlsP.getValueAsString().replaceAll("^<|>$", "").trim();	//note: < and > are typically already removed
 		boolean isActionOpen = (action.equals(Action.Type.show.name()) || action.equals(Action.Type.on.name()));
 		boolean isActionClose = (action.equals(Action.Type.remove.name()) || action.equals(Action.Type.off.name()));
 		boolean isActionIncrease = (action.equals(Action.Type.increase.name()) || action.equals(Action.Type.add.name()));
@@ -140,7 +141,7 @@ public class ClientControls implements ServiceInterface{
 		boolean isActionEdit = (action.equals(Action.Type.set.name()) || action.equals(Action.Type.edit.name()));
 		
 		Parameter controlFunP = nluResult.getRequiredParameter(PARAMETERS.CLIENT_FUN);
-		String controlFun = controlFunP.getValueAsString().replaceAll("^<|>$", "").trim();
+		String controlFun = controlFunP.getValueAsString().replaceAll("^<|>$", "").trim(); 			//note: < and > are typically already removed
 		
 		boolean isSettings = controlFun.equals(ClientFunction.Type.settings.name());
 		boolean isAlwaysOn = controlFun.equals(ClientFunction.Type.alwaysOn.name());
@@ -148,6 +149,7 @@ public class ClientControls implements ServiceInterface{
 		boolean isClexi = controlFun.equals(ClientFunction.Type.clexi.name());
 		boolean isMedia = controlFun.equals(ClientFunction.Type.media.name()); 		//NOTE: media and volume can exist simultaneously
 		boolean isVolume = controlFun.equals(ClientFunction.Type.volume.name()) || mediaControls.startsWith("volume_");
+		boolean isRuntimeCommand = Is.typeEqual(controlFun, ClientFunction.Type.runtimeCommands);
 		
 		if (isVolume){
 			controlFun = ClientFunction.Type.volume.name();
@@ -159,6 +161,9 @@ public class ClientControls implements ServiceInterface{
 		
 		Parameter numberP = nluResult.getOptionalParameter(PARAMETERS.NUMBER, "");
 		String num = numberP.getValueAsString();
+		
+		//get background parameters
+		String reply = nluResult.getParameter(PARAMETERS.REPLY);	//a custom reply (defined via Teach-UI)
 				
 		//This service basically cannot fail here ... only inside client
 		
@@ -238,8 +243,8 @@ public class ClientControls implements ServiceInterface{
 			//Always-On mode support
 			actionName = "toggle";	//we simply use a toggle command, no matter what action 
 			
-		}else if (isMeshNode || isClexi){
-			//Mesh-Node & CLEXI support
+		}else if (isMeshNode || isClexi || isRuntimeCommand){
+			//Mesh-Node / CLEXI / Runtime (e.g. via CLEXI) support
 			actionName = data; 		//this call requires a custom data block
 		}
 		JSONObject a = JSON.make("action", actionName);
@@ -287,6 +292,12 @@ public class ClientControls implements ServiceInterface{
 			api.setStatusOkay();
 		}else{
 			api.setStatusSuccess();
+			
+			//custom success reply?
+			if (!reply.isEmpty()){
+				reply = AnswerTools.handleUserAnswerSets(reply);
+				api.setCustomAnswer(reply);
+			}
 		}
 		
 		//build the API_Result

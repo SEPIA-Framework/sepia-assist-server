@@ -1,4 +1,4 @@
-package net.b07z.sepia.server.assist.services;
+package net.b07z.sepia.server.assist.smarthome;
 
 import java.util.List;
 import java.util.Map;
@@ -16,7 +16,7 @@ import net.b07z.sepia.server.core.tools.Debugger;
  * 
  * @author Florian Quirin
  */
-public class Test_SmartHubIntegration {
+public class Test_SmartHomeHub {
 
 	public static void main(String[] args) {
 		

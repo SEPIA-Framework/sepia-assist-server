@@ -279,14 +279,14 @@ public class Wikipedia implements ServiceInterface{
 					wikiText_clean = wikiText_clean.replaceAll("\\([^(]*?\\)", "");
 					wikiText_clean = wikiText_clean.replaceAll("\\([^(]*?\\)", "");
 					wikiText_clean = wikiText_clean.replaceAll("\\s+", " ").replaceAll(" \\. ",". ").trim();
-					wikiText = wikiText.replaceAll("\\n", "<br><br>");
+					//wikiText = wikiText.replaceAll("\\n", "<br><br>"); 		//removed due to restricted HTML support in 'answer'
 					//System.out.println(wikiText);		//debug
 					
 					//check if it is a "real" answer or a multiple-choice - DEPENDS ON LANGUAGE!
 					boolean isGoodResult = true;
-					if (wikiText.contains("steht für:") || wikiText.contains("bezeichnet<br><br>") 
-									|| wikiText.contains("refer to:") || wikiText.contains("refer to<br><br>")
-									|| wikiText.contains(":<br><br>")){
+					if (wikiText.contains("steht für:") || wikiText.contains("bezeichnet\n") 
+									|| wikiText.contains("refer to:") || wikiText.contains("refer to\n")
+									|| wikiText.contains(":\n")){
 						isGoodResult = false;
 					}
 					

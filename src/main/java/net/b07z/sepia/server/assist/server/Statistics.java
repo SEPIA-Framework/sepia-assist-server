@@ -4,6 +4,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import net.b07z.sepia.server.assist.messages.Clients;
+import net.b07z.sepia.server.assist.workers.ServiceBackgroundTaskManager;
+import net.b07z.sepia.server.assist.workers.ThreadManager;
 import net.b07z.sepia.server.assist.workers.Workers;
 import net.b07z.sepia.server.core.server.BasicStatistics;
 
@@ -65,12 +67,19 @@ public class Statistics extends BasicStatistics {
 				"WebSocket connection info:<br>" + Clients.getAssistantSocketClientStats() +
 				Start.addToStatistics() +
 				"<br>"
-				;
+		;
 		
 		//add basics
 		msg += getBasicInfo();
 		
 		//add workers
+		msg += "Processing threads:<br>";
+		msg += "Active threads now: " + ThreadManager.getNumberOfCurrentlyActiveThreads() + "<br>";
+		msg += "Max. active threads: " + ThreadManager.getMaxNumberOfActiveThreads() + "<br>";
+		msg += "Scheduled or active custom tasks: " + ThreadManager.getNumberOfScheduledTasks() + "<br>";
+		msg += "Scheduled or active service tasks: " + ServiceBackgroundTaskManager.getNumberOfScheduledTasks() + "<br>";
+		msg += "<br>";
+		msg += "Workers and Connections:<br>";
 		msg += Workers.getStatsReport();
 		
 		return msg;

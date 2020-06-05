@@ -24,6 +24,7 @@ import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.core.assistant.ACTIONS;
+import net.b07z.sepia.server.core.assistant.ENVIRONMENTS;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.JSON;
@@ -78,10 +79,12 @@ public class WebsearchBasic implements ServiceInterface{
 		//Answers:
 		info.addSuccessAnswer("websearch_1a")
 			.addFailAnswer("error_0a")
-			.addAnswerParameters("search", "engine", "section");
+			.addCustomAnswer("missingDisplay", missingDisplay);
+		info.addAnswerParameters("search", "engine", "section");
 		
 		return info;
 	}
+	private static final String missingDisplay = "error_missing_display_0b"; 
 
 	//result
 	public ServiceResult getResult(NluResult nluResult){
@@ -215,6 +218,9 @@ public class WebsearchBasic implements ServiceInterface{
 		//api.answerClean = Converters.removeHTML(api.answer);
 		
 		//status
+		if (!ENVIRONMENTS.deviceHasActiveDisplay(nluResult.input.environment)){
+			api.setCustomAnswer(missingDisplay);
+		}
 		api.setStatusSuccess();
 		
 		//finally build the API_Result

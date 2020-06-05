@@ -15,9 +15,10 @@ public class NormalizerLightTR implements Normalizer {
 		text = text.replaceAll("İ", "i");
 		text = text.replaceAll("I", "ı");
 				
-		text = text.replaceAll("(!(?!\\()|¿|¡|\\?(?!\\()|,(?!\\d))", "").toLowerCase().trim();
+		text = text.replaceAll("(!(?!\\()|¿|¡|,(?!\\d))", "").toLowerCase().trim();
 		//text = text.replaceAll("(?<![oO])'", "").trim();		//TODO: use it or not?
-		text = text.replaceAll("((?<!\\d)\\.$)", "").trim();
+		//text = text.replaceAll("((?<!\\d)\\.$)", "").trim();
+		text = text.replaceAll("(\\.|\\?)$", "").trim();
 		
 		//special characters
 		//TODO: use it or not?

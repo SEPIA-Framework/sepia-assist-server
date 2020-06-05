@@ -52,7 +52,7 @@ public class DynamoDB {
 	public static JSONObject getItem(String tableName, String primaryKey, String keyValue, String... lookUp){
 		if (lookUp == null || lookUp.length <= 0){
 			JSONObject result =	new JSONObject();
-			JSON.add(result, Connectors.HTTP_REST_SUCCESS, new Boolean(false));
+			JSON.add(result, Connectors.HTTP_REST_SUCCESS, Boolean.FALSE);
 			JSON.add(result, "error", "no data to lookup!");
 			return result;
 		}
@@ -73,7 +73,7 @@ public class DynamoDB {
 		JSONObject request = new JSONObject();
 		JSON.add(request, "TableName", tableName);
 		JSON.add(request, "Key", getSearchKey(primaryKey, keyValue.toLowerCase().trim())); 		//IDs are always lowerCase
-		JSON.add(request, "ConsistentRead", new Boolean(false));	//eventually consistent should be enough
+		JSON.add(request, "ConsistentRead", Boolean.FALSE);	//eventually consistent should be enough
 		JSON.add(request, "ReturnConsumedCapacity", "NONE");		//we don't need that info here .. yet
 		JSON.add(request, "ProjectionExpression", lookFor);
 		if (!expressionAttributeNames.isEmpty()){
@@ -95,7 +95,7 @@ public class DynamoDB {
 		//IndexName could also be the header for multiple attributes or independent from attribute name, but this is not supported here.
 		if (lookUp == null || lookUp.length <= 0){
 			JSONObject result =	new JSONObject();
-			JSON.add(result, Connectors.HTTP_REST_SUCCESS, new Boolean(false));
+			JSON.add(result, Connectors.HTTP_REST_SUCCESS, Boolean.FALSE);
 			JSON.add(result, "error", "no data to lookup!");
 			return result;
 		}
@@ -122,7 +122,7 @@ public class DynamoDB {
 			JSON.add(expAttVal, ":ival", ival);
 		JSON.add(request, "ExpressionAttributeValues", expAttVal);
 		JSON.add(request, "Limit", 1);
-		JSON.add(request, "ConsistentRead", new Boolean(false));	//eventually consistent should be enough
+		JSON.add(request, "ConsistentRead", Boolean.FALSE);	//eventually consistent should be enough
 		JSON.add(request, "ReturnConsumedCapacity", "NONE");		//we don't need that info here .. yet
 		JSON.add(request, "ProjectionExpression", lookFor);
 		if (!expressionAttributeNames.isEmpty()){
@@ -409,7 +409,7 @@ public class DynamoDB {
 			
 		}catch (Exception e){
 			JSONObject result =	new JSONObject();
-			JSON.add(result, Connectors.HTTP_REST_SUCCESS, new Boolean(false));
+			JSON.add(result, Connectors.HTTP_REST_SUCCESS, Boolean.FALSE);
 			JSON.add(result, "error", e.toString());
 			e.printStackTrace();
 			return result;

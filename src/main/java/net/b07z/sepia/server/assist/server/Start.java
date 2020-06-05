@@ -57,6 +57,7 @@ public class Start {
 
 	//stuff
 	public static String startGMT = "";
+	public static long lastStartUNIX = 0l;
 	public static String serverType = "";
 	public static String[] startUpArgs = null;
 	
@@ -239,7 +240,7 @@ public class Start {
 	 * All kinds of things that should be loaded on startup.
 	 */
 	public static void setupModules(){
-		Config.setupDatabases(); 		//DB modules
+		Config.setupDatabases(true);	//DB modules
 		Config.setupAnswers();			//answers
 		Config.setupCommands();			//predefined commands
 		Config.setupChats(); 			//predefined chats
@@ -360,6 +361,8 @@ public class Start {
 	 * MAIN METHOD TO START SERVER
 	 */
 	public static void main(String[] args) {
+		//activation timestamp
+		lastStartUNIX = System.currentTimeMillis();
 		
 		//load settings
 		loadSettings(args);

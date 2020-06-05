@@ -269,7 +269,7 @@ public class Test_AuthAndAccount {
 		
 		//load custom config
 		Start.loadSettings(new String[]{"--test"});
-		Config.setupDatabases();
+		Config.setupDatabases(false);
 		
 		//load modules
 		auth = (AuthenticationInterface) ClassBuilder.construct(Config.authenticationModule);

@@ -2,8 +2,10 @@ package net.b07z.sepia.server.assist.smarthome;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.json.simple.JSONObject;
 
@@ -28,6 +30,9 @@ public class TestHub implements SmartHomeHub {
 		//Not required
 	}
 	
+	private JSONObject info;
+	private String hubId;
+	
 	//------ test devices ------
 	
 	private static SmartHomeDevice light = new SmartHomeDevice(
@@ -38,7 +43,8 @@ public class TestHub implements SmartHomeHub {
 			"link", JSON.make(
 					"id", "Light_Test_A",
 					"origin", NAME,
-					"typeGuessed", false
+					"typeGuessed", false,
+					"namedBySepia", true
 			)
 	);
 	private static SmartHomeDevice light2 = new SmartHomeDevice(
@@ -49,7 +55,8 @@ public class TestHub implements SmartHomeHub {
 			"link", JSON.make(
 					"id", "Light_Test_B",
 					"origin", NAME,
-					"typeGuessed", true
+					"typeGuessed", true,
+					"namedBySepia", true
 			)
 	);
 	private static SmartHomeDevice heater = new SmartHomeDevice(
@@ -60,7 +67,8 @@ public class TestHub implements SmartHomeHub {
 			"link", JSON.make(
 					"id", "Heater_Test_A",
 					"origin", NAME,
-					"typeGuessed", false
+					"typeGuessed", false,
+					"namedBySepia", true
 			)
 	);
 	private static SmartHomeDevice rollerShutter = new SmartHomeDevice(
@@ -71,14 +79,58 @@ public class TestHub implements SmartHomeHub {
 			"link", JSON.make(
 					"id", "Shutter_Test_A",
 					"origin", NAME,
-					"typeGuessed", false
+					"typeGuessed", false,
+					"namedBySepia", true
+			)
+	);
+	private static SmartHomeDevice genericDevice = new SmartHomeDevice(
+			"Device 1", 
+			SmartDevice.Types.device.name(), 
+			Room.Types.garage.name(), 
+			SmartHomeDevice.State.off.name(), SmartHomeDevice.StateType.text_binary.name(), "", 
+			"link", JSON.make(
+					"id", "Device_Test_A",
+					"origin", NAME,
+					"typeGuessed", false,
+					"namedBySepia", true
 			)
 	);
 	private static List<SmartHomeDevice> devicesList = Arrays.asList(
-			light, light2, heater, rollerShutter
+			light, light2, heater, rollerShutter, genericDevice
 	);
 	
 	//--------------------------
+	
+	@Override
+	public JSONObject toJson(){
+		return JSON.make(
+			"id", this.hubId,
+			"type", NAME,
+			"host", "SEPIA",
+			"authType", "",
+			"authData", "",
+			"info", this.info
+		);
+	}
+	
+	@Override
+	public boolean activate(){
+		return true;
+	}
+	@Override
+	public boolean deactivate(){
+		return true;
+	}
+	
+	@Override
+	public void setId(String id){
+		this.hubId = id; 
+	}
+	
+	@Override
+	public String getId(){
+		return this.hubId;
+	}
 
 	@Override
 	public void setHostAddress(String hostUrl){
@@ -89,7 +141,20 @@ public class TestHub implements SmartHomeHub {
 	public void setAuthenticationInfo(String authType, String authData){
 		//Not required
 	}
+	
+	@Override
+	public void setInfo(JSONObject info){
+		this.info = info;
+	}
+	@Override
+	public JSONObject getInfo(){
+		return this.info;
+	}
 
+	@Override
+	public boolean requiresRegistration(){
+		return false;
+	}
 	@Override
 	public boolean registerSepiaFramework(){
 		return true;
@@ -114,9 +179,7 @@ public class TestHub implements SmartHomeHub {
 				deviceFound.setRoomIndex(attrValue);
 			}else if (attrName.equals(SmartHomeDevice.SEPIA_TAG_SET_CMDS)){
 				if (attrValue != null && attrValue.trim().startsWith("{")){
-					JSON.put(deviceFound.getMeta(), "setCmds", JSON.parseString(attrValue));
-				}else{
-					JSON.put(deviceFound.getMeta(), "setCmds", attrValue);
+					deviceFound.setCustomCommands(JSON.parseString(attrValue));
 				}
 			}else if (attrName.equals(SmartHomeDevice.SEPIA_TAG_STATE_TYPE)){
 				deviceFound.setStateType(attrValue);
@@ -137,6 +200,21 @@ public class TestHub implements SmartHomeHub {
 		}
 		return devices;
 	}
+	
+	@Override
+	public Map<String, Set<String>> getBufferedDeviceNamesByType(){
+		Map<String, Set<String>> devicesByType = new HashMap<>();
+		for (SmartHomeDevice shd : devicesList){
+			String type = shd.getType();
+			Set<String> devices = devicesByType.get(type);
+			if (devices == null){
+				devices = new HashSet<>();
+				devicesByType.put(type, devices);
+			}
+			devices.add(SmartHomeDevice.getCleanedUpName(shd.getName()));		//NOTE: use "clean" name!
+		}
+		return devicesByType;
+	}
 
 	@Override
 	public List<SmartHomeDevice> getFilteredDevicesList(Map<String, Object> filters){
@@ -156,19 +234,20 @@ public class TestHub implements SmartHomeHub {
 
 	@Override
 	public SmartHomeDevice loadDeviceData(SmartHomeDevice device){
-		return getDevices().get(device.getName());
+		String id = device.getId();
+		return getDevices().get(id);
 	}
 
 	@Override
 	public boolean setDeviceState(SmartHomeDevice device, String state, String stateType){
 		//get reference to stored object from internal list (the given 'device' can be imported from JSON or created)
-		SmartHomeDevice deviceFound = getDevices().get(device.getMetaValueAsString("id"));
+		SmartHomeDevice deviceFound = getDevices().get(device.getId());
 		//modify object reference
 		Debugger.println(TestHub.class.getSimpleName() + " - setDeviceState - name: " 
 				+ device.getName() + ", stateType: " + stateType + ", state: " + state, 3);
 		if (deviceFound != null){
 			//set command overwrite?
-			JSONObject setCmds = (JSONObject) device.getMeta().get("setCmds");
+			JSONObject setCmds = device.getCustomCommands();
 			if (Is.notNullOrEmpty(setCmds)){
 				String newState = SmartHomeDevice.getStateFromCustomSetCommands(state, stateType, setCmds);
 				if (newState != null){
@@ -190,7 +269,7 @@ public class TestHub implements SmartHomeHub {
 
 	@Override
 	public boolean setDeviceStateMemory(SmartHomeDevice device, String stateMemory){
-		SmartHomeDevice deviceFound = getDevices().get(device.getName());
+		SmartHomeDevice deviceFound = getDevices().get(device.getId());
 		if (deviceFound != null){
 			deviceFound.setStateMemory(stateMemory);
 			return true;

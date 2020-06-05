@@ -18,8 +18,9 @@ public class NormalizerLightDE implements Normalizer {
 		String assiName = Config.assistantName.toLowerCase();
 		String assiRegEx = "(" + Pattern.quote(assiName) + "|<assistant_name>" + ")";
 		
-		text = text.replaceAll("(!(?!\\()|\\?(?!\\()|(?<![oO])'|,(?!\\d))", "").toLowerCase().trim();
-		text = text.replaceAll("((?<!\\d)\\.$)", "").trim();
+		text = text.replaceAll("(!(?!\\()|(?<![oO])'|,(?!\\d))", "").toLowerCase().trim();
+		//text = text.replaceAll("((?<!\\d)\\.$)", "").trim();
+		text = text.replaceAll("(\\.|\\?)$", "").trim();
 		text = text.replaceFirst("^" + assiRegEx + " ","").trim();
 		text = text.replaceFirst("(?<!(auf den namen|ist|fuer))\\s+" + assiRegEx + "$","").trim();
 		text = text.replaceAll("^(hallo |hi |hey |guten tag |guten morgen )","").trim();

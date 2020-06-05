@@ -6,6 +6,7 @@ import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.Statistics;
+import net.b07z.sepia.server.assist.workers.ThreadManager.ThreadInfo;
 import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.FilesAndStreams;
@@ -20,16 +21,18 @@ import net.b07z.sepia.server.core.tools.URLBuilder;
  *
  */
 public class DuckDnsWorker implements WorkerInterface {
+	//TODO: there is some inconsistency in ALL worker classes about how to use static and instance variables :-| 
 	
 	//DuckDNS settings - worker will only run if token and domain are set
 	public static String configFile = Config.xtensionsFolder + "DynamicDNS/duck-dns.properties"; 
 	public static String workerName = "DuckDNS-worker"; 
+	
 	private String token = "";
 	private String domain = "";
 	
 	//common
 	String name = workerName;
-	Thread worker;
+	ThreadInfo worker;
 	int workerStatus = -1;				//-1: offline, 0: ready to start, 1: waiting for next action, 2: in action
 	private String statusDesc = "";		//text description of status
 	boolean abort = false;
@@ -47,7 +50,7 @@ public class DuckDnsWorker implements WorkerInterface {
 	long customWaitInterval = 5000;			//custom wait time until the worker checks for an abort request and status changes
 	public static long customRefreshInterval = (5*60*1000);		//every 5min - can be set in config file
 	public static long errorRefreshInterval = (10*60*1000);		//every 10min
-	public long minTimeToLog = (60*60*1000);	//minimum time to wait until next log entry (handy when refreshes are made frequently, errors are logged always)
+	public long minTimeToLog = (60*60*1000);	//minimum time to wait until next log entry (handy when refreshes are made frequently, errors are always logged)
 	public static long lastLog = 0;
 	
 	//variables
@@ -99,11 +102,11 @@ public class DuckDnsWorker implements WorkerInterface {
 	
 	@Override
 	public boolean kill(){
-		abort = true;
+		abort = true;	 	//NOTE: once this flag is set it remains false and the worker is basically dead! Create a new instance afterwards.
 		long thisWait = 0; 
 		if (executedRefreshs != 0){
 			while (workerStatus > 0){
-				try {	Thread.sleep(waitInterval);	} catch (Exception e){	e.printStackTrace(); return false;	}
+				Debugger.sleep(waitInterval);
 				thisWait += waitInterval;
 				if (thisWait >= maxWait){
 					break;
@@ -122,7 +125,7 @@ public class DuckDnsWorker implements WorkerInterface {
 		//if (nextRefresh > 100){	return;	}
 		long thisWait = 0; 
 		while (workerStatus == 2){
-			try {	Thread.sleep(waitInterval);	} catch (Exception e){	e.printStackTrace(); break;	}
+			Debugger.sleep(waitInterval);
 			thisWait += waitInterval;
 			if (thisWait >= Math.min(upperMaxRefreshWait, averageRefreshTime)){
 				break;
@@ -142,9 +145,9 @@ public class DuckDnsWorker implements WorkerInterface {
 		}
 		
 		//start
-		worker = new Thread(() -> {
+		worker = ThreadManager.runForever(() -> {
 	    	workerStatus = 1;
-	    	try {	Thread.sleep(customStartDelay);	} catch (Exception e){	e.printStackTrace(); }
+	    	Debugger.sleep(customStartDelay);
 	    	totalRefreshTime = 0;
 	    	executedRefreshs = 0;
 	    	if (!abort){
@@ -181,13 +184,12 @@ public class DuckDnsWorker implements WorkerInterface {
 				long thisWait = 0; 
 				while(!abort && (thisWait < refreshInterval)){
 					nextRefresh = refreshInterval-thisWait;
-					try {	Thread.sleep(customWaitInterval);	} catch (Exception e){	e.printStackTrace(); workerStatus=-1; break; }
+					Debugger.sleep(customWaitInterval);
 					thisWait += customWaitInterval;
 				}
 	    	}
 	    	workerStatus = 0;
 		});
-		worker.start();
 	}
 	
 	//---------- WORKER LOGIC -----------

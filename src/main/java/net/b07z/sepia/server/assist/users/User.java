@@ -17,6 +17,7 @@ import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.services.ServiceAccessManager;
 import net.b07z.sepia.server.assist.tools.GeoCoding;
+import net.b07z.sepia.server.assist.workers.ThreadManager;
 import net.b07z.sepia.server.core.data.Role;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
 import net.b07z.sepia.server.core.tools.Converters;
@@ -474,17 +475,14 @@ public final class User {
 	 * return anything. Errors are written to the log. We have to keep an eye on memory to make sure the thread is not going crazy ...!
 	 */
 	public void saveStatistics(){
-		Thread thread = new Thread(){
-		    public void run(){
-		    	boolean ok = accountData.writeBasicStatistics(userId);
-				if (!ok){
-					Debugger.println("USER STATISTICS FAILED! - USER: " + userId + " - TIME: " + System.currentTimeMillis(), 1);
-				}/*else{
-					Debugger.println("USER STATISTICS WRITTEN! - USER: " + user_id + " - TIME: " + System.currentTimeMillis(), 1);
-				}*/
-		    }
-		};
-		thread.start();
+		ThreadManager.run(() -> {
+	    	boolean ok = accountData.writeBasicStatistics(userId);
+			if (!ok){
+				Debugger.println("USER STATISTICS FAILED! - USER: " + userId + " - TIME: " + System.currentTimeMillis(), 1);
+			}/*else{
+				Debugger.println("USER STATISTICS WRITTEN! - USER: " + user_id + " - TIME: " + System.currentTimeMillis(), 1);
+			}*/
+	    });
 	}
 	
 	//---- return data that has been loaded ----

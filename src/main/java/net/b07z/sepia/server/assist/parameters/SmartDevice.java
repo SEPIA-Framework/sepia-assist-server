@@ -1,6 +1,11 @@
 package net.b07z.sepia.server.assist.parameters;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.json.simple.JSONObject;
 
@@ -11,6 +16,9 @@ import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.interpreters.Normalizer;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.server.Config;
+import net.b07z.sepia.server.assist.smarthome.SmartHomeHub;
+import net.b07z.sepia.server.assist.tools.StringCompare;
+import net.b07z.sepia.server.assist.tools.StringCompare.StringCompareResult;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Debugger;
@@ -24,6 +32,8 @@ import net.b07z.sepia.server.core.tools.JSON;
  * 
  */
 public class SmartDevice implements ParameterHandler{
+	
+	private static final long deviceNameScanToolsId = ParameterTools.getNewIdForPerformanceProfiling("SmartDevice#deviceNamesScan");
 
 	//-----data-----
 	
@@ -44,7 +54,8 @@ public class SmartDevice implements ParameterHandler{
 		device,
 		//no extract methods:
 		other,
-		hidden
+		hidden,
+		unknown 	//NOTE: this should only be used if instead the device tag/name is known
 		//TODO: window, door or use device?
 	}
 	/**
@@ -71,6 +82,7 @@ public class SmartDevice implements ParameterHandler{
 		types_de.put("device", "das Gerät");
 		types_de.put("other", "");
 		types_de.put("hidden", "");
+		types_de.put("unknown", "");
 		
 		types_en.put("light", "the light");
 		types_en.put("heater", "the heater");
@@ -85,6 +97,7 @@ public class SmartDevice implements ParameterHandler{
 		types_en.put("device", "the device");
 		types_en.put("other", "");
 		types_en.put("hidden", "");
+		types_en.put("unknown", "");
 	}
 	
 	/**
@@ -108,8 +121,12 @@ public class SmartDevice implements ParameterHandler{
 		return localName;
 	}
 	
-	public static final String lightRegEx_en = "light(s|)|lighting|lamp(s|)|illumination|brightness";
-	public static final String heaterRegEx_en = "heater(s|)|temperature(s|)|thermostat(s|)";
+	public static final String lightRegEx_en = "light(s|)|lighting|lamp(s|)|"
+											+ "illumination|"
+											+ "brightness";
+	public static final String heaterRegEx_en = "heat(er(s|)|ing)|"
+											+ "temperature(s|)|"
+											+ "thermostat(s|)";
 	public static final String tvRegEx_en = "tv|television";
 	public static final String musicPlayerRegEx_en = "(stereo|music)( |)(player)|stereo|bluetooth(-| )(speaker|box)|speaker(s|)";
 	public static final String fridgeRegEx_en = "fridge|refrigerator";
@@ -118,19 +135,25 @@ public class SmartDevice implements ParameterHandler{
 	public static final String rollerShutterRegEx_en = "((roller|window|sun)( |-|)|)(shutter(s|)|blind(s|)|louver(s|))|jalousie(s|)";
 	public static final String powerOutletRegEx_en = "((wall|power)( |-|)|)(socket(s|)|outlet(s|))";
 	public static final String sensorRegEx_en = "sensor(s|)";
-	public static final String genericDeviceRegEx_en = "device( |)\\d+";
+	public static final String genericDeviceRegEx_en = "device";
 	
-	public static final String lightRegEx_de = "licht(er|es|)|lampe(n|)|beleuchtung|leuchte(n|)|helligkeit";
-	public static final String heaterRegEx_de = "heiz(er|ungen|ung|koerper(s|)|luefter(s|)|strahler(s|))|thermostat(es|s|)|temperatur(regler(s|)|en|)";
+	public static final String lightRegEx_de = "\\w*(licht(er|es|)|lampe(n|)|beleuchtung|leuchte(n|))|"
+											+ "helligkeit";
+	public static final String heaterRegEx_de = "\\w*(heiz(er|ungen|ung|koerper(s|)|luefter(s|)|strahler(s|)))|"
+											+ "\\w*(thermostat(es|s|))|"
+											+ "temperatur(regler(s|)|en|)";
 	public static final String tvRegEx_de = "tv(s|)|television(s|)|fernseh(er(s|)|geraet(es|s|)|apparat(es|s|))";
-	public static final String musicPlayerRegEx_de = "(stereo|musi(k|c))( |)(anlage|player(s|))|bluetooth(-| )(lautsprecher(s|)|box)|lautsprecher(s|)|boxen";
+	public static final String musicPlayerRegEx_de = "(stereo|musi(k|c))( |)(anlage|player(s|))|"
+											+ "bluetooth(-| )(lautsprecher(s|)|box)|"
+											+ "\\w*(lautsprecher(s|))|"
+											+ "\\w*(boxen)";
 	public static final String fridgeRegEx_de = "kuehlschrank(s|)";
 	public static final String ovenRegEx_de = "ofen(s|)|herd(es|s)";
 	public static final String coffeeMakerRegEx_de = "kaffeemaschine";
 	public static final String rollerShutterRegEx_de = "(fenster|rol(l|))(l(a|ae)den)|jalousie(n|)|rollo(s|)|markise";
 	public static final String powerOutletRegEx_de = "(steck|strom)( |-|)dose(n|)|stromanschluss(es|)";
 	public static final String sensorRegEx_de = "sensor(en|s|)";
-	public static final String genericDeviceRegEx_de = "geraet( |)\\d+";
+	public static final String genericDeviceRegEx_de = "geraet";
 	//----------------
 	
 	User user;
@@ -230,102 +253,134 @@ public class SmartDevice implements ParameterHandler{
 			//Still empty
 			return "";
 		}else{
-			//we should take device names (tag/number..) into account, like "Lamp 1", "Light A" or "Desk-Lights" etc.
-			String deviceWithNumber;
-			if (language.matches(LANGUAGES.DE)){
-				deviceWithNumber = NluTools.stringFindFirst(input, device + "( (mit der |mit |)nummer|) \\d+");
-			}else{
-				deviceWithNumber = NluTools.stringFindFirst(input, device + "( (with the |with |)number|) \\d+");
-			}
-			if (!deviceWithNumber.isEmpty()){
-				this.found = deviceWithNumber;
-			}else{
-				this.found = device;
-			}
-			//System.out.println("found: " + this.found); 		//DEBUG
-			
-			//TODO: needs further work ->  create an additional parameter called SMART_DEVICE_NAME
+			this.found = device;
+			//System.out.println("found 1: " + this.found); 		//DEBUG
 		}
 		
-		//classify into types:
+		//classify into generalized types:
 		
-		String deviceTypeTag = null;
+		final String deviceType;
 		
 		if (language.matches(LANGUAGES.DE)){
 			if (NluTools.stringContains(device, lightRegEx_de)){
-				deviceTypeTag = "<" + Types.light.name() + ">";
+				deviceType = Types.light.name();
 				
 			}else if (NluTools.stringContains(device, heaterRegEx_de)){
-				deviceTypeTag = "<" + Types.heater.name() + ">";
+				deviceType = Types.heater.name();
 				
 			}else if (NluTools.stringContains(device, tvRegEx_de)){
-				deviceTypeTag = "<" + Types.tv.name() + ">";
+				deviceType = Types.tv.name();
 				
 			}else if (NluTools.stringContains(device, musicPlayerRegEx_de)){
-				deviceTypeTag = "<" + Types.music_player.name() + ">";
+				deviceType = Types.music_player.name();
 				
 			}else if (NluTools.stringContains(device, rollerShutterRegEx_de)){
-				deviceTypeTag = "<" + Types.roller_shutter.name() + ">";
+				deviceType = Types.roller_shutter.name();
 				
 			}else if (NluTools.stringContains(device, powerOutletRegEx_de)){
-				deviceTypeTag = "<" + Types.power_outlet.name() + ">";
+				deviceType = Types.power_outlet.name();
 				
 			}else if (NluTools.stringContains(device, sensorRegEx_de)){
-				deviceTypeTag = "<" + Types.sensor.name() + ">";
+				deviceType = Types.sensor.name();
 				
 			}else if (NluTools.stringContains(device, fridgeRegEx_de)){
-				deviceTypeTag = "<" + Types.fridge.name() + ">";
+				deviceType = Types.fridge.name();
 				
 			}else if (NluTools.stringContains(device, ovenRegEx_de)){
-				deviceTypeTag = "<" + Types.oven.name() + ">";
+				deviceType = Types.oven.name();
 				
 			}else if (NluTools.stringContains(device, coffeeMakerRegEx_de)){
-				deviceTypeTag = "<" + Types.coffee_maker.name() + ">";
+				deviceType = Types.coffee_maker.name();
 			
 			}else{
-				deviceTypeTag = "<" + Types.device.name() + ">";
+				deviceType = Types.device.name();
 			}
 		}else{
 			if (NluTools.stringContains(device, lightRegEx_en)){
-				deviceTypeTag = "<" + Types.light.name() + ">";
+				deviceType = Types.light.name();
 				
 			}else if (NluTools.stringContains(device, heaterRegEx_en)){
-				deviceTypeTag = "<" + Types.heater.name() + ">";
+				deviceType = Types.heater.name();
 				
 			}else if (NluTools.stringContains(device, tvRegEx_en)){
-				deviceTypeTag = "<" + Types.tv.name() + ">";
+				deviceType = Types.tv.name();
 				
 			}else if (NluTools.stringContains(device, musicPlayerRegEx_en)){
-				deviceTypeTag = "<" + Types.music_player.name() + ">";
+				deviceType = Types.music_player.name();
 				
 			}else if (NluTools.stringContains(device, rollerShutterRegEx_en)){
-				deviceTypeTag = "<" + Types.roller_shutter.name() + ">";
+				deviceType = Types.roller_shutter.name();
 				
 			}else if (NluTools.stringContains(device, powerOutletRegEx_en)){
-				deviceTypeTag = "<" + Types.power_outlet.name() + ">";
+				deviceType = Types.power_outlet.name();
 				
 			}else if (NluTools.stringContains(device, sensorRegEx_en)){
-				deviceTypeTag = "<" + Types.sensor.name() + ">";
+				deviceType = Types.sensor.name();
 				
 			}else if (NluTools.stringContains(device, fridgeRegEx_en)){
-				deviceTypeTag = "<" + Types.fridge.name() + ">";
+				deviceType = Types.fridge.name();
 				
 			}else if (NluTools.stringContains(device, ovenRegEx_en)){
-				deviceTypeTag = "<" + Types.oven.name() + ">";
+				deviceType = Types.oven.name();
 				
 			}else if (NluTools.stringContains(device, coffeeMakerRegEx_en)){
-				deviceTypeTag = "<" + Types.coffee_maker.name() + ">";
+				deviceType = Types.coffee_maker.name();
 				
 			}else{
-				deviceTypeTag = "<" + Types.device.name() + ">";
+				deviceType = Types.device.name();
 			}
+		}
+		
+		//can we improve the result with known smart device names for the found type?
+		SmartHomeHub smartHomeHUB = SmartHomeHub.getHubFromSeverConfig(); 
+		String[] deviceNameMatchResult = null;
+		String deviceNameMatch = null;
+		if (smartHomeHUB != null){
+			//make sure this procedure does not seriously influence NLU chain performance: 
+			deviceNameMatchResult = findMatchInKnownDeviceNamesFastOrSkip(input, deviceType, smartHomeHUB, this.language);
+			if (deviceNameMatchResult != null && deviceNameMatchResult.length == 2){
+				//remember match
+				if (Is.notNullOrEmpty(deviceNameMatchResult[0])){
+					deviceNameMatch = deviceNameMatchResult[0];
+				}
+				//can we combine the found name with previous result?
+				if (!deviceNameMatchResult[1].contains(device)){	//NOTE: this is the norm. 'name' because 'device' is norm.
+					if (input.contains(deviceNameMatchResult[1] + " " + device)){
+						this.found = deviceNameMatchResult[1] + " " + device;
+					}else if (input.contains(device + " " + deviceNameMatchResult[1])){
+						this.found = device + " " + deviceNameMatchResult[1];
+					}else{
+						this.found = deviceNameMatchResult[1];
+					}
+				}else{
+					this.found = deviceNameMatchResult[1];
+				}
+				//System.out.println("found 2: " + this.found); 		//DEBUG
+			}
+		}
+		
+		//we should take device names (tag/number..) into account like "Lamp 1", "Light A" etc.
+		String deviceWithNumber;
+		if (language.matches(LANGUAGES.DE)){
+			deviceWithNumber = NluTools.stringFindFirst(input, Pattern.quote(this.found) + "( (mit der |mit |)nummer|) \\d+");
+		}else{
+			deviceWithNumber = NluTools.stringFindFirst(input, Pattern.quote(this.found) + "( (with the |with |)number|) \\d+");
+		}
+		if (!deviceWithNumber.isEmpty()){
+			//String deviceNumber = deviceWithNumber.replaceFirst(".* (\\d+)", "$1")
+			this.found = deviceWithNumber;
+			//System.out.println("found 3: " + this.found); 		//DEBUG
 		}
 		
 		//reconstruct original phrase to get proper item names
 		Normalizer normalizer = Config.inputNormalizers.get(this.language);
-		String tag = normalizer.reconstructPhrase(nluInput.textRaw, this.found);
+		String fullFoundTag = normalizer.reconstructPhrase(nluInput.textRaw, this.found);
 		
-		typeAndTag = deviceTypeTag + ";;" + tag;
+		if (deviceNameMatch != null){
+			typeAndTag = "<" + deviceType + ">;;" + fullFoundTag + ";;" + deviceNameMatch;
+		}else{
+			typeAndTag = "<" + deviceType + ">;;" + fullFoundTag;
+		}
 		
 		//store it
 		pr = new ParameterResult(PARAMETERS.SMART_DEVICE, typeAndTag, this.found);
@@ -345,7 +400,7 @@ public class SmartDevice implements ParameterHandler{
 	}
 
 	@Override
-	public String remove(String input, String found) {
+	public String remove(String input, String found){
 		if (language.equals(LANGUAGES.DE)){
 			found = "(der |die |das |)" + found;
 		}else{
@@ -357,28 +412,44 @@ public class SmartDevice implements ParameterHandler{
 	@Override
 	public String responseTweaker(String input){
 		if (language.equals(LANGUAGES.DE)){
-			return input.replaceAll(".*\\b(einen|einem|einer|eine|ein|der|die|das|den|dem|des|ne|ner|meine(r|s|m|))\\b", "").trim();
+			input = input.replaceAll(".*\\b(einen|einem|einer|eine|ein|der|die|das|den|dem|des|ne|ner|meine(r|s|m|))\\b", "").trim();
 		}else{
-			return input.replaceAll(".*\\b(a|the|my)\\b", "").trim();
+			input = input.replaceAll(".*\\b(a|the|my)\\b", "").trim();
 		}
+		return input;
 	}
 
 	@Override
-	public String build(String input) {
-		//extract again/first? - this should only happen via predefined parameters (e.g. from direct triggers)
+	public String build(String input){
+		//extract again/first? - this should only happen via predefined parameters (e.g. from direct triggers) OR as response (via responseTweaker)
 		if (Is.notNullOrEmpty(input) && !input.startsWith("<")){
-			input = extract(input);
-			if (Is.nullOrEmpty(input)){
-				return "";
+			String exIn = extract(input);
+			if (Is.nullOrEmpty(exIn)){
+				//final try is to look for device name in all (cached) names
+				SmartHomeHub smartHomeHUB = SmartHomeHub.getHubFromSeverConfig();
+				String[] deviceNameMatchResult = findMatchInKnownDeviceNamesFastOrSkip(input, null, smartHomeHUB, this.language);
+				if (deviceNameMatchResult != null && deviceNameMatchResult.length == 2){
+					input = "<" + Types.unknown.name() + ">;;" + deviceNameMatchResult[1] + ";;" + deviceNameMatchResult[0];
+				}else{
+					return "";
+				}
+			}else{
+				input = exIn;
 			}
 		}
 		
 		//expects a type!
 		String deviceNameFound = "";
+		String deviceNameFoundClean = null;
 		String deviceIndexStr = "";
 		if (input.contains(";;")){
 			String[] typeAndName = input.split(";;");
-			if (typeAndName.length == 2){
+			if (typeAndName.length == 3){
+				deviceNameFound = typeAndName[1];
+				deviceNameFoundClean = typeAndName[2];
+				deviceIndexStr = NluTools.stringFindFirst(deviceNameFound, "\\b\\d+\\b");
+				input = typeAndName[0];
+			}else if (typeAndName.length == 2){
 				deviceNameFound = typeAndName[1];
 				deviceIndexStr = NluTools.stringFindFirst(deviceNameFound, "\\b\\d+\\b");
 				input = typeAndName[0];
@@ -389,11 +460,20 @@ public class SmartDevice implements ParameterHandler{
 		String commonValue = input.replaceAll("^<|>$", "").trim();
 		String localValue = getLocal(commonValue, language);
 		
+		if (deviceNameFoundClean == null){
+			if (language.matches(LANGUAGES.DE)){
+				deviceNameFoundClean = deviceNameFound.replaceFirst("(?i)( (mit der |mit |)nummer|) \\d+", "").trim();
+			}else{
+				deviceNameFoundClean = deviceNameFound.replaceFirst("(?i)( (with the |with |)number|) \\d+", "").trim();
+			}
+		}
+		
 		//build default result
 		JSONObject itemResultJSON = new JSONObject();
 			JSON.add(itemResultJSON, InterviewData.VALUE, commonValue);
 			JSON.add(itemResultJSON, InterviewData.VALUE_LOCAL, localValue);
-			JSON.add(itemResultJSON, InterviewData.SMART_DEVICE_TAG, deviceNameFound);
+			JSON.add(itemResultJSON, InterviewData.SMART_DEVICE_TAG, deviceNameFoundClean);
+			JSON.add(itemResultJSON, InterviewData.FOUND, deviceNameFound);
 		//add device index
 		if (!deviceIndexStr.isEmpty()){
 			int deviceIndex = Integer.parseInt(deviceIndexStr);
@@ -417,6 +497,55 @@ public class SmartDevice implements ParameterHandler{
 	@Override
 	public boolean buildSuccess() {
 		return buildSuccess;
+	}
+	
+	//------------------------ helpers ------------------------
+	
+	/**
+	 * Find a match for the input by comparing it to all known (cached) smart device names.<br>
+	 * NOTE: Since this method is performance critical it can occasionally been skipped when taking too long (>250ms).
+	 * @param input - sentence or string to search for device name
+	 * @param deviceType - known device type filter or null (= all types)
+	 * @param smartHomeHUB - HUB that holds the device name info
+	 * @param language - service language code
+	 * @return String array with {bestMatch, bestMatchNorm}
+	 */
+	public static String[] findMatchInKnownDeviceNamesFastOrSkip(String input, String deviceType, SmartHomeHub smartHomeHUB, String language){
+		long thresholdTime = 250; 		//this method has to be super fast!
+		String[] deviceNameMatchResult = ParameterTools.runOrSkipPerformanceCriticalMethod(deviceNameScanToolsId, thresholdTime, (in) -> {
+			Map<String, Set<String>> deviceNamesByType = smartHomeHUB.getBufferedDeviceNamesByType();
+			if (deviceNamesByType != null){
+				Set<String> deviceNames;
+				if (Is.nullOrEmpty(deviceType)){
+					deviceNames = new HashSet<>();
+					deviceNamesByType.values().forEach(set -> {
+						deviceNames.addAll(set);
+					});
+				}else{
+					deviceNames = deviceNamesByType.get(deviceType);
+				}
+				if (Is.notNullOrEmpty(deviceNames)){
+					//System.out.println("input: " + input); 					//DEBUG
+					//System.out.println("possible tags: " + deviceNames); 		//DEBUG
+					StringCompareResult scr = StringCompare.scanSentenceForBestPhraseMatch(
+							input, new ArrayList<>(deviceNames), language
+					);
+					int bestScore = scr.getResultPercent();
+					//System.out.println("bestScore: " + bestScore); 				//DEBUG
+					//System.out.println("bestMatch: " + scr.getResultString()); 	//DEBUG
+					if (bestScore >= 100){			//allow more "fuzziness" ?? - NOTE: we can't do this unless we fix smart device value too
+						String bestMatch = scr.getResultString();
+						String bestMatchNorm = scr.getResultStringNormalized();
+						//System.out.println("Best tag: " + bestMatch); 		//DEBUG
+						return new String[]{bestMatch, bestMatchNorm};
+					}
+				}
+				return new String[]{};		//return empty to prevent error
+			}else{
+				return null;				//return null to indicate error
+			}
+		}, null);
+		return deviceNameMatchResult;
 	}
 
 }

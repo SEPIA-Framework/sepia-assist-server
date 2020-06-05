@@ -34,7 +34,14 @@ public class SmartHomeDevice {
 	private String stateType;	//e.g.: STATE_TYPE_NUMBER_PERCENT
 	private String stateMemory;		//state storage for e.g. default values after restart etc.
 	private String link;		//e.g. HTTP direct URL to device
+	private String interfaceId;	//e.g. openhab, fhem
 	private JSONObject meta;	//space for custom stuff
+	
+	//filter options
+	public static final String FILTER_NAME = "name";
+	public static final String FILTER_TYPE = "type";
+	public static final String FILTER_ROOM = "room";
+	public static final String FILTER_ROOM_INDEX = "roomIndex";
 	
 	//global tags used to store SEPIA specific device data in other HUB systems
 	public static final String SEPIA_TAG_NAME = "sepia-name";
@@ -45,6 +52,9 @@ public class SmartHomeDevice {
 	public static final String SEPIA_TAG_MEM_STATE = "sepia-mem-state";
 	public static final String SEPIA_TAG_STATE_TYPE = "sepia-state-type";
 	public static final String SEPIA_TAG_SET_CMDS = "sepia-set-cmds";
+	
+	public static final String SEPIA_TAG_INTERFACE = "sepia-interface";
+	public static final String SEPIA_TAG_LINK = "sepia-link";
 	
 	//generalized device states
 	public static enum State {
@@ -155,6 +165,20 @@ public class SmartHomeDevice {
 	}
 	
 	/**
+	 * Device interface id
+	 * @return
+	 */
+	public String getInterface() {
+		return interfaceId;
+	}
+	/**
+	 * Set class variable 'interfaceId' (no write to HUB!)
+	 */
+	public void setInterface(String interfaceId) {
+		this.interfaceId = interfaceId;
+	}
+	
+	/**
 	 * Device name
 	 * @return
 	 */
@@ -162,7 +186,7 @@ public class SmartHomeDevice {
 		return name;
 	}
 	/**
-	 * Set object variable (no write to HUB!)
+	 * Set class variable 'name' (no write to HUB!)
 	 */
 	public void setName(String name) {
 		this.name = name;
@@ -176,7 +200,7 @@ public class SmartHomeDevice {
 		return type;
 	}
 	/**
-	 * Set object variable (no write to HUB!)
+	 * Set class variable 'type' (no write to HUB!)
 	 */
 	public void setType(String type) {
 		this.type = type;
@@ -190,7 +214,7 @@ public class SmartHomeDevice {
 		return room;
 	}
 	/**
-	 * Set object variable (no write to HUB!)
+	 * Set class variable 'room' (no write to HUB!)
 	 */
 	public void setRoom(String room) {
 		this.room = room;
@@ -203,7 +227,7 @@ public class SmartHomeDevice {
 		return roomIndex;
 	}
 	/**
-	 * Set object variable (no write to HUB!)
+	 * Set class variable 'roomIndex' (no write to HUB!)
 	 */
 	public void setRoomIndex(String roomIndex) {
 		this.roomIndex = roomIndex;
@@ -217,7 +241,7 @@ public class SmartHomeDevice {
 		return state;
 	}
 	/**
-	 * Set object variable (no write to HUB!)
+	 * Set class variable 'state' (no write to HUB!)
 	 */
 	public void setState(String state) {
 		this.state = state;
@@ -293,7 +317,7 @@ public class SmartHomeDevice {
 	/**
 	 * Get certain value of meta data as string.
 	 * @param key
-	 * @return
+	 * @return value or null
 	 */
 	public String getMetaValueAsString(String key){
 		if (meta != null){
@@ -303,19 +327,59 @@ public class SmartHomeDevice {
 		}
 	}
 	/**
-	 * Set object variable (no write to HUB!)
+	 * Set whole meta object (no write to HUB!)
 	 */
-	public void setMeta(JSONObject meta) {
+	public void setMeta(JSONObject meta){
 		this.meta = meta;
 	}
 	/**
-	 * Set object variable (no write to HUB!)
+	 * Set field of meta data (no write to HUB!)
 	 */
-	public void setMetaValue(String key, Object value) {
+	public void setMetaValue(String key, Object value){
 		if (meta == null){
 			meta = new JSONObject();
 		}
 		JSON.put(meta, key, value);
+	}
+	/**
+	 * Delete field from meta data (no write to HUB!)
+	 */
+	public void removeMetaField(String key){
+		if (meta != null){
+			meta.remove(key);
+		}
+	}
+	
+	/**
+	 * Get the ID usually used to identify the device in the internal database or external HUB.
+	 * The method will check for 'interface' first and return 'interfaceDeviceId' if available (or null).
+	 * If no interface is defined it will return the "normal" ID (meta.id).
+	 * @return
+	 */
+	public String getId(){
+		if (Is.notNullOrEmpty(this.interfaceId)){
+			return getMetaValueAsString("interfaceDeviceId");
+		}else{
+			return getMetaValueAsString("id");
+		}
+	}
+	
+	/**
+	 * Get custom commands object (aka 'setCmds').
+	 * @return
+	 */
+	public JSONObject getCustomCommands(){
+		if (meta == null){
+			return null;
+		}else{
+			return JSON.getJObject(meta, "setCmds");
+		}
+	}
+	/**
+	 * Set custom commands object (aka 'setCmds'; no write to HUB!)
+	 */
+	public void setCustomCommands(JSONObject setCmds){
+		setMetaValue("setCmds", setCmds);
 	}
 	
 	/**
@@ -325,15 +389,16 @@ public class SmartHomeDevice {
 	public JSONObject getDeviceAsJson(){
 		//create common object
 		JSONObject newDeviceObject = JSON.make(
+				"interface", interfaceId,
 				"name", name, 
 				"type", type, 
 				"room", room, 
 				"state", state,
 				"link", link
 		);
-		JSON.put(newDeviceObject, "room-index", roomIndex);
-		JSON.put(newDeviceObject, "state-type", stateType);
-		JSON.put(newDeviceObject, "state-memory", stateMemory);		//NOTE: this CAN BE smart HUB specific (not identical to generalized state value)
+		JSON.put(newDeviceObject, "roomIndex", roomIndex);
+		JSON.put(newDeviceObject, "stateType", stateType);
+		JSON.put(newDeviceObject, "stateMemory", stateMemory);		//NOTE: this CAN BE smart HUB specific (not identical to generalized state value)
 		JSON.put(newDeviceObject, "meta", meta);
 		return newDeviceObject;
 	}
@@ -342,19 +407,41 @@ public class SmartHomeDevice {
 	 * @param deviceJson
 	 */
 	public SmartHomeDevice importJsonDevice(JSONObject deviceJson){
+		this.interfaceId = JSON.getString(deviceJson, "interface");
 		this.name = JSON.getString(deviceJson, "name");
 		this.type = JSON.getString(deviceJson, "type");
 		this.room = JSON.getString(deviceJson, "room");
-		this.roomIndex = JSON.getString(deviceJson, "room-index");
+		this.roomIndex = JSON.getString(deviceJson, "roomIndex");
 		this.state = JSON.getString(deviceJson, "state");
-		this.stateType = JSON.getString(deviceJson, "state-type");
-		this.stateMemory = JSON.getString(deviceJson, "state-memory");
+		this.stateType = JSON.getString(deviceJson, "stateType");
+		this.stateMemory = JSON.getString(deviceJson, "stateMemory");
 		this.link = JSON.getString(deviceJson, "link");
 		this.meta = JSON.getJObject(deviceJson, "meta");
+		//fix some formats
+		if (this.meta != null){
+			this.setCustomCommands(this.getCustomCommands());
+		}
 		return this;
 	}
 	
 	//--------- static helper methods ----------
+	
+	/**
+	 * Clean up a device name, e.g. remove all (..) brackets and trim result.
+	 * @param rawName - name of device as defined by user
+	 * @return
+	 */
+	public static String getCleanedUpName(String rawName){
+		return rawName.replaceAll("\\(.*?\\)", " ").replaceAll("\\s+", " ").trim();
+	}
+	/**
+	 * Get clean name with no brackets and no number.
+	 * @param rawName - name of device as defined by user
+	 * @return
+	 */
+	public static String getBaseName(String rawName){
+		return rawName.replaceAll("\\(.*?\\)", " ").replaceAll("\\d+", " ").replaceAll("\\s+", " ").trim();
+	}
 	
 	/**
 	 * Get devices from the list that match type and room (optionally).
@@ -444,6 +531,33 @@ public class SmartHomeDevice {
 		}else{
 			return devicesList.get(defaultIndex);
 		}
+	}
+	/**
+	 * Search for a given number in device name and return all matches. If number is 1 return all matches AND all devices without any number.
+	 * @param devicesList - list of devices, usually already filtered by device type and room
+	 * @param number - a number to look for in device name (e.g. 1 for "Light 1 in living-room")
+	 * @return list of matches or empty list
+	 */
+	public static List<SmartHomeDevice> findDevicesWithNumberInName(List<SmartHomeDevice> devicesList, int number){
+		List<SmartHomeDevice> matchingDevices = new ArrayList<>();
+		String indexRegExp = ".*(^|\\b|\\D)" + number + "(\\b|\\D|$).*";
+		if (number == 1){
+			//if number is 1 search all devices with 1 or without number
+			for (SmartHomeDevice shd : devicesList){
+				String name = shd.getName();
+				if (!name.matches(".*\\d.*") || name.matches(indexRegExp)){
+					matchingDevices.add(shd);
+				}
+			}
+		}else{
+			//get all with this number
+			for (SmartHomeDevice shd : devicesList){
+				if (shd.getName().matches(indexRegExp)){
+					matchingDevices.add(shd);
+				}
+			}
+		}
+		return matchingDevices;
 	}
 	
 	/**
@@ -610,18 +724,18 @@ public class SmartHomeDevice {
 	public static String getStateFromCustomSetCommands(String state, String stateType, JSONObject setCmds){
 		if (stateType != null){
 			if (stateType.matches(REGEX_STATE_TYPE_NUMBER)){
-				String cmd = (String) setCmds.get("number");
+				String cmd = Converters.obj2StringOrDefault(setCmds.get("number"), null);
 				if (Is.notNullOrEmpty(cmd)){
 					return cmd.replaceAll("<val>|<value>", state);
 				}
 			}else if (stateType.matches(REGEX_STATE_TYPE_TEXT)){
 				if (state.matches(REGEX_STATE_ENABLE)){
-					String cmd = (String) setCmds.get("enable");
+					String cmd = Converters.obj2StringOrDefault(setCmds.get("enable"), null);
 					if (Is.notNullOrEmpty(cmd)){
 						return cmd;
 					}
 				}else if (state.matches(REGEX_STATE_DISABLE)){
-					String cmd = (String) setCmds.get("disable");
+					String cmd = Converters.obj2StringOrDefault(setCmds.get("disable"), null);
 					if (Is.notNullOrEmpty(cmd)){
 						return cmd;
 					}

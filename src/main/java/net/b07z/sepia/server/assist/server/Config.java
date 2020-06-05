@@ -32,6 +32,7 @@ import net.b07z.sepia.server.assist.interpreters.NormalizerLightEN;
 import net.b07z.sepia.server.assist.interpreters.NormalizerLightTR;
 import net.b07z.sepia.server.assist.services.ServiceAccessManager;
 import net.b07z.sepia.server.assist.smarthome.OpenHAB;
+import net.b07z.sepia.server.assist.smarthome.SmartDevicesElasticsearch;
 import net.b07z.sepia.server.assist.tools.RssFeedReader;
 import net.b07z.sepia.server.assist.tools.SpotifyApi;
 import net.b07z.sepia.server.assist.tts.TtsInterface;
@@ -59,7 +60,7 @@ import net.b07z.sepia.server.core.tools.Is;
  */
 public class Config {
 	public static final String SERVERNAME = "SEPIA-Assist-API"; 		//public server name
-	public static final String apiVersion = "v2.4.1";					//API version
+	public static final String apiVersion = "v2.5.0";					//API version
 	public static String privacyPolicyLink = "";						//Link to privacy policy
 	
 	//helper for dynamic class creation (e.g. from strings in config-file) - TODO: reduce dependencies further 
@@ -119,7 +120,7 @@ public class Config {
 	
 	public static String answersPath = xtensionsFolder + "Assistant/answers/";		//where to find the answers text files ...
 	public static String commandsPath = xtensionsFolder + "Assistant/commands/";	//where to find predefined sentences/commands ...
-		
+	
 	//URLs
 	public static String endpointUrl = "http://localhost:20721/";			//**this API URL
 	public static String teachApiUrl = "http://localhost:20722/";			//**teach API URL
@@ -152,6 +153,7 @@ public class Config {
 	public static String ttsModule = TtsOpenEmbedded.class.getCanonicalName();
 	public static String ttsName = "Open Embedded";
 	public static String emailModule = SendEmailBasicSmtp.class.getCanonicalName();
+	public static String smartDevicesModule = SmartDevicesElasticsearch.class.getCanonicalName();	//TODO: not variable yet
 	
 	//toggles and switches:
 	
@@ -174,6 +176,9 @@ public class Config {
 		answerModule = module.getClass().getCanonicalName();
 		setupAnswers();
 	}
+	
+	//Some performance settings (NLU)
+	public static int parameterPerformanceMode = 0; 	//0: skip profiled methods for a few seconds if they exceed threshold too often, 1: always run, 2: never run
 	
 	//Default users and managers
 	public static ServiceAccessManager superuserServiceAccMng = new ServiceAccessManager("API_BOSS"); 	//universal API manager for internal procedures
@@ -337,6 +342,7 @@ public class Config {
 	public static String deutscheBahnOpenApi_key = "";
 	
 	//API URLs - loaded from config file
+	public static String marytts_server = "";
 	public static String smarthome_hub_host = "";
 	public static String smarthome_hub_name = "";
 	public static String smarthome_hub_auth_type = "";
@@ -346,10 +352,15 @@ public class Config {
 	
 	/**
 	 * Setup the modules for database access.
+	 * @param preLoadData - certain database instances might be able to cache some data (similar to the NLU system)
 	 */
-	public static void setupDatabases(){
-		//refresh stuff
+	public static void setupDatabases(boolean preLoadData){
+		//refresh settings
 		DB.refreshSettings();
+		//pre-load some data
+		if (preLoadData){
+			DB.preLoadData();
+		}
 	}
 	/**
 	 * Test databases, e.g. Elasticsearch mappings etc.
@@ -524,6 +535,8 @@ public class Config {
 			if (nluInterpretationChainArr != null && !nluInterpretationChainArr.isEmpty()){
 				nluInterpretationStepsCustomChain = Arrays.asList(nluInterpretationChainArr.split(","));
 			}
+			//NLU performance profilers
+			parameterPerformanceMode = Integer.valueOf(settings.getProperty("parameter_performance_mode", "0"));
 			//workers
 			String backgroundWorkersArr = settings.getProperty("background_workers", "");
 			if (backgroundWorkersArr != null && !backgroundWorkersArr.isEmpty()){
@@ -589,6 +602,7 @@ public class Config {
 			affilinet_key = settings.getProperty("affilinet_key");
 			deutscheBahnOpenApi_key = settings.getProperty("deutscheBahnOpenApi_key");
 			//API URLs
+			marytts_server = settings.getProperty("marytts_server", "http://127.0.0.1:59125").replaceAll("/$", "");
 			smarthome_hub_host = settings.getProperty("smarthome_hub_host");
 			smarthome_hub_name = settings.getProperty("smarthome_hub_name");
 			if (Is.nullOrEmpty(smarthome_hub_host)){

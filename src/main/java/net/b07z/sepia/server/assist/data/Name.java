@@ -46,9 +46,23 @@ public class Name {
 		this.nick = (String) map.get(NICK);
 	}
 	
+	/**
+	 * Make sure all entries are free of malicious code.
+	 * @param json - JSONObject representing name
+	 * @return cleaned up JSON
+	 */
+	public static JSONObject cleanUpNameJson(JSONObject json){
+		for (Object kObj : json.keySet()){
+			String entry = JSON.getStringOrDefault(json, (String) kObj, "");
+			//JSON.put(json, (String) kObj, Converters.escapeHTML(entry));
+			JSON.put(json, (String) kObj, entry.replaceAll("[^\\w\\s#\\-\\+&]","").replaceAll("\\s+", " ").trim());
+		}
+		return json;
+	}
+	
 	@Override
 	public String toString(){
-		return ("First: " + first + ", Last: " + last + ", Nick: " + nick);
+		return buildJSON().toJSONString();
 	}
 	
 	/**
@@ -56,9 +70,9 @@ public class Name {
 	 */
 	public JSONObject buildJSON(){
 		jsonName = new JSONObject();
-		JSON.add(jsonName, FIRST, this.first);
-		JSON.add(jsonName, LAST, this.last);
-		JSON.add(jsonName, NICK, this.nick);
+		JSON.put(jsonName, FIRST, this.first);
+		JSON.put(jsonName, LAST, this.last);
+		JSON.put(jsonName, NICK, this.nick);
 		return jsonName;
 	}
 }

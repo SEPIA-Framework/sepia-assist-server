@@ -83,6 +83,7 @@ public class AssistEndpoint {
 		
 		Statistics.add_NLP_hit();					//hit counter
 		long tic = System.currentTimeMillis();
+		JSONObject processTime = new JSONObject();
 		
 		//prepare parameters
 		RequestParameters params = new RequestGetOrFormParameters(request);
@@ -110,13 +111,15 @@ public class AssistEndpoint {
 		NluResult result = nluChain.getResult(input);
 		
 		Statistics.save_NLP_total_time(tic);		//store NLP time
+		JSON.put(processTime, "nlu", Debugger.toc(tic));
 		
 		//write basic statistics for user
 		input.user.saveStatistics();
 		
 		//return answer in requested format
-		String msg = result.getBestResultJSON().toJSONString();
-		return SparkJavaFw.returnResult(request, response, msg, 200);
+		JSONObject msg = result.getBestResultJSON();
+		JSON.put(msg, "processTime", processTime);
+		return SparkJavaFw.returnResult(request, response, msg.toJSONString(), 200);
 	}
 	/**---INTERPRETER API V2 (also known as 'understand')---<br>
 	 * End-point that interprets a user text input searching for commands and parameters and returns a JSON object describing the best result.
@@ -127,6 +130,7 @@ public class AssistEndpoint {
 		
 		Statistics.add_NLP_hit();					//hit counter
 		long tic = System.currentTimeMillis();
+		JSONObject processTime = new JSONObject();
 		
 		//prepare parameters
 		RequestParameters params = new RequestGetOrFormParameters(request);
@@ -203,6 +207,8 @@ public class AssistEndpoint {
 		}
 		
 		Statistics.save_NLP_total_time(tic);		//store NLP time
+		JSON.put(processTime, "nlu", Debugger.toc(tic));
+		JSON.put(resultJson, "processTime", processTime);
 		
 		//write basic statistics for user
 		input.user.saveStatistics();
@@ -218,6 +224,7 @@ public class AssistEndpoint {
 		
 		Statistics.add_NLP_hit();					//hit counter
 		long tic = System.currentTimeMillis();
+		JSONObject processTime = new JSONObject();
 		
 		//prepare parameters
 		RequestParameters params = new RequestGetOrFormParameters(request);
@@ -265,6 +272,8 @@ public class AssistEndpoint {
 		}
 		
 		Statistics.save_NLP_total_time(tic);		//store NLP time
+		JSON.put(processTime, "nlu", Debugger.toc(tic));
+		JSON.put(returnMsg, "processTime", processTime);
 		
 		//write basic statistics for user
 		input.user.saveStatistics();
@@ -280,6 +289,7 @@ public class AssistEndpoint {
 		
 		Statistics.add_API_hit();					//hit counter
 		long tic = System.currentTimeMillis();
+		JSONObject processTime = new JSONObject();
 		
 		//prepare parameters
 		RequestParameters params = new RequestGetOrFormParameters(request);
@@ -307,6 +317,7 @@ public class AssistEndpoint {
 		NluResult result = nluChain.getResult(input);
 		
 		Statistics.save_NLP_total_time(tic);		//store NLP time and prepare API time
+		JSON.put(processTime, "nlu", Debugger.toc(tic));
 		tic = System.currentTimeMillis();			//track answer time
 		
 		//choose API and get the result of the API as JSON String
@@ -369,18 +380,21 @@ public class AssistEndpoint {
 		}
 		
 		Statistics.save_API_total_time(tic);			//store API call time
+		JSON.put(processTime, "service", Debugger.toc(tic));
 		
+		//TODO: extend this?
 		CollectStuff.saveAsync(result); 				//store useful stuff to build up database and corpi 
 		
 		//different formats ... only JSON right now
-		String answerJSON = answer.getResultJSON();
+		JSONObject answerJSON = answer.getResultJSONObject();
+		JSON.put(answerJSON, "processTime", processTime);
 		
 		//write basic statistics for user
 		input.user.saveStatistics();
 				
 		//return answer in requested format
 		//System.out.println(answer_JSON); 		//DEBUG
-		return SparkJavaFw.returnResult(request, response, answerJSON, 200);
+		return SparkJavaFw.returnResult(request, response, answerJSON.toJSONString(), 200);
 	}
 
 	/**-- EVENTS --<br>

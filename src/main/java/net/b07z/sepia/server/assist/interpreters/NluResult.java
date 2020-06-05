@@ -140,7 +140,7 @@ public class NluResult {
 		if (foundResult && !commandType.matches(CMD.NO_RESULT)) {
 			obj.put("result", "success");
 			obj.put("command", commandType);
-			obj.put("certainty", new Double(certaintyLvl));
+			obj.put("certainty", certaintyLvl);
 			obj.put("bestDirectMatch", bestDirectMatch);
 			JSONObject params = Converters.mapStrStr2Json(parameters);
 			/*for (String e : parameters){
@@ -155,7 +155,7 @@ public class NluResult {
 		obj.put("language", language);
 		obj.put("context", context);
 		obj.put("environment", environment);
-		obj.put("mood", new Integer(mood));
+		obj.put("mood", mood);
 		if (Is.notNullOrEmpty(normalizedText)){
 			obj.put("normalizedText", normalizedText);
 		}
@@ -176,7 +176,7 @@ public class NluResult {
 		if (foundResult && !commandType.matches(CMD.NO_RESULT)){
 			obj.put("result", "success");
 			obj.put("command", commandType);
-			obj.put("certainty", new Double(certaintyLvl));
+			obj.put("certainty", certaintyLvl);
 			obj.put("best_direct_match", bestDirectMatch);
 			obj.put("parameters", Converters.mapStrStr2Json(parameters));	//note: parameter names are not guaranteed to be snake-case :-/
 		}else{
@@ -186,7 +186,7 @@ public class NluResult {
 		obj.put("language", language);
 		obj.put("context", context);
 		obj.put("environment", environment);
-		obj.put("mood", new Integer(mood));
+		obj.put("mood", mood);
 		if (Is.notNullOrEmpty(normalizedText)){
 			obj.put("normalized_text", normalizedText);
 		}

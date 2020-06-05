@@ -3,14 +3,18 @@ package net.b07z.sepia.server.assist.smarthome;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.parameters.SmartDevice;
+import net.b07z.sepia.server.assist.server.Statistics;
 import net.b07z.sepia.server.assist.smarthome.SmartHomeDevice.StateType;
 import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Converters;
@@ -26,12 +30,20 @@ import net.b07z.sepia.server.core.tools.URLBuilder;
  */
 public class Fhem implements SmartHomeHub {
 	
+	public static final String NAME = "fhem";
+	
+	public static int CONNECT_TIMEOUT = 4000;
+	
+	private String hubId;
 	private String host;
 	private String authType;
 	private String authData;
+	private JSONObject info;
 	private String csrfToken = "";
-	public static final String NAME = "fhem";
 	
+	private static Map<String, Map<String, Set<String>>> bufferedDevicesOfHostByType = new ConcurrentHashMap<>();
+	private Map<String, Set<String>> bufferedDevicesByType;
+		
 	private static final String TAG_REGEX = "\\bsepia-.*?\\s";
 	private static final String TAG_NAME = SmartHomeDevice.SEPIA_TAG_NAME;
 	private static final String TAG_TYPE = SmartHomeDevice.SEPIA_TAG_TYPE;
@@ -52,6 +64,7 @@ public class Fhem implements SmartHomeHub {
 		}else{
 			this.host = host;
 			this.csrfToken = getCsrfToken(this.host);
+			this.bufferedDevicesByType = bufferedDevicesOfHostByType.get(this.host);
 		}
 	}
 	/**
@@ -65,6 +78,7 @@ public class Fhem implements SmartHomeHub {
 		}else{
 			this.host = host;
 			this.csrfToken = csrfToken;
+			this.bufferedDevicesByType = bufferedDevicesOfHostByType.get(this.host);
 		}
 	}
 	
@@ -73,14 +87,46 @@ public class Fhem implements SmartHomeHub {
 		return Connectors.addAuthHeader(headers, this.authType, this.authData);
 	}
 	private JSONObject httpGET(String url){
+		Map<String, String> headers = new HashMap<>();
+		headers.put(Connectors.HEADER_ACCEPT_CONTENT, "application/json");
+		headers.put(Connectors.HEADER_ACCEPT_ENCODING, "gzip");
 		if (Is.notNullOrEmpty(this.authData)){
-			return Connectors.httpGET(url, null, addAuthHeader(null));
+			return Connectors.httpGET(url, null, addAuthHeader(headers), CONNECT_TIMEOUT);
 		}else{
-			return Connectors.httpGET(url);
+			return Connectors.httpGET(url, null, headers, CONNECT_TIMEOUT);
 		}
 	}
 	
 	//-------INTERFACE IMPLEMENTATIONS---------
+	
+	@Override
+	public boolean activate(){
+		return true;
+	}
+	@Override
+	public boolean deactivate(){
+		return true;
+	}
+	
+	@Override
+	public JSONObject toJson(){
+		return JSON.make(
+			"id", this.hubId,
+			"type", NAME,
+			"host", this.host,
+			"authType", this.authType,
+			"authData", this.authData,
+			"info", this.info
+		);
+	}
+	@Override
+	public void setId(String id){
+		this.hubId = id; 
+	}
+	@Override
+	public String getId(){
+		return this.hubId;
+	}
 	
 	@Override
 	public void setHostAddress(String hostUrl){
@@ -93,6 +139,19 @@ public class Fhem implements SmartHomeHub {
 		this.authData = authData;
 	}
 	
+	@Override
+	public void setInfo(JSONObject info){
+		this.info = info;
+	}
+	@Override
+	public JSONObject getInfo(){
+		return this.info;
+	}
+	
+	@Override
+	public boolean requiresRegistration(){
+		return true;
+	}
 	@Override
 	public boolean registerSepiaFramework(){
 		//Find attributes first
@@ -161,6 +220,11 @@ public class Fhem implements SmartHomeHub {
 			try {
 				Map<String, SmartHomeDevice> devices = new HashMap<>();
 				JSONArray devicesArray = JSON.getJArray(result, "Results");
+				
+				//use the chance to update the "names by type" buffer
+				this.bufferedDevicesByType = new ConcurrentHashMap<>();
+				
+				//convert all to 'SmartHomeDevice' and collect
 				for (Object o : devicesArray){
 					JSONObject hubDevice = (JSONObject) o;
 					
@@ -170,8 +234,27 @@ public class Fhem implements SmartHomeHub {
 					//devices
 					if (shd != null){
 						devices.put(shd.getMetaValueAsString("id"), shd);
+						
+						//fill buffer
+						String deviceType = shd.getType();
+						String deviceName = shd.getName();
+						if (Is.notNullOrEmpty(deviceType) && Is.notNullOrEmpty(deviceName)){
+							deviceName = SmartHomeDevice.getCleanedUpName(deviceName);		//NOTE: use "clean" name!
+							if (!deviceName.isEmpty() && (boolean) shd.getMeta().get("namedBySepia")){
+								Set<String> deviceNamesOfType = this.bufferedDevicesByType.get(deviceType);
+								if (deviceNamesOfType == null){
+									deviceNamesOfType = new HashSet<>();
+									this.bufferedDevicesByType.put(deviceType, deviceNamesOfType);
+								}
+								deviceNamesOfType.add(deviceName);
+							}
+						}
 					}
 				}
+				
+				//store new buffer
+				bufferedDevicesOfHostByType.put(this.host, this.bufferedDevicesByType);
+				
 				return devices;
 				
 			}catch (Exception e){
@@ -186,6 +269,15 @@ public class Fhem implements SmartHomeHub {
 	}
 	
 	@Override
+	public Map<String, Set<String>> getBufferedDeviceNamesByType(){
+		if (this.bufferedDevicesByType == null){
+			//first run, fill buffer
+			getDevices();
+		}
+		return this.bufferedDevicesByType;
+	}
+	
+	@Override
 	public List<SmartHomeDevice> getFilteredDevicesList(Map<String, Object> filters){
 		//TODO: make this more effective by filtering before instead of loading all devices first
 		Map<String, SmartHomeDevice> devices = getDevices();
@@ -193,13 +285,19 @@ public class Fhem implements SmartHomeHub {
 			return null;
 		}else{
 			//filters
-			String deviceType = (String) filters.get("type");
-			String roomType = (String) filters.get("room");
-			String roomIndex = Converters.obj2StringOrDefault(filters.get("roomIndex"), null);
-			Object limitObj = filters.get("limit");
+			String deviceType = null;
+			String roomType = null;
+			String roomIndex = null;
 			int limit = -1;
-			if (limitObj != null){
-				limit = (int) limitObj;
+			if (filters != null){
+				deviceType = Converters.obj2StringOrDefault(filters.get("type"), null);
+				roomType = Converters.obj2StringOrDefault(filters.get("room"), null);
+				roomIndex = Converters.obj2StringOrDefault(filters.get("roomIndex"), null);
+				Object limitObj = filters.get("limit");
+				limit = -1;
+				if (limitObj != null){
+					limit = (int) limitObj;
+				}
 			}
 			//get all devices with right type and optionally right room
 			List<SmartHomeDevice> matchingDevices = SmartHomeDevice.getMatchingDevices(devices, deviceType, roomType, roomIndex, limit);
@@ -235,8 +333,10 @@ public class Fhem implements SmartHomeHub {
 
 	@Override
 	public SmartHomeDevice loadDeviceData(SmartHomeDevice device){
-		String fhemId = device.getMetaValueAsString("id");
+		long tic = System.currentTimeMillis();
+		String fhemId = device.getId();
 		if (Is.nullOrEmpty(fhemId)){
+			Debugger.println("FHEM - loadDeviceData FAILED with msg.: Missing ID!", 1);
 			return null;
 		}else{
 			String deviceURL = URLBuilder.getString(this.host, 
@@ -248,6 +348,8 @@ public class Fhem implements SmartHomeHub {
 			//System.out.println("RESPONSE: " + response); 		//this is usually empty if there was no error
 			if (Connectors.httpSuccess(response)){
 				try {
+					Statistics.addExternalApiHit("FHEM loadDevice");
+					Statistics.addExternalApiTime("FHEM loadDevice", tic);
 					JSONArray devicesArray = JSON.getJArray(response, "Results");
 					if (devicesArray.size() != 1){
 						throw new RuntimeException("Result was null or not unique! Result size: " + devicesArray.size());
@@ -263,6 +365,9 @@ public class Fhem implements SmartHomeHub {
 					return null;
 				}
 			}else{
+				Statistics.addExternalApiHit("FHEM loadDevice ERROR");
+				Statistics.addExternalApiTime("FHEM loadDevice ERROR", tic);
+				Debugger.println("FHEM - loadDeviceData FAILED with msg.: " + response, 1);
 				return null;
 			}
 		}
@@ -270,18 +375,24 @@ public class Fhem implements SmartHomeHub {
 
 	@Override
 	public boolean setDeviceState(SmartHomeDevice device, String state, String stateType){
-		String fhemId = device.getMetaValueAsString("id");
+		long tic = System.currentTimeMillis();
+		String fhemId = device.getId();
 		String setOptions = device.getMetaValueAsString("setOptions");
 		if (Is.nullOrEmpty(setOptions)){
-			//this is required info
-			return false;
+			//this is required info ... but before we don't even try ...
+			setOptions = "";
+			//return false;
 		}
-		String deviceCmdLink = device.getLink(); 
+		String deviceCmdLink = device.getLink();
+		if (Is.nullOrEmpty(deviceCmdLink)){
+			deviceCmdLink = (this.host + "?cmd." + fhemId);
+		}
 		if (Is.nullOrEmpty(fhemId) || Is.nullOrEmpty(deviceCmdLink)){
+			Debugger.println("FHEM - setDeviceState FAILED with msg.: Missing ID or device link!", 1);
 			return false;
 		}else{
 			//set command overwrite?
-			JSONObject setCmds = (JSONObject) device.getMeta().get("setCmds");
+			JSONObject setCmds = device.getCustomCommands();
 			//System.out.println("setCmds: " + setCmds);		//DEBUG
 			if (Is.notNullOrEmpty(setCmds)){
 				String newState = SmartHomeDevice.getStateFromCustomSetCommands(state, stateType, setCmds);
@@ -330,7 +441,8 @@ public class Fhem implements SmartHomeHub {
 							}
 						}else if(stateType.equals(SmartHomeDevice.StateType.number_temperature_c.name()) 
 								|| stateType.equals(SmartHomeDevice.StateType.number_temperature_f.name())){
-							String cmd = NluTools.stringFindFirst(setOptions, "\\b(desired-temperature|desired-temp|desiredTemperature|desiredTemp|temperature)(?=(\\b|\\d))");
+							String cmd = NluTools.stringFindFirst(setOptions, 
+									"\\b(desired-temperature|desired-temp|desiredTemperature|desiredTemp|temperature)(?=(\\b|\\d))");
 							//temp. via desired-temp, temperature, desiredTemp, desired-temperature 
 							if (!cmd.isEmpty()){
 								state = cmd + " " + state;
@@ -361,8 +473,16 @@ public class Fhem implements SmartHomeHub {
 					Debugger.println("FHEM interface error in 'setDeviceState': " + msg, 1);
 				}
 			}
-			
-			return (Connectors.httpSuccess(response) && !gotErrorMessage);
+			boolean callSuccess = Connectors.httpSuccess(response);
+			if (!callSuccess){
+				Statistics.addExternalApiHit("FHEM setDeviceState ERROR");
+				Statistics.addExternalApiTime("FHEM setDeviceState ERROR", tic);
+				Debugger.println("FHEM - setDeviceState FAILED with msg.: " + response, 1);
+			}else{
+				Statistics.addExternalApiHit("FHEM setDeviceState");
+				Statistics.addExternalApiTime("FHEM setDeviceState", tic);
+			}
+			return (callSuccess && !gotErrorMessage);
 		}
 	}
 
@@ -410,9 +530,13 @@ public class Fhem implements SmartHomeHub {
 		String stateType = null;
 		JSONObject setCmds = null;
 		boolean typeGuessed = false;
+		boolean namedBySepia = false;
 		if (attributes != null){
 			//try to find self-defined SEPIA tags first
 			name = JSON.getStringOrDefault(attributes, TAG_NAME, null);
+			if (Is.notNullOrEmpty(name)){
+				namedBySepia = true;
+			}
 			type = JSON.getStringOrDefault(attributes, TAG_TYPE, null);
 			room = JSON.getStringOrDefault(attributes, TAG_ROOM, null);
 			roomIndex = JSON.getStringOrDefault(attributes, TAG_ROOM_INDEX, null);
@@ -423,17 +547,21 @@ public class Fhem implements SmartHomeHub {
 				setCmds = JSON.parseString(setCmdsStr);
 			}
 		}
-		//smart-guess if missing sepia-specific settings
 		String fhemObjName = JSON.getStringOrDefault(hubDevice, "Name", null);		//NOTE: has to be unique!
+		if (Is.nullOrEmpty(fhemObjName)){
+			//we need the ID
+			return null;
+		}
+		//smart-guess if missing sepia-specific settings
 		if (name == null && attributes != null){
 			name = JSON.getStringOrDefault(attributes, "alias", null);
 		}
 		if (name == null && internals != null){
 			name = JSON.getStringOrDefault(internals, "name", JSON.getStringOrDefault(internals, "NAME", null));		//NOTE: has to be unique!
 		}
-		if (name == null && Is.notNullOrEmpty(fhemObjName)){
+		if (name == null){
 			//we only accept devices with name
-			return null;
+			name = fhemObjName;
 		}
 		if (type == null && internals != null){
 			String fhemType = JSON.getStringOrDefault(internals, "type", JSON.getStringOrDefault(internals, "TYPE", "")).toLowerCase();
@@ -489,10 +617,10 @@ public class Fhem implements SmartHomeHub {
 		JSONObject meta = JSON.make(
 				"id", fhemObjName,
 				"origin", NAME,
-				"setOptions", JSON.getStringOrDefault(hubDevice, "PossibleSets", null),
-				"setCmds", setCmds,
+				"setOptions", JSON.getStringOrDefault(hubDevice, "PossibleSets", null), 		//FHEM specific
 				"typeGuessed", typeGuessed
 		);
+		JSON.put(meta, "namedBySepia", namedBySepia);
 		//note: we need 'id' for commands although it is basically already in 'link'
 		SmartHomeDevice shd = new SmartHomeDevice(name, type, room, 
 				state, stateType, memoryState, 
@@ -500,6 +628,9 @@ public class Fhem implements SmartHomeHub {
 		//specify more
 		if (Is.notNullOrEmpty(roomIndex)){
 			shd.setRoomIndex(roomIndex);
+		}
+		if (Is.notNullOrEmpty(setCmds)){
+			shd.setCustomCommands(setCmds);
 		}
 		return shd;
 	}

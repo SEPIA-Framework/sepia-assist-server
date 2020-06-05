@@ -20,7 +20,7 @@ public class Test_SlashCommandsAndInputMod {
 		texts.add("https://b07z.net");
 		
 		for (String s : texts){
-			System.out.println("text: " + s + " - has cmd: " + RegexParameterSearch.contains_slashCMD(s));
+			System.out.println("text: " + s + " - has cmd: " + RegexParameterSearch.containsSlashCMD(s));
 		}
 		
 		System.out.println("\n---\n");

@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BooleanSupplier;
 
@@ -21,6 +22,8 @@ import net.b07z.sepia.server.core.tools.Debugger;
 public class ServiceBackgroundTaskManager {
 	
 	private static AtomicLong lastUsedBaseId = new AtomicLong(0); 	//NOTE: this will reset on server start but task don't survive restart anyways
+	private static AtomicInteger activeThreads = new AtomicInteger(0);
+	private static int maxActiveThreads = 0;
 	private static Map<String, ServiceBackgroundTask> sbtMap = new ConcurrentHashMap<>();
 	
 	private static String getNewTaskId(){
@@ -35,6 +38,32 @@ public class ServiceBackgroundTaskManager {
 	}
 	private static ServiceBackgroundTask getFromSbtMap(String taskId){
 		return sbtMap.get(taskId);
+	}
+	
+	/**
+	 * Get the number of scheduled tasks, waiting to be run or currently running (they are removed after they finish).
+	 */
+	public static int getNumberOfScheduledTasks(){
+		return sbtMap.size();
+	}
+	/**
+	 * Get the number of active threads.
+	 */
+	public static int getNumberOfCurrentlyActiveThreads(){
+		return activeThreads.get();
+	}
+	/**
+	 * Get the maximum number of active threads tracked so far.
+	 */
+	public static int getMaxNumberOfActiveThreads(){
+		return maxActiveThreads;
+	}
+	private static void increaseThreadCounter(){
+		int n = activeThreads.incrementAndGet();
+		if (n > maxActiveThreads) maxActiveThreads = n;
+	}
+	private static void decreaseThreadCounter(){
+		activeThreads.decrementAndGet();
 	}
 	
 	/**
@@ -92,16 +121,22 @@ public class ServiceBackgroundTaskManager {
 		String taskId = getNewTaskId();
 		
 		int corePoolSize = 1;
-	    final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(corePoolSize);
+	    final ScheduledThreadPoolExecutor executor = ThreadManager.getNewScheduledThreadPool(corePoolSize);
 	    executor.setRemoveOnCancelPolicy(true);
 	    ScheduledFuture<?> future = executor.schedule(() -> {
 	    	//run task and...
-	    	task.run();
+	    	try{
+	    		increaseThreadCounter();
+	    		task.run();
+	    		decreaseThreadCounter();
+	    	}catch (Exception e){
+	    		decreaseThreadCounter();
+			}
 	    	//... remove yourself from manager
 	    	removeFromSbtMap(taskId);
 	    	executor.purge();
 	    	executor.shutdown();
-	    	return;
+	    	
 	    }, delayMs, TimeUnit.MILLISECONDS);
 	    //other option (but does not support lambda expression):
 	    //Timer timer = new Timer();

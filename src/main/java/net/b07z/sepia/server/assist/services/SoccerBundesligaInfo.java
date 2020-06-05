@@ -67,9 +67,10 @@ public class SoccerBundesligaInfo implements ServiceInterface{
 		//Answers (these are the default answers, you can add a custom answer at any point in the module with api.setCustomAnswer(..)):
 		info.addSuccessAnswer("news_1a")
 			.addFailAnswer("abort_0c")
-			.addAnswerParameters("topic") 		//be sure to use the same parameter names as in resultInfo
 			.addCustomAnswer("soccerResults", soccerResultsAns)
-			.addCustomAnswer("soccerTable", soccerTableAns);
+			.addCustomAnswer("soccerTable", soccerTableAns)
+		.addAnswerParameters("topic")  
+		;
 		
 		return info;
 	}

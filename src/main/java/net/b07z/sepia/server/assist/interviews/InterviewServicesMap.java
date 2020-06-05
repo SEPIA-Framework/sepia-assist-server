@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.services.Alarms;
 import net.b07z.sepia.server.assist.services.ChatPreprocessor;
 import net.b07z.sepia.server.assist.services.ClientControls;
@@ -29,10 +30,12 @@ import net.b07z.sepia.server.assist.services.ServiceInfo;
 import net.b07z.sepia.server.assist.services.ServiceInterface;
 import net.b07z.sepia.server.assist.services.SmartHomeHubConnector;
 import net.b07z.sepia.server.assist.services.WeatherDarkSky;
+import net.b07z.sepia.server.assist.services.WeatherMeteoNorway;
 import net.b07z.sepia.server.assist.services.WebsearchBasic;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.Is;
 
 /**
  * Connects system default commands to default services. 
@@ -127,7 +130,11 @@ public class InterviewServicesMap {
 			systemInterviewServicesMap.put(CMD.NEWS, news);
 		//WEATHER
 		ArrayList<String> weather = new ArrayList<String>();
-			weather.add(WeatherDarkSky.class.getCanonicalName());
+			if (Is.notNullOrEmpty(Config.forecast_io_key)){
+				weather.add(WeatherDarkSky.class.getCanonicalName());
+			}else{
+				weather.add(WeatherMeteoNorway.class.getCanonicalName());
+			}
 			systemInterviewServicesMap.put(CMD.WEATHER, weather);
 		//SMART-DEVICE CONTROL
 		ArrayList<String> controlSmarthome = new ArrayList<String>();

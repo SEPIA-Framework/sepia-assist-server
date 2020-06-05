@@ -78,7 +78,7 @@ public class Lists implements ServiceInterface{
 		JSON.put(item, "name", name.trim());
 		JSON.put(item, "eleType", type);
 		JSON.put(item, "lastChange", System.currentTimeMillis());
-		JSON.put(item, "checked", new Boolean(false));
+		JSON.put(item, "checked", Boolean.FALSE);
 		if (state != null){
 			JSON.put(item, "state", state);
 		}

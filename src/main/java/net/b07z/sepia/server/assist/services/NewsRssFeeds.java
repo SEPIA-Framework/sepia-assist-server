@@ -6,6 +6,7 @@ import net.b07z.sepia.server.assist.data.Card;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.data.Card.ElementType;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
+import net.b07z.sepia.server.assist.interviews.ConvertResult;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.parameters.NewsSection;
 import net.b07z.sepia.server.assist.parameters.NewsSection.NSection;
@@ -16,6 +17,7 @@ import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.assist.tools.RandomGen;
 import net.b07z.sepia.server.core.assistant.ACTIONS;
+import net.b07z.sepia.server.core.assistant.ENVIRONMENTS;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
@@ -64,11 +66,13 @@ public class NewsRssFeeds implements ServiceInterface{
 		localTerms_de.put("<politics>", "Politik");
 		localTerms_de.put("<soccer>", "Fussball");
 		localTerms_de.put("<economy>", "Wirtschaft");
+		localTerms_de.put("<health>", "Gesundheit");
 		localTerms_de.put("<games>", "Games");
 		localTerms_de.put("<music>", "Musik");
 		localTerms_de.put("<cinema>", "Kino");
 		localTerms_de.put("<tv>", "Tv Serien");
 		localTerms_de.put("<startup>", "Start-Up");
+		localTerms_de.put("<corona>", "Corona");
 		//sport
 		localTerms_de.put("<matchday>", "Spieltag");
 		localTerms_de.put("<matches>", "Spiele");
@@ -87,11 +91,13 @@ public class NewsRssFeeds implements ServiceInterface{
 		localTerms_en.put("<politics>", "Politics");
 		localTerms_en.put("<soccer>", "Soccer");
 		localTerms_en.put("<economy>", "Economy");
+		localTerms_en.put("<health>", "Health");
 		localTerms_en.put("<games>", "Games");
 		localTerms_en.put("<music>", "Music");
 		localTerms_en.put("<cinema>", "Cinema");
 		localTerms_en.put("<tv>", "Tv series");
 		localTerms_en.put("<startup>", "Start-up");
+		localTerms_en.put("<corona>", "Corona");
 		//sport
 		localTerms_en.put("<matchday>", "Matchday");
 		localTerms_en.put("<matches>", "Matches");
@@ -198,12 +204,14 @@ public class NewsRssFeeds implements ServiceInterface{
 		
 		//Answers (these are the default answers, you can add a custom answer at any point in the module with api.setCustomAnswer(..)):
 		info.addSuccessAnswer("news_1a")
+			.addOkayAnswer("news_0a")
 			.addFailAnswer("abort_0c")
-			.addAnswerParameters("topic") 		//be sure to use the same parameter names as in resultInfo
-			;
+			.addCustomAnswer("answerWoDisplay", answerWoDisplay);
+		info.addAnswerParameters("topic", "firstTitle"); 		//be sure to use the same parameter names as in resultInfo
 		
 		return info;
 	}
+	private static final String answerWoDisplay = "news_1d"; 
 
 	//result
 	public ServiceResult getResult(NluResult nluResult){
@@ -222,7 +230,7 @@ public class NewsRssFeeds implements ServiceInterface{
 		String sportsTeam = sportsTeamP.getDataFieldOrDefault(InterviewData.VALUE).toString();
 		//System.out.println("SPORTS TEAM: " + sportsTeam); 		//debug
 		
-		//SPORTS TEAM
+		//SPORTS LEAGUE
 		Parameter sportsLeagueP = nluResult.getOptionalParameter(PARAMETERS.SPORTS_LEAGUE, "");
 		String sportsLeague = sportsLeagueP.getDataFieldOrDefault(InterviewData.VALUE).toString();
 		//System.out.println("SPORTS LEAGUE: " + sportsLeague);	//debug
@@ -273,7 +281,9 @@ public class NewsRssFeeds implements ServiceInterface{
 		//soccer results?
 		if (section.equals(NSection.soccer.name()) && (type.equals(NType.results.name()) || type.equals(NType.table.name()))){
 			//TODO: this is the first step of separating news and soccer results, ... next is to get rid of this by splitting the regEx
-			return new SoccerBundesligaInfo().getResult(nluResult);
+			ServiceResult serviceResult = new SoccerBundesligaInfo().getResult(nluResult);
+			ConvertResult.adjustAnswerParameters(serviceResult, JSON.make("firstTitle", ""), null);
+			return serviceResult;
 		}
 		
 		//articles
@@ -282,6 +292,8 @@ public class NewsRssFeeds implements ServiceInterface{
 			sectionGroupsForLanguage = outletGroupsByLanguage.get(LANGUAGES.EN);
 		}
 		List<String> feeds = sectionGroupsForLanguage.get(section);
+		//TODO: check feeds == null
+		List<String> top3Titles = new ArrayList<>();
 		
 		Card card = new Card(Card.TYPE_GROUPED_LIST);
 		int i = 1;
@@ -291,10 +303,15 @@ public class NewsRssFeeds implements ServiceInterface{
 	        JSONObject feed = Config.rssReader.getFeed(url, feedName, 8, Config.cacheRssResults); 	//NOTE: maxEntries does not work when loading from cache (aka worker)
 	        if (!feed.isEmpty()){
 	        	JSON.add(feed, "name", nameHTML);
-	        	if (feed.get("image").toString().isEmpty()){
+	        	/*if (feed.get("image").toString().isEmpty()){
 	        		//TODO: add logo-url
-	        	}
+	        	}*/
 	        	card.addGroupeElement(ElementType.news, String.valueOf(i), feed);
+	        	if (i <= 3){
+	        		try{
+	        			top3Titles.add((String) ((JSONObject) ((JSONArray) feed.get("data")).get(0)).get("title"));
+	        		}catch(Exception e){}	//ignored for now
+	        	}
 	        	i++;
 	        }
 		}
@@ -303,6 +320,8 @@ public class NewsRssFeeds implements ServiceInterface{
 		//add it
 		api.addCard(card.getJSON());
 		api.hasCard = true;
+		
+		api.resultInfoPut("firstTitle", top3Titles.get(0));
 		
 		//actions
 		
@@ -358,7 +377,19 @@ public class NewsRssFeeds implements ServiceInterface{
 		}
 		
 		//all clear?
-		api.status = "success";
+		if (top3Titles.isEmpty()){
+			//no news but no error?
+			api.setStatusOkay();
+			
+		}else if (!ENVIRONMENTS.deviceHasActiveDisplay(nluResult.input.environment)){
+			//no display answer
+			api.setCustomAnswer(answerWoDisplay);
+			api.setStatusSuccess();
+		
+		}else{
+			//default
+			api.setStatusSuccess();
+		}
 		
 		//finally build the API_Result
 		ServiceResult result = api.buildResult();

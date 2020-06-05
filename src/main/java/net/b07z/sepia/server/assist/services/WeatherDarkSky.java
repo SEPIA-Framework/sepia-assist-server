@@ -33,7 +33,7 @@ import org.json.simple.JSONObject;
  * @author Florian Quirin
  *
  */
-public class WeatherDarkSky implements ServiceInterface{
+public class WeatherDarkSky implements ServiceInterface {
 	
 	//some localizations
 	public static HashMap<String, String> timeNames_de = new HashMap<>();
@@ -92,8 +92,8 @@ public class WeatherDarkSky implements ServiceInterface{
 	}
 	
 	/**
-	 * Get a localized name for a day of the week (1-7), today (0) and now (-1)
-	 * @param tag - numbers from -1 to 7 as string 
+	 * Get a localized name for a day of the week (1-7), today (0) and now (-1) or short localized name for a day (monday - Mon, montag - Mo).
+	 * @param tag - numbers from -1 to 7 as string, days in different formats like "monday", "montag" or "Mon", "Mo", "Tue", "Die" etc., "week"
 	 * @param language - ISO code
 	 */
 	public static String getTimeName(String tag, String language){
@@ -137,7 +137,7 @@ public class WeatherDarkSky implements ServiceInterface{
 			.addCustomAnswer("dayOfWeekAnswer", answerDayOfWeek)	//specific for a certain day of the week
 			.addCustomAnswer("weekAnswer", answerThisWeek)			//specific for anything even further than tomorrow
 			.addFailAnswer("weather_0a")							//for some reason the service failed
-			.addAnswerParameters("place", "tempRequest", "tempDesc", "day");
+			.addAnswerParameters("place", "temp", "description", "day");
 		
 		return info;
 	}
@@ -174,7 +174,7 @@ public class WeatherDarkSky implements ServiceInterface{
 		}
 		api.resultInfoPut("place", place);
 		
-		//adapt answer and search to given date
+		//adapt answer and search using given date
 		String dateType = (String) timeJSON.get(InterviewData.TIME_TYPE); 
 		String targetDate = "";
 		long days = 0;
@@ -216,10 +216,6 @@ public class WeatherDarkSky implements ServiceInterface{
 			isToday = true;
 			//leave it with the default answer
 		}
-		//TODO: fix this with new TIME data
-		String nowDate = DateTimeConverters.getToday(Config.defaultSdf, nluResult.input);
-		String nowTime = nowDate.replaceFirst(".*_", "").replaceFirst(":.*?$", "").trim();
-		nowDate = nowDate.replaceFirst("_.*", "").trim();
 		
 		Debugger.println("cmd: weather, place: " + place + ", days in future: " + days, 2);		//debug
 		
@@ -238,7 +234,7 @@ public class WeatherDarkSky implements ServiceInterface{
 		String url = "";
 		if (Is.nullOrEmpty(Config.forecast_io_key) || missingGeoCoder){
 			//set all parameters to empty to avoid AnswerLoader complaints
-			api.resultInfoFill();
+			api.resultInfoFill(); 		//TODO: this is probably not required anymore
 						
 			//add some real info here about missing key
 			api.setCustomAnswer(answerNoApiKey);
@@ -273,10 +269,10 @@ public class WeatherDarkSky implements ServiceInterface{
 		//Check API result
 		if (!Connectors.httpSuccess(response)){
 			Statistics.addExternalApiHit("Weather DarkSky error");
-			Statistics.addExternalApiTime("Weather DarkSky error", tic);
+			Statistics.addExternalApiTime("Weather DarkSky error", Debugger.toc(tic));
 			
 			//set all parameters to empty to avoid AnswerLoader complaints
-			api.resultInfoFill();
+			api.resultInfoFill();		//TODO: this is probably not required anymore
 			api.setStatusFail();
 			
 			//build the API_Result and goodbye
@@ -284,7 +280,7 @@ public class WeatherDarkSky implements ServiceInterface{
 			return result;
 		}else{
 			Statistics.addExternalApiHit("Weather DarkSky");
-			Statistics.addExternalApiTime("Weather DarkSky", tic);
+			Statistics.addExternalApiTime("Weather DarkSky", Debugger.toc(tic));
 		}
 		
 		//Build service answer
@@ -307,6 +303,14 @@ public class WeatherDarkSky implements ServiceInterface{
 			
 			//now
 			if (isToday){
+				String[] todayDate = DateTimeConverters.getToday("yyyy.MM.dd_HH:mm", nluResult.input).split("_"); 
+				String nowDate = "";
+				String nowTime = "";
+				if (todayDate.length == 2){
+					nowDate = todayDate[0];
+					nowTime = todayDate[1];
+				}
+				
 				String dayLong = "";
 				double tempNow = Double.parseDouble(currently.get("temperature").toString());
 				tempNow = Math.round(tempNow);
@@ -316,20 +320,21 @@ public class WeatherDarkSky implements ServiceInterface{
 				String iconDay = ((String) details.get("icon"));
 				String precipType = ((String) currently.get("precipType"));
 				double precipProb = Double.parseDouble(currently.get("precipProbability").toString());
-					JSON.add(dataOut, "place", place);
-					JSON.add(dataOut, "dateTag", getTimeName("0", api.language));
-					JSON.add(dataOut, "date", nowDate);
-					JSON.add(dataOut, "time", nowTime);
-					JSON.add(dataOut, "timeUNIX", now);
-					JSON.add(dataOut, "desc", tempNowDesc);
-					JSON.add(dataOut, "desc48h", tempDayDesc);
-					JSON.add(dataOut, "tempA", (int) tempNow);
-					JSON.add(dataOut, "tagA", getTimeName("-1", api.language));
-					JSON.add(dataOut, "icon", icon);	//clear-day, clear-night, rain, snow, sleet, wind, fog, cloudy, partly-cloudy-day, partly-cloudy-night or null
-					JSON.add(dataOut, "icon48h", iconDay);
-					JSON.add(dataOut, "units", unitsName);
-					JSON.add(dataOut, "precipProb", precipProb);
-					JSON.add(dataOut, "precipType", precipType);	//rain, snow, sleet or null
+				//build main info
+				JSON.add(dataOut, "place", place);
+				JSON.add(dataOut, "dateTag", getTimeName("0", api.language));
+				JSON.add(dataOut, "date", nowDate);
+				JSON.add(dataOut, "time", nowTime);
+				JSON.add(dataOut, "timeUNIX", now);
+				JSON.add(dataOut, "desc", tempNowDesc);
+				JSON.add(dataOut, "desc48h", tempDayDesc);
+				JSON.add(dataOut, "tempA", (int) tempNow);
+				JSON.add(dataOut, "tagA", getTimeName("-1", api.language));
+				JSON.add(dataOut, "icon", icon);	//clear-day, clear-night, rain, snow, sleet, wind, fog, cloudy, partly-cloudy-day, partly-cloudy-night or null
+				JSON.add(dataOut, "icon48h", iconDay);
+				JSON.add(dataOut, "units", unitsName);
+				JSON.add(dataOut, "precipProb", precipProb);
+				JSON.add(dataOut, "precipType", precipType);	//rain, snow, sleet or null
 					
 				JSONArray hours = new JSONArray();
 				int i=0;
@@ -377,8 +382,8 @@ public class WeatherDarkSky implements ServiceInterface{
 				
 				//response info
 				api.resultInfoPut("place", place);
-				api.resultInfoPut("tempRequest", (int) tempNow);
-				api.resultInfoPut("tempDesc", tempNowDesc);
+				api.resultInfoPut("temp", (int) tempNow);
+				api.resultInfoPut("description", tempNowDesc);
 				api.resultInfoPut("day", dayLong);
 				
 				//card type
@@ -463,18 +468,18 @@ public class WeatherDarkSky implements ServiceInterface{
 				//response info and card type
 				api.resultInfoPut("place", place);
 				if (days == 1){
-					api.resultInfoPut("tempRequest", (int) targetTemp);
-					api.resultInfoPut("tempDesc", targetDesc);
+					api.resultInfoPut("temp", (int) targetTemp);
+					api.resultInfoPut("description", targetDesc);
 					api.resultInfoPut("day", dayLong);
 					cardElementType = ElementType.weatherTmo;
 				}else if (!tooFarOrUnspecific){
-					api.resultInfoPut("tempRequest", (int) targetTemp);
-					api.resultInfoPut("tempDesc", targetDesc);
+					api.resultInfoPut("temp", (int) targetTemp);
+					api.resultInfoPut("description", targetDesc);
 					api.resultInfoPut("day", dayLong);
 					cardElementType = ElementType.weatherWeek;
 				}else{
-					api.resultInfoPut("tempRequest", "");
-					api.resultInfoPut("tempDesc", tempWeekDesc);
+					api.resultInfoPut("temp", "");
+					api.resultInfoPut("description", tempWeekDesc);
 					api.resultInfoPut("day", "");
 					cardElementType = ElementType.weatherWeek;
 				}

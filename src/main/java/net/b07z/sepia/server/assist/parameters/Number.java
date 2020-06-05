@@ -143,6 +143,9 @@ public class Number implements ParameterHandler{
 			
 		}else if (NluTools.stringContains(input, "(kilo|milli|mikro|micro|zenti|centi|dezi|deci|)(metre|meter)(s|)|km|mm|µm|cm|m")){
 			return "<" + Types.length.name() + ">";
+			
+		}else if (NluTools.stringContains(input, "(kilo)")){
+			return "<" + Types.weight.name() + ">";		//fallback after kilo wasn't used for other types (typical in German)
 		
 		}else if (input.matches(".*[a-z]$")){
 			return "<" + Types.letterend.name() + ">";

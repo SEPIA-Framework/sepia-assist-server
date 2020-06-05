@@ -8,6 +8,7 @@ import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.Statistics;
 import net.b07z.sepia.server.assist.services.NewsRssFeeds;
 import net.b07z.sepia.server.assist.tools.RssFeedReader;
+import net.b07z.sepia.server.assist.workers.ThreadManager.ThreadInfo;
 import net.b07z.sepia.server.core.tools.Debugger;
 
 /**
@@ -20,7 +21,7 @@ public class RssFeedWorker implements WorkerInterface {
 	
 	//common
 	String name = "RSS-feed-worker";
-	Thread worker;
+	ThreadInfo worker;
 	int workerStatus = -1;				//-1: offline, 0: ready to start, 1: waiting for next action, 2: in action
 	private String statusDesc = "";		//text description of status
 	boolean abort = false;
@@ -95,11 +96,11 @@ public class RssFeedWorker implements WorkerInterface {
 	
 	@Override
 	public boolean kill(){
-		abort = true;
+		abort = true;		//NOTE: once this flag is set it remains false and the worker is basically dead! Create a new instance afterwards.
 		long thisWait = 0; 
 		if (executedRefreshs != 0){
 			while (workerStatus > 0){
-				try {	Thread.sleep(waitInterval);	} catch (Exception e){	e.printStackTrace(); return false;	}
+				Debugger.sleep(waitInterval);
 				thisWait += waitInterval;
 				if (thisWait >= maxWait){
 					break;
@@ -118,7 +119,7 @@ public class RssFeedWorker implements WorkerInterface {
 		//if (nextRefresh > 100){	return;	}
 		long thisWait = 0; 
 		while (workerStatus == 2){
-			try {	Thread.sleep(waitInterval);	} catch (Exception e){	e.printStackTrace(); break;	}
+			Debugger.sleep(waitInterval);
 			thisWait += waitInterval;
 			if (thisWait >= Math.min(upperMaxRefreshWait, averageRefreshTime)){
 				break;
@@ -147,44 +148,41 @@ public class RssFeedWorker implements WorkerInterface {
 	}
 	@Override
 	public void start(long startDelay){
-		worker = new Thread(){
-		    public void run(){
-		    	workerStatus = 1;
-		    	try {	Thread.sleep(startDelay);	} catch (Exception e){	e.printStackTrace(); }
-		    	totalRefreshTime = 0;
-		    	executedRefreshs = 0;
-		    	if (!abort){
-		    		Debugger.println(name + ": START", 3);
-		    	}else{
-		    		Debugger.println(name + ": CANCELED before start", 3);
-		    	}
-		    	while (!abort){
-		    		workerStatus = 2;
-			    	long tic = Debugger.tic();
-			    	
-			    	//WORKER ACTION
-			    	workerAction(tic);
-			    	
-			    	//report
-			    	long thisRefreshTime = (System.currentTimeMillis()-tic); 
-			    	totalRefreshTime += thisRefreshTime;
-			    	averageRefreshTime = (long)((double)totalRefreshTime/(double)executedRefreshs);
-			    	Statistics.addOtherApiHit("Worker: " + name);
-					Statistics.addOtherApiTime("Worker: " + name, tic);
-					
-					//wait for next interval
-					workerStatus = 1;
-					long thisWait = 0; 
-					while(!abort && (thisWait < customRefreshInterval)){
-						nextRefresh = customRefreshInterval-thisWait;
-						try {	Thread.sleep(customWaitInterval);	} catch (Exception e){	e.printStackTrace(); workerStatus=-1; break; }
-						thisWait += customWaitInterval;
-					}
-		    	}
-		    	workerStatus = 0;
-		    }
-		};
-		worker.start();
+		worker = ThreadManager.runForever(() -> {
+	    	workerStatus = 1;
+	    	Debugger.sleep(startDelay);
+	    	totalRefreshTime = 0;
+	    	executedRefreshs = 0;
+	    	if (!abort){
+	    		Debugger.println(name + ": START", 3);
+	    	}else{
+	    		Debugger.println(name + ": CANCELED before start", 3);
+	    	}
+	    	while (!abort){
+	    		workerStatus = 2;
+		    	long tic = Debugger.tic();
+		    	
+		    	//WORKER ACTION
+		    	workerAction(tic);
+		    	
+		    	//report
+		    	long thisRefreshTime = (System.currentTimeMillis()-tic); 
+		    	totalRefreshTime += thisRefreshTime;
+		    	averageRefreshTime = (long)((double)totalRefreshTime/(double)executedRefreshs);
+		    	Statistics.addOtherApiHit("Worker: " + name);
+				Statistics.addOtherApiTime("Worker: " + name, tic);
+				
+				//wait for next interval
+				workerStatus = 1;
+				long thisWait = 0; 
+				while(!abort && (thisWait < customRefreshInterval)){
+					nextRefresh = customRefreshInterval-thisWait;
+					Debugger.sleep(customWaitInterval);
+					thisWait += customWaitInterval;
+				}
+	    	}
+	    	workerStatus = 0;
+	    });
 	}
 
 	//---------- WORKER LOGIC -----------

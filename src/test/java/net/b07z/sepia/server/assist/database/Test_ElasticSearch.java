@@ -35,7 +35,7 @@ public class Test_ElasticSearch {
 		
 		//init
 		Start.loadSettings(new String[]{"--test"});
-		Config.setupDatabases();
+		Config.setupDatabases(false);
 		db = new Elasticsearch();
 		
 		/*

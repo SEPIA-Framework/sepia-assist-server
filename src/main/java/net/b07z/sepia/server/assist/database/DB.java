@@ -20,11 +20,13 @@ import net.b07z.sepia.server.assist.data.Address;
 import net.b07z.sepia.server.assist.data.Word;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.Statistics;
+import net.b07z.sepia.server.assist.smarthome.SmartDevicesDb;
 import net.b07z.sepia.server.assist.users.ACCOUNT;
 import net.b07z.sepia.server.assist.users.AccountInterface;
 import net.b07z.sepia.server.assist.users.Authenticator;
 import net.b07z.sepia.server.assist.users.ID;
 import net.b07z.sepia.server.assist.users.User;
+import net.b07z.sepia.server.assist.workers.ThreadManager;
 import net.b07z.sepia.server.core.data.Answer;
 import net.b07z.sepia.server.core.data.CmdMap;
 import net.b07z.sepia.server.core.data.Command;
@@ -66,12 +68,15 @@ public class DB {
 	public static final String COMMANDS = "commands";		//system and personal commands - Type: Command.COMMANDS_TYPE
 	public static final String ANSWERS = Answer.ANSWERS_INDEX; 		//system and personal answers - Type: Answer.ANSWERS_TYPE;
 	public static final String WHITELIST = "whitelist";		//white-lists of e.g. users
+	//additional indices see:
+	//SmartDevices..., chat server
 	
 	//----------Database Implementations----------
 
 	private static AccountInterface accounts = (AccountInterface) ClassBuilder.construct(Config.accountModule);				//USER ACCOUNT STUFF
-	//note: you can use Account_DynamoDB.setTable(...) to access other tables in DynamoDB
-	private static DatabaseInterface knowledge = (DatabaseInterface) ClassBuilder.construct(Config.knowledgeDbModule);		//BASICALLY EVERYTHING ELSE
+	private static DatabaseInterface knowledge = (DatabaseInterface) ClassBuilder.construct(Config.knowledgeDbModule);		//BASICALLY EVERYTHING ELSE USER RELATED
+	
+	private static SmartDevicesDb smartDevices = (SmartDevicesDb) ClassBuilder.construct(Config.smartDevicesModule);		//CUSTOM SMART DEVICES AND INTERFACES
 	
 	/**
 	 * Refresh the settings for accounts and knowledge database.
@@ -80,10 +85,24 @@ public class DB {
 		GUID.setup();
 		accounts = (AccountInterface) ClassBuilder.construct(Config.accountModule);
 		knowledge = (DatabaseInterface) ClassBuilder.construct(Config.knowledgeDbModule);
+		smartDevices = (SmartDevicesDb) ClassBuilder.construct(Config.smartDevicesModule);
+	}
+	/**
+	 * Pre-load some data to cache (e.g. smart home interfaces).
+	 */
+	public static void preLoadData(){
+		//load smart-devices cache
+		smartDevices.loadInterfaces();
 	}
 	
 	private static AuthenticationInterface getAuthDb(){
 		return (AuthenticationInterface) ClassBuilder.construct(Config.authenticationModule);
+	}
+	
+	//----------Smart Devices----------
+	
+	public static SmartDevicesDb getSmartDevicesDb(){
+		return smartDevices;
 	}
 	
 	//----------Account methods----------
@@ -414,6 +433,7 @@ public class DB {
 		
 		//this is heavily depending on elasticSearch specific code ...
 		//TODO: replace with EsQueryBuilder.getMixedRootAndNestedBoolMustMatch
+		//NOTE: we deliberately ignore "size" parameter here?
 		
 		StringWriter sw = new StringWriter();
 		try {
@@ -509,7 +529,7 @@ public class DB {
 		getFilters.put("userIds", userId);
 		getFilters.put("language", language);
 		getFilters.put("searchText", textToMatch);
-		getFilters.put("matchExactText", new Boolean(true));
+		getFilters.put("matchExactText", Boolean.TRUE);
 		
 		JSONArray matchingSentences = getCommands(getFilters);
 		String itemId = "";
@@ -1142,22 +1162,19 @@ public class DB {
 	 * @param data - JSON string with data objects that should be stored for index/type/item, e.g. {"name":"john"}
 	 */
 	public static void saveKnowledgeAsync(String index, String type, String item_id, JSONObject data){
-		Thread thread = new Thread(){
-		    public void run(){
-		    	//time
-		    	long tic = Debugger.tic();
-		    	
-		    	int code = knowledge.setItemData(index, type, item_id, data);
-				if (code != 0){
-					Debugger.println("KNOWLEDGE DB ERROR! - PATH: " + index + "/" + type + "/" + item_id + " - TIME: " + System.currentTimeMillis(), 1);
-				}else{
-					//Debugger.println("KNOWLEDGE DB UPDATED! - PATH: " + index + "/" + type + "/" + item_id + " - TIME: " + System.currentTimeMillis(), 1);
-					Statistics.add_KDB_write_hit();
-					Statistics.save_KDB_write_total_time(tic);
-				}
-		    }
-		};
-		thread.start();
+		ThreadManager.run(() -> {
+	    	//time
+	    	long tic = Debugger.tic();
+	    	
+	    	int code = knowledge.setItemData(index, type, item_id, data);
+			if (code != 0){
+				Debugger.println("KNOWLEDGE DB ERROR! - PATH: " + index + "/" + type + "/" + item_id + " - TIME: " + System.currentTimeMillis(), 1);
+			}else{
+				//Debugger.println("KNOWLEDGE DB UPDATED! - PATH: " + index + "/" + type + "/" + item_id + " - TIME: " + System.currentTimeMillis(), 1);
+				Statistics.add_KDB_write_hit();
+				Statistics.save_KDB_write_total_time(tic);
+			}
+	    });
 	}
 	/**
 	 * Save stuff to database without waiting for reply, making this save method UNSAVE so keep that in mind when using it.
@@ -1167,22 +1184,19 @@ public class DB {
 	 * @param data - JSON string with data objects that should be stored for index/type/item, e.g. {"name":"john"}
 	 */
 	public static void saveKnowledgeAsyncAnyID(String index, String type, JSONObject data){
-		Thread thread = new Thread(){
-		    public void run(){
-		    	//time
-		    	long tic = Debugger.tic();
-		    	
-		    	int code = JSON.getIntegerOrDefault(knowledge.setAnyItemData(index, type, data), "code", -1);
-				if (code != 0){
-					Debugger.println("KNOWLEDGE DB ERROR! - PATH: " + index + "/" + type + "/[rnd] - TIME: " + System.currentTimeMillis(), 1);
-				}else{
-					//Debugger.println("KNOWLEDGE DB UPDATED! - PATH: " + index + "/" + type + "/[rnd] - TIME: " + System.currentTimeMillis(), 1);
-					Statistics.add_KDB_write_hit();
-					Statistics.save_KDB_write_total_time(tic);
-				}
-		    }
-		};
-		thread.start();
+		ThreadManager.run(() -> {
+	    	//time
+	    	long tic = Debugger.tic();
+	    	
+	    	int code = JSON.getIntegerOrDefault(knowledge.setAnyItemData(index, type, data), "code", -1);
+			if (code != 0){
+				Debugger.println("KNOWLEDGE DB ERROR! - PATH: " + index + "/" + type + "/[rnd] - TIME: " + System.currentTimeMillis(), 1);
+			}else{
+				//Debugger.println("KNOWLEDGE DB UPDATED! - PATH: " + index + "/" + type + "/[rnd] - TIME: " + System.currentTimeMillis(), 1);
+				Statistics.add_KDB_write_hit();
+				Statistics.save_KDB_write_total_time(tic);
+			}
+	    });
 	}
 		
 	//--------------Tools----------------

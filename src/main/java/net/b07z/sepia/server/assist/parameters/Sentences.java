@@ -47,8 +47,11 @@ public class Sentences implements ParameterHandler{
 
 	@Override
 	public String extract(String input) {
-		found = input;
-		return input;
+		String seperatedText = input
+				.replaceAll("(\\.|\\?|;;|;)(\\s|$)", " && ")
+				.replaceAll("(\\&\\&\\s)$", "").trim();
+		found = seperatedText;
+		return seperatedText;
 	}
 	
 	@Override

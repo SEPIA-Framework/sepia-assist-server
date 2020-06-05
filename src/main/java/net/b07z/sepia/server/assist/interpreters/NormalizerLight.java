@@ -18,9 +18,10 @@ public class NormalizerLight implements Normalizer {
 		text = text.replaceAll("İ", "i");
 		//text = text.replaceAll("I", "ı"); 	//not good for general languages
 				
-		text = text.replaceAll("(!(?!\\()|¿|¡|\\?(?!\\()|,(?!\\d))", "").toLowerCase().trim();
+		text = text.replaceAll("(!(?!\\()|¿|¡|,(?!\\d))", "").toLowerCase().trim();
 		//text = text.replaceAll("(?<![oO])'", "").trim();		//TODO: use it or not?
-		text = text.replaceAll("((?<!\\d)\\.$)", "").trim();
+		//text = text.replaceAll("((?<!\\d)\\.$)", "").trim();
+		text = text.replaceAll("(\\.|\\?)$", "").trim();	//we keep "." and "?" inside sentences. Old replace: \\?(?!\\()
 		
 		//special characters
 		//TODO: use it or not?

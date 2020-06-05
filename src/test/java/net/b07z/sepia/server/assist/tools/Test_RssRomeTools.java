@@ -68,7 +68,7 @@ public class Test_RssRomeTools {
 			tic = Debugger.tic();
 			try {
        			//FEED STUFF
-				HttpClientResult httpClientRes = Connectors.apacheHttpGET(url, null);
+				HttpClientResult httpClientRes = Connectors.apacheHttpGET(url, "");
 				//System.out.println(httpClientRes.content);
 				if (Is.notNullOrEmpty(httpClientRes.content)){
 					System.out.println(httpClientRes.content.substring(0, 50));
