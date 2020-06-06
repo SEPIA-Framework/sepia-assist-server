@@ -32,9 +32,23 @@ zählen;;		command=count;;
 zähle;;		command=count;;
 1;;		command=count;;		number=1;;		memory=1;;
 eins;;		command=count;;				number=1;;		memory=1;;
-=);;				command=chat;;		reply=#LAUGH01#||#LAUGH02#||#LAUGH03#
-:-);;				command=chat;;		reply=#LAUGH01#||#LAUGH02#||#LAUGH03#
-:);;				command=chat;;		reply=#LAUGH01#||#LAUGH02#||#LAUGH03#
+=);;			command=chat;;		type=emote_happy;; 		reply=<random_lol_emoji_0a>
+:-D;;			command=chat;;		type=emote_happy;; 		reply=<random_lol_emoji_0a>
+:D;;			command=chat;;		type=emote_happy;; 		reply=<random_lol_emoji_0a>
+😁;;				command=chat;;		type=emote_happy;; 		reply=<random_lol_emoji_0a>
+😂;;				command=chat;;		type=emote_happy;; 		reply=<random_lol_emoji_0a>
+:-);;				command=chat;;		type=emote_happy;; 		reply=<random_happy_emoji_0a>
+:);;				command=chat;;		type=emote_happy;; 		reply=<random_happy_emoji_0a>
+😊;;					command=chat;;		type=emote_happy;; 		reply=<random_happy_emoji_0a>
+😃;;					command=chat;;		type=emote_happy;; 		reply=<random_happy_emoji_0a>
+:-(;;			command=chat;;		type=emote_sad;; 		reply=<random_sad_emoji_0a>
+:(;;			command=chat;;		type=emote_sad;; 		reply=<random_sad_emoji_0a>
+😣;;				command=chat;;		type=emote_sad;; 		reply=<random_sad_emoji_0a>
+😞;;				command=chat;;		type=emote_sad;; 		reply=<random_sad_emoji_0a>
+;);;				command=chat;;		type=emote_happy;; 		reply=<random_wink_emoji_0a>
+;-);;				command=chat;;		type=emote_happy;; 		reply=<random_wink_emoji_0a>
+😉;;					command=chat;;		type=emote_happy;; 		reply=<random_wink_emoji_0a>
+😜;;					command=chat;;		type=emote_happy;; 		reply=<random_wink_emoji_0a>
 Favoriten hinzufügen;;		command=my_favorite;;
 Favoriten zeigen;;		command=my_favorite;;	action=open;;
 nps;; 	command=feedback_nps;;  
