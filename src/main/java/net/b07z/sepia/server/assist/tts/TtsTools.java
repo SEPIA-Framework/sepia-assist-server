@@ -30,9 +30,9 @@ public class TtsTools {
 	public static int getMoodIndex(String text, int current_mood_index){
 		int mood_index = current_mood_index;
 		//overwrite current
-		if (text.matches(".*(^|\\s)((:|;)(-|)(\\)|\\])|\\^_\\^)(\\?|!|,|\\.|)($|\\s).*")){
+		if (text.matches(".*(^|\\s)((:|;)(-|)(\\)|\\])|\\^_\\^|😂|😃|😁|😆|😉|😊)(\\?|!|,|\\.|)($|\\s).*")){
 			mood_index=1;
-		}else if (text.matches(".*(^|\\s)(:|;)(-|)(\\(|\\[)(\\?|!|,|\\.|)($|\\s).*")){
+		}else if (text.matches(".*(^|\\s)((:|;)(-|)(\\(|\\[)|😣|😞)(\\?|!|,|\\.|)($|\\s).*")){
 			mood_index=2;
 		}else if (text.matches(".*(^|\\s)((:|;)(-|)(\\|)|\\-_\\-)(\\?|!|,|\\.|)($|\\s).*")){
 			mood_index=0;
@@ -71,6 +71,10 @@ public class TtsTools {
 			input = input + ".";
 		}
 		input = input.replaceAll("\\[|\\]", " ").trim();
+		
+		//emojis
+		input = input.replaceAll("😂|😃|😁|😆|😉|😊", " ");	//happy
+		input = input.replaceAll("😣|😞", " ");			//sad
 		
 		//specific
 		if (language.equals(LANGUAGES.DE)){

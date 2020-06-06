@@ -51,11 +51,11 @@ public class ChatPreprocessor implements ServiceInterface{
 				//that makes really happy :-)
 				api.mood = Assistant.mood_increase(api.mood);	api.mood = Assistant.mood_increase(api.mood);
 			}
-			else if (type.matches("greeting") || type.matches("thanks")){
+			else if (type.matches("greeting") || type.matches("thanks") || type.matches("emote_happy")){
 				//that makes a bit happy :-)
 				api.mood = Assistant.mood_increase(api.mood);
 			}
-			else if (type.matches("complain")){
+			else if (type.matches("complain") || type.matches("emote_sad")){
 				//that makes really sad :-)
 				api.mood = Assistant.mood_decrease(api.mood);	api.mood = Assistant.mood_decrease(api.mood);
 			}

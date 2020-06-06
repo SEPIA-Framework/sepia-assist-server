@@ -106,7 +106,7 @@ alarms_confirm_delete_0a;;			rep=0|mood=5;;		Bist du sicher, dass du den nächst
 alarms_confirm_delete_timer_0a;;	rep=0|mood=5;;		Bist du sicher, dass du den nächsten Timer stoppen willst? ;;char=neutral
 sentences_0a;;	rep=0|mood=5;;		Wie lautet der Satz? ;;char=neutral
 sentences_1a;;	rep=0|mood=5;;		Fehlgeschlagen. ;;char=neutral
-feedback_nps_ask_0a;;		rep=0|mood=5;;		#THROAT01# Kann ich dich kurz stören? Würde dich gerne um Feedback bitten. ;;char=neutral
+feedback_nps_ask_0a;;		rep=0|mood=5;;		Kann ich dich kurz stören? Würde dich gerne um Feedback bitten. ;;char=neutral
 feedback_nps_1a;;		rep=0|mood=5;;		Super! Dann schau mal hier bitte. ;;char=neutral
 feedback_nps_0a;;		rep=0|mood=5;;		Ok dann vielleicht später. ;;char=neutral
 more_0a;;		rep=0|mood=5;;		Soll ich noch irgendwas berücksichtigen? ;;char=neutral
@@ -580,3 +580,13 @@ redirect_result_0a;;		rep=0|mood=5;;		Ich ahne grob worum es geht, kann dir zur 
 redirect_result_0a;;		rep=0|mood=5;;		Das Thema kommt mir bekannt vor, ich kann es aber leider noch nicht beantworten. ;;char=neutral
 redirect_result_0a;;		rep=0|mood=5;;		Bei diesem Thema bin ich mir noch nicht sicher, sorry. ;;char=neutral
 redirect_result_0a;;		rep=0|mood=5;;		Dieses Thema werde ich hoffentlich in Zukunft bedienen können, momentan kann ich es aber leider noch nicht. ;;char=neutral
+random_happy_emoji_0a;;		rep=0|mood=5;;		😃 ;;char=cool,neutral
+random_happy_emoji_0a;;		rep=0|mood=5;;		😊 ;;char=cool,neutral
+random_lol_emoji_0a;;		rep=0|mood=5;;		😂 ;;char=cool,neutral
+random_lol_emoji_0a;;		rep=0|mood=5;;		😁 ;;char=cool,neutral
+random_lol_emoji_0a;;		rep=0|mood=5;;		😆 ;;char=cool,neutral
+random_lol_emoji_0a;;		rep=0|mood=5;;		😉 ;;char=cool,neutral
+random_sad_emoji_0a;;		rep=0|mood=5;;		😣 ;;char=neutral
+random_sad_emoji_0a;;		rep=0|mood=5;;		😞 ;;char=neutral
+random_wink_emoji_0a;;		rep=0|mood=5;;		😜 ;;char=neutral
+random_wink_emoji_0a;;		rep=0|mood=5;;		😉 ;;char=neutral

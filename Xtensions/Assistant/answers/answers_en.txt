@@ -108,7 +108,7 @@ alarms_confirm_delete_0a;;			rep=0|mood=5;;		Are you sure you want to remove the
 alarms_confirm_delete_timer_0a;;	rep=0|mood=5;;		Are you sure you want to stop the next timer? ;;char=neutral
 sentences_0a;;	rep=0|mood=5;;		What is the sentence? ;;char=neutral
 sentences_1a;;	rep=0|mood=5;;		Failed. ;;char=neutral
-feedback_nps_ask_0a;;		rep=0|mood=5;;		#THROAT01# Can I have 5 minutes of your time? I'd like to ask you for some feedback. ;;char=neutral
+feedback_nps_ask_0a;;		rep=0|mood=5;;		Can I have 5 minutes of your time? I'd like to ask you for some feedback. ;;char=neutral
 feedback_nps_1a;;		rep=0|mood=5;;		Perfect! Have a look please. ;;char=neutral
 feedback_nps_0a;;		rep=0|mood=5;;		Ok maybe later. ;;char=neutral
 more_0a;;		rep=0|mood=5;;		Anything else? ;;char=neutral
@@ -574,3 +574,13 @@ redirect_result_0a;;		rep=0|mood=5;;		I'm afraid I can't help you with that at t
 redirect_result_0a;;		rep=0|mood=5;;		I'm still learning and I think this topic might already be on my to-do list. ;;char=neutral
 redirect_result_0a;;		rep=0|mood=5;;		I'm sorry <user_name>, I've heard this topic before, but I can't answer it yet. ;;char=neutral
 redirect_result_0a;;		rep=0|mood=5;;		Sorry, I might have heard this before, but I can't answer your question yet. ;;char=neutral
+random_happy_emoji_0a;;		rep=0|mood=5;;		😃 ;;char=cool,neutral
+random_happy_emoji_0a;;		rep=0|mood=5;;		😊 ;;char=cool,neutral
+random_lol_emoji_0a;;		rep=0|mood=5;;		😂 ;;char=cool,neutral
+random_lol_emoji_0a;;		rep=0|mood=5;;		😁 ;;char=cool,neutral
+random_lol_emoji_0a;;		rep=0|mood=5;;		😆 ;;char=cool,neutral
+random_lol_emoji_0a;;		rep=0|mood=5;;		😉 ;;char=cool,neutral
+random_sad_emoji_0a;;		rep=0|mood=5;;		😣 ;;char=neutral
+random_sad_emoji_0a;;		rep=0|mood=5;;		😞 ;;char=neutral
+random_wink_emoji_0a;;		rep=0|mood=5;;		😜 ;;char=neutral
+random_wink_emoji_0a;;		rep=0|mood=5;;		😉 ;;char=neutral
