@@ -197,7 +197,7 @@ public class TtsOpenEmbedded implements TtsInterface {
 			//get voices from MaryTTS server
 			maryTtsVoicesRes = Connectors.simpleHtmlGet(Config.marytts_server + "/voices").split("(\\r\\n|\\n)");
 		}catch (Exception e){
-			Debugger.println("TTS module - MaryTTS server did not answer or had no voices installed. Support has been deactivated for now.", 1);
+			Debugger.println("TTS module - MaryTTS server (" + Config.marytts_server + ") did not answer or had no voices installed. Support has been deactivated for now.", 1);
 			maryTtsVoicesRes = null;
 		}
 		//map voices from MaryTTS
