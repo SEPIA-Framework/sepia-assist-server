@@ -18,6 +18,7 @@ import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletException;
 import javax.servlet.http.Part;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.server.Config;
@@ -108,7 +109,6 @@ public class SdkEndpoint {
 			JSON.add(result, "error", "SDK not enabled on this server");
 			return SparkJavaFw.returnResult(req, res, result.toJSONString(), 200);
 		}
-		long tic = System.currentTimeMillis();
 		//?? - required to read parameters properly 
 	    req.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"));
 	    
@@ -135,6 +135,8 @@ public class SdkEndpoint {
 			Debugger.println("unauthorized access attempt to upload-service endpoint (missing role)! User: " + userId, 3);
 			return SparkJavaFw.returnNoAccess(req, res);
 		}
+		
+		long tic = System.currentTimeMillis();
 		try{
 			//Check upload type
 			RequestParameters params = new RequestGetOrFormParameters(req);
@@ -221,12 +223,63 @@ public class SdkEndpoint {
 		}
 	}
 	
+	/**-- GET SERVICES POST --
+	 * End-point to get all custom services of a user.  
+	 */
+	public static String getServicesPost(Request req, Response res){
+		RequestParameters params = new RequestPostParameters(req);
+		
+		//authenticate
+		Authenticator token = Start.authenticate(params, req);
+		if (!token.authenticated()){
+			return SparkJavaFw.returnNoAccess(req, res, token.getErrorCode());
+		}
+		//create user
+		User user = new User(null, token);
+		//String userId = user.getUserID();
+		
+		long tic = System.currentTimeMillis();
+		try{
+			//get command mappings
+			UserDataInterface userData = user.getUserDataAccess();
+			List<CmdMap> customMap = userData.getCustomCommandMappings(user, null);
+			if (customMap == null){
+				throw new RuntimeException("Failed to load custom command mappings. Reason: unknown. Try again or check database please.");
+			}
+			
+			JSONArray customCommandsAndServices = new JSONArray();
+			for (CmdMap cmdMap : customMap){
+				JSON.add(customCommandsAndServices, JSON.make(
+						"command", cmdMap.getCommand(),
+						"services", cmdMap.getServices()
+				));
+			}
+			
+			//stats
+	      	Statistics.addOtherApiHit("get-services");
+	      	Statistics.addOtherApiTime("get-services", tic);
+	      	
+	      	JSONObject msg = new JSONObject();
+			JSON.add(msg, "result", "success");
+			JSON.add(msg, "commandsAndServices", customCommandsAndServices);
+			return SparkJavaFw.returnResult(req, res, msg.toJSONString(), 200);
+			
+		}catch (Exception e){
+			//stats
+	      	Statistics.addOtherApiHit("get-services fail");
+	      	Statistics.addOtherApiTime("get-services fail", tic);
+	      	
+	      	JSONObject msg = new JSONObject();
+			JSON.add(msg, "result", "fail");
+			JSON.add(msg, "error", e.getMessage());
+			return SparkJavaFw.returnResult(req, res, msg.toJSONString(), 200);
+		}
+	}
+	
 	/**-- DELETE SERVICE POST --
 	 * End-point to delete a custom service and clean up.  
 	 */
 	public static String deleteServicePost(Request req, Response res){
-		long tic = System.currentTimeMillis();
-		
 		RequestParameters params = new RequestPostParameters(req);
 		
 		//authenticate
@@ -240,7 +293,8 @@ public class SdkEndpoint {
 		
 		//check role
 		//not required ... a user should always be allowed to delete his services
-		
+
+		long tic = System.currentTimeMillis();
 		try{
 			//Get commands to be removed
 			String[] commandsArray = params.getStringArray("commands");
