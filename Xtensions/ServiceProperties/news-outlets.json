@@ -44,7 +44,13 @@
 		{ "name": "NY Times Business", "url": "https://rss.nytimes.com/services/xml/rss/nyt/Business.xml", "name_html": "<span style='color:#000; font-family:serif'><b>NY Times</b> Business</span>" },
 		{ "name": "NY Times Sports", "url": "https://rss.nytimes.com/services/xml/rss/nyt/Sports.xml", "name_html": "<span style='color:#000; font-family:serif'><b>NY Times</b> Sports</span>" },
 		{ "name": "NY Times Health", "url": "https://rss.nytimes.com/services/xml/rss/nyt/Health.xml", "name_html": "<span style='color:#000; font-family:serif'><b>NY Times</b> Health</span>" },
-		{ "name": "NY Times Well", "url": "https://rss.nytimes.com/services/xml/rss/nyt/Well.xml", "name_html": "<span style='color:#000; font-family:serif'><b>NY Times</b> Well</span>" }
+		{ "name": "NY Times Well", "url": "https://rss.nytimes.com/services/xml/rss/nyt/Well.xml", "name_html": "<span style='color:#000; font-family:serif'><b>NY Times</b> Well</span>" },
+		{ "name": "The Guardian World", "url": "https://www.theguardian.com/world/rss", "name_html": "<span style='color:#052962; font-family:serif'><b>The Guardian</b></span>" },
+		{ "name": "The Guardian Economics", "url": "https://www.theguardian.com/business/economics/rss", "name_html": "<span style='color:#052962; font-family:serif'><b>The Guardian</b> Economics</span>" },
+		{ "name": "The Guardian UK", "url": "https://www.theguardian.com/uk/rss", "name_html": "<span style='color:#052962; font-family:serif'><b>The Guardian</b> UK</span>" },
+		{ "name": "The Guardian Technology", "url": "https://www.theguardian.com/uk/technology/rss", "name_html": "<span style='color:#052962; font-family:serif'><b>The Guardian</b> Technology</span>" },
+		{ "name": "The Guardian Sport", "url": "https://www.theguardian.com/uk/sport/rss", "name_html": "<span style='color:#052962; font-family:serif'><b>The Guardian</b> Sport</span>" },
+		{ "name": "The Guardian Football", "url": "https://www.theguardian.com/football/rss", "name_html": "<span style='color:#052962; font-family:serif'><b>The Guardian</b> Football</span>" }
 	],
 	"inactive":[
 		{ "name": "WHO", "url": "https://www.who.int/rss-feeds/news-english.xml", "name_html": "<span style='color:#008dc9;'><b>WHO</b></span>" }
@@ -62,7 +68,7 @@
 			{"section": "science", "group": ["wissenschaft.de", "t3n", "golem.de", "heise online", "NY Times Science"]},
 			{"section": "tech", "group": ["golem.de", "t3n", "heise online", "heise Developer", "heise Make", "HACKADAY", "NY Times Technology", "PCGames"]},
 			{"section": "sports", "group": ["Sport1", "Sportschau", "Kicker"]},
-			{"section": "soccer", "group": ["Sportschau - Fussball", "Kicker", "Sport1"]},
+			{"section": "soccer", "group": ["Sportschau - Fussball", "Kicker", "Sport1", "The Guardian Football"]},
 			{"section": "games", "group": ["PCGames", "GameStar"]},
 			{"section": "music", "group": ["RollingStone", "MUSIC NEWS"]},
 			{"section": "cinema", "group": ["Filmstarts.de - aktuell", "Filmstarts.de - bald", "Kino.de - Film-News", "SPIEGEL Kino"]},
@@ -72,13 +78,13 @@
 			{"section": "corona", "group": ["aerzteblatt.de", "Robert Koch Institute", "CDC", "SPIEGEL Gesundheit", "NY Times Well"]}
 		]},
 		{ "language": "en", "data": [
-			{"section": "main", "group": ["NY Times World", "Wired", "RollingStone", "SPIEGEL ONLINE", "FAZ", "Bild"]},
-			{"section": "economy", "group": ["NY Times Business", "SPIEGEL ONLINE", "Süddeutsche", "FAZ", "Tagesschau", "Gruenderszene"]},
-			{"section": "politics", "group": ["SPIEGEL ONLINE", "Süddeutsche", "FAZ", "Bild", "Tagesschau"]},
-			{"section": "science", "group": ["NY Times Science", "Wired", "NY Times Technology", "t3n", "golem.de", "heise online"]},
-			{"section": "tech", "group": ["Wired", "MIT Technology Review", "HACKADAY", "NY Times Technology", "t3n", "golem.de", "heise online", "PCGames"]},
-			{"section": "sports", "group": ["NY Times Sports", "Sport1", "Sportschau", "Kicker"]},
-			{"section": "soccer", "group": ["Sportschau - Fussball", "Kicker", "Sport1"]},
+			{"section": "main", "group": ["NY Times World", "The Guardian World", "The Guardian UK", "Wired", "RollingStone", "SPIEGEL ONLINE", "FAZ", "Bild"]},
+			{"section": "economy", "group": ["NY Times Business", "The Guardian Economics", "FAZ", "Gruenderszene"]},
+			{"section": "politics", "group": ["NY Times World", "The Guardian World", "SPIEGEL ONLINE", "Süddeutsche", "Bild", "Tagesschau"]},
+			{"section": "science", "group": ["NY Times Science", "Wired", "NY Times Technology", "The Guardian Technology", "t3n", "golem.de", "heise online"]},
+			{"section": "tech", "group": ["Wired", "MIT Technology Review", "HACKADAY", "NY Times Technology", "The Guardian Technology", "t3n", "golem.de", "heise online", "PCGames"]},
+			{"section": "sports", "group": ["NY Times Sports", "The Guardian Sport", "Sport1", "Sportschau", "Kicker"]},
+			{"section": "soccer", "group": ["The Guardian Football", "Sportschau - Fussball", "Kicker", "Sport1"]},
 			{"section": "games", "group": ["PCGames", "GameStar"]},
 			{"section": "music", "group": ["RollingStone", "MUSIC NEWS"]},
 			{"section": "cinema", "group": ["Filmstarts.de - aktuell", "Filmstarts.de - bald", "Kino.de - Film-News", "SPIEGEL Kino"]},
