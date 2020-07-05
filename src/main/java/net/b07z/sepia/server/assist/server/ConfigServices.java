@@ -52,6 +52,13 @@ public class ConfigServices {
 	public static String getCustomServicesBaseFolder(){
 		return Config.sdkClassesFolder + "services/";
 	}
+	/**
+	 * Get folder path to custom services source code, e.g.:<br>
+	 * "net/b07z/sepia/services-source-code/"
+	 */
+	public static String getCustomServicesSourceFolder(){
+		return Config.sdkClassesFolder + "services-source-code/";
+	}
 	
 	/**
 	 * Get package path to custom services (full name), e.g.:<br>

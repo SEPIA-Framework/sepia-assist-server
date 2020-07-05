@@ -28,6 +28,7 @@ Desktop.ini
 # Project
 Xtensions/Backups/*
 Xtensions/Plugins/net/b07z/sepia/sdk/services/uid*
+Xtensions/Plugins/net/b07z/sepia/sdk/services-source-code/uid*
 Xtensions/WebContent/app*
 Xtensions/WebContent/tools*
 Xtensions/WebContent/shared*
