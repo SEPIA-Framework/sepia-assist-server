@@ -333,6 +333,7 @@ public class Start {
 		get("/upload-service", (request, response) -> 		SdkEndpoint.uploadServiceGet(request, response));
 		post("/upload-service", (request, response) -> 		SdkEndpoint.uploadServicePost(request, response));
 		post("/get-services", (request, response) -> 		SdkEndpoint.getServicesPost(request, response));
+		post("/get-service-source", (request, response) -> 	SdkEndpoint.getServiceSourceCodePost(request, response));
 		post("/delete-service", (request, response) -> 		SdkEndpoint.deleteServicePost(request, response));
 		
 		//Remote controls
