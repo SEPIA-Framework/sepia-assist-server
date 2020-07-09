@@ -96,7 +96,7 @@ public interface UserDataInterface {
 	 * @param tag - 'specialTag' given by user to address (e.g. user_home (with or without brackets))
 	 * @param name - 'specialName' given to this address (e.g. Monday soccer, favorite restaurant)
 	 * @param adrData - address JSON data to write/update
-	 * @return JSONObject with "status" and optionally "_id" if the doc was newly created
+	 * @return JSONObject with "status", (database) "_id" and optionally "newlyCreated: true"
 	 */
 	public JSONObject setOrUpdateSpecialAddress(User user, String tag, String name, JSONObject adrData);
 	/**

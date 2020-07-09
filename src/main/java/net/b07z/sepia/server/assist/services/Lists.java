@@ -10,6 +10,8 @@ import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.data.Card;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.data.Card.ElementType;
+import net.b07z.sepia.server.assist.events.ChangeEvent;
+import net.b07z.sepia.server.assist.events.EventsBroadcaster;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.parameters.Action;
@@ -366,7 +368,13 @@ public class Lists implements ServiceInterface{
 					return result;
 				}
 			}
+			//build default answer
 			api.setStatusSuccess();
+			
+			//broadcast change
+			broadcastUpdateEventToAllUserDevices(nluResult.input.user, nluResult.input.deviceId, activeList.getId());
+			
+			//END - wait for build
 		
 		//-ADD
 		}else if (isActionAdd){
@@ -430,6 +438,9 @@ public class Lists implements ServiceInterface{
 					//build answer - all fine I've added stuff
 					api.setStatusSuccess();
 					api.setCustomAnswer(addedStuff);
+					
+					//broadcast change
+					broadcastUpdateEventToAllUserDevices(nluResult.input.user, nluResult.input.deviceId, activeList.getId());
 					
 					//END - wait for build
 				
@@ -495,6 +506,17 @@ public class Lists implements ServiceInterface{
 		
 		//System.out.println(result.getResultJSON()); 		//debug
 		return result;
-	}	
+	}
+	
+	//---------- helpers ----------
+	
+	private void broadcastUpdateEventToAllUserDevices(User user, String senderDeviceId, String listId){
+		//sent time events update trigger after a short delay
+		EventsBroadcaster.broadcastBackgroundDataSyncNotes(
+			EventsBroadcaster.buildChangeEventsSet(
+				new ChangeEvent(ChangeEvent.Type.productivity, listId)		//NOTE: we skip data because we don't know any more details
+			), user, senderDeviceId
+		);
+	}
 
 }

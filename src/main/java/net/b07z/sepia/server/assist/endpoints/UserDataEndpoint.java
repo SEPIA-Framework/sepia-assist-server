@@ -1,17 +1,15 @@
 package net.b07z.sepia.server.assist.endpoints;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.data.Address;
 import net.b07z.sepia.server.assist.endpoints.AssistEndpoint.InputParameters;
+import net.b07z.sepia.server.assist.events.ChangeEvent;
 import net.b07z.sepia.server.assist.events.EventsBroadcaster;
-import net.b07z.sepia.server.assist.events.EventsBroadcaster.ChangeEvent;
 import net.b07z.sepia.server.assist.server.Start;
 import net.b07z.sepia.server.assist.users.ACCOUNT;
 import net.b07z.sepia.server.assist.users.Authenticator;
@@ -73,7 +71,7 @@ public class UserDataEndpoint {
 		
 		//init. answer
 		JSONObject msg = new JSONObject();
-		Set<String> changeEvents = new HashSet<>();
+		List<ChangeEvent> changeEvents = new ArrayList<>();
 		
 		//GET DATA
 		if (get != null){
@@ -124,7 +122,9 @@ public class UserDataEndpoint {
 				for (Object jo : addresses){
 					JSONObject adr = (JSONObject) jo;
 					String tag = JSON.getString(adr, "specialTag");
+					
 					//TODO: support name
+					
 					if (Is.nullOrEmpty(tag)){
 						JSON.put(getResult, ACCOUNT.ADDRESSES, addressesFound);
 						JSON.put(msg, "get_result", getResult);
@@ -193,8 +193,9 @@ public class UserDataEndpoint {
 					
 					}else{
 						//ADD result
-						JSON.add(listsSet, JSON.make("_id", statusList.get("_id"), "indexType", indexType, "section", sectionName));
-						changeEvents.add(sectionName); 		//e.g. ChangeEvent.timeEvents.name()
+						String id = udl.getId();
+						JSON.add(listsSet, JSON.make("_id", id, "indexType", indexType, "section", sectionName));
+						changeEvents.add(new ChangeEvent(sectionName, id)); 		//e.g. type=ChangeEvent.timeEvents
 					}
 				}
 				JSON.put(setResult, ACCOUNT.LISTS, listsSet);
@@ -207,7 +208,9 @@ public class UserDataEndpoint {
 				for (Object jo : addresses){
 					JSONObject adr = (JSONObject) jo;
 					String tag = JSON.getString(adr, "specialTag");
+					
 					//TODO: support name
+					
 					if (Is.nullOrEmpty(tag)){
 						JSON.put(setResult, ACCOUNT.ADDRESSES, addressesSet);
 						JSON.put(msg, "set_result", setResult);
@@ -229,8 +232,9 @@ public class UserDataEndpoint {
 					
 					}else{
 						//ADD result
-						JSON.add(addressesSet, JSON.make("_id", statusAdr.get("_id"), "specialTag", tag));
-						changeEvents.add(ChangeEvent.addresses.name());
+						String id = (String) statusAdr.get("_id");
+						JSON.add(addressesSet, JSON.make("_id", id, "specialTag", tag));
+						changeEvents.add(new ChangeEvent(ChangeEvent.Type.addresses, id));
 					}
 				}
 				JSON.put(setResult, ACCOUNT.ADDRESSES, addressesSet);
@@ -319,7 +323,7 @@ public class UserDataEndpoint {
 					}else{
 						//ADD result
 						JSON.add(adrsDeleted, JSON.make("_id", id, "deleted", deleteResult));
-						changeEvents.add(ChangeEvent.addresses.name());
+						changeEvents.add(new ChangeEvent(ChangeEvent.Type.addresses, id));
 					}
 				}
 				JSON.put(delResult, ACCOUNT.ADDRESSES, adrsDeleted);
