@@ -11,6 +11,8 @@ import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.data.Card;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.data.Card.ElementType;
+import net.b07z.sepia.server.assist.events.EventsBroadcaster;
+import net.b07z.sepia.server.assist.events.EventsBroadcaster.ChangeEvent;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
@@ -424,6 +426,7 @@ public class Alarms implements ServiceInterface{
 				return result;
 			
 			}else{
+				broadcastUpdateEventToAllUserDevices(nluResult.input.user, nluResult.input.deviceId);
 				api.setStatusSuccess();
 			}
 			
@@ -534,20 +537,22 @@ public class Alarms implements ServiceInterface{
 							api.setStatusFail();
 							ServiceResult result = api.buildResult();
 							return result;
-						
-						}						
-						//action
-						api.addAction(ACTIONS.ALARM);
-							api.putActionInfo("info", "remove");
-							api.putActionInfo("targetTimeUnix", JSON.getLongOrDefault(nextAlarm, "targetTimeUnix", 0));
-							api.putActionInfo("eventId", JSON.getString(nextAlarm, "eventId"));
-							
-						if (isTimer){
-							api.setCustomAnswer(answerRemoveTimers);
 						}else{
-							api.setCustomAnswer(answerRemoveAlarms);
+							broadcastUpdateEventToAllUserDevices(nluResult.input.user, nluResult.input.deviceId);
+							
+							//action
+							api.addAction(ACTIONS.ALARM);
+								api.putActionInfo("info", "remove");
+								api.putActionInfo("targetTimeUnix", JSON.getLongOrDefault(nextAlarm, "targetTimeUnix", 0));
+								api.putActionInfo("eventId", JSON.getString(nextAlarm, "eventId"));
+								
+							if (isTimer){
+								api.setCustomAnswer(answerRemoveTimers);
+							}else{
+								api.setCustomAnswer(answerRemoveAlarms);
+							}
+							api.setStatusSuccess();
 						}
-						api.setStatusSuccess();
 					}
 				}
 				
@@ -600,6 +605,12 @@ public class Alarms implements ServiceInterface{
 		}else{
 			return false;
 		}
+	}
+	private void broadcastUpdateEventToAllUserDevices(User user, String senderDeviceId){
+		//sent time events update trigger after a short delay
+		EventsBroadcaster.broadcastBackgroundDataSyncNotes(
+				EventsBroadcaster.buildChangeEventsSet(ChangeEvent.timeEvents), user, senderDeviceId
+		);
 	}
 	
 	private JSONObject getNextTimeEventInList(List<UserDataList> udlList){
