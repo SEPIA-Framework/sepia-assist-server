@@ -23,6 +23,7 @@ import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
+import net.b07z.sepia.websockets.common.SocketMessage.RemoteActionType;
 
 /**
  * This class is a helper to build services and it includes a default set of necessary variables.<br>
@@ -490,13 +491,34 @@ public class ServiceBuilder {
 	}
 	
 	/**
-	 * WebSockets support duplex communication which means you can send an answer first and after a few seconds send a follow-up
-	 * message to add more info/data to the previous reply. Test for nluInput.isDuplexConnection() first!
-	 * @param nluInput - initial {@link NluInput} to follow-up
-	 * @param serviceResult - {@link ServiceResult} as produced by services to send as follow-up
+	 * Use {@link #sendFollowUpMessage(ServiceResult)}
 	 */
+	@Deprecated
 	public boolean sendFollowUpMessage(NluInput nluInput, ServiceResult serviceResult){
 		return Clients.sendAssistantFollowUpMessage(nluInput, serviceResult);
+	}
+	/**
+	 * WebSockets support duplex communication which means you can send an answer first and after a few seconds send a follow-up
+	 * message to add more info/data to the previous reply. Test for nluInput.isDuplexConnection() first!
+	 * @param serviceResult - {@link ServiceResult} as produced by services to send as follow-up
+	 * @return true if sent, false if not - note: sent does not mean someone actually received it
+	 */
+	public boolean sendFollowUpMessage(ServiceResult serviceResult){
+		return Clients.sendAssistantFollowUpMessage(nluResult.input, serviceResult);
+	}
+	/**
+	 * Send remote-action to a specific user device (or all).
+	 * @param actionType - {@link RemoteActionType} , e.g. 'hotkey' or 'sync'
+	 * @param action - basic String or JSONObject as String representing the action, e.g. {"key":"mic"}
+	 * @param targetDeviceId - target a specific device ID (e.g. ID, empty=auto, ;&ltall;&gt)
+	 * @param targetChannelId - target a specific chat channel (e.g. ID, empty=auto)
+	 * @param skipDeviceId - device IDs to skip (useful for targetDeviceId 'auto' or 'all')
+	 * @return true if sent, false if not - note: sent does not mean someone actually received it
+	 */
+	public boolean sendRemoteAction(String actionType, String action, 
+			String targetDeviceId, String targetChannelId, String skipDeviceId){
+		String receiver = nluResult.input.user.getUserID();
+		return Clients.sendAssistantRemoteAction(receiver, actionType, action, targetDeviceId, targetChannelId, skipDeviceId);
 	}
 	
 	/**

@@ -1,7 +1,6 @@
 package net.b07z.sepia.server.assist.events;
 
 import java.util.Calendar;
-
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.assistant.CmdBuilder;
