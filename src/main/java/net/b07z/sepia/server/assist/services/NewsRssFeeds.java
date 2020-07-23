@@ -220,7 +220,7 @@ public class NewsRssFeeds implements ServiceInterface{
 				getInfoFreshOrCache(nluResult.input, this.getClass().getCanonicalName()));
 		
 		//Button options:
-		JSONObject optionsNoActions = JSON.make(ACTIONS.SKIP_TTS, true, ACTIONS.SKIP_TEXT, true, ACTIONS.SKIP_ACTIONS, true);
+		JSONObject optionsNoActions = JSON.make(ACTIONS.OPTION_SKIP_TTS, true, ACTIONS.OPTION_SKIP_TEXT, true, ACTIONS.OPTION_SKIP_ACTIONS, true);
 		//JSONObject optionsWithActions = JSON.make(ACTIONS.SKIP_TTS, true, ACTIONS.SKIP_TEXT, true);
 						
 		//parameter evaluation:

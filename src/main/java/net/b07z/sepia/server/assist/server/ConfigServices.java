@@ -15,7 +15,7 @@ import net.b07z.sepia.server.assist.endpoints.AuthEndpoint;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interviews.Interview;
 import net.b07z.sepia.server.assist.interviews.InterviewServicesMap;
-import net.b07z.sepia.server.assist.services.OpenDashboard;
+import net.b07z.sepia.server.assist.services.SettingsService;
 import net.b07z.sepia.server.assist.services.ServiceInterface;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.assist.users.UserDataInterface;
@@ -69,7 +69,7 @@ public class ConfigServices {
 	}
 	
 	//essential stand-alone services
-	public static ServiceInterface dashboard = new OpenDashboard();
+	public static ServiceInterface settingsService = new SettingsService();
 	
 	//Note: loadInterviewService map has moved to interviews.InterviewServicesMap
 	

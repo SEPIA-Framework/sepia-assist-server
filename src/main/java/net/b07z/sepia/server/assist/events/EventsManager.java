@@ -104,7 +104,7 @@ public class EventsManager {
 		
 		//events start
 		boolean hasButtons = false;
-		actionBuilder.addAction(ACTIONS.EVENTS_START);
+		actionBuilder.addAction(ACTIONS.MOD_EVENTS_START);
 		actionBuilder.putActionInfo("info", "dividerWithTime");
 		//actionBuilder.actionInfo_put_info("info", "divider");
 		//actionBuilder.actionInfo_put_info("info", "quietText");
@@ -162,8 +162,8 @@ public class EventsManager {
 					CmdBuilder.getNews("")
 			);
 			actionBuilder.putActionInfo("options", JSON.make(
-					ACTIONS.SKIP_TTS, true,
-					ACTIONS.SHOW_VIEW, true
+					ACTIONS.OPTION_SKIP_TTS, true,
+					ACTIONS.OPTION_SHOW_VIEW, true
 			)); 
 			hasButtons = true;
 		}
@@ -175,8 +175,8 @@ public class EventsManager {
 					CmdBuilder.getRadioGenre("my")
 			);
 			actionBuilder.putActionInfo("options", JSON.make(
-					ACTIONS.SKIP_TTS, true,
-					ACTIONS.SHOW_VIEW, true
+					ACTIONS.OPTION_SKIP_TTS, true,
+					ACTIONS.OPTION_SHOW_VIEW, true
 			));
 			hasButtons = true;
 		}else if (localTimeIsKnown && isNight){
@@ -185,8 +185,8 @@ public class EventsManager {
 					CmdBuilder.getRadioStation("night")
 			);
 			actionBuilder.putActionInfo("options", JSON.make(
-					ACTIONS.SKIP_TTS, true,
-					ACTIONS.SHOW_VIEW, true
+					ACTIONS.OPTION_SKIP_TTS, true,
+					ACTIONS.OPTION_SHOW_VIEW, true
 			));
 			hasButtons = true;
 		}
@@ -305,7 +305,7 @@ public class EventsManager {
 		actionBuilder.putActionInfo("cmd", cmd);
 		//default button options
 		actionBuilder.putActionInfo("options", JSON.make(
-				ACTIONS.SHOW_VIEW, true
+				ACTIONS.OPTION_SHOW_VIEW, true
 		)); 
 	}
 	/**

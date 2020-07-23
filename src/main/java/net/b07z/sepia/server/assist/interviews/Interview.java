@@ -217,7 +217,7 @@ public class Interview {
 			nluResult.setParameter(PARAMETERS.INFO, data[2]);
 			nluResult.setParameter(PARAMETERS.REPLY, customReply);
 			nluResult.setParameter(PARAMETERS.ACTION, "add");
-			return ConfigServices.dashboard.getResult(nluResult);
+			return ConfigServices.settingsService.getResult(nluResult);
 		}
 		//TODO: add more actions
 		Debugger.println("handleInterviewAction(...) is missing a handler for: " + getResult, 1);

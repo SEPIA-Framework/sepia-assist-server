@@ -20,7 +20,6 @@ import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.assist.users.UserDataInterface;
-import net.b07z.sepia.server.core.assistant.ACTIONS;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.data.UserDataList;
 import net.b07z.sepia.server.core.data.UserDataList.Section;
@@ -487,11 +486,6 @@ public class Lists implements ServiceInterface{
 				
 		//ACTION and CARD
 		if (udlList != null && !udlList.isEmpty()){
-			//build action - for apps indicate direct triggering of info view
-			api.addAction(ACTIONS.OPEN_LIST);
-			api.putActionInfo("listInfo", JSON.make("indexType", indexType, "title", title, "_id", _id));
-			api.hasAction = true;
-		
 			//make card
 			Card card = new Card(Card.TYPE_UNI_LIST);
 			for (UserDataList udl : udlList){
