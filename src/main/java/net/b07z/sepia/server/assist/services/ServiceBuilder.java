@@ -4,6 +4,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.answers.ServiceAnswers;
+import net.b07z.sepia.server.assist.assistant.ActionBuilder;
 import net.b07z.sepia.server.assist.assistant.Assistant;
 import net.b07z.sepia.server.assist.data.Card;
 import net.b07z.sepia.server.assist.data.Parameter;
@@ -267,9 +268,10 @@ public class ServiceBuilder {
 	}
 	
 	/**
-	 * Put "value" to "key" in current actionInfo element. E.g.: putActionInfo("url", call_url). The current JSONArray element (action) is previously
-	 * set by using addAction(value), so be sure to first add an action and then add info for that action.<br>
-	 * See also: {@link net.b07z.sepia.server.assist.assistant.ActionBuilder}
+	 * Recommended use: {@link ActionBuilder}<br>
+	 * <br>
+	 * Set "value" of "key" for active actionInfo element. E.g.: putActionInfo("url", call_url). Use "options"-key for special settings.<br>
+	 * NOTE: The currently active actionInfo element has to be set in advance by using addAction(value).
 	 * @param key
 	 * @param value
 	 */
@@ -283,10 +285,11 @@ public class ServiceBuilder {
 		}
 	}
 	/**
+	 * Recommended use: {@link ActionBuilder}<br>
+	 * <br>
 	 * Add a new action to the queue, to be more specific: create a new JSONObject action, put "value" to "type"-key and add it to the actions array.
-	 * Note: the order in which actions are created can matter because clients would usually execute them one after another. 
-	 * E.g.: addAction(ACTIONS.OPEN_URL) or addAction(ACTIONS.OPEN_INFO).<br>
-	 * See also: {@link net.b07z.sepia.server.assist.assistant.ActionBuilder}
+	 * Note: the order in which actions are created can matter because clients would usually execute them one after another.<br> 
+	 * E.g.: addAction(ACTIONS.OPEN_URL) or addAction(ACTIONS.OPEN_INFO).
 	 * @param value
 	 */
 	@SuppressWarnings("unchecked")

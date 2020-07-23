@@ -3,43 +3,68 @@ package net.b07z.sepia.server.assist.assistant;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import net.b07z.sepia.server.assist.services.ServiceBuilder;
+import net.b07z.sepia.server.assist.services.ServiceResult;
+import net.b07z.sepia.server.core.assistant.ACTIONS;
 import net.b07z.sepia.server.core.tools.JSON;
 
 /**
- * Class to build actions for services (e.g. for buttons etc.).
+ * Class to build actions for services (e.g. commands, buttons etc.) in a simpler way.
  * 
  * @author Florian Quirin
  *
  */
 public class ActionBuilder {
 
+	private JSONArray actionArray;
+	
 	/**
-	 * Make a simple action with just one key-value pair. 
-	 * @param type - ACTIONS.xyt action type
-	 * @param key - key of the only entry
-	 * @param value - value of the only entry
-	 * @return JSONArray with one action
+	 * Initialize action builder using {@link ServiceBuilder}.
+	 * @param serviceBuilder - builder used inside a service
 	 */
-	public static JSONArray makeSimpleAction(String type, String key, String value){
-		JSONArray ja = new JSONArray();
-		JSONObject jo = new JSONObject();
-		JSON.put(jo, "type", type);
-		JSON.put(jo, key, value);
-		JSON.add(ja, jo);
-		return ja;
+	public ActionBuilder(ServiceBuilder serviceBuilder){
+		this.actionArray = serviceBuilder.actionInfo;
 	}
 	/**
-	 * Make a simple action with added JSON data. 
-	 * @param type - ACTIONS.xyt action type
-	 * @param json - JSON object to add. NOTE: the key "type" may not be used and will be overwritten by the ACTION type!
-	 * @return JSONArray with action
+	 * Initialize action builder using the 'actionInfo' array of a {@link ServiceResult} or {@link ServiceBuilder}.
+	 * @param actionInfo - JSONArray holding all actions of a service
 	 */
-	public static JSONArray makeSimpleAction(String type, JSONObject json){
-		JSONArray ja = new JSONArray();
-		JSONObject jo = json;
-		JSON.put(jo, "type", type);
-		JSON.add(ja, jo);
-		return ja;
+	public ActionBuilder(JSONArray actionInfo){
+		this.actionArray = actionInfo;
+	}
+	
+	/**
+	 * Add a new client action to a service.
+	 * @param actionName - one String of {@link ACTIONS}
+	 * @param actionParameters - parameters specific to this action (or new JSONObject())
+	 */
+	public ActionBuilder addAction(String actionName, JSONObject actionParameters){
+		return addAction(actionName, actionParameters, null);
+	}
+	/**
+	 * Add a new client action to a service including some extra options.
+	 * @param actionName - one String of {@link ACTIONS}
+	 * @param actionParameters - parameters specific to this action (or new JSONObject())
+	 * @param options - one or more {@link ACTIONS}.OPTION_... with specific value (or null)
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public ActionBuilder addAction(String actionName, JSONObject actionParameters, JSONObject options){
+		JSONObject action = actionParameters;
+		action.put("type", actionName);		//NOTE: "type" can NEVER be a parameter! - this is a bit of a bad design decision but ... 
+		if (options != null && !options.isEmpty()){
+			action.put("options", options);
+		}
+		JSON.add(actionArray, action);
+		return this;
+	}
+	
+	/**
+	 * Get the reference to the 'actionInfo' array created with this builder.<br>
+	 * NOTE: Use this only if you want to further modify the result.
+	 */
+	public JSONArray getArray(){
+		return this.actionArray;
 	}
 
 	/**

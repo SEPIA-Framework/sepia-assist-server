@@ -1,6 +1,7 @@
 package net.b07z.sepia.server.assist.chats;
 
 import net.b07z.sepia.server.assist.answers.Answers;
+import net.b07z.sepia.server.assist.assistant.ActionBuilder;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.services.ServiceBuilder;
@@ -189,9 +190,12 @@ public class Help {
 		//add help action
 		String data = getSkillList(api.language);
 			
-		api.addAction(ACTIONS.SHOW_HTML_RESULT);
-		api.putActionInfo("data", data);
-		api.putActionInfo("options", JSON.make("targetView", "bigResults"));
+		ActionBuilder actionBuilder = new ActionBuilder(api);
+		actionBuilder.addAction(
+				ACTIONS.SHOW_HTML_RESULT, 
+				JSON.make("data", data), 
+				JSON.make(ACTIONS.OPTION_TARGET_VIEW, "bigResults")
+		);
 		api.hasAction = true;
 		
 		api.setStatusSuccess();
