@@ -120,6 +120,8 @@ food_0a;;		rep=0|mood=5;;		Sorry, da kann ich dir gerade auch nicht helfen. ;;ch
 food_1a;;		rep=0|mood=5;;		Schau doch mal hier nach was Essbarem. ;;char=neutral
 dashboard_0a;;		rep=0|mood=5;;		Lass mich mal dein Dashboard öffnen. ;;char=cool,rude
 dashboard_0b;;		rep=0|mood=5;;		Da fehlen mir leider die Informationen, aber du könntest sie deinem Account hinzufügen. ;;char=polite,neutral
+settings_0a;;		rep=0|mood=5;;		Lass mich mal deine Settings öffnen. ;;char=cool,rude
+settings_0b;;		rep=0|mood=5;;		Da fehlen mir leider die Informationen, aber du könntest sie deinem Account hinzufügen. ;;char=polite,neutral
 search_retail_0a;;		rep=0|mood=5;;		Sorry, aber bei diesem Anbieter kann ich noch keine Suche durchführen. ;;char=cool,neutral
 search_retail_1a;;		rep=0|mood=5;;		<user_name>, hier sind deine Suchergebnisse. ;;char=neutral
 search_retail_ask_0a;;		rep=0|mood=5;;		Was soll ich suchen <user_name>? ;;char=neutral
