@@ -51,8 +51,9 @@ public class OpenCustomLink {
 		//get parameters:
 		
 		//URL
-		String url = nluResult.getParameter(PARAMETERS.URL);		//the URL to call (can include wildcards in the form ***)
-		url = url.replaceAll("^javascript:", "").trim();			//we don't allow JavaScript
+		String url = nluResult.getParameter(PARAMETERS.URL).trim();	//the URL to call (can include wildcards in the form ***)
+		if (!url.matches("^[a-zA-Z-_]+:.*")) url = ""; 				//no surprises in the protocol plz ;-)
+		if (url.matches("(?i)^(javascript|data):.*")) url = "";		//we don't allow JavaScript or data
 		
 		String parameter_set = nluResult.getParameter("parameter_set");		//the parameters filling the wildcards connected by "&&"
 		String question_set = nluResult.getParameter("question_set");		//a set of questions to the wildcards connected by "&&"
