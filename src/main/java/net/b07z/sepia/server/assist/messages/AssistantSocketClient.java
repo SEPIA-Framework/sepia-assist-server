@@ -33,7 +33,7 @@ import spark.Request;
  * @author Florian Quirin
  *
  */
-@WebSocket
+@WebSocket(maxTextMessageSize = 262144, maxBinaryMessageSize = 262144)	//default: 65536
 public class AssistantSocketClient extends SepiaSocketClient {
 	
 	private String sepiaUserId = ""; 		//should be in sync. with getUserId()
