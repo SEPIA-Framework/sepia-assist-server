@@ -50,7 +50,8 @@
 		{ "name": "The Guardian UK", "url": "https://www.theguardian.com/uk/rss", "name_html": "<span style='color:#052962; font-family:serif'><b>The Guardian</b> UK</span>" },
 		{ "name": "The Guardian Technology", "url": "https://www.theguardian.com/uk/technology/rss", "name_html": "<span style='color:#052962; font-family:serif'><b>The Guardian</b> Technology</span>" },
 		{ "name": "The Guardian Sport", "url": "https://www.theguardian.com/uk/sport/rss", "name_html": "<span style='color:#052962; font-family:serif'><b>The Guardian</b> Sport</span>" },
-		{ "name": "The Guardian Football", "url": "https://www.theguardian.com/football/rss", "name_html": "<span style='color:#052962; font-family:serif'><b>The Guardian</b> Football</span>" }
+		{ "name": "The Guardian Football", "url": "https://www.theguardian.com/football/rss", "name_html": "<span style='color:#052962; font-family:serif'><b>The Guardian</b> Football</span>" },
+		{ "name": "1E9 Magazin", "url": "https://1e9.community/c/magazin.rss", "name_html": "<span style='color:#000;';><b><span style='text-shadow: 1px 1px 0px #4bf07c;'>1E9</span> Magazin</b></span>" }
 	],
 	"inactive":[
 		{ "name": "WHO", "url": "https://www.who.int/rss-feeds/news-english.xml", "name_html": "<span style='color:#008dc9;'><b>WHO</b></span>" }
@@ -62,7 +63,7 @@
 	],
 	"groups":[
 		{ "language": "de", "data": [
-			{"section": "main", "group": ["Tagesschau", "SPIEGEL ONLINE", "Süddeutsche", "FAZ", "Bild", "golem.de", "Gruenderszene", "jetzt.de", "bento"]},
+			{"section": "main", "group": ["Tagesschau", "SPIEGEL ONLINE", "Süddeutsche", "FAZ", "Bild", "golem.de", "1E9 Magazin", "Gruenderszene", "jetzt.de", "bento"]},
 			{"section": "economy", "group": ["SPIEGEL ONLINE", "Süddeutsche", "FAZ", "Tagesschau", "Gruenderszene"]},
 			{"section": "politics", "group": ["SPIEGEL ONLINE", "Süddeutsche", "FAZ", "Bild", "Tagesschau"]},
 			{"section": "science", "group": ["wissenschaft.de", "t3n", "golem.de", "heise online", "NY Times Science"]},

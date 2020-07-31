@@ -1,11 +1,12 @@
 package net.b07z.sepia.server.assist.tools;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import net.b07z.sepia.server.assist.services.NewsRssFeeds;
 import net.b07z.sepia.server.core.tools.JSON;
 import net.b07z.sepia.server.core.tools.Timer;
 
@@ -18,24 +19,12 @@ public class Test_RssFeedReader {
 		int maxEntries = 10;
 		boolean cacheIt = false;
 		
-		/*
-		List<String> urlList = Arrays.asList(
-			"https://www.11freunde.de/feed",
-			"https://www.gruenderszene.de/feed",
-			"http://t3n.de/feed/feed.atom",
-			"http://t3n.de/rss.xml",
-			"https://www.serienjunkies.de/docs/serienkalender-aktuell.html"
-		);
-		for (String url : urlList){
-			System.out.println("\nTEST FEED: " + url + "\n");
-			JSONObject feed = rss.getFeed(url, "TestFeed", maxEntries, cacheIt);
-			testFeed(feed);
-		}
-		*/
+		Map<String, String> feeds = new HashMap<>();		// = NewsRssFeeds.feedUrls.entrySet();
+		feeds.put("1E9 Magazin", "https://1e9.community/c/magazin.rss");
 		
 		int tested = 0;
 		int good = 0;
-		for (Entry<String, String> e : NewsRssFeeds.feedUrls.entrySet()){
+		for (Entry<String, String> e : feeds.entrySet()){
 			System.out.println("\nPRODUCTION FEED: " + e.getValue() + "\n");
 			JSONObject feed = rss.getFeed(e.getValue(), e.getKey(), maxEntries, cacheIt);
 			tested++;
