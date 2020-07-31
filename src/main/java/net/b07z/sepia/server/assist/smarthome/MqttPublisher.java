@@ -37,7 +37,7 @@ public class MqttPublisher implements SmartHomeHub {
 		if (Is.nullOrEmpty(host)){
 			throw new RuntimeException("No host address found for MQTT integration!");
 		}else{
-			this.host = host;
+			this.host = host.replaceFirst("/$", "").trim();
 		}
 	}
 	
@@ -153,7 +153,7 @@ public class MqttPublisher implements SmartHomeHub {
 	
 	@Override
 	public void setHostAddress(String hostUrl){
-		this.host = hostUrl;
+		this.host = hostUrl.replaceFirst("/$", "").trim();
 	}
 
 	@Override

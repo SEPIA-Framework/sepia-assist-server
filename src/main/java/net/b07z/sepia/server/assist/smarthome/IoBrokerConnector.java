@@ -42,7 +42,7 @@ public class IoBrokerConnector implements SmartHomeHub {
 		if (Is.nullOrEmpty(hubHost)){
 			throw new RuntimeException("No host address found for ioBroker integration!");
 		}else{
-			this.host = hubHost;
+			this.host = hubHost.replaceFirst("/$", "").trim();
 		}
 	}
 	
@@ -104,7 +104,7 @@ public class IoBrokerConnector implements SmartHomeHub {
 
 	@Override
 	public void setHostAddress(String hostUrl){
-		this.host = hostUrl;
+		this.host = hostUrl.replaceFirst("/$", "").trim();
 	}
 	
 	@Override

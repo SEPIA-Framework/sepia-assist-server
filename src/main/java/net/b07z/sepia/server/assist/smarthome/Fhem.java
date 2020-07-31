@@ -62,7 +62,7 @@ public class Fhem implements SmartHomeHub {
 		if (Is.nullOrEmpty(host)){
 			throw new RuntimeException("No host address found for FHEM integration!");
 		}else{
-			this.host = host;
+			this.host = host.replaceFirst("/$", "").trim();
 			this.csrfToken = getCsrfToken(this.host);
 			this.bufferedDevicesByType = bufferedDevicesOfHostByType.get(this.host);
 		}
@@ -76,7 +76,7 @@ public class Fhem implements SmartHomeHub {
 		if (Is.nullOrEmpty(host)){
 			throw new RuntimeException("No host address found for FHEM integration!");
 		}else{
-			this.host = host;
+			this.host = host.replaceFirst("/$", "").trim();
 			this.csrfToken = csrfToken;
 			this.bufferedDevicesByType = bufferedDevicesOfHostByType.get(this.host);
 		}
@@ -130,7 +130,7 @@ public class Fhem implements SmartHomeHub {
 	
 	@Override
 	public void setHostAddress(String hostUrl){
-		this.host = hostUrl;
+		this.host = hostUrl.replaceFirst("/$", "").trim();
 	}
 	
 	@Override
