@@ -39,8 +39,8 @@ public class AuthenticationDynamoDB implements AuthenticationInterface {
 	private static final long access_lvl_token_valid_time = 1800000L;		//that token is valid 30min
 	private static final long registration_token_valid_time = 86400000L;	//that token is valid 24h
 	private static final long reset_token_valid_time = 1200000L;		//that token is valid 20min
-	private static final long key_token_valid_time = 86400000L;			//that token is valid for one day
-	private static final long app_token_valid_time = 3153600000L;		//that token is valid for one year
+	private static final long key_token_valid_time = Authenticator.SESSION_TOKEN_VALID_FOR;	//that token is valid for one day
+	private static final long app_token_valid_time = Authenticator.APP_TOKEN_VALID_FOR;		//that token is valid for one year
 	
 	private static final String TOKENS_SUPP = "tokens_supp";
 	private static final String TOKENS_REG = "tokens_reg";
@@ -674,8 +674,13 @@ public class AuthenticationDynamoDB implements AuthenticationInterface {
 					JSONObject tts = DynamoDB.dig(item, token_ts);
 					long ts = Converters.obj2LongOrDefault(DynamoDB.typeConversion(tts), 0l);
 					if ((System.currentTimeMillis() - ts) > valid_time){
-						//token became invalid
-						pwd = null;
+						if (pwd.equals(password)){
+							errorCode = 5;
+							return false;
+						}else{
+							errorCode = 2;
+							return false;
+						}
 					}
 				}else{
 					pwd = null;
