@@ -17,12 +17,12 @@ import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.services.ServiceAccessManager;
 import net.b07z.sepia.server.assist.tools.GeoCoding;
-import net.b07z.sepia.server.assist.workers.ThreadManager;
 import net.b07z.sepia.server.core.data.Role;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
 import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.JSON;
+import net.b07z.sepia.server.core.tools.ThreadManager;
 
 /**
  * Class that manages the user info during client-server communication. Created from client info and account info.

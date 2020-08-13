@@ -13,8 +13,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.tts.TtsTools.EngineType;
-import net.b07z.sepia.server.assist.workers.ThreadManager;
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.ThreadManager;
 
 /**
  * NOTE: This is pretty old code and might need some upgrades ^^<br>

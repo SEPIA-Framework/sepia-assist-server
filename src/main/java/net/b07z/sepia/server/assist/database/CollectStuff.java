@@ -6,12 +6,12 @@ import net.b07z.sepia.server.assist.assistant.LOCATION;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.Statistics;
-import net.b07z.sepia.server.assist.workers.ThreadManager;
 import net.b07z.sepia.server.core.database.DatabaseInterface;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
 import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.JSON;
+import net.b07z.sepia.server.core.tools.ThreadManager;
 
 /**
  * Collect useful stuff to build up databases and corpi. Includes methods to collect asynchronous write processes to make 

@@ -10,10 +10,11 @@ import net.b07z.sepia.server.assist.parameters.SportsLeague;
 import net.b07z.sepia.server.assist.parameters.SportsTeam;
 import net.b07z.sepia.server.assist.server.Statistics;
 import net.b07z.sepia.server.assist.tools.DateTimeConverters;
-import net.b07z.sepia.server.assist.workers.ThreadManager.ThreadInfo;
 import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.JSON;
+import net.b07z.sepia.server.core.tools.ThreadManager;
+import net.b07z.sepia.server.core.tools.ThreadManager.ThreadInfo;
 
 public class OpenLigaWorker implements WorkerInterface {
 	
