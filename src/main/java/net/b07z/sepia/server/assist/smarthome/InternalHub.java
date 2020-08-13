@@ -8,10 +8,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.database.DB;
-import net.b07z.sepia.server.assist.workers.ThreadManager;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
+import net.b07z.sepia.server.core.tools.ThreadManager;
 
 /**
  * A HUB that uses the internal database to store devices and executes actions by using the other known HUBs or simple actions.
@@ -101,16 +101,13 @@ public class InternalHub implements SmartHomeHub {
 		}else if (devicesList.isEmpty()){
 			return devices;
 		}else{
-			/* old, non-parallel call:
-			for (SmartHomeDevice shd : devicesList){ ... }
-			*/
-			long timeout = devicesList.size() * 5000; 
-			ThreadManager.runParallelAndWait("InternalHub#getDevices", devicesList, (shd) -> {
+			//collect
+			for (SmartHomeDevice shd : devicesList){
 				String id = shd.getMetaValueAsString("id");
 				if (Is.notNullOrEmpty(id)){		//actually this can never be null or empty ... in theory
 					devices.put(shd.getMetaValueAsString("id"), shd);
 				}
-			}, timeout);
+			}
 		}
 		return devices;
 	}
@@ -127,8 +124,10 @@ public class InternalHub implements SmartHomeHub {
 			/* old, non-parallel call:
 			for (SmartHomeDevice shd : devices.values()){ ... }
 			*/
-			long timeout = devices.size() * 5000;
-			ThreadManager.runParallelAndWait("InternalHub#getFilteredDevicesList", devices.values(), (shd) -> {
+			int n = devices.size();
+			long timeout = 5000 + (n * 1000); 	//this might be a bit OD
+			int maxNumOfThreads = 5;			//should be enough!?
+			boolean finishedInTime = ThreadManager.runParallelAndWait("InternalHub#getFilteredDevicesList", devices.values(), (shd) -> {
 				//filter again! (because the DB is more tolerant)
 				boolean filterMatch = true;
 				if (filters != null){
@@ -162,7 +161,11 @@ public class InternalHub implements SmartHomeHub {
 					shd = loadDeviceData(shd);
 					filteredDevices.add(shd);
 				}
-			}, timeout);
+			}, timeout, maxNumOfThreads);
+			if (!finishedInTime){
+				Debugger.println("Smart Home HUB Interface - getFilteredDevicesList"
+						+ " - Failed to get all devices in time (" + timeout + "ms)! Requested: " + n, 1);
+			}
 			return filteredDevices;
 		}
 	}
