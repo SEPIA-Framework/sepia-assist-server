@@ -139,12 +139,12 @@ public class ServiceBackgroundTaskManager {
 	    	executor.shutdown();
 	    	
 	    }, delayMs, TimeUnit.MILLISECONDS);
-	    //other option (but does not support lambda expression):
+	    //other option (but does not support lambda expression and uses unknown thread):
 	    //Timer timer = new Timer();
 	    //timer.schedule(task, delayMs);
 	    
 	    BooleanSupplier cancelFun = () -> {
-	    	if (future.isDone() || future.cancel(false)){
+	    	if (future.isDone() || future.isCancelled() || future.cancel(false)){
 	    		removeFromSbtMap(taskId);
 	    		executor.purge();
 		    	executor.shutdown();

@@ -87,7 +87,7 @@ public class NewsSection implements ParameterHandler{
 							+ "champions( |)league|europaliga|euro( |)league|europa( |)league|premier league|primera division|"
 							+ "wm|em|(europa|welt)(meister| meister)(schaft|)|"
 							+ "racing|auto rennen|rennen|race|raceing|formel 1|formel eins|"
-							+ "games|lol|league of legends|dota|overwatch|heroes|"
+							+ "gam(es|e|ing)|lol|league of legends|dota|overwatch|heroes|fortnite|"
 							+ "musik(er|)|music|band(s|)|kino(s|)|cinema(s|)|film(e|)|movie(s|)|serie(n|)|tv|television|fernseh(serie(n|)|sendung(en|))|fernseh|shows|"
 							+ "start( |-|)up(s|)|gruender|gruenderszene|"
 							+ "corona(( |)virus|)|covid(-19|)|sars-cov-2");
@@ -101,7 +101,7 @@ public class NewsSection implements ParameterHandler{
 							+ "wm|em|(european|world)(champion| champion)(ship|)|"
 							+ "baseball|football|basketball|golf|ice hockey|hockey|tennis|handball|wrestling|"
 							+ "racing|race|formula one|formula 1|"
-							+ "games|lol|league of legends|dota|overwatch|heroes|"
+							+ "gam(es|e|ing)|lol|league of legends|dota|overwatch|heroes|fortnite|"
 							+ "music|band(s|)|cinema(s|)|movie(s|)|film(s|)|tv|series|serial|television|shows|"
 							+ "start( |-|)up(s|)|founder(s|)|"
 							+ "corona(( |)virus|)|covid(-19|)|sars-cov-2");
@@ -132,7 +132,7 @@ public class NewsSection implements ParameterHandler{
 			return "<" + NSection.science.name() + ">";
 		}else if (NluTools.stringContains(newsFound, "tech|technik\\w*|technology|technologie|pc|it|hardware|computer")){
 			return "<" + NSection.tech.name() + ">";
-		}else if (NluTools.stringContains(newsFound, "games|lol|league of legends|dota|overwatch|heroes")){
+		}else if (NluTools.stringContains(newsFound, "gam(es|e|ing)|lol|league of legends|dota|overwatch|heroes|fortnite")){
 			return "<" + NSection.games + ">";
 		}else if (NluTools.stringContains(newsFound, "music|musik(er|)|band(s|)")){
 			return "<" + NSection.music + ">";
