@@ -67,6 +67,7 @@ public class NluInput {
 	public static final String DATA_EMBEDDED_MEDIA_PLAYERS = "embeddedPlayers";
 	public static final String DATA_DEVICE_LOCAL_SITE = "deviceLocalSite";
 	public static final String DATA_PREFERRED_TEMPERATURE_UNIT = "prefTempUnit";
+	public static final String DATA_PREFERRED_SEARCH_ENGINE = "prefSearchEngine";
 	
 	//Stuff to cache during all processes from NLU to service result:
 	
