@@ -149,7 +149,8 @@ public class Start {
 		//host files?
 		if (Config.hostFiles){
 			staticFiles.externalLocation(Config.webServerFolder);
-			Debugger.println("Web-server is active and uses folder: " + Config.webServerFolder, 3);
+			Debugger.println("Web-server is active and uses folder: " + Config.webServerFolder 
+					+ " - CORS (files): " + (Config.enableFileCORS? "*" : "same page"), 3);
 			if (Is.notNullOrEmpty(Config.fileMimeTypes)){
 				for (String ft : Config.fileMimeTypes.split(",")){
 					String[] fileAndType = ft.split("=", 2);
@@ -214,6 +215,9 @@ public class Start {
 		//set access-control headers to enable CORS
 		if (Config.enableCORS){
 			SparkJavaFw.enableCORS("*", "*", "*");
+		}
+		if (Config.enableFileCORS){
+			SparkJavaFw.enableFileCORS("*", "*", "*");
 		}
 
 		//do something before end-point evaluation - e.g. authentication
