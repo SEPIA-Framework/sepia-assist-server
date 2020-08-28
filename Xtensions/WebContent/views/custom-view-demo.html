@@ -38,6 +38,7 @@
 		load: function(){
 			$('#sepiaFW-frames-mic').attr('class', 'entry');
 		},
+		nluPrefix: "_my_app_1_",
 		sayHelloOnOpen: function(){
 			//we use '$('#sepiaFW-frame-page-...')' to avoid conflicts with global ID:
 			$('#sepiaFW-frame-page-1 #sepiaFW-frame-c-hello').html(
@@ -51,7 +52,7 @@
 			$('#sepiaFW-frame-page-2 #sepiaFW-frame-c-stt-data').val(JSON.stringify(data, "", 2));
 			//modify text to include custom tag (can be used to redirect all input to a custom service for example)
 			if (data.text && data.isFinal){
-				var textWithPrefix = "customdemo " + data.text;
+				var textWithPrefix = SepiaFW.frames.currentScope.nluPrefix? (SepiaFW.frames.currentScope.nluPrefix + " " + data.text) : data.text;
 				return textWithPrefix;	//<-- return the data to actually modify it
 			}
 		},
@@ -61,11 +62,15 @@
 		//Animation state "listener" (listening, speaking, loading, idle, etc.)
 		onAnimationStateChange: function(animState){
 			$('#sepiaFW-frames-mic').attr('class', 'entry state-' + animState);
+		},
+		//Custom actions
+		actionHandler: function(action){
+			console.error(action);
 		}
 		
 		//Use this action in your service to trigger the demo frame:
 		//Action name: "open_frames_view";
-		//Action data: "info": {"pageUrl": "<custom_data>/demo-view.html", "onOpen": "sayHelloOnOpen", "onSpeechToTextInputHandler": "handleSttData", "onChatOutputHandler": "handleChatOutput"}
+		//Action data: "info": {"pageUrl": "<custom_data>/custom-view-demo.html", "onOpen": "sayHelloOnOpen", "onSpeechToTextInputHandler": "handleSttData", "onChatOutputHandler": "handleChatOutput"}
 	}
 	SepiaFW.frames.currentScope.load();
 </script>

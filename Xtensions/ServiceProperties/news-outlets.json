@@ -63,11 +63,11 @@
 	],
 	"groups":[
 		{ "language": "de", "data": [
-			{"section": "main", "group": ["Tagesschau", "SPIEGEL ONLINE", "Süddeutsche", "FAZ", "Bild", "golem.de", "1E9 Magazin", "Gruenderszene", "jetzt.de", "bento"]},
+			{"section": "main", "group": ["Tagesschau", "SPIEGEL ONLINE", "Süddeutsche", "FAZ", "Bild", "golem.de", "Gruenderszene", "1E9 Magazin", "jetzt.de", "bento"]},
 			{"section": "economy", "group": ["SPIEGEL ONLINE", "Süddeutsche", "FAZ", "Tagesschau", "Gruenderszene"]},
 			{"section": "politics", "group": ["SPIEGEL ONLINE", "Süddeutsche", "FAZ", "Bild", "Tagesschau"]},
 			{"section": "science", "group": ["wissenschaft.de", "t3n", "golem.de", "heise online", "NY Times Science"]},
-			{"section": "tech", "group": ["golem.de", "t3n", "heise online", "heise Developer", "heise Make", "HACKADAY", "NY Times Technology", "PCGames"]},
+			{"section": "tech", "group": ["golem.de", "t3n", "heise online", "heise Developer", "heise Make", "HACKADAY", "NY Times Technology", "1E9 Magazin", "PCGames"]},
 			{"section": "sports", "group": ["Sport1", "Sportschau", "Kicker"]},
 			{"section": "soccer", "group": ["Sportschau - Fussball", "Kicker", "Sport1", "The Guardian Football"]},
 			{"section": "games", "group": ["PCGames", "GameStar"]},

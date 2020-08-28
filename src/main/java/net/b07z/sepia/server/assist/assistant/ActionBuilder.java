@@ -38,6 +38,14 @@ public class ActionBuilder {
 	 * @param actionName - one String of {@link ACTIONS}
 	 * @param actionParameters - parameters specific to this action (or new JSONObject())
 	 */
+	public ActionBuilder addAction(String actionName){
+		return addAction(actionName, new JSONObject(), null);
+	}
+	/**
+	 * Add a new client action to a service.
+	 * @param actionName - one String of {@link ACTIONS}
+	 * @param actionParameters - parameters specific to this action (or new JSONObject())
+	 */
 	public ActionBuilder addAction(String actionName, JSONObject actionParameters){
 		return addAction(actionName, actionParameters, null);
 	}
