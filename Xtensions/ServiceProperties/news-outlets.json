@@ -51,7 +51,8 @@
 		{ "name": "The Guardian Technology", "url": "https://www.theguardian.com/uk/technology/rss", "name_html": "<span style='color:#052962; font-family:serif'><b>The Guardian</b> Technology</span>" },
 		{ "name": "The Guardian Sport", "url": "https://www.theguardian.com/uk/sport/rss", "name_html": "<span style='color:#052962; font-family:serif'><b>The Guardian</b> Sport</span>" },
 		{ "name": "The Guardian Football", "url": "https://www.theguardian.com/football/rss", "name_html": "<span style='color:#052962; font-family:serif'><b>The Guardian</b> Football</span>" },
-		{ "name": "1E9 Magazin", "url": "https://1e9.community/c/magazin.rss", "name_html": "<span style='color:#000;';><b><span style='text-shadow: 1px 1px 0px #4bf07c;'>1E9</span> Magazin</b></span>" }
+		{ "name": "1E9 Magazin", "url": "https://1e9.community/c/magazin.rss", "name_html": "<span style='color:#000;';><b><span style='text-shadow: 1px 1px 0px #4bf07c;'>1E9</span> Magazin</b></span>" },
+		{ "name": "Raspberry Pi News", "url": "https://www.raspberrypi.org/blog/feed/", "name_html": "<span style='color:#000;';><b><span style='color:#c51d4a;'>Raspberry </span>Pi News</b></span>" }
 	],
 	"inactive":[
 		{ "name": "WHO", "url": "https://www.who.int/rss-feeds/news-english.xml", "name_html": "<span style='color:#008dc9;'><b>WHO</b></span>" }
@@ -67,7 +68,7 @@
 			{"section": "economy", "group": ["SPIEGEL ONLINE", "Süddeutsche", "FAZ", "Tagesschau", "Gruenderszene"]},
 			{"section": "politics", "group": ["SPIEGEL ONLINE", "Süddeutsche", "FAZ", "Bild", "Tagesschau"]},
 			{"section": "science", "group": ["wissenschaft.de", "t3n", "golem.de", "heise online", "NY Times Science"]},
-			{"section": "tech", "group": ["golem.de", "t3n", "heise online", "heise Developer", "heise Make", "HACKADAY", "NY Times Technology", "1E9 Magazin", "PCGames"]},
+			{"section": "tech", "group": ["golem.de", "t3n", "heise online", "heise Developer", "heise Make", "HACKADAY", "Raspberry Pi News", "NY Times Technology", "1E9 Magazin", "PCGames"]},
 			{"section": "sports", "group": ["Sport1", "Sportschau", "Kicker"]},
 			{"section": "soccer", "group": ["Sportschau - Fussball", "Kicker", "Sport1", "The Guardian Football"]},
 			{"section": "games", "group": ["PCGames", "GameStar"]},
@@ -83,7 +84,7 @@
 			{"section": "economy", "group": ["NY Times Business", "The Guardian Economics", "FAZ", "Gruenderszene"]},
 			{"section": "politics", "group": ["NY Times World", "The Guardian World", "SPIEGEL ONLINE", "Süddeutsche", "Bild", "Tagesschau"]},
 			{"section": "science", "group": ["NY Times Science", "Wired", "NY Times Technology", "The Guardian Technology", "t3n", "golem.de", "heise online"]},
-			{"section": "tech", "group": ["Wired", "MIT Technology Review", "HACKADAY", "NY Times Technology", "The Guardian Technology", "t3n", "golem.de", "heise online", "PCGames"]},
+			{"section": "tech", "group": ["Wired", "MIT Technology Review", "HACKADAY", "NY Times Technology", "The Guardian Technology", "Raspberry Pi News"]},
 			{"section": "sports", "group": ["NY Times Sports", "The Guardian Sport", "Sport1", "Sportschau", "Kicker"]},
 			{"section": "soccer", "group": ["The Guardian Football", "Sportschau - Fussball", "Kicker", "Sport1"]},
 			{"section": "games", "group": ["PCGames", "GameStar"]},
