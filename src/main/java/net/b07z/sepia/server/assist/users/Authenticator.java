@@ -56,7 +56,8 @@ public class Authenticator {
 	private static Map<String, AtomicInteger> protectedAccountsFailedLoginAttempts = new HashMap<>();
 	private static Map<String, AtomicLong> protectedAccountsLastLoginAttempt = new HashMap<>();
 	private static Map<String, String> protectedAccountsEmailToIdMap = new HashMap<>();
-	private static int failedLoginAttemptThreshold = 3;
+	private static int failedLoginAttemptThreshold = 5;
+	
 	public static void addProtectedAccount(String uid, String email){
 		if (!protectedAccountsFailedLoginAttempts.containsKey(uid)){
 			protectedAccountsFailedLoginAttempts.put(uid, new AtomicInteger(0));
