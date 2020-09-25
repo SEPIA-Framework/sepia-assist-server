@@ -44,12 +44,13 @@ public class Room implements ParameterHandler{
 		garden,
 		shack,
 		hallway,
+		entrance,
 		sunroom, //winter garden
 		terrace,
 		balcony,
+		attic,
 		other,
 		unassigned	//must be assigned directly
-		//TODO: entrance/front door, veranda(h)/patio/porch/lanai
 	}
 	//TODO: expose this to an endpoint to client and control HUB can download it
 	
@@ -73,6 +74,8 @@ public class Room implements ParameterHandler{
 		types_de.put("balcony", "auf dem Balkon");
 		types_de.put("shack", "im Schuppen");
 		types_de.put("hallway", "im Flur");
+		types_de.put("entrance", "am Eingang");
+		types_de.put("attic", "auf dem Dachboden");
 		types_de.put("other", "am Standort");	//"am erwähnten Ort"
 		types_de.put("unassigned", "");
 		
@@ -92,6 +95,8 @@ public class Room implements ParameterHandler{
 		types_en.put("balcony", "on the balcony");
 		types_en.put("shack", "in the shack");
 		types_en.put("hallway", "in the hallway");
+		types_en.put("entrance", "at the entrance");
+		types_en.put("attic", "on the attic");
 		types_en.put("other", "at location"); 	//"at the mentioned location"
 		types_en.put("unassigned", "");
 	}
@@ -163,6 +168,8 @@ public class Room implements ParameterHandler{
 					+ "terrasse(n|)|veranda(s|)|patio|"
 					+ "balkon(en|es|e|s|)|"
 					+ "(haus|)flur|korridor|diele|"
+					+ "(haupt|)eingang(stuer|)|haustuer(e|)|"
+					+ "dach(boden|speicher)|loft|"
 					//+ "andere(n|es|r|)( |-|)(zimmer|raum|raeumen)"
 					+ "zimmer(n|)|raum|raeumen|kammer(n|)|(stand|)ort(en|)"
 				+ "");
@@ -183,9 +190,11 @@ public class Room implements ParameterHandler{
 					+ "shack(s|)|shed(s|)|"
 					+ "winter(-| |)garden|sun(-| |)room|conservatory|solarium|"
 					+ "garden|"
-					+ "terrace(s|)|patio(s|)|"
+					+ "terrace(s|)|patio(s|)|porch(es|)|"
 					+ "balcon(y|ies)|"
 					+ "hallway|corridor|"
+					+ "entrance|front(-| |)door|doorway|"
+					+ "attic|loft|"
 					//+ "other (room|chamber)(s|)|"
 					+ "(room|chamber|location)(s|)"
 				+ "");
@@ -282,8 +291,8 @@ public class Room implements ParameterHandler{
 				+ "garden")){
 			roomTypeTag =  "<" + Types.garden.name() + ">";
 			
-		}else if (NluTools.stringContains(room, "terrasse(n|)|veranda(s|)|patio|"
-				+ "terrace(s|)|patio(s|)")){
+		}else if (NluTools.stringContains(room, "terrasse(n|)|veranda(h|)(s|)|patio|"
+				+ "terrace(s|)|patio(s|)|porch(es|)")){
 			roomTypeTag =  "<" + Types.terrace.name() + ">";
 			
 		}else if (NluTools.stringContains(room, "balkon(en|es|e|s|)|"
@@ -293,6 +302,14 @@ public class Room implements ParameterHandler{
 		}else if (NluTools.stringContains(room, "(haus|)flur|korridor|diele|"
 				+ "hallway|corridor")){
 			roomTypeTag =  "<" + Types.hallway.name() + ">";
+			
+		}else if (NluTools.stringContains(room, "(haupt|)eingang(stuer|)|haustuer(e|)|"
+				+ "entrance|front(-| |)door|doorway")){
+			roomTypeTag =  "<" + Types.entrance.name() + ">";
+			
+		}else if (NluTools.stringContains(room, "dach(boden|speicher)|"
+				+ "attic|loft")){
+			roomTypeTag =  "<" + Types.attic.name() + ">";
 			
 		/*}else if (NluTools.stringContains(room, "andere(n|es|r|)( |-|)(zimmer(n|)|raum|raeumen)|"
 				+ "other room(s|)")){

@@ -34,7 +34,7 @@ import net.b07z.sepia.server.core.tools.JSON;
  */
 public class Lists implements ServiceInterface{
 	
-	private static int lists_max_load = 20;		//maximum number of lists loaded with one call from server
+	private static int lists_max_load = 25;		//maximum number of lists loaded with one call from server
 	private static int list_limit = 50;			//this many items are allowed in the list
 	private static int element_limit = 160;		//maximum length of an item
 	
@@ -167,7 +167,7 @@ public class Lists implements ServiceInterface{
 		String listTypeLocal = JSON.getStringOrDefault(listTypeP.getData(), InterviewData.LIST_TYPE_LOCALE, "");
 		
 		Parameter listSubTypeP = nluResult.getOptionalParameter(PARAMETERS.LIST_SUBTYPE, "");
-		String listSubType = JSON.getStringOrDefault(listSubTypeP.getData(), InterviewData.VALUE, "");
+		String listSubType = JSON.getStringOrDefault(listSubTypeP.getData(), InterviewData.VALUE, "").trim();
 		
 		if (listTypeLocal.isEmpty()){
 			api.resultInfoPut("listType", (listSubType + " " + ListType.getLocal("<list>", api.language)));
@@ -183,7 +183,7 @@ public class Lists implements ServiceInterface{
 		boolean isActionCreate = action.equals(Action.Type.create.name());
 		
 		Parameter listItemP = nluResult.getOptionalParameter(PARAMETERS.LIST_ITEM, "");
-		String listItem = (String) listItemP.getDataFieldOrDefault(InterviewData.VALUE);
+		String listItem = ((String) listItemP.getDataFieldOrDefault(InterviewData.VALUE)).trim();
 		
 		api.resultInfoPut("listItem", listItem); 	//might get overwritten later
 		
@@ -246,16 +246,16 @@ public class Lists implements ServiceInterface{
 			//we trust the database to find multiple lists that fit to the search term (because it uses a OR b OR c for an 'a b c' list)
 			//so we can remove and, or, ... from search term ...
 			if (nluResult.language.equals(LANGUAGES.DE)){
-				title = title.replaceAll("\\b(und|oder)\\b", " ").replaceAll("\\s+", " ");
+				title = title.replaceAll("\\b(und|oder)\\b", " ").replaceAll("\\s+", " ").trim();
 			}else if (nluResult.language.equals(LANGUAGES.EN)){
-				title = title.replaceAll("\\b(and|or)\\b", " ").replaceAll("\\s+", " ");
+				title = title.replaceAll("\\b(and|or)\\b", " ").replaceAll("\\s+", " ").trim();
 			}
 			filters.put("title", title);
 		}
 		
 		//results size and pagination
 		filters.put("resultsFrom", 0);					//start at first result
-		filters.put("resultsSize", lists_max_load);		//we support 20 lists with one call for now
+		filters.put("resultsSize", lists_max_load);		//we support N (see above) lists with one call for now
 		
 		//list section (a classification for this type of lists)
 		Section section = Section.productivity;

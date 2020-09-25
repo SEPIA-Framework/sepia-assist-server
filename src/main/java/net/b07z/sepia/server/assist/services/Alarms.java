@@ -347,7 +347,7 @@ public class Alarms implements ServiceInterface{
 				//build data
 				JSONObject data = JSON.make(
 						"targetTimeUnix", timeUnix,
-						"name", name,
+						"name", name.trim(),
 						"eventId", eventId,
 						"lastChange", lastChange,
 						"activated", activatedByUI
@@ -400,7 +400,7 @@ public class Alarms implements ServiceInterface{
 						"date", speakableDate,
 						"repeat", repeat
 				);
-				JSON.put(data, "name", name);
+				JSON.put(data, "name", name.trim());
 				JSON.put(data, "eleType", UserDataList.EleType.alarm.name());
 				JSON.put(data, "eventId", eventId);
 				JSON.put(data, "lastChange", lastChange);
