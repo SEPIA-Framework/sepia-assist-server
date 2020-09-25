@@ -61,6 +61,7 @@ public class NewsRssFeeds implements ServiceInterface{
 		localTerms_de.put("<latest>", "Aktuell");
 		localTerms_de.put("<main>", "Aktuelle News");
 		localTerms_de.put("<tech>", "Technik");
+		localTerms_de.put("<maker>", "Maker");
 		localTerms_de.put("<sports>", "Sport");
 		localTerms_de.put("<science>", "Wissenschaft");
 		localTerms_de.put("<politics>", "Politik");
@@ -86,6 +87,7 @@ public class NewsRssFeeds implements ServiceInterface{
 		localTerms_en.put("<latest>", "Latest");
 		localTerms_en.put("<main>", "Latest news");
 		localTerms_en.put("<tech>", "Tech");
+		localTerms_en.put("<maker>", "Maker");
 		localTerms_en.put("<sports>", "Sports");
 		localTerms_en.put("<science>", "Science");
 		localTerms_en.put("<politics>", "Politics");
