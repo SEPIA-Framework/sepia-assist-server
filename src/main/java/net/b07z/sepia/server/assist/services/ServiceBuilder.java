@@ -494,6 +494,7 @@ public class ServiceBuilder {
 	}
 	
 	/**
+	 * @deprecated
 	 * Use {@link #sendFollowUpMessage(ServiceResult)}
 	 */
 	@Deprecated

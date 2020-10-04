@@ -189,9 +189,11 @@ public class AccountElasticsearch implements AccountInterface{
 		);
 				
 		//Connect - TODO: this ends-up often in a failed 'retry' if we set it too small
-		int code = getDB().updateDocument(DB.USERS, "all", userID, script, 3);  	
+		long ts = System.currentTimeMillis();
+		//System.out.println("writeBasicStatistics - UID: " + userID + " - ts: " + ts);									//debug
+		int code = getDB().updateDocument(DB.USERS, "all", userID, script, 5);  	
 		//About retry: https://github.com/elastic/elasticsearch/issues/13619
-		//System.out.println("Time needed: " + Debugger.toc(tic) + "ms");		//debug
+		//System.out.println("writeBasicStatistics - UID: " + userID + " - ts: " + ts + " - Time needed: " + Debugger.toc(tic) + "ms");	//debug
 		
 		if (code != 0){
 			//errorCode = 3;

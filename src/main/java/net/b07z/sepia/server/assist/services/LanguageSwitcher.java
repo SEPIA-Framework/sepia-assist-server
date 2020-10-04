@@ -159,7 +159,7 @@ public class LanguageSwitcher implements ServiceInterface{
 				ServiceBuilder service = new ServiceBuilder(nluResult);
 				service.answer = Answers.getAnswerString(nluResult, followUpTest);
 				service.status = "success";
-				/*boolean wasSent =*/ service.sendFollowUpMessage(nluResult.input, service.buildResult());
+				/*boolean wasSent =*/ service.sendFollowUpMessage(service.buildResult());
 				return;
 			});
 		}

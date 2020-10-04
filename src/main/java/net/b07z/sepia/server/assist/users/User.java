@@ -476,6 +476,7 @@ public final class User {
 	 */
 	public void saveStatistics(){
 		ThreadManager.run(() -> {
+			Debugger.sleep(Math.round(Math.random() * 1000)); 		//TODO: this will take some load from the DB but we should maybe buffer this properly
 	    	boolean ok = accountData.writeBasicStatistics(userId);
 			if (!ok){
 				Debugger.println("USER STATISTICS FAILED! - USER: " + userId + " - TIME: " + System.currentTimeMillis(), 1);
