@@ -8,6 +8,7 @@ import net.b07z.sepia.server.assist.parameters.ParameterConfig;
 import net.b07z.sepia.server.assist.parameters.ParameterHandler;
 import net.b07z.sepia.server.assist.server.ConfigServices;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
+import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 
@@ -218,8 +219,17 @@ public class Parameter {
 	 * Same as "(String) getData().get(InterviewData.VALUE)" except it checks for null and returns empty string in that case.
 	 */
 	public String getValueAsString(){
-		String val = (String) data.get(InterviewData.VALUE);
-		return (val == null)? "" : val;
+		Object value = data.get(InterviewData.VALUE);
+		if (value != null){
+			if (value instanceof String){
+				return ((String) value);
+				//TODO: check other types?
+			}else{
+				return Converters.obj2StringOrDefault(value, "");
+			}
+		}else{
+			return "";
+		}
 	}
 	/**
 	 * Does the parameter contain data (in final format, not input string)?

@@ -67,4 +67,5 @@ Das Datum von Heute;;		command=chat;;		reply=Heute ist der <local_date_ddMMyyyy>
 Client Mesh-Node test;;		command=client_controls;;	client_fun=<meshNode>;;			data={"url":"http://localhost:20780", "plugin":"HelloPlugin"};;		action=<on>;;
 System herunterfahren;; 	command=client_controls;;	client_fun=<runtimeCommands>;;	data={"value": {"shortcut":"os_shutdown", "delay":16000}};;		action=<set>;;		reply=Ok ich versuchs;;"
 System neustarten;; 		command=client_controls;;	client_fun=<runtimeCommands>;;	data={"value": {"shortcut":"os_reboot", "delay":16000}};;		action=<set>;;		reply=Ok ich versuchs;;"
+System neu starten;; 		command=client_controls;;	client_fun=<runtimeCommands>;;	data={"value": {"shortcut":"os_reboot", "delay":16000}};;		action=<set>;;		reply=Ok ich versuchs;;"
 Zeilenumbruch;;			command=chat;;		reply=Dies ist Zeile 1.  Und dies ist Zeile 2.  ENDE
