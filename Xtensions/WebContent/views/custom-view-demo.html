@@ -8,8 +8,10 @@
 		<!-- Page 2 -->
 		<div id="sepiaFW-frame-page-2" class='sepiaFW-frames-page sepiaFW-carousel-pane'>
 			<h3>Page 2 - Microphone and chat output</h3>
-			<textarea id="sepiaFW-frame-c-stt-data" style="width: 100%; height: calc(50% - 35px);"></textarea>
-			<textarea id="sepiaFW-frame-c-chat-data" style="width: 100%; height: calc(50% - 35px);"></textarea>
+			<input id="sepiaFW-frame-c-text-in" style="width: calc(100% - 113px); height: 40px; margin: 8px 8px 8px 0; border-bottom: 1px solid;" placeholder="input text">
+			<button style="width: 100px; margin: 0;" onclick="SepiaFW.frames.currentScope.sendText();">SEND</button>
+			<textarea id="sepiaFW-frame-c-stt-data" style="width: 100%; height: calc(50% - 65px);"></textarea>
+			<textarea id="sepiaFW-frame-c-chat-data" style="width: 100%; height: calc(50% - 65px);"></textarea>
 		</div>
 	</div>
 </div>
@@ -38,7 +40,11 @@
 		load: function(){
 			$('#sepiaFW-frames-mic').attr('class', 'entry');
 		},
-		nluPrefix: "_my_app_1_",
+		//You can use the NLU-prefix to redirect input to this custom view frame via SDK or Teach-UI commands (make sure to use _..._ format)
+		nluPrefix: "_demo_frame_",
+		
+		//--Interface functions--
+		
 		sayHelloOnOpen: function(){
 			//we use '$('#sepiaFW-frame-page-...')' to avoid conflicts with global ID:
 			$('#sepiaFW-frame-page-1 #sepiaFW-frame-c-hello').html(
@@ -65,12 +71,34 @@
 		},
 		//Custom actions
 		actionHandler: function(action){
-			console.error(action);
+			console.log("Custom frame action", action);
+			if (action.functionName && typeof action.functionName == "string" && action.functionName.toLowerCase() == "test"){
+				console.log("Custom frame action: TEST", action.data);
+			}
+		},
+		
+		//--Custom functions--
+		
+		//Send text from input field and add NLU-prefix automatically
+		sendText: function(text){
+			var $textInput = $('#sepiaFW-frame-page-2 #sepiaFW-frame-c-text-in');
+			if (!text){
+				text = $textInput.val();
+				$textInput.val("");
+			}
+			if (text){
+				text = text.trim();
+				if (SepiaFW.frames.currentScope.nluPrefix && text.indexOf(SepiaFW.frames.currentScope.nluPrefix) != 0){
+					text = SepiaFW.frames.currentScope.nluPrefix + " " + text;
+				}
+				$('#sepiaFW-frame-page-2 #sepiaFW-frame-c-stt-data').val(text);
+				SepiaFW.client.sendInputText(text);
+			}
 		}
 		
 		//Use this action in your service to trigger the demo frame:
 		//Action name: "open_frames_view";
-		//Action data: "info": {"pageUrl": "<custom_data>/custom-view-demo.html", "onOpen": "sayHelloOnOpen", "onSpeechToTextInputHandler": "handleSttData", "onChatOutputHandler": "handleChatOutput"}
+		//Action data: "info": {"pageUrl": "<assist_server>/views/custom-view-demo.html", "onOpen": "sayHelloOnOpen", "onSpeechToTextInputHandler": "handleSttData", "onChatOutputHandler": "handleChatOutput"}
 	}
 	SepiaFW.frames.currentScope.load();
 </script>
