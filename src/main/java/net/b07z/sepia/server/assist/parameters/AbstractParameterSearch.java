@@ -24,7 +24,7 @@ public class AbstractParameterSearch {
 	 */
 	public AbstractParameterSearch setParameters(String... parameterNames){
 		for (String p : parameterNames){
-			parameters.add(new Parameter(p));
+			this.parameters.add(new Parameter(p));
 		}
 		return this;
 	}
@@ -85,19 +85,19 @@ public class AbstractParameterSearch {
 	 */
 	public Map<String, String> getParameters(){
 		Map<String, String> pv = new HashMap<>();
-		String thisText = nluInput.text; 		//extra normalization required?
+		String thisText = this.nluInput.text; 		//extra normalization required?
 		ParameterHandler paramHandler;
 				
-		for (Parameter pa : parameters){
+		for (Parameter pa : this.parameters){
 			//any normal parameter
 			String name = pa.getName();
-			if (!preCheckedParameters.containsKey(name)){
+			if (!this.preCheckedParameters.containsKey(name)){
 				paramHandler = pa.getHandler();
 				//System.out.println("Handler: " + paramHandler.getClass().getCanonicalName()); 	//DEBUG
-				paramHandler.setup(nluInput);
+				paramHandler.setup(this.nluInput);
 				String result = paramHandler.extract(thisText);
 				boolean guess = false;
-				if (result.isEmpty() && doGuess){
+				if (result.isEmpty() && this.doGuess){
 					result = paramHandler.guess(thisText);
 					guess = true;
 				}
@@ -117,17 +117,17 @@ public class AbstractParameterSearch {
 				if (!result.isEmpty()){
 					if (guess){
 						Debugger.println("GUESS (CLEANED): " + result + " = " + name + "", 3);
-						guesses.add(name);
+						this.guesses.add(name);
 					}
 					//Increase score (under certain conditions)
 					if (!paramHandler.isGeneric()){
-						score++;
+						this.score++;
 					}
 				}
-				preCheckedParameters.put(name, result);
+				this.preCheckedParameters.put(name, result);
 				pv.put(name, result);
 			}else{
-				pv.put(name, preCheckedParameters.get(name));
+				pv.put(name, this.preCheckedParameters.get(name));
 			}
 		}
 		

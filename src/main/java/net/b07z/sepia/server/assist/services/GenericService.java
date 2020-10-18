@@ -79,7 +79,7 @@ public class GenericService implements ServiceInterface{
 	@Override
 	public ServiceResult getResult(NluResult nluResult) {
 		//initialize result
-		ServiceBuilder api = new ServiceBuilder(nluResult, 
+		ServiceBuilder service = new ServiceBuilder(nluResult, 
 				getInfoFreshOrCache(nluResult.input, this.getClass().getCanonicalName()));
 		
 		//get required parameters
@@ -90,9 +90,9 @@ public class GenericService implements ServiceInterface{
 		//This service basically cannot fail ... ;-)
 		
 		//Just for demo purposes we add a button-action with a link to the SDK
-		api.addAction(ACTIONS.BUTTON_IN_APP_BROWSER);
-		api.putActionInfo("url", "https://github.com/SEPIA-Framework/sepia-sdk-java");
-		api.putActionInfo("title", "SDK info");
+		service.addAction(ACTIONS.BUTTON_IN_APP_BROWSER);
+		service.putActionInfo("url", "https://github.com/SEPIA-Framework/sepia-sdk-java");
+		service.putActionInfo("title", "SDK info");
 		
 		//... and we also add a demo card
 		Card card = new Card(Card.TYPE_SINGLE);
@@ -103,13 +103,13 @@ public class GenericService implements ServiceInterface{
 				"https://sepia-framework.github.io/img/icon.png", 
 				null, null);
 		//JSON.put(linkCard, "imageBackground", "transparent");	//use any CSS background option you wish
-		api.addCard(card.getJSON());
+		service.addCard(card.getJSON());
 		
 		//all good
-		api.setStatusSuccess();
+		service.setStatusSuccess();
 		
 		//build the API_Result
-		ServiceResult result = api.buildResult();
+		ServiceResult result = service.buildResult();
 		return result;
 	}
 }
