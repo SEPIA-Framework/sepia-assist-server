@@ -5,9 +5,9 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import net.b07z.sepia.server.assist.messages.Clients;
 import net.b07z.sepia.server.assist.workers.ServiceBackgroundTaskManager;
-import net.b07z.sepia.server.assist.workers.ThreadManager;
 import net.b07z.sepia.server.assist.workers.Workers;
 import net.b07z.sepia.server.core.server.BasicStatistics;
+import net.b07z.sepia.server.core.tools.ThreadManager;
 
 /**
  * Track all sorts of statistics like total hits, time authorization took, API calls, etc.
@@ -74,8 +74,8 @@ public class Statistics extends BasicStatistics {
 		
 		//add workers
 		msg += "Processing threads:<br>";
-		msg += "Active threads now: " + ThreadManager.getNumberOfCurrentlyActiveThreads() + "<br>";
-		msg += "Max. active threads: " + ThreadManager.getMaxNumberOfActiveThreads() + "<br>";
+		msg += "Active threads now: " + (ThreadManager.getNumberOfCurrentlyActiveThreads() + ServiceBackgroundTaskManager.getNumberOfCurrentlyActiveThreads()) + "<br>";
+		msg += "Max. active threads: " + (ThreadManager.getMaxNumberOfActiveThreads() + ServiceBackgroundTaskManager.getMaxNumberOfActiveThreads()) + "<br>";
 		msg += "Scheduled or active custom tasks: " + ThreadManager.getNumberOfScheduledTasks() + "<br>";
 		msg += "Scheduled or active service tasks: " + ServiceBackgroundTaskManager.getNumberOfScheduledTasks() + "<br>";
 		msg += "<br>";

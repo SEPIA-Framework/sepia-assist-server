@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.b07z.sepia.server.assist.data.Parameter;
@@ -59,7 +60,7 @@ public class NluKeywordAnalyzer implements NluInterface {
 		if (regEx == null || regEx.isEmpty()){
 			return index;
 		}
-		
+				
 		//check the trigger
 		if (NluTools.stringContains(text, regEx)){
 			
@@ -71,19 +72,33 @@ public class NluKeywordAnalyzer implements NluInterface {
 			
 			//get all parameters
 			List<Parameter> paramsList = serviceInfo.getAllParameters();
-			Map<String, String> pv = new HashMap<>(); 		//TODO: pass this down to avoid additional checking? Is it still relevant with parameter cache?
+			Map<String, String> pv = new HashMap<>(); 		//if a parameter is in this map it will not be checked again later
+			
+			//analyze via regular expression
+			if (regEx.contains("?<")){
+				//apply pattern
+				Pattern pattern = Pattern.compile(regEx);
+		        Matcher matcher = pattern.matcher(text); 	//Note: this can only find normalized text results
+		        if (matcher.find()){
+		        	//check each parameter
+					for (Parameter p : paramsList){
+						String pNameReduced = p.getName().replaceFirst(".*\\$", "");		//we reduce the name to smallest possible for custom parameters
+						String groupTag = "?<" + pNameReduced + ">";
+						if (regEx.contains(groupTag)){
+							//check named groups
+							String pValue = matcher.group(pNameReduced);
+							if (pValue != null && !pValue.trim().isEmpty()){
+								pv.put(p.getName(), pValue);
+								//System.out.println("RegX Analyzer, param: " + pNameReduced + " - value: " + pValue); 		//DEBUG
+							}
+						}
+					}
+		        }
+			}
+			
+			//analyze via parameter handlers
 			if (!paramsList.isEmpty()){
-				/*
-				String[] params = new String[paramsList.size()];
-				int i = 0;
-				for (Parameter p : paramsList){
-					params[i] = p.getName();
-					//System.out.println("RegX Analyzer, param: " + params[i]); 		//DEBUG
-					i++;
-				}
-				*/
 				AbstractParameterSearch aps = new AbstractParameterSearch()
-						//.setParameters(params)
 						.setParameters(paramsList.toArray(new Parameter[paramsList.size()]))
 						.setup(input, pv);
 				aps.getParameters();

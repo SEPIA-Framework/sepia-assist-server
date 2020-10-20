@@ -11,6 +11,8 @@ import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.data.Card;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.data.Card.ElementType;
+import net.b07z.sepia.server.assist.events.ChangeEvent;
+import net.b07z.sepia.server.assist.events.EventsBroadcaster;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
@@ -292,6 +294,7 @@ public class Alarms implements ServiceInterface{
 			//make a (hopefully) unique ID
 			long lastChange = System.currentTimeMillis();
 			String eventIdSuffix = lastChange + "-" + RandomGen.getInt(100, 999);
+			String eventId; 		//see below
 			boolean activatedByUI = false;
 			
 			//Load list
@@ -339,12 +342,13 @@ public class Alarms implements ServiceInterface{
 					String speakableDate = DateTimeConverters.getSpeakableDate(dateDay, "yyyy.MM.dd", api.language);
 					name = (speakableDate + " - " + dateTime);
 				}
+				eventId = "timer-" + eventIdSuffix;
 				
 				//build data
 				JSONObject data = JSON.make(
 						"targetTimeUnix", timeUnix,
-						"name", name,
-						"eventId", "timer-" + eventIdSuffix,
+						"name", name.trim(),
+						"eventId", eventId,
 						"lastChange", lastChange,
 						"activated", activatedByUI
 				);
@@ -357,7 +361,7 @@ public class Alarms implements ServiceInterface{
 					api.putActionInfo("info", "set");
 					api.putActionInfo("targetTimeUnix", timeUnix);
 					api.putActionInfo("name", name);
-					api.putActionInfo("eventId", "timer-" + eventIdSuffix);
+					api.putActionInfo("eventId", eventId);
 					api.putActionInfo("eleType", UserDataList.EleType.timer.name());
 				
 			}else if (isAlarm){
@@ -386,6 +390,7 @@ public class Alarms implements ServiceInterface{
 				}else{
 					name = speakableDay;
 				}
+				eventId = "alarm-" + eventIdSuffix;
 				
 				//build data
 				JSONObject data = JSON.make(
@@ -395,9 +400,9 @@ public class Alarms implements ServiceInterface{
 						"date", speakableDate,
 						"repeat", repeat
 				);
-				JSON.put(data, "name", name);
+				JSON.put(data, "name", name.trim());
 				JSON.put(data, "eleType", UserDataList.EleType.alarm.name());
-				JSON.put(data, "eventId", "alarm-" + eventIdSuffix);
+				JSON.put(data, "eventId", eventId);
 				JSON.put(data, "lastChange", lastChange);
 				JSON.put(data, "activated", activatedByUI);
 				JSON.add(activeList.data, data);
@@ -413,7 +418,11 @@ public class Alarms implements ServiceInterface{
 					api.putActionInfo("repeat", repeat);
 					api.putActionInfo("name", name);
 					api.putActionInfo("eleType", UserDataList.EleType.alarm.name());
-					api.putActionInfo("eventId", "alarm-" + eventIdSuffix);
+					api.putActionInfo("eventId", eventId);
+			
+			}else{
+				//TODO: what about the other possible events?
+				eventId = "";
 			}
 			
 			//update list
@@ -424,6 +433,8 @@ public class Alarms implements ServiceInterface{
 				return result;
 			
 			}else{
+				broadcastUpdateEventToAllUserDevices(nluResult.input.user, nluResult.input.deviceId, 
+						activeList.getId(), eventId);
 				api.setStatusSuccess();
 			}
 			
@@ -534,20 +545,25 @@ public class Alarms implements ServiceInterface{
 							api.setStatusFail();
 							ServiceResult result = api.buildResult();
 							return result;
-						
-						}						
-						//action
-						api.addAction(ACTIONS.ALARM);
-							api.putActionInfo("info", "remove");
-							api.putActionInfo("targetTimeUnix", JSON.getLongOrDefault(nextAlarm, "targetTimeUnix", 0));
-							api.putActionInfo("eventId", JSON.getString(nextAlarm, "eventId"));
-							
-						if (isTimer){
-							api.setCustomAnswer(answerRemoveTimers);
 						}else{
-							api.setCustomAnswer(answerRemoveAlarms);
+							String eventId = JSON.getString(nextAlarm, "eventId");
+							
+							broadcastUpdateEventToAllUserDevices(nluResult.input.user, nluResult.input.deviceId, 
+									searchResult.activeList.getId(), eventId);
+							
+							//action
+							api.addAction(ACTIONS.ALARM);
+								api.putActionInfo("info", "remove");
+								api.putActionInfo("targetTimeUnix", JSON.getLongOrDefault(nextAlarm, "targetTimeUnix", 0));
+								api.putActionInfo("eventId", eventId);
+								
+							if (isTimer){
+								api.setCustomAnswer(answerRemoveTimers);
+							}else{
+								api.setCustomAnswer(answerRemoveAlarms);
+							}
+							api.setStatusSuccess();
 						}
-						api.setStatusSuccess();
 					}
 				}
 				
@@ -600,6 +616,14 @@ public class Alarms implements ServiceInterface{
 		}else{
 			return false;
 		}
+	}
+	private void broadcastUpdateEventToAllUserDevices(User user, String senderDeviceId, String listId, String timeEventId){
+		//sent time events update trigger after a short delay
+		EventsBroadcaster.broadcastBackgroundDataSyncNotes(
+			EventsBroadcaster.buildChangeEventsSet(
+				new ChangeEvent(ChangeEvent.Type.timeEvents, listId, JSON.make("eventId", timeEventId))
+			), user, senderDeviceId
+		);
 	}
 	
 	private JSONObject getNextTimeEventInList(List<UserDataList> udlList){

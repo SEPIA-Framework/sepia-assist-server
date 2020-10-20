@@ -4,6 +4,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.answers.ServiceAnswers;
+import net.b07z.sepia.server.assist.assistant.ActionBuilder;
 import net.b07z.sepia.server.assist.assistant.Assistant;
 import net.b07z.sepia.server.assist.data.Card;
 import net.b07z.sepia.server.assist.data.Parameter;
@@ -23,6 +24,7 @@ import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
+import net.b07z.sepia.websockets.common.SocketMessage.RemoteActionType;
 
 /**
  * This class is a helper to build services and it includes a default set of necessary variables.<br>
@@ -266,9 +268,10 @@ public class ServiceBuilder {
 	}
 	
 	/**
-	 * Put "value" to "key" in current actionInfo element. E.g.: putActionInfo("url", call_url). The current JSONArray element (action) is previously
-	 * set by using addAction(value), so be sure to first add an action and then add info for that action.<br>
-	 * See also: {@link net.b07z.sepia.server.assist.assistant.ActionBuilder}
+	 * Recommended use: {@link ActionBuilder}<br>
+	 * <br>
+	 * Set "value" of "key" for active actionInfo element. E.g.: putActionInfo("url", call_url). Use "options"-key for special settings.<br>
+	 * NOTE: The currently active actionInfo element has to be set in advance by using addAction(value).
 	 * @param key
 	 * @param value
 	 */
@@ -282,10 +285,11 @@ public class ServiceBuilder {
 		}
 	}
 	/**
+	 * Recommended use: {@link ActionBuilder}<br>
+	 * <br>
 	 * Add a new action to the queue, to be more specific: create a new JSONObject action, put "value" to "type"-key and add it to the actions array.
-	 * Note: the order in which actions are created can matter because clients would usually execute them one after another. 
-	 * E.g.: addAction(ACTIONS.OPEN_URL) or addAction(ACTIONS.OPEN_INFO).<br>
-	 * See also: {@link net.b07z.sepia.server.assist.assistant.ActionBuilder}
+	 * Note: the order in which actions are created can matter because clients would usually execute them one after another.<br> 
+	 * E.g.: addAction(ACTIONS.OPEN_URL) or addAction(ACTIONS.OPEN_INFO).
 	 * @param value
 	 */
 	@SuppressWarnings("unchecked")
@@ -490,13 +494,35 @@ public class ServiceBuilder {
 	}
 	
 	/**
-	 * WebSockets support duplex communication which means you can send an answer first and after a few seconds send a follow-up
-	 * message to add more info/data to the previous reply. Test for nluInput.isDuplexConnection() first!
-	 * @param nluInput - initial {@link NluInput} to follow-up
-	 * @param serviceResult - {@link ServiceResult} as produced by services to send as follow-up
+	 * @deprecated
+	 * Use {@link #sendFollowUpMessage(ServiceResult)}
 	 */
+	@Deprecated
 	public boolean sendFollowUpMessage(NluInput nluInput, ServiceResult serviceResult){
 		return Clients.sendAssistantFollowUpMessage(nluInput, serviceResult);
+	}
+	/**
+	 * WebSockets support duplex communication which means you can send an answer first and after a few seconds send a follow-up
+	 * message to add more info/data to the previous reply. Test for nluInput.isDuplexConnection() first!
+	 * @param serviceResult - {@link ServiceResult} as produced by services to send as follow-up
+	 * @return true if sent, false if not - note: sent does not mean someone actually received it
+	 */
+	public boolean sendFollowUpMessage(ServiceResult serviceResult){
+		return Clients.sendAssistantFollowUpMessage(nluResult.input, serviceResult);
+	}
+	/**
+	 * Send remote-action to a specific user device (or all).
+	 * @param actionType - {@link RemoteActionType} , e.g. 'hotkey' or 'sync'
+	 * @param action - basic String or JSONObject as String representing the action, e.g. {"key":"mic"}
+	 * @param targetDeviceId - target a specific device ID (e.g. ID, empty=auto, ;&ltall;&gt)
+	 * @param targetChannelId - target a specific chat channel (e.g. ID, empty=auto)
+	 * @param skipDeviceId - device IDs to skip (useful for targetDeviceId 'auto' or 'all')
+	 * @return true if sent, false if not - note: sent does not mean someone actually received it
+	 */
+	public boolean sendRemoteAction(String actionType, String action, 
+			String targetDeviceId, String targetChannelId, String skipDeviceId){
+		String receiver = nluResult.input.user.getUserID();
+		return Clients.sendAssistantRemoteAction(receiver, actionType, action, targetDeviceId, targetChannelId, skipDeviceId);
 	}
 	
 	/**

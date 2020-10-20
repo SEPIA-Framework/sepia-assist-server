@@ -324,6 +324,11 @@ public class UserDataDefault implements UserDataInterface {
 		JSONObject res = DB.setAddressWithTagAndName(docId, user.getUserID(), tag, name, adrData);
 		if (JSON.getIntegerOrDefault(res, "code", -1) == 0){
 			JSON.put(res, "status", "success");
+			if (res.containsKey("_id")){
+				JSON.put(res, "newlyCreated", true);
+			}else{
+				JSON.put(res, "_id", docId);
+			}
 		}else{
 			JSON.put(res, "status", "fail");
 		}

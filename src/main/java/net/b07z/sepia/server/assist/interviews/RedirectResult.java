@@ -72,7 +72,7 @@ public class RedirectResult implements ServiceInterface{
 		api.putActionInfo("title", "Web Search");
 		api.putActionInfo("info", "direct_cmd");
 		api.putActionInfo("cmd", CmdBuilder.getWebSearch(nluResult.input.textRaw));
-		api.putActionInfo("options", JSON.make(ACTIONS.SKIP_TTS, true));
+		api.putActionInfo("options", JSON.make(ACTIONS.OPTION_SKIP_TTS, true));
 		
 		api.resultInfoPut("cmd", nluResult.getCommand());
 		

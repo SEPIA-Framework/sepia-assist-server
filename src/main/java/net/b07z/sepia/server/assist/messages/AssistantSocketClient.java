@@ -33,7 +33,7 @@ import spark.Request;
  * @author Florian Quirin
  *
  */
-@WebSocket
+@WebSocket(maxTextMessageSize = 262144, maxBinaryMessageSize = 262144)	//default: 65536
 public class AssistantSocketClient extends SepiaSocketClient {
 	
 	private String sepiaUserId = ""; 		//should be in sync. with getUserId()
@@ -65,24 +65,32 @@ public class AssistantSocketClient extends SepiaSocketClient {
     }
 	
 	/**
-	 * WebSockets support duplex communication which means you can send an answer first and after a few seconds send a follow-up
-	 * message to add more info/data to the previous reply.<br>
-	 * Since this is called by {@link Clients} it is assumed that nluInput.isDuplexConnection() was checked before!
-	 * @param nluInput - initial {@link NluInput} to follow-up
-	 * @param serviceResult - {@link ServiceResult} as produced by services to send as follow-up
+	 * See: {@link Clients#sendAssistantFollowUpMessage(NluInput, ServiceResult)}
 	 */
-	public void sendFollowUpMessage(NluInput nluInput, ServiceResult serviceResult){
+	public boolean sendFollowUpMessage(NluInput nluInput, ServiceResult serviceResult){
 		//use duplex data for channel?
 		//String channelId = JSON.getString(JSON.parseString(nluInput.duplexData), "channelId");
 		//or use receiver id?
 		//String channelId = nluInput.user.getUserID()
 		//We use the user ID to post directly into user channel
-		String channelId = "<auto>"; 	//Note: "<auto>" will find the receiver active channel if the sender is "omnipresent" (assistant is)
+		String channelId = "<auto>"; 	//Note: we need to put something here - "<auto>" will find the receiver active channel if the sender is "omnipresent" (assistant is)
 		String receiver = nluInput.user.getUserID();
 		String deviceId = nluInput.deviceId;		//TODO: use it or not?
 		SocketMessage msg = buildFollowUp(serviceResult.getResultJSONObject(), channelId, receiver, deviceId);
 		if (Is.notNullOrEmpty(nluInput.msgId)) msg.setMessageId(nluInput.msgId); 		//add old ID as reference
-		sendMessage(msg, 3000);
+		return sendMessage(msg, 3000);		//TODO: is this timeout to short?
+	}
+	/**
+	 * See: {@link Clients#sendAssistantRemoteAction(String, String, String, String, String, String)}
+	 */
+	public boolean sendRemoteAction(String receiver, String actionType, String action, 
+			String targetDeviceId, String targetChannelId, String skipDeviceId){
+		
+		SocketMessage msg = buildRemoteActionMessage(actionType, action, 
+				targetDeviceId, targetChannelId, skipDeviceId, 
+				receiver
+		);
+		return sendMessage(msg, 3000);		//TODO: is this timeout to short?
 	}
 
     //Triggered when this client reads an arbitrary chat message
@@ -272,6 +280,7 @@ public class AssistantSocketClient extends SepiaSocketClient {
 	    		JSONObject data = new JSONObject();
 		        JSON.add(data, "dataType", DataType.assistFollowUp.name());
 		        JSON.add(data, "assistAnswer", answer); 		//NOTE: we keep the name 'assistAnswer' here for client ... should have called it 'assistMsg'
+		        
 		        reply = new SocketMessage(channelId, getUserId(), getDeviceId(), receiver, receiverDeviceId, data);
 	    	}
     	
@@ -284,6 +293,29 @@ public class AssistantSocketClient extends SepiaSocketClient {
     	if (Is.notNullOrEmpty(receiverDeviceId)){
     		reply.setReceiverDeviceId(receiverDeviceId);
     	}
+    	reply.setSenderDeviceId(Config.assistantDeviceId);
+    	return reply;
+    }
+    /**
+     * Build {@link SocketMessage} assistant remote-action message.
+     */
+    private SocketMessage buildRemoteActionMessage(String actionType, String action, 
+			String targetDeviceId, String targetChannelId, String skipDeviceId, 
+			String receiver){
+		        
+        JSONObject data = JSON.make(
+				"dataType", DataType.remoteAction.name(), 
+				"remoteUserId", receiver,
+				"targetDeviceId", targetDeviceId,
+				"targetChannelId", targetChannelId,
+				"skipDeviceId", skipDeviceId
+		);
+		JSON.put(data, "type", actionType);
+		JSON.put(data, "action", action);
+		
+		String channelId = "<auto>";	//we need to put something here but it doesn't really matter since remote-action has its own field
+		SocketMessage reply = new SocketMessage(channelId, getUserId(), getDeviceId(), receiver, "", data);
+    	reply.setSenderType(SenderType.assistant.name());
     	reply.setSenderDeviceId(Config.assistantDeviceId);
     	return reply;
     }

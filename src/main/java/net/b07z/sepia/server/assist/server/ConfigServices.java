@@ -15,7 +15,7 @@ import net.b07z.sepia.server.assist.endpoints.AuthEndpoint;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interviews.Interview;
 import net.b07z.sepia.server.assist.interviews.InterviewServicesMap;
-import net.b07z.sepia.server.assist.services.OpenDashboard;
+import net.b07z.sepia.server.assist.services.SettingsService;
 import net.b07z.sepia.server.assist.services.ServiceInterface;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.assist.users.UserDataInterface;
@@ -52,6 +52,13 @@ public class ConfigServices {
 	public static String getCustomServicesBaseFolder(){
 		return Config.sdkClassesFolder + "services/";
 	}
+	/**
+	 * Get folder path to custom services source code, e.g.:<br>
+	 * "net/b07z/sepia/services-source-code/"
+	 */
+	public static String getCustomServicesSourceFolder(){
+		return Config.sdkClassesFolder + "services-source-code/";
+	}
 	
 	/**
 	 * Get package path to custom services (full name), e.g.:<br>
@@ -62,7 +69,7 @@ public class ConfigServices {
 	}
 	
 	//essential stand-alone services
-	public static ServiceInterface dashboard = new OpenDashboard();
+	public static ServiceInterface settingsService = new SettingsService();
 	
 	//Note: loadInterviewService map has moved to interviews.InterviewServicesMap
 	

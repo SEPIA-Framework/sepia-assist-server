@@ -60,7 +60,7 @@ public class RegexParameterSearch {
 	 * @return true/false
 	 */
 	public static boolean is_abort(String input, String language){
-		if (input.matches("(abort\\b.*|.*\\babort|abbrechen\\b.*|.*\\babbrechen|zurueck|back|aufhoeren|stop|stop it|end|schluss)")){
+		if (input.replaceFirst("^_.*?_\\s", "").matches("(abort\\b.*|.*\\babort|abbrechen\\b.*|.*\\babbrechen|zurueck|back|aufhoeren|stop|stop it|end|schluss)")){
 			return true;
 		}else{
 			return false;

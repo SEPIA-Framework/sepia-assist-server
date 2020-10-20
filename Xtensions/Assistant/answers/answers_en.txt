@@ -121,6 +121,8 @@ food_0a;;		rep=0|mood=5;;		Sorry, I can't help you with that right now. ;;char=n
 food_1a;;		rep=0|mood=5;;		Please have a look here for some food. ;;char=neutral
 dashboard_0a;;		rep=0|mood=5;;		Let me open the user dashboard for you. ;;char=neutral
 dashboard_0b;;		rep=0|mood=5;;		I'm missing this info, but you can add it to your account. ;;char=neutral
+settings_0a;;		rep=0|mood=5;;		Let me open the settings for you. ;;char=neutral
+settings_0b;;		rep=0|mood=5;;		I'm missing this info, but you can add it to your account. ;;char=neutral
 search_retail_0a;;		rep=0|mood=5;;		Sorry, but I can't search this shop yet. ;;char=polite,neutral
 search_retail_1a;;		rep=0|mood=5;;		<user_name>, here are your search results. ;;char=neutral
 search_retail_ask_0a;;		rep=0|mood=5;;		What should I search <user_name>? ;;char=neutral

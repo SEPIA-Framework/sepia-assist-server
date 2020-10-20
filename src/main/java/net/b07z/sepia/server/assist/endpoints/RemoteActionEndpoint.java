@@ -12,8 +12,6 @@ import net.b07z.sepia.server.core.server.RequestParameters;
 import net.b07z.sepia.server.core.server.SparkJavaFw;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.JSON;
-import net.b07z.sepia.websockets.common.SocketMessage;
-import net.b07z.sepia.websockets.common.SocketMessage.DataType;
 import spark.Request;
 import spark.Response;
 
@@ -59,6 +57,7 @@ public class RemoteActionEndpoint {
 			//get target device
 			String targetDeviceId =  params.getString("targetDeviceId");
 			if (targetDeviceId == null || targetDeviceId.isEmpty())		targetDeviceId = "<auto>";
+			String skipDeviceId =  params.getString("skipDeviceId");
 			
 			//validate
 			if (type == null || type.isEmpty() || action == null || action.isEmpty()){
@@ -69,21 +68,15 @@ public class RemoteActionEndpoint {
 				return SparkJavaFw.returnResult(request, response, msg.toJSONString(), 200);
 			}
 			
-			//data for socket message
-			JSONObject data = JSON.make(
-					"dataType", DataType.remoteAction.name(), 
-					"remoteUserId", token.getUserID(),
-					"targetDeviceId", targetDeviceId,
-					"targetChannelId", targetChannelId
-			);
-			JSON.put(data, "type", type);
-			JSON.put(data, "action", action);
-			
-			//using the assistant connection to transfer remote action to socket messenger
-			String ownChannel = Config.assistantId;
-			SocketMessage sMessage = new SocketMessage(ownChannel, Config.assistantId, Config.assistantDeviceId, "", "", data);
-			//send
+			//send socket message
+			/*
+			SocketMessage sMessage = new SocketMessage("<auto>", Config.assistantId, Config.assistantDeviceId, "", "", data);
 			boolean msgSent = Clients.webSocketMessenger.send(sMessage, 2000);
+			*/
+			boolean msgSent = Clients.sendAssistantRemoteAction(token.getUserID(), 
+					type, action, targetDeviceId, targetChannelId, skipDeviceId
+			);
+			
 			JSONObject msg;		//response to api call
 			if (!msgSent){
 				//Queues.addSocketMessageToSend(sMessage);		//a: remote actions should probably not be delayed, b: queue is not implemented yet
@@ -103,5 +96,5 @@ public class RemoteActionEndpoint {
 			return SparkJavaFw.returnResult(request, response, msg.toJSONString(), 200);
 		}
 	}
-
+	
 }

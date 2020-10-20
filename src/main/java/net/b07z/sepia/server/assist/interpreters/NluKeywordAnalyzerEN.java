@@ -738,9 +738,7 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 		}
 		
 		//retailer product search/buy
-		if (NluTools.stringContains(text, "saturn|media(\\s|)(markt|market|markets)|amazon") || (NluTools.stringContains(text, "tv(?! (program))|television")	
-							&& NluTools.stringContains(text, "show|search|find|look for|buy"))
-			){
+		if (NluTools.stringContains(text, "(search) (saturn|media(\\s|)(markt|market|markets)|amazon)")){
 			String this_text = text;
 			possibleCMDs.add(CMD.SEARCH_RETAIL);
 			possibleScore.add(1);	index++;

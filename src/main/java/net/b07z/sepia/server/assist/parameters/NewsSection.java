@@ -18,6 +18,7 @@ public class NewsSection implements ParameterHandler{
 		main,
 		science,
 		tech,
+		maker,
 		politics,
 		sports,
 		soccer,
@@ -82,27 +83,29 @@ public class NewsSection implements ParameterHandler{
 		//German
 		if (language.matches(LANGUAGES.DE)){
 			type = NluTools.stringFindFirst(input, "(politik|wirtschaft|wissenschaft|sport|technologie|technik|tech|kultur|gesundheit)\\w*|"
-							+ "it news|pc games|pc news|computer|"
+							+ "it news|pc games|pc news|computer|hacker|"
 							+ "(fussball|bundesliga|regionalliga|handball|baseball|football|basketball|golf|eishockey|tennis|wrestling)\\w*|"
 							+ "champions( |)league|europaliga|euro( |)league|europa( |)league|premier league|primera division|"
 							+ "wm|em|(europa|welt)(meister| meister)(schaft|)|"
 							+ "racing|auto rennen|rennen|race|raceing|formel 1|formel eins|"
-							+ "games|lol|league of legends|dota|overwatch|heroes|"
+							+ "gam(es|e|ing)|lol|league of legends|dota|overwatch|heroes|fortnite|"
 							+ "musik(er|)|music|band(s|)|kino(s|)|cinema(s|)|film(e|)|movie(s|)|serie(n|)|tv|television|fernseh(serie(n|)|sendung(en|))|fernseh|shows|"
+							+ "maker|(bastler|bastel)\\w*|"
 							+ "start( |-|)up(s|)|gruender|gruenderszene|"
 							+ "corona(( |)virus|)|covid(-19|)|sars-cov-2");
 			
 		//English and other
 		}else{
 			type = NluTools.stringFindFirst(input, "politics|economy|science|technology|tech|culture|cultural|sport|sports|health|"
-							+ "computer|it news|pc news|pc games|"
+							+ "computer|it news|pc news|pc games|hacker|"
 							+ "soccer|"
 							+ "bundesliga|champions( |)league|europaliga|euro( |)league|europa( |)league|premier league|primera division|"
 							+ "wm|em|(european|world)(champion| champion)(ship|)|"
 							+ "baseball|football|basketball|golf|ice hockey|hockey|tennis|handball|wrestling|"
 							+ "racing|race|formula one|formula 1|"
-							+ "games|lol|league of legends|dota|overwatch|heroes|"
+							+ "gam(es|e|ing)|lol|league of legends|dota|overwatch|heroes|fortnite|"
 							+ "music|band(s|)|cinema(s|)|movie(s|)|film(s|)|tv|series|serial|television|shows|"
+							+ "maker|tinkerer|"
 							+ "start( |-|)up(s|)|founder(s|)|"
 							+ "corona(( |)virus|)|covid(-19|)|sars-cov-2");
 			
@@ -130,9 +133,11 @@ public class NewsSection implements ParameterHandler{
 			return "<" + NSection.economy.name() + ">";
 		}else if (NluTools.stringContains(newsFound, "wissenschaft\\w*|science")){
 			return "<" + NSection.science.name() + ">";
-		}else if (NluTools.stringContains(newsFound, "tech|technik\\w*|technology|technologie|pc|it|hardware|computer")){
+		}else if (NluTools.stringContains(newsFound, "tech|technik\\w*|technology|technologie|pc|it|hardware|computer|hacker")){
 			return "<" + NSection.tech.name() + ">";
-		}else if (NluTools.stringContains(newsFound, "games|lol|league of legends|dota|overwatch|heroes")){
+		}else if (NluTools.stringContains(newsFound, "maker|tinkerer|(bastler|bastel)\\w*")){
+			return "<" + NSection.maker.name() + ">";
+		}else if (NluTools.stringContains(newsFound, "gam(es|e|ing)|lol|league of legends|dota|overwatch|heroes|fortnite")){
 			return "<" + NSection.games + ">";
 		}else if (NluTools.stringContains(newsFound, "music|musik(er|)|band(s|)")){
 			return "<" + NSection.music + ">";

@@ -6,13 +6,14 @@ import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.Statistics;
-import net.b07z.sepia.server.assist.workers.ThreadManager.ThreadInfo;
 import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.FilesAndStreams;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
+import net.b07z.sepia.server.core.tools.ThreadManager;
 import net.b07z.sepia.server.core.tools.URLBuilder;
+import net.b07z.sepia.server.core.tools.ThreadManager.ThreadInfo;
 
 /**
  * Worker that makes regular calls to DuckDNS to update IP.

@@ -8,8 +8,10 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.server.Config;
+import net.b07z.sepia.server.core.assistant.CLIENTS;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 import net.b07z.sepia.server.core.users.AuthenticationInterface;
 import spark.Request;
@@ -25,8 +27,12 @@ import spark.Request;
  */
 public class Authenticator {
 	
+	public static final long APP_TOKEN_VALID_FOR = 3153600000L; 	//1 year
+	public static final long SESSION_TOKEN_VALID_FOR = 86400000L; 	//24h
+	
 	private String tokenHash = "";				//token created on demand
 	private long timeCreated = 0;				//System time on creation
+	private long tokenValidUntil = 0;			//token valid time
 	private boolean authenticated = false;		//is the user authenticated?
 	private String userID = "";					//user ID received from authenticator
 	private String key = "-1";					//key to access micro-services and other APIs
@@ -50,7 +56,8 @@ public class Authenticator {
 	private static Map<String, AtomicInteger> protectedAccountsFailedLoginAttempts = new HashMap<>();
 	private static Map<String, AtomicLong> protectedAccountsLastLoginAttempt = new HashMap<>();
 	private static Map<String, String> protectedAccountsEmailToIdMap = new HashMap<>();
-	private static int failedLoginAttemptThreshold = 3;
+	private static int failedLoginAttemptThreshold = 5;
+	
 	public static void addProtectedAccount(String uid, String email){
 		if (!protectedAccountsFailedLoginAttempts.containsKey(uid)){
 			protectedAccountsFailedLoginAttempts.put(uid, new AtomicInteger(0));
@@ -69,6 +76,11 @@ public class Authenticator {
 	 * Default constructor for token.
 	 */
 	public Authenticator(String username, String password, String idType, String client, Request requestMetaInfo){
+		//no password at all?
+		if (Is.nullOrEmpty(password)){
+			errorCode = 6;
+			return;
+		}
 		try {
 			AuthenticationInterface auth = (AuthenticationInterface) ClassBuilder.construct(Config.authenticationModule); 	//e.g.: new Authentication_Demo();
 			auth.setRequestInfo(requestMetaInfo);
@@ -273,8 +285,16 @@ public class Authenticator {
 	public String getKeyToken(String client){
 		AuthenticationInterface auth = (AuthenticationInterface) ClassBuilder.construct(Config.authenticationModule);
 		tokenHash = auth.writeKeyToken(userID, client);
+		tokenValidUntil = System.currentTimeMillis() + (CLIENTS.isRatherUnsafe(client)? (SESSION_TOKEN_VALID_FOR) : (APP_TOKEN_VALID_FOR));
 		errorCode = auth.getErrorCode(); 
 		return tokenHash;
+	}
+	
+	/**
+	 * Get UNIX time stamp that indicates when the key token expires.
+	 */
+	public long getKeyTokenValidTime(){
+		return this.tokenValidUntil;
 	}
 	
 	/**

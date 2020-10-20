@@ -47,6 +47,8 @@ public class WebsearchBasic implements ServiceInterface{
 		commonEngines.add(WebSearchEngine.BING);
 		commonEngines.add(WebSearchEngine.DUCK_DUCK_GO);
 		commonEngines.add(WebSearchEngine.YAHOO);
+		commonEngines.add(WebSearchEngine.QWANT);
+		commonEngines.add(WebSearchEngine.ECOSIA);
 		//NOTE: add only "real" web-search engines here (not specialized things like YouTube)
 	}
 	
@@ -111,12 +113,19 @@ public class WebsearchBasic implements ServiceInterface{
 		api.resultInfoPut("section", sectionLocal);
 		
 		//TODO: choose best engine or user favorite when no engine is given
-		Parameter engineP = nluResult.getOptionalParameter(PARAMETERS.WEBSEARCH_ENGINE, "google");
+		Parameter engineP = nluResult.getOptionalParameter(PARAMETERS.WEBSEARCH_ENGINE, "");
 		String engine = "";
 		if (!engineP.isDataEmpty()){
 			engine = (String) engineP.getData().get(InterviewData.VALUE);
 		}else{
-			engine = (String) engineP.getDefaultValue();
+			//Default music app in client
+			Object prefSearchEngine = nluResult.input.getCustomDataObject(NluInput.DATA_PREFERRED_SEARCH_ENGINE);
+			if (prefSearchEngine != null){
+				engine = (String) prefSearchEngine;
+			}else{
+				engine = WebSearchEngine.GOOGLE;
+			}
+			//System.out.println("prefSearchEngine: " + engine);		//DEBUG
 		}
 		api.resultInfoPut("engine", engine);
 		
@@ -279,6 +288,26 @@ public class WebsearchBasic implements ServiceInterface{
 			iconUrl = Config.urlWebImages + "brands/youtube-logo.png";
 			search_url = "https://www.youtube.com/results?search_query=";
 			if (section.equals("videos") || section.equals("music")){
+				search = searchReduced;
+			}
+		}else if (engine.contains(WebSearchEngine.QWANT)){
+			engine = "Qwant";
+			search_url = "https://www.qwant.com/?h=1&s=1&a=1&b=0&vt=0&hc=0&smartNews=0&theme=0&i=1&q=";
+			if (section.equals("pictures")){
+				search_url = "https://www.qwant.com/?h=1&s=1&a=1&b=0&vt=0&hc=0&smartNews=0&theme=0&i=1&t=images&q=";
+				search = searchReduced;
+			}else if (section.equals("videos")){
+				search_url = "https://www.qwant.com/?h=1&s=1&a=1&b=0&vt=0&hc=0&smartNews=0&theme=0&i=1&t=videos&q=";
+				search = searchReduced;
+			}
+		}else if (engine.contains(WebSearchEngine.ECOSIA)){
+			engine = "Ecosia";
+			search_url = "https://www.ecosia.org/search?q=";
+			if (section.equals("pictures")){
+				search_url = "https://www.ecosia.org/images?q=";
+				search = searchReduced;
+			}else if (section.equals("videos")){
+				search_url = "https://www.ecosia.org/videos?q=";
 				search = searchReduced;
 			}
 		}else{

@@ -51,7 +51,7 @@ public class OpenHAB implements SmartHomeHub {
 		if (Is.nullOrEmpty(host)){
 			throw new RuntimeException("No host address found for openHAB integration!");
 		}else{
-			this.host = host;
+			this.host = host.replaceFirst("/$", "").trim();
 			this.bufferedDevicesByType = bufferedDevicesOfHostByType.get(this.host);
 		}
 	}
@@ -122,7 +122,7 @@ public class OpenHAB implements SmartHomeHub {
 	
 	@Override
 	public void setHostAddress(String hostUrl){
-		this.host = hostUrl;
+		this.host = hostUrl.replaceFirst("/$", "").trim();
 	}
 	
 	@Override
@@ -497,6 +497,7 @@ public class OpenHAB implements SmartHomeHub {
 					type = SmartDevice.Types.roller_shutter.name();		//ROLLER SHUTTER
 					typeGuessed = true;
 				}
+				//TODO: add more
 			}
 		}
 		if (room == null){

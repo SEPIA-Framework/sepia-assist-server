@@ -106,7 +106,7 @@ public class LocationSearchBasic implements ServiceInterface{
 					//return No_Result.get(NLU_result, "default_miss_info_0b");
 					nluResult.setParameter(PARAMETERS.TYPE, "addresses");
 					nluResult.setParameter(PARAMETERS.ACTION, "add");
-					return ConfigServices.dashboard.getResult(nluResult);
+					return ConfigServices.settingsService.getResult(nluResult);
 				}else{
 					return NoResult.get(nluResult, "default_miss_info_0a");
 				}

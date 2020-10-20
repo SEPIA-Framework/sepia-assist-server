@@ -8,8 +8,10 @@ import net.b07z.sepia.server.assist.parameters.ParameterConfig;
 import net.b07z.sepia.server.assist.parameters.ParameterHandler;
 import net.b07z.sepia.server.assist.server.ConfigServices;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
+import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
+import net.b07z.sepia.server.core.tools.JSON;
 
 /**
  * This class represents a parameter with some additional info than just the name.
@@ -218,8 +220,43 @@ public class Parameter {
 	 * Same as "(String) getData().get(InterviewData.VALUE)" except it checks for null and returns empty string in that case.
 	 */
 	public String getValueAsString(){
-		String val = (String) data.get(InterviewData.VALUE);
-		return (val == null)? "" : val;
+		Object value = data.get(InterviewData.VALUE);
+		if (value != null){
+			if (value instanceof String){
+				return ((String) value);
+				//TODO: check other types?
+			}else{
+				return Converters.obj2StringOrDefault(value, "");
+			}
+		}else{
+			return "";
+		}
+	}
+	/**
+	 * Get data.value as JSON object. If InterviewData.VALUE is a string try to parse it or fail.<br>
+	 * returns JSONObject (can be empty .. I guess) or null (fails silently)
+	 */
+	public JSONObject getValueAsJson(){
+		Object value = data.get(InterviewData.VALUE);
+		if (value != null){
+			if (value instanceof String){
+				try {
+					return JSON.parseStringOrFail((String) value);
+				}catch (Exception e){
+					return null;
+				}
+			}else if (value instanceof JSONObject){
+				return (JSONObject) value;
+			}else{
+				try {
+					return (JSONObject) value;
+				}catch (Exception e){
+					return null;
+				}
+			}
+		}else{
+			return null;
+		}
 	}
 	/**
 	 * Does the parameter contain data (in final format, not input string)?

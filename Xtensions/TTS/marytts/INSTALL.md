@@ -8,7 +8,7 @@ It has been integrated as server extension due to it's memory requirements of ar
 
 ## Installation
 
-Note: It is required to use a system with 2GB memory or more to add this extension, but you can run the server on a different machine as well (see SEPIA settings 'marytts_server'). 
+Note: It is required to use a system with 2GB memory or more to add this extension, but you can run the server on a different machine as well (see comment below). 
   
 * To install the extension simply use one of the dowload scripts. The start scripts of SEPIA will automatically load the server if the downloaded files are available.  
 * To remove the server simply delete the downloaded files.
@@ -20,6 +20,19 @@ Note: It is required to use a system with 2GB memory or more to add this extensi
 When you run Mary-TTS via SEPIA setup direct access to the Mary-TTS server is only possible via `localhost`. You can open up Mary-TTS for direct access from any machine and apply some other settings via then environmental variable `MARYTTS_SERVER_OPTS`.
 Here is an example command that will remove the localhost restriction, to be run BEFORE the SEPIA server starts up Mary-TTS: `export MARYTTS_SERVER_OPTS="-Dsocket.addr=0.0.0.0 -Dsocket.port=59125"`.  
 Keep in mind that you can of cause always use the SEPIA TTS endpoint to access Mary-TTS from anywhere ... with the proper authentication.
+
+### Running Mary-TTS on a different machine
+
+When your SEPIA server doesn't have enough resources left to run the Mary-TTS server you can move it to a different system by simply copying the `marytts` folder.  
+Note: Your target system has to have Java installed.  
+After you've copied the files run your Mary-TTS server without 'localhost' restriction, e.g.:
+```
+cd marytts/bin
+export MARYTTS_SERVER_OPTS="-Dsocket.addr=0.0.0.0 -Dsocket.port=59125"
+bash marytts-server
+```
+
+SEPIA settings 'marytts_server'
 
 ### Server endpoints
 

@@ -8,8 +8,9 @@ import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.Statistics;
 import net.b07z.sepia.server.assist.services.NewsRssFeeds;
 import net.b07z.sepia.server.assist.tools.RssFeedReader;
-import net.b07z.sepia.server.assist.workers.ThreadManager.ThreadInfo;
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.ThreadManager;
+import net.b07z.sepia.server.core.tools.ThreadManager.ThreadInfo;
 
 /**
  * Worker that reads news feeds and caches results.

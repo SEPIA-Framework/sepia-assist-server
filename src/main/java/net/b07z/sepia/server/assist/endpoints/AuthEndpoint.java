@@ -38,6 +38,7 @@ public class AuthEndpoint {
 	
 	//temporary token is valid for
 	public static final long TEMP_TOKEN_VALID_FOR = 300000l; 	//5minutes
+	//see 'Authenticator' and 'AuthenticationInterface' implementations for other token times (usually key-token is 24h and app token 1y)
 	
 	/**
 	 * Input parameters required for authentication. Usually combined with {@link AssistEndpoint.InputParameters}. 
@@ -145,7 +146,7 @@ public class AuthEndpoint {
 		
 		//get action - validate/logout/createUser/deleteUser
 		String action = params.getString("action");
-		String client_info = params.getString("client");
+		String clientInfo = params.getString("client");
 		
 		//no action
 		if (action == null || action.trim().isEmpty()){
@@ -200,18 +201,21 @@ public class AuthEndpoint {
 			if (!token.authenticated()){
 				return SparkJavaFw.returnNoAccess(request, response, token.getErrorCode());
 			}else{
-				//success: make a new token and save it in the database
+				//success: make a new token and save it in the database 
+				//TODO: restrict this to access level 1 (not 0)? - the client currently uses the token for refresh as well
 				long timeStamp = System.currentTimeMillis();
-				String new_token = token.getKeyToken(client_info);
-				if (token.getErrorCode() != 0 && !new_token.isEmpty()){
+				String newToken = token.getKeyToken(clientInfo);
+				long validUntil = token.getKeyTokenValidTime();
+				if (token.getErrorCode() != 0 && !newToken.isEmpty()){
 					String msg = "{\"result\":\"fail\",\"error\":\"cannot create token, maybe invalid client info?\"}";
 					return SparkJavaFw.returnResult(request, response, msg, 200);
 				}
 				JSONObject msg = new JSONObject();
 				JSON.add(msg, "result", "success");
 				JSON.add(msg, "access_level", token.getAccessLevel());
-				JSON.add(msg, "keyToken", new_token);
+				JSON.add(msg, "keyToken", newToken);
 				JSON.add(msg, "keyToken_TS", timeStamp);
+				JSON.add(msg, "validUntil", validUntil);
 				JSON.add(msg, "duration_ms", Debugger.toc(tic));
 				//basic info
 				token.addBasicInfoToJsonObject(msg);
@@ -226,7 +230,7 @@ public class AuthEndpoint {
 				return SparkJavaFw.returnNoAccess(request, response, token.getErrorCode());
 			}else{
 				//success: logout user
-				boolean success = token.logoutUser(client_info);
+				boolean success = token.logoutUser(clientInfo);
 				JSONObject msg = new JSONObject();
 				if (success){
 					JSON.add(msg, "result", "success");

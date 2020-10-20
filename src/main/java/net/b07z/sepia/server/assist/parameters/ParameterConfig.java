@@ -95,12 +95,13 @@ public class ParameterConfig {
 		handlerToParameter.put(PARAMETERS.SELECTION, Select.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.SENTENCES, Sentences.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.DATA, GenericEmptyParameter.class.getCanonicalName());
-		handlerToParameter.put(PARAMETERS.REPLY, GenericParameter.class.getCanonicalName());
-		handlerToParameter.put(PARAMETERS.REPLY_SUCCESS, GenericParameter.class.getCanonicalName());
-		handlerToParameter.put(PARAMETERS.REPLY_FAIL, GenericParameter.class.getCanonicalName());
-		handlerToParameter.put(PARAMETERS.MESH_NODE_URL, GenericParameter.class.getCanonicalName());
-		handlerToParameter.put(PARAMETERS.MESH_NODE_PLUGIN_NAME, GenericParameter.class.getCanonicalName());
-		handlerToParameter.put(PARAMETERS.MESH_NODE_PLUGIN_DATA, GenericParameter.class.getCanonicalName());
+		handlerToParameter.put(PARAMETERS.URL, GenericEmptyParameter.class.getCanonicalName()); 		//TODO: make real parameter?
+		handlerToParameter.put(PARAMETERS.REPLY, GenericEmptyParameter.class.getCanonicalName());
+		handlerToParameter.put(PARAMETERS.REPLY_SUCCESS, GenericEmptyParameter.class.getCanonicalName());
+		handlerToParameter.put(PARAMETERS.REPLY_FAIL, GenericEmptyParameter.class.getCanonicalName());
+		handlerToParameter.put(PARAMETERS.MESH_NODE_URL, GenericEmptyParameter.class.getCanonicalName());
+		handlerToParameter.put(PARAMETERS.MESH_NODE_PLUGIN_NAME, GenericEmptyParameter.class.getCanonicalName());
+		handlerToParameter.put(PARAMETERS.MESH_NODE_PLUGIN_DATA, GenericEmptyParameter.class.getCanonicalName());
 	}
 	/**
 	 * Add another parameter handler.

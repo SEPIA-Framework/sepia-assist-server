@@ -19,12 +19,14 @@ public class WebSearchEngine implements ParameterHandler{
 	public static final String BING = "bing";
 	public static final String YAHOO = "yahoo";
 	public static final String DUCK_DUCK_GO = "duck duck go";
+	public static final String QWANT = "qwant";
+	public static final String ECOSIA = "ecosia";
 	//Specialized
 	public static final String YOUTUBE = "youtube";
 	
 	//-----data-----
 	
-	public static final String names = "(google|bing|duck duck go|duck duck|duckduckgo|yahoo|youtube)";
+	public static final String names = "(google|bing|duck duck go|duck duck|duckduckgo|yahoo|qwant|ecosia|youtube)";
 	
 	//--------------
 

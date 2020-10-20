@@ -120,6 +120,8 @@ public class SmartHomeHubConnector implements ServiceInterface {
 			.addCustomAnswer("setDeviceToStateWithRoom", setDeviceToStateWithRoom)
 			.addCustomAnswer("showDeviceState", showDeviceState)
 			.addCustomAnswer("showDeviceStateWithRoom", showDeviceStateWithRoom)
+			.addCustomAnswer("notAllowed", notAllowed)
+			.addCustomAnswer("notWithAdmin", notWithAdmin)
 			.addCustomAnswer("notYetControllable", notYetControllable)
 			.addCustomAnswer("noDeviceMatchesFound", noDeviceMatchesFound)
 			.addCustomAnswer("actionNotPossible", actionNotPossible)
@@ -181,7 +183,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		
 		//TODO: can/should we check if the user is in the same network? (proper proxy forwarding?)
 		
-		//check if we know an OpenHAB server
+		//check if we know a Smart Home HUB (e.g. openHAB, FHEM, internal, etc.)
 		SmartHomeHub smartHomeHUB = SmartHomeHub.getHubFromSeverConfig();
 		if (smartHomeHUB == null){
 			service.setStatusOkay(); 				//"soft"-fail (no error just missing info)

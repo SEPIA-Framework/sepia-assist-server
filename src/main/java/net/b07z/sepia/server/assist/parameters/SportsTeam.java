@@ -43,6 +43,7 @@ public class SportsTeam implements ParameterHandler{
 			+ "hannover(aner|)|"
 			+ "duesseldorf(er|)|"
 			+ "paderborn(er|)|"
+			+ "bielefeld(er|)|"
 			+ "essen kray(er|)|essen(er|)|kray(er|)|"
 			+ "duisburg(er|)|"
 			+ "istanbul|london|liverpool|manchester|leicester|barcelona|madrid"
@@ -72,6 +73,7 @@ public class SportsTeam implements ParameterHandler{
 			+ "hannover|"
 			+ "duesseldorf|"
 			+ "paderborn|"
+			+ "bielefeld|"
 			+ "essen kray|essen|kray|"
 			+ "duisburg|"
 			+ "istanbul|london|liverpool|manchester|leicester|barcelona|madrid"
@@ -104,6 +106,7 @@ public class SportsTeam implements ParameterHandler{
 			+ "fortuna duesseldorf|"
 			+ "(1\\. |1 |erster |)(fc |)union berlin|"
 			+ "sc paderborn( 07|)|"
+			+ "arminia bielefeld|arminia|"
 			+ "(fc |)(st |)pauli|"
 			+ "(fc |)kray|rot weiss essen|rwe|"
 			+ "msv duisburg|msv|"
@@ -137,6 +140,7 @@ public class SportsTeam implements ParameterHandler{
 			+ "fortuna duesseldorf|"
 			+ "(1\\. |1 |)(fc |)union berlin|"
 			+ "sc paderborn( 07|)|"
+			+ "arminia bielefeld|arminia|"
 			+ "(fc |)(st |st\\. |)pauli|"
 			+ "(fc |)kray|rot weiss essen|rwe|"
 			+ "msv duisburg|msv|"
@@ -175,6 +179,7 @@ public class SportsTeam implements ParameterHandler{
 		soccerIDs_bundesliga.put("<fortuna_duesseldorf>", 	185l);		shortNames.put(185l, "Düsseldorf");
 		soccerIDs_bundesliga.put("<sc_paderborn_07>", 		31l);		shortNames.put(31l, "Paderborn");
 		soccerIDs_bundesliga.put("<1_fc_union_berlin>", 	80l);		shortNames.put(80l, "Union");
+		soccerIDs_bundesliga.put("<arminia_bielefeld>", 	83l);		shortNames.put(83l, "Arminia");
 		
 		soccerIDs.putAll(soccerIDs_bundesliga);
 	}
@@ -322,6 +327,7 @@ public class SportsTeam implements ParameterHandler{
 		else if (NluTools.stringContains(item, "stuttgart(er|)")){						return "<vfb_stuttgart>";		}
 		else if (NluTools.stringContains(item, "fortuna|duesseldorf(er|)")){			return "<fortuna_duesseldorf>";		}
 		else if (NluTools.stringContains(item, "paderborn(er|)")){						return "<sc_paderborn_07>";		}
+		else if (NluTools.stringContains(item, "arminia|bielefeld(er|)")){				return "<arminia_bielefeld>";		}
 		else if (NluTools.stringContains(item, "union|(?<!(hertha|bsc) )berlin(er|)")){		return "<1_fc_union_berlin>";		}
 		
 		else if (NluTools.stringContains(item, "kray(er|)")){							return "<fc_kray>";		}

@@ -461,11 +461,10 @@ public class SmartHomeDevice {
 			//check type
 			SmartHomeDevice data = entry.getValue();
 			String thisType = data.getType();
-			if (Is.nullOrEmpty(thisType)){
-				continue;
-			}
-			if (Is.notNullOrEmpty(deviceType) && !thisType.equals(deviceType)){
-				continue;
+			if (Is.notNullOrEmpty(deviceType)){
+				if (thisType == null || !thisType.equals(deviceType)){
+					continue;
+				}
 			}
 			//check room?
 			if (Is.notNullOrEmpty(roomType)){

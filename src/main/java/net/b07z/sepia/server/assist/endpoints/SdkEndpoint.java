@@ -18,6 +18,7 @@ import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletException;
 import javax.servlet.http.Part;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.server.Config;
@@ -52,6 +53,7 @@ import spark.Response;
 public class SdkEndpoint {
 	
 	public static String uploadEndpointPath = "/upload-service"; 	//used in form, keep in sync with the endpoint definitions (in Start)!
+	public static boolean storeSourceCodeAfterCompile = true;
 	
 	public static final String UPLOAD_FILE_KEY = "upload_file";
 	public static final String UPLOAD_CODE_KEY = "upload_code";
@@ -108,7 +110,6 @@ public class SdkEndpoint {
 			JSON.add(result, "error", "SDK not enabled on this server");
 			return SparkJavaFw.returnResult(req, res, result.toJSONString(), 200);
 		}
-		long tic = System.currentTimeMillis();
 		//?? - required to read parameters properly 
 	    req.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"));
 	    
@@ -135,6 +136,8 @@ public class SdkEndpoint {
 			Debugger.println("unauthorized access attempt to upload-service endpoint (missing role)! User: " + userId, 3);
 			return SparkJavaFw.returnNoAccess(req, res);
 		}
+		
+		long tic = System.currentTimeMillis();
 		try{
 			//Check upload type
 			RequestParameters params = new RequestGetOrFormParameters(req);
@@ -157,7 +160,7 @@ public class SdkEndpoint {
 				if (isSourceCodeTransfer){
 					classBaseName = sourceCodeClassName;
 					fileName = sourceCodeClassName + ".class"; 		//this is what it will be after compilation
-					compileServiceSourceCode(userId, sourceCodeClassName, sourceCode);
+					compileServiceSourceCode(userId, sourceCodeClassName, sourceCode, storeSourceCodeAfterCompile);
 				
 				//v2 - receive and store file or compile and class file(s)
 				}else{
@@ -173,7 +176,10 @@ public class SdkEndpoint {
 	          	Statistics.addOtherApiHit("upload-service");
 	          	Statistics.addOtherApiTime("upload-service", tic);
 	          	
-	          	return uploadRes.getCanonicalName() + " has been uploaded! (old triggers removed: " + uploadRes.getCleanedTriggers() + ")";
+	          	return "SUCCESS: '" + classBaseName + "' has been uploaded for USER: " + userId
+	          		+ " - Class name: " + uploadRes.getCanonicalName() 
+	          		+ " - Old triggers removed: " + uploadRes.getCleanedTriggers()
+	          	;
 	        	
 	        }catch (Exception e){
 	        	Debugger.println("upload-service - Issue in code transfer, compilation or validation: " + e.getMessage(), 1);
@@ -221,12 +227,119 @@ public class SdkEndpoint {
 		}
 	}
 	
+	/**-- GET SERVICES POST --
+	 * End-point to get all custom services of a user.  
+	 */
+	public static String getServicesPost(Request req, Response res){
+		RequestParameters params = new RequestPostParameters(req);
+		
+		//authenticate
+		Authenticator token = Start.authenticate(params, req);
+		if (!token.authenticated()){
+			return SparkJavaFw.returnNoAccess(req, res, token.getErrorCode());
+		}
+		//create user
+		User user = new User(null, token);
+		//String userId = user.getUserID();
+		
+		long tic = System.currentTimeMillis();
+		try{
+			//get command mappings
+			UserDataInterface userData = user.getUserDataAccess();
+			List<CmdMap> customMap = userData.getCustomCommandMappings(user, null);
+			if (customMap == null){
+				throw new RuntimeException("Failed to load custom command mappings. Reason: unknown. Try again or check database please.");
+			}
+			
+			JSONArray customCommandsAndServices = new JSONArray();
+			for (CmdMap cmdMap : customMap){
+				JSON.add(customCommandsAndServices, JSON.make(
+						"command", cmdMap.getCommand(),
+						"services", cmdMap.getServices()
+				));
+			}
+			
+			//stats
+	      	Statistics.addOtherApiHit("get-services");
+	      	Statistics.addOtherApiTime("get-services", tic);
+	      	
+	      	JSONObject msg = new JSONObject();
+			JSON.add(msg, "result", "success");
+			JSON.add(msg, "commandsAndServices", customCommandsAndServices);
+			return SparkJavaFw.returnResult(req, res, msg.toJSONString(), 200);
+			
+		}catch (Exception e){
+			//stats
+	      	Statistics.addOtherApiHit("get-services fail");
+	      	Statistics.addOtherApiTime("get-services fail", tic);
+	      	
+	      	JSONObject msg = new JSONObject();
+			JSON.add(msg, "result", "fail");
+			JSON.add(msg, "error", e.getMessage());
+			return SparkJavaFw.returnResult(req, res, msg.toJSONString(), 200);
+		}
+	}
+	/**-- GET SERVICE SOURCE CODE POST --
+	 * End-point to get source code of specific service of a user.  
+	 */
+	public static String getServiceSourceCodePost(Request req, Response res){
+		RequestParameters params = new RequestPostParameters(req);
+		
+		//authenticate
+		Authenticator token = Start.authenticate(params, req);
+		if (!token.authenticated()){
+			return SparkJavaFw.returnNoAccess(req, res, token.getErrorCode());
+		}
+		//create user
+		User user = new User(null, token);
+		//String userId = user.getUserID();
+		
+		long tic = System.currentTimeMillis();
+		try{
+			//get source code from file
+			String serviceName = params.getString("service");
+			if (Is.nullOrEmpty(serviceName)){
+				JSONObject msg = new JSONObject();
+				JSON.add(msg, "result", "fail");
+				JSON.add(msg, "error", "missing 'service' parameter");
+				return SparkJavaFw.returnResult(req, res, msg.toJSONString(), 200);
+			}
+			
+			File sourceFile = new File(ConfigServices.getCustomServicesSourceFolder() + user.getUserID() + "/" + serviceName + ".java");
+			if (!sourceFile.exists()){
+				throw new RuntimeException("No source file found for '" + (user.getUserID() + "/" + serviceName) + "'");
+			
+			}else{
+				String sourceCode = String.join("\n", FilesAndStreams.readFileAsList(sourceFile.getAbsolutePath()));
+				if (Is.nullOrEmpty(sourceCode)){
+					throw new RuntimeException("Could not load source code, result was corrupted or empty");
+				}
+				//stats
+		      	Statistics.addOtherApiHit("get-service-source");
+		      	Statistics.addOtherApiTime("get-service-source", tic);
+		      	
+		      	JSONObject msg = new JSONObject();
+				JSON.add(msg, "result", "success");
+				JSON.add(msg, "sourceCode", sourceCode);
+				return SparkJavaFw.returnResult(req, res, msg.toJSONString(), 200);
+			}
+			
+		}catch (Exception e){
+			//stats
+	      	Statistics.addOtherApiHit("get-service-source fail");
+	      	Statistics.addOtherApiTime("get-service-source fail", tic);
+	      	
+	      	JSONObject msg = new JSONObject();
+			JSON.add(msg, "result", "fail");
+			JSON.add(msg, "error", e.getMessage());
+			return SparkJavaFw.returnResult(req, res, msg.toJSONString(), 200);
+		}
+	}
+	
 	/**-- DELETE SERVICE POST --
 	 * End-point to delete a custom service and clean up.  
 	 */
 	public static String deleteServicePost(Request req, Response res){
-		long tic = System.currentTimeMillis();
-		
 		RequestParameters params = new RequestPostParameters(req);
 		
 		//authenticate
@@ -240,7 +353,8 @@ public class SdkEndpoint {
 		
 		//check role
 		//not required ... a user should always be allowed to delete his services
-		
+
+		long tic = System.currentTimeMillis();
 		try{
 			//Get commands to be removed
 			String[] commandsArray = params.getStringArray("commands");
@@ -278,7 +392,9 @@ public class SdkEndpoint {
 			//Delete service files
 			String[] servicesArray = params.getStringArray("services");
 			long deletedFiles = 0;
-			long fileErrors = 0;
+			long deletedSources = 0;
+			long classFileErrors = 0;
+			long sourceFileErrors = 0;
 			if (servicesArray != null && servicesArray.length > 0){
 				File uploadDir = new File(ConfigServices.getCustomServicesBaseFolder() + userId);
 				for (String className : servicesArray){
@@ -287,13 +403,29 @@ public class SdkEndpoint {
 			        	List<Path> tempFiles = findCustomClassAndRelated(uploadDir, className);
 		        		for (Path p : tempFiles){
 		        			Files.delete(p);
-		        			Debugger.println("delete-service - File '" + p.toString() + "' removed during clean-up!", 3);
+		        			Debugger.println("delete-service - Class file '" + p.toString() + "' removed during clean-up!", 3);
 		        			deletedFiles++;
 		        		}
-		        	}catch (Exception e1) {
-		        		Debugger.println("delete-service - Error during deletion of file '" + userId + "/" + className + "'!", 1);
-		        		fileErrors++;
+		        	}catch (Exception e1){
+		        		Debugger.println("delete-service - Error during deletion of class file '" + userId + "/" + className + "'!", 1);
+		        		classFileErrors++;
 		        	}
+					//check source code file
+					try{
+						File sourceFile = new File(ConfigServices.getCustomServicesSourceFolder() + userId + "/" + className + ".java");
+						if (sourceFile.exists()){
+							try{
+								sourceFile.delete();
+								Debugger.println("delete-service - Source file '" + sourceFile.getPath() + "' removed during clean-up!", 3);
+								deletedSources++;
+							}catch (Exception e2){
+								Debugger.println("delete-service - Error during deletion of source file '" + userId + "/" + className + "'!", 1);
+								sourceFileErrors++;
+							}
+						}
+					}catch (Exception e){
+						Debugger.printStackTrace(e, 3);
+					}
 				}
 			}
 			
@@ -311,8 +443,10 @@ public class SdkEndpoint {
 			JSON.add(msg, "deletedTriggers", deletedTriggers);
 			JSON.add(msg, "deletedMappings", deletedMappings);
 			JSON.add(msg, "ignoredCommands", ignoredCommands.toString());
-			JSON.add(msg, "deletedFiles", deletedFiles);
-			JSON.add(msg, "fileErrors", fileErrors);
+			JSON.add(msg, "deletedClassFiles", deletedFiles);
+			JSON.add(msg, "deletedSourceFiles", deletedSources);
+			JSON.add(msg, "classFileErrors", classFileErrors);
+			JSON.add(msg, "sourceFileErrors", sourceFileErrors);
 			
 			Debugger.println("delete-service - User '" + userId 
 				+ "' requested deletion of commands: " + String.join(", ", commandsArray), 3);
@@ -375,7 +509,7 @@ public class SdkEndpoint {
             String classNameSimple = fileName.replace(".java", "");
             
         	//Compile code (or throw exception)
-            compileServiceSourceCode(userId, classNameSimple, sourceCode);
+            compileServiceSourceCode(userId, classNameSimple, sourceCode, storeSourceCodeAfterCompile);
         	
         //Wrong or not supported file
         }else{
@@ -390,8 +524,9 @@ public class SdkEndpoint {
 	 * @param userId - ID of user
 	 * @param simpleClassName - simple name of class (without any packages or modifiers)
 	 * @param sourceCode - source code as String (with proper line-breaks)
+	 * @param storeSource - store source code as file in sub-folder "services-source-code" (next to "services")
 	 */
-	private static void compileServiceSourceCode(String userId, String simpleClassName, String sourceCode){
+	private static void compileServiceSourceCode(String userId, String simpleClassName, String sourceCode, boolean storeSource){
 		//Get right folder and make sure it exists
     	File uploadDir = new File(ConfigServices.getCustomServicesBaseFolder() + userId);
         uploadDir.mkdirs();
@@ -402,6 +537,25 @@ public class SdkEndpoint {
 		String errors = ClassBuilder.compile(className, sourceCode, new File(Config.pluginsFolder));
 		if (!errors.isEmpty()){
 			throw new RuntimeException("Class '" + simpleClassName + "' - " + errors);
+		}
+		
+		//Store source?
+		if (storeSource){
+			String sourceCodePath = ConfigServices.getCustomServicesSourceFolder() + userId;
+			String sourceFileName = simpleClassName + ".java";
+			boolean sourceWriteSuccess;
+			try{
+				Files.createDirectories(Paths.get(sourceCodePath));
+				sourceWriteSuccess = FilesAndStreams.writeStringToFile(sourceCodePath, sourceFileName, sourceCode);
+			}catch (Exception e){
+				Debugger.printStackTrace(e, 3);
+				sourceWriteSuccess = false;
+			}
+			if (sourceWriteSuccess){
+				Debugger.println("upload-service - Stored source code at: " + sourceCodePath + "/" + sourceFileName, 3);
+			}else{
+				Debugger.println("upload-service - Failed to write source code to: " + sourceCodePath + "/" + sourceFileName, 1);
+			}
 		}
 	}
 	

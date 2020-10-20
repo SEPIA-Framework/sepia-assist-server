@@ -12,6 +12,7 @@ import net.b07z.sepia.server.assist.services.Alarms;
 import net.b07z.sepia.server.assist.services.ChatPreprocessor;
 import net.b07z.sepia.server.assist.services.ClientControls;
 import net.b07z.sepia.server.assist.services.ControlPreprocessor;
+import net.b07z.sepia.server.assist.services.CustomFrameControl;
 import net.b07z.sepia.server.assist.services.DictionaryTranslateBasic;
 import net.b07z.sepia.server.assist.services.DirectionsGoogleMaps;
 import net.b07z.sepia.server.assist.services.EventsWrapper;
@@ -49,7 +50,8 @@ public class InterviewServicesMap {
 	private static boolean loadCustom = false; 		//use this via "loadCustom(..)" in the server "Start" class
 	
 	//Interview -> services
-	//note: service modules are stored as class-reference to dynamically create them inside interview
+	//NOTE1: service modules are stored as class-reference to dynamically create them inside interview
+	//NOTE2: custom services can register themselves via ServiceInfo#getInfo (e.g. 'setCustomTriggerRegX')
 	private static Map<String, List<String>> systemInterviewServicesMap = new LinkedHashMap<>();
 	
 	/**
@@ -246,6 +248,10 @@ public class InterviewServicesMap {
 		ArrayList<String> platform_controls = new ArrayList<String>();
 		platform_controls.add(PlatformControls.class.getCanonicalName());
 			systemInterviewServicesMap.put(CMD.PLATFORM_CONTROLS, platform_controls);
+		//FRAME CONTROL
+		ArrayList<String> frame_control = new ArrayList<String>();
+		frame_control.add(CustomFrameControl.class.getCanonicalName());
+			systemInterviewServicesMap.put(CMD.FRAME_CONTROL, frame_control);
 		//LANGUAGE SWITCH 
 		ArrayList<String> langSwitch = new ArrayList<String>();
 		langSwitch.add(LanguageSwitcher.class.getCanonicalName());

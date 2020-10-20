@@ -10,6 +10,8 @@ import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.data.Card;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.data.Card.ElementType;
+import net.b07z.sepia.server.assist.events.ChangeEvent;
+import net.b07z.sepia.server.assist.events.EventsBroadcaster;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.parameters.Action;
@@ -18,7 +20,6 @@ import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.assist.users.UserDataInterface;
-import net.b07z.sepia.server.core.assistant.ACTIONS;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.data.UserDataList;
 import net.b07z.sepia.server.core.data.UserDataList.Section;
@@ -33,7 +34,7 @@ import net.b07z.sepia.server.core.tools.JSON;
  */
 public class Lists implements ServiceInterface{
 	
-	private static int lists_max_load = 20;		//maximum number of lists loaded with one call from server
+	private static int lists_max_load = 25;		//maximum number of lists loaded with one call from server
 	private static int list_limit = 50;			//this many items are allowed in the list
 	private static int element_limit = 160;		//maximum length of an item
 	
@@ -166,7 +167,7 @@ public class Lists implements ServiceInterface{
 		String listTypeLocal = JSON.getStringOrDefault(listTypeP.getData(), InterviewData.LIST_TYPE_LOCALE, "");
 		
 		Parameter listSubTypeP = nluResult.getOptionalParameter(PARAMETERS.LIST_SUBTYPE, "");
-		String listSubType = JSON.getStringOrDefault(listSubTypeP.getData(), InterviewData.VALUE, "");
+		String listSubType = JSON.getStringOrDefault(listSubTypeP.getData(), InterviewData.VALUE, "").trim();
 		
 		if (listTypeLocal.isEmpty()){
 			api.resultInfoPut("listType", (listSubType + " " + ListType.getLocal("<list>", api.language)));
@@ -182,7 +183,7 @@ public class Lists implements ServiceInterface{
 		boolean isActionCreate = action.equals(Action.Type.create.name());
 		
 		Parameter listItemP = nluResult.getOptionalParameter(PARAMETERS.LIST_ITEM, "");
-		String listItem = (String) listItemP.getDataFieldOrDefault(InterviewData.VALUE);
+		String listItem = ((String) listItemP.getDataFieldOrDefault(InterviewData.VALUE)).trim();
 		
 		api.resultInfoPut("listItem", listItem); 	//might get overwritten later
 		
@@ -245,16 +246,16 @@ public class Lists implements ServiceInterface{
 			//we trust the database to find multiple lists that fit to the search term (because it uses a OR b OR c for an 'a b c' list)
 			//so we can remove and, or, ... from search term ...
 			if (nluResult.language.equals(LANGUAGES.DE)){
-				title = title.replaceAll("\\b(und|oder)\\b", " ").replaceAll("\\s+", " ");
+				title = title.replaceAll("\\b(und|oder)\\b", " ").replaceAll("\\s+", " ").trim();
 			}else if (nluResult.language.equals(LANGUAGES.EN)){
-				title = title.replaceAll("\\b(and|or)\\b", " ").replaceAll("\\s+", " ");
+				title = title.replaceAll("\\b(and|or)\\b", " ").replaceAll("\\s+", " ").trim();
 			}
 			filters.put("title", title);
 		}
 		
 		//results size and pagination
 		filters.put("resultsFrom", 0);					//start at first result
-		filters.put("resultsSize", lists_max_load);		//we support 20 lists with one call for now
+		filters.put("resultsSize", lists_max_load);		//we support N (see above) lists with one call for now
 		
 		//list section (a classification for this type of lists)
 		Section section = Section.productivity;
@@ -366,7 +367,13 @@ public class Lists implements ServiceInterface{
 					return result;
 				}
 			}
+			//build default answer
 			api.setStatusSuccess();
+			
+			//broadcast change
+			broadcastUpdateEventToAllUserDevices(nluResult.input.user, nluResult.input.deviceId, activeList.getId());
+			
+			//END - wait for build
 		
 		//-ADD
 		}else if (isActionAdd){
@@ -431,6 +438,9 @@ public class Lists implements ServiceInterface{
 					api.setStatusSuccess();
 					api.setCustomAnswer(addedStuff);
 					
+					//broadcast change
+					broadcastUpdateEventToAllUserDevices(nluResult.input.user, nluResult.input.deviceId, activeList.getId());
+					
 					//END - wait for build
 				
 				}else{
@@ -476,11 +486,6 @@ public class Lists implements ServiceInterface{
 				
 		//ACTION and CARD
 		if (udlList != null && !udlList.isEmpty()){
-			//build action - for apps indicate direct triggering of info view
-			api.addAction(ACTIONS.OPEN_LIST);
-			api.putActionInfo("listInfo", JSON.make("indexType", indexType, "title", title, "_id", _id));
-			api.hasAction = true;
-		
 			//make card
 			Card card = new Card(Card.TYPE_UNI_LIST);
 			for (UserDataList udl : udlList){
@@ -495,6 +500,17 @@ public class Lists implements ServiceInterface{
 		
 		//System.out.println(result.getResultJSON()); 		//debug
 		return result;
-	}	
+	}
+	
+	//---------- helpers ----------
+	
+	private void broadcastUpdateEventToAllUserDevices(User user, String senderDeviceId, String listId){
+		//sent time events update trigger after a short delay
+		EventsBroadcaster.broadcastBackgroundDataSyncNotes(
+			EventsBroadcaster.buildChangeEventsSet(
+				new ChangeEvent(ChangeEvent.Type.productivity, listId)		//NOTE: we skip data because we don't know any more details
+			), user, senderDeviceId
+		);
+	}
 
 }

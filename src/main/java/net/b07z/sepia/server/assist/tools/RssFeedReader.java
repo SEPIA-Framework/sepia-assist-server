@@ -192,11 +192,7 @@ public class RssFeedReader {
 						.replaceAll("\\s+", " ").trim(); 
 				String link = se.getLink();
 				link = link.replaceAll("\\r\\n|\\r|\\n|\\t", " ").replaceAll("\\s+", " ").trim();
-				//some more tweaks:
-				link = link.replaceAll("www\\.bild\\.de", "m.bild.de");
 				
-				JSON.add(jo, "title", title);
-				JSON.add(jo, "link", link);
 				Date d = se.getPublishedDate();
 				long age = -1;
 				if (d != null){
@@ -222,11 +218,27 @@ public class RssFeedReader {
 						.replaceAll("<object.*?</object>", "")
 						//.replaceAll("<a href=.*?>", "").replaceAll("</a>", "")
 						.replaceAll("\\s+", " ").trim();
+				
+				//outlet specific tweaks
+				if (feedName.startsWith("1E9")){
+					//1E9 Magazin
+					desc = desc
+						.replaceFirst("<span class=\"filename\">.*?</span>", " ")
+						.replaceFirst("<span class=\"informations\">.*?</span>", " ");
+				
+				}else if (feedName.startsWith("Bild")){
+					//Bild
+					link = link.replaceAll("www\\.bild\\.de", "m.bild.de");
+				}
+				
 				//max. 2000 characters
 				if (desc.length() > 2000){
-					desc = desc.replaceAll("<.*?>", " ").replaceAll("\\s+", " "); 	//<- most aggressive html clean-up
+					desc = desc.replaceAll("<.*?>", " ").replaceAll("\\s+", " ").trim(); 	//<- most aggressive html clean-up
 					desc = desc.substring(0, Math.min(2000, desc.length()));
 				}
+				
+				JSON.add(jo, "title", title);
+				JSON.add(jo, "link", link);
 				JSON.add(jo, "description", desc);
 				
 				//filter by date and add

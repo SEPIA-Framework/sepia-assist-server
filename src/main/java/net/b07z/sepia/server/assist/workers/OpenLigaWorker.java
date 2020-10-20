@@ -10,10 +10,11 @@ import net.b07z.sepia.server.assist.parameters.SportsLeague;
 import net.b07z.sepia.server.assist.parameters.SportsTeam;
 import net.b07z.sepia.server.assist.server.Statistics;
 import net.b07z.sepia.server.assist.tools.DateTimeConverters;
-import net.b07z.sepia.server.assist.workers.ThreadManager.ThreadInfo;
 import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.JSON;
+import net.b07z.sepia.server.core.tools.ThreadManager;
+import net.b07z.sepia.server.core.tools.ThreadManager.ThreadInfo;
 
 public class OpenLigaWorker implements WorkerInterface {
 	
@@ -345,12 +346,12 @@ public class OpenLigaWorker implements WorkerInterface {
 	//----------------- API -------------------
 	
 	public static final String BUNDESLIGA = "bl1";
-	public static final String BUNDESLIGA_SEASON = "2019";		//TODO: update automatically after season?
+	public static final String BUNDESLIGA_SEASON = "2020";		//TODO: update automatically after season?
 	public static final String BUNDESLIGA_2 = "bl2";
 	public static final String DFB_POKAL = "DFB";
 	public static final String PRIMERA_DIVISION = "PD";
 	public static final String PREMIER_LEAGUE = "PL";
-	public static final String CHAMPIONS_LEAGUE_16 = "cl1617";
+	public static final String CHAMPIONS_LEAGUE_16 = "cl1617"; 	//TODO: update (and use?)
 	
 	public static HashMap<String, String> openLigaDB_mapping = new HashMap<>();
 	static{

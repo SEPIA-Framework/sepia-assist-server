@@ -59,7 +59,7 @@ public class WebSearchRequest implements ParameterHandler{
 			//clean up
 			search = search.replaceFirst("^(mir)", "").trim();
 			search = search.replaceFirst("^(mal bitte|bitte mal|mal|bitte)", "").trim();
-			search = search.replaceFirst("^(nach|.*\\b(suchen( (im|das) (web|internet) | )nach))\\b", "").trim();
+			search = search.replaceFirst("^(online nach|nach|.*\\b(suchen( (im|das) (web|internet) | )nach))\\b", "").trim();
 			//some adaptations
 			/*
 			search = search.replaceFirst("^(bild(ern|er|)|rezept(en|e|)|video(s|)|movie(s|)|film(en|e|)|aktie(n|)|buecher(n|)|buch) (von|vom|ueber|mit|)|"
@@ -84,7 +84,7 @@ public class WebSearchRequest implements ParameterHandler{
 			}
 			//clean up
 			search = search.replaceFirst("^(me)", "").trim();
-			search = search.replaceFirst("^(for)", "").trim();
+			search = search.replaceFirst("^(online for|for)", "").trim();
 			//some adaptations
 			/*
 			search = search.replaceFirst("^(picture(s|)|recipe(s|)|video(s|)|movie(s|)|film(s|)|share(s|)|stock(s|)|book(s|)) (of|with|by|)|"

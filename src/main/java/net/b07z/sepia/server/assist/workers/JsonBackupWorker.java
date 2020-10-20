@@ -4,9 +4,10 @@ import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.Statistics;
-import net.b07z.sepia.server.assist.workers.ThreadManager.ThreadInfo;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.JSON;
+import net.b07z.sepia.server.core.tools.ThreadManager;
+import net.b07z.sepia.server.core.tools.ThreadManager.ThreadInfo;
 
 /**
  * Worker that makes regular backups of certain data in JSON format.<br>

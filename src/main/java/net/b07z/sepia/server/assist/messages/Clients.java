@@ -7,12 +7,12 @@ import org.json.simple.JSONObject;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.services.ServiceResult;
-import net.b07z.sepia.server.assist.workers.ThreadManager;
-import net.b07z.sepia.server.assist.workers.ThreadManager.ThreadInfo;
 import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.FilesAndStreams;
 import net.b07z.sepia.server.core.tools.JSON;
+import net.b07z.sepia.server.core.tools.ThreadManager;
+import net.b07z.sepia.server.core.tools.ThreadManager.ThreadInfo;
 import net.b07z.sepia.websockets.client.SepiaSocketClient;
 import net.b07z.sepia.websockets.client.SocketClientHandler;
 import net.b07z.sepia.websockets.common.SocketConfig;
@@ -98,14 +98,33 @@ public class Clients {
 	/**
 	 * WebSockets support duplex communication which means you can send an answer first and after a few seconds send a follow-up
 	 * message to add more info/data to the previous reply.
-	 * @param nluInput - initial {@link NluInput} to follow-up
+	 * @param nluInput - initial {@link NluInput} to follow-up (is checked for 'isDuplexConnection' as well)
 	 * @param serviceResult - {@link ServiceResult} as produced by services to send as follow-up
 	 * @return true if sent, false if not
 	 */
 	public static boolean sendAssistantFollowUpMessage(NluInput nluInput, ServiceResult serviceResult){
 		if (assistantSocket != null && Config.assistantAllowFollowUps && nluInput.isDuplexConnection()){
-			assistantSocket.sendFollowUpMessage(nluInput, serviceResult);
-			return true;
+			return assistantSocket.sendFollowUpMessage(nluInput, serviceResult);
+		}else{
+			return false;
+		}
+	}
+	
+	/**
+	 * Send a remote-action message to selected devices (specific, auto=first active or first random, all) of input user.
+	 * @param receiver - receiver user ID
+	 * @param actionType - type of remote action
+	 * @param action - actual remote action (simple String or JSON object as String)
+	 * @param targetDeviceId - target a specific device ID (e.g. ID, empty=auto, ;&ltall;&gt)
+	 * @param targetChannelId - target a specific chat channel (e.g. ID, empty=auto)
+	 * @param skipDeviceId - device IDs to skip (useful for targetDeviceId 'auto' or 'all')
+	 * @return true if sent, false if not
+	 */
+	public static boolean sendAssistantRemoteAction(String receiver, String actionType, String action, 
+			String targetDeviceId, String targetChannelId, String skipDeviceId){
+		if (assistantSocket != null){
+			return assistantSocket.sendRemoteAction(receiver, actionType, action, 
+					targetDeviceId, targetChannelId, skipDeviceId);
 		}else{
 			return false;
 		}

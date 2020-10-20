@@ -221,10 +221,20 @@ public class MusicRadioMixed implements ServiceInterface {
 					int i = 0;
 					for (Object so : stationsCollection){
 						JSONObject stationCard = (JSONObject) so;
+						String stationName = (String) stationCard.get("name");
 						if (i==0){
-							active_name = (String) stationCard.get("name");
+							active_name = stationName;
 							active_stream = (String) stationCard.get("streamURL");
 						}
+						//add playlist?
+						String playlistURL = RadioStation.getPlaylistUrl(stationName);
+						if (playlistURL == null){
+							playlistURL = RadioStation.getPlaylistUrl(stationName.replaceAll(" - .*", "").trim());
+						}
+						if (playlistURL != null){
+							JSON.put(stationCard, "playlistURL", playlistURL);
+						}
+						
 						i++;
 						card.addGroupeElement(ElementType.radio, "", stationCard);
 					}

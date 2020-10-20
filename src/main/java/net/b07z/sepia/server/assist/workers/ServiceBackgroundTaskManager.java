@@ -12,9 +12,10 @@ import java.util.function.BooleanSupplier;
 
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.ThreadManager;
 
 /**
- * If a services uses the 'runInBackground' method of {@link net.b07z.sepia.server.assist.services.ServiceBuilder} the tasks will be managed here.
+ * If a service uses the 'runInBackground' method of {@link net.b07z.sepia.server.assist.services.ServiceBuilder} the tasks will be managed here.
  * 
  * @author Florian Quirin
  *
@@ -121,7 +122,7 @@ public class ServiceBackgroundTaskManager {
 		String taskId = getNewTaskId();
 		
 		int corePoolSize = 1;
-	    final ScheduledThreadPoolExecutor executor = ThreadManager.getNewScheduledThreadPool(corePoolSize);
+	    final ScheduledThreadPoolExecutor executor = ThreadManager.getNewOrSharedScheduledThreadPool(corePoolSize);
 	    executor.setRemoveOnCancelPolicy(true);
 	    ScheduledFuture<?> future = executor.schedule(() -> {
 	    	//run task and...
@@ -138,12 +139,12 @@ public class ServiceBackgroundTaskManager {
 	    	executor.shutdown();
 	    	
 	    }, delayMs, TimeUnit.MILLISECONDS);
-	    //other option (but does not support lambda expression):
+	    //other option (but does not support lambda expression and uses unknown thread):
 	    //Timer timer = new Timer();
 	    //timer.schedule(task, delayMs);
 	    
 	    BooleanSupplier cancelFun = () -> {
-	    	if (future.isDone() || future.cancel(false)){
+	    	if (future.isDone() || future.isCancelled() || future.cancel(false)){
 	    		removeFromSbtMap(taskId);
 	    		executor.purge();
 		    	executor.shutdown();

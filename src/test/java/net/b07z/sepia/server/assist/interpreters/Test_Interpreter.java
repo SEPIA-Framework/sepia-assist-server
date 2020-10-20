@@ -130,8 +130,6 @@ public class Test_Interpreter {
 			System.out.println("PARAMETERS: " + params.toJSONString());			//JSON version of result.get_parameter("xy")
 		}
 		
-		String res ="";
-		
 		System.out.println("---command: " + result.getCommand());
 		System.out.println("---parameters:");
 		for (Map.Entry<String, String> entry : result.parameters.entrySet()) {
@@ -139,6 +137,8 @@ public class Test_Interpreter {
 		}
 		
 		/*
+		String res ="";
+		
 		//interview module with services 
 		ArrayList<API_Interface> services = ConfigServices.getCustomOrSystemServices(user, result.get_command());
 		if (!services.isEmpty()){
