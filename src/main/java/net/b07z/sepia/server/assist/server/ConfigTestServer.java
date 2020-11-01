@@ -87,19 +87,19 @@ public class ConfigTestServer {
 	}
 	
 	/**
-	 * Make a fake input with current local time, a defined user_location and some other default parameters. 
+	 * Make a fake input with current local time, fake user, a defined user_location and some other default parameters. 
 	 */
 	public static NluInput getFakeInput(String text, String language){
 		return getFakeInput(text, language, null, null, null);
 	}
 	/**
-	 * Make a fake input with current local time, a defined user_location and some other default parameters. 
+	 * Make a fake input with current local time, fake user, a defined user_location and some other default parameters. 
 	 */
 	public static NluInput getFakeInput(String text, String language, String userLocation){
 		return getFakeInput(text, language, userLocation, null, null);
 	}
 	/**
-	 * Make a fake input with current local time, a defined user_location and some other default parameters. 
+	 * Make a fake input with current local time, fake user, a defined user_location and some other default parameters. 
 	 */
 	public static NluInput getFakeInput(String text, String language, String userLocation, String userDateGMT){
 		Long unixTime = null;
@@ -109,7 +109,7 @@ public class ConfigTestServer {
 		return getFakeInput(text, language, userLocation, unixTime, userDateGMT);
 	}
 	/**
-	 * Make a fake input with current local time, a defined user_location and some other default parameters. 
+	 * Make a fake input with current local time, fake user, a defined user_location and some other default parameters. 
 	 */
 	public static NluInput getFakeInput(String text, String language, String userLocation, Long userTime, String userTimeLocal){
 		String context = "default";
