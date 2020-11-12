@@ -45,6 +45,7 @@ import net.b07z.sepia.server.core.tools.Security;
 import net.b07z.sepia.server.core.tools.ThreadManager;
 import net.b07z.sepia.server.core.tools.Timer;
 import net.b07z.sepia.server.core.tools.EsQueryBuilder.QueryElement;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.users.AuthenticationInterface;
 
 /**
@@ -1064,10 +1065,10 @@ public class DB {
 		//Note: if the 'title' is empty this might unintentionally overwrite a list or create a new one
 		String title = (String) listData.get("title");
 		if ((docId == null || docId.isEmpty()) && (title == null || title.isEmpty())){
-			throw new RuntimeException("setUserDataList - 'title' AND 'id' is MISSING! Need at least one.");
+			throw new RuntimeException("setListData - 'title' AND 'id' is MISSING! Need at least one.");
 		}
 		if (section == null || section.name().isEmpty()){
-			throw new RuntimeException("setUserDataList - 'section' is MISSING!");
+			throw new RuntimeException("setListData - 'section' is MISSING!");
 		}
 		
 		//simply write when no docId is given
@@ -1087,7 +1088,7 @@ public class DB {
 				dataAssign += ("ctx._source." + key + "=params." + key + "; ");
 			}
 			JSONObject script = JSON.make("lang", "painless",
-					"inline", "if (ctx._source.user != params.user) { ctx.op = 'noop'} " + dataAssign.trim(),
+					"inline", "if (ctx._source.user != params.user) { ctx.op = 'noop' } else { " + dataAssign.trim() + "}",
 					"params", listData);
 			JSON.put(newListData, "script", script);//"ctx.op = ctx._source.user == " + userId + "? 'update' : 'none'");
 			JSON.put(newListData, "scripted_upsert", true);
@@ -1101,6 +1102,51 @@ public class DB {
 		Statistics.addOtherApiTime("setListDataInDB", tic);
 				
 		return setResult;
+	}
+	/**
+	 * Update a given user data list.
+	 * @return JSONObject with "code"
+	 */
+	public static JSONObject updateListData(String userId, String docId, boolean removeEntry, JSONObject listDataEntry){
+		long tic = Debugger.tic();
+
+		if (Is.nullOrEmpty(docId)){
+			throw new RuntimeException("updateListData - 'id' is MISSING!");
+		}
+		
+		//Create script
+		String dataAssign = "if (ctx._source.user != params.user){ ctx.op = 'noop'; } else { ";		//BEGIN
+		/*for(Object keyObj : listData.keySet()){
+			String key = (String) keyObj;
+			dataAssign += ("ctx._source." + key + "=params." + key + "; ");
+		}*/
+		
+		//TODO: use https://iridakos.com/programming/2019/05/02/add-update-delete-elasticsearch-nested-objects
+		
+		dataAssign += ("ctx._source.lastEdit=params.lastEdit" + "; }");				//END
+		
+		JSONObject script = JSON.make("lang", "painless",
+				"inline", dataAssign.trim(),
+				"params", JSON.make(
+						"lastEdit", System.currentTimeMillis(),
+						"user", userId
+				)
+		);
+		
+		JSONObject listDataUpdateQuery = JSON.make(
+				"script", script,
+				"scripted_upsert", true
+		);
+		
+		int code = knowledge.updateItemData(DB.USERDATA, UserDataList.LISTS_TYPE, docId, listDataUpdateQuery);
+		JSONObject updateResult = JSON.make("code", code);
+		
+		
+		//statistics
+		Statistics.addOtherApiHit("updateListDataInDB");
+		Statistics.addOtherApiTime("updateListDataInDB", tic);
+				
+		return updateResult;
 	}
 	
 	//------- LISTS END --------
