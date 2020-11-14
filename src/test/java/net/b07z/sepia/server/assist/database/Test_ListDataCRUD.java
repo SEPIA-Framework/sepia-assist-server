@@ -27,7 +27,7 @@ public class Test_ListDataCRUD {
 		String userId = "uid1007";
 		Section section = Section.productivity; //Section.timeEvents;
 		String indexType = IndexType.newsFavorites.name(); //IndexType.alarms.name();
-		Map<String, Object> filters = new HashMap<>();
+		Map<String, Object> filters;
 		
 		//-------- Create list entries --------
 		System.out.println("\nCreating lists ...");
@@ -40,6 +40,7 @@ public class Test_ListDataCRUD {
 		//-------- Read one or more lists --------
 		Debugger.sleep(1000);
 		System.out.println("\nReading lists ...");
+		filters = new HashMap<>();
 		List<UserDataList> foundLists = DB.getListData(userId, section, indexType, filters);
 		
 		System.out.println("\nFound lists: " + foundLists.size());
@@ -100,7 +101,11 @@ public class Test_ListDataCRUD {
 		System.out.println(updatedList.get("data"));
 				
 		//-------- Delete all --------
-		//TODO
+		System.out.println("\nDeleting data ...");
+		filters = new HashMap<>();
+		for (String docId : idsToDelete){
+			System.out.println("docId: " + docId + " - " + DB.deleteListData(userId, docId, filters));
+		}
 		
 		System.out.println("\nDONE");
 	}
