@@ -21,7 +21,6 @@ import net.b07z.sepia.server.assist.parameters.AlarmType;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
-import net.b07z.sepia.server.assist.tools.RandomGen;
 import net.b07z.sepia.server.assist.tools.DateTimeConverters;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.assist.users.UserDataInterface;
@@ -292,9 +291,6 @@ public class Alarms implements ServiceInterface{
 			}
 			
 			//make a (hopefully) unique ID
-			long lastChange = System.currentTimeMillis();
-			String eventIdSuffix = lastChange + "-" + RandomGen.getInt(100, 999);
-			String eventId; 		//see below
 			boolean activatedByUI = false;
 			
 			//Load list
@@ -330,6 +326,8 @@ public class Alarms implements ServiceInterface{
 			}
 			
 			//actions and answers
+			String eventId = null;	//will be auto-created, 
+			
 			if (isTimer){			
 				//answer
 				api.setCustomAnswer(answerSetTimer);
@@ -342,17 +340,15 @@ public class Alarms implements ServiceInterface{
 					String speakableDate = DateTimeConverters.getSpeakableDate(dateDay, "yyyy.MM.dd", api.language);
 					name = (speakableDate + " - " + dateTime);
 				}
-				eventId = "timer-" + eventIdSuffix;
-				
 				//build data
-				JSONObject data = JSON.make(
-						"targetTimeUnix", timeUnix,
-						"name", name.trim(),
-						"eventId", eventId,
-						"lastChange", lastChange,
-						"activated", activatedByUI
+				JSONObject data = UserDataList.createEntryTimer(
+					timeUnix, 
+					name, 
+					null, 
+					System.currentTimeMillis(), 
+					activatedByUI
 				);
-				JSON.put(data, "eleType", UserDataList.EleType.timer.name());
+				eventId = JSON.getString(data, "eventId"); 		//get auto-created ID
 				JSON.add(activeList.data, data);
 				
 				//action
@@ -390,21 +386,21 @@ public class Alarms implements ServiceInterface{
 				}else{
 					name = speakableDay;
 				}
-				eventId = "alarm-" + eventIdSuffix;
+				name = name.trim();
 				
 				//build data
-				JSONObject data = JSON.make(
-						"targetTimeUnix", timeUnix,
-						"day", speakableDay,
-						"time", dateTime,
-						"date", speakableDate,
-						"repeat", repeat
+				JSONObject data = UserDataList.createEntryAlarm(
+					timeUnix, 
+					speakableDay, 
+					dateTime, 
+					speakableDate, 
+					repeat, 
+					name, 
+					null, 
+					System.currentTimeMillis(), 
+					activatedByUI
 				);
-				JSON.put(data, "name", name.trim());
-				JSON.put(data, "eleType", UserDataList.EleType.alarm.name());
-				JSON.put(data, "eventId", eventId);
-				JSON.put(data, "lastChange", lastChange);
-				JSON.put(data, "activated", activatedByUI);
+				eventId = JSON.getString(data, "eventId"); 		//get auto-created ID
 				JSON.add(activeList.data, data);
 				
 				//action

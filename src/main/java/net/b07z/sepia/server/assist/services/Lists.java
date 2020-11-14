@@ -69,20 +69,13 @@ public class Lists implements ServiceInterface{
 	 * Default item for to-do and shopping lists.
 	 */
 	public static JSONObject makeProductivityListItem(String name, String indexType){
-		JSONObject item = new JSONObject();
-		String type = UserDataList.EleType.checkable.name();
-		String state = null;
-		if (indexType.equals(UserDataList.IndexType.todo.name())){
-			//type = UserDataList.EleType.checkable.name();
-			state = UserDataList.EleState.open.name();			//usually only to-do lists have a state in addition to 'checked'
-		}
-		JSON.put(item, "name", name.trim());
-		JSON.put(item, "eleType", type);
-		JSON.put(item, "lastChange", System.currentTimeMillis());
-		JSON.put(item, "checked", Boolean.FALSE);
-		if (state != null){
-			JSON.put(item, "state", state);
-		}
+		//does it have binary state (checked/unchecked) or like to-do items: states open, inProgress, done?
+		boolean hasMoreThanTwoStates = indexType.equals(UserDataList.IndexType.todo.name());
+		JSONObject item = UserDataList.createEntryCheckable(
+			name, 
+			System.currentTimeMillis(), 
+			hasMoreThanTwoStates
+		);
 		//JSON.put(item, "metaData", new JSONObject());
 		return item;
 	}
