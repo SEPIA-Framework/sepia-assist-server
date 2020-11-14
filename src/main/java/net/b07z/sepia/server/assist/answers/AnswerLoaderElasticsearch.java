@@ -4,11 +4,12 @@ import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.server.Config;
-import net.b07z.sepia.server.assist.tools.RandomGen;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.data.Answer;
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.RandomGen;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
