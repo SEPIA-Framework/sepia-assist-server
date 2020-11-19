@@ -68,12 +68,13 @@ public class Lists implements ServiceInterface{
 	/**
 	 * Default item for to-do and shopping lists.
 	 */
-	public static JSONObject makeProductivityListItem(String name, String indexType){
+	public static JSONObject makeProductivityListItem(String name, String indexType, int priority){
 		//does it have binary state (checked/unchecked) or like to-do items: states open, inProgress, done?
 		boolean hasMoreThanTwoStates = indexType.equals(UserDataList.IndexType.todo.name());
 		JSONObject item = UserDataList.createEntryCheckable(
-			name, 
-			System.currentTimeMillis(), 
+			name, null,
+			priority,
+			System.currentTimeMillis(), System.currentTimeMillis(), 
 			hasMoreThanTwoStates
 		);
 		//JSON.put(item, "metaData", new JSONObject());
@@ -414,7 +415,7 @@ public class Lists implements ServiceInterface{
 			//modify and save
 			}else{
 				for (String i : items){
-					JSON.add(activeList.data, makeProductivityListItem(i, indexType));
+					JSON.add(activeList.data, makeProductivityListItem(i, indexType, 0));	//TODO: set priority?
 				}
 				//System.out.println("DATA: " + activeList.data); 		//debug
 				JSONObject writeResult = userData.setUserDataList(user, Section.productivity, activeList);

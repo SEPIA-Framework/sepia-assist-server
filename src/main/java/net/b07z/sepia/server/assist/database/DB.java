@@ -953,7 +953,8 @@ public class DB {
 			//TODO: think about that again
 			indexType = "";
 		}
-		String title = (filters.containsKey("title"))? (String) filters.get("title") : "";
+		String title = (String) filters.getOrDefault("title", "");
+		String docId = (String) filters.getOrDefault("_id", "");
 		if (userId.isEmpty() || (indexType.isEmpty() && title.isEmpty())){
 			throw new RuntimeException("getListData - userId or (indexType and title) invalid!");
 		}
@@ -976,7 +977,10 @@ public class DB {
 			matches.add(new QueryElement("indexType", indexType));
 		}
 		if (!title.isEmpty()){
-			matches.add(new QueryElement("title", filters.get("title"), ""));
+			matches.add(new QueryElement("title", title, ""));
+		}
+		if (!docId.isEmpty()){
+			matches.add(new QueryElement("_id", docId));
 		}
 		JSONObject queryJson = EsQueryBuilder.getBoolMustMatch(matches);
 		JSON.put(queryJson, "from", resultsFrom);
@@ -1107,7 +1111,7 @@ public class DB {
 	 * Update a given user data list.
 	 * @return JSONObject with "code"
 	 */
-	public static JSONObject updateListData(String userId, String docId, boolean removeEntry, JSONObject listDataEntry){
+	public static JSONObject updateListData(String userId, String docId, JSONArray itemsToAdd, JSONArray itemsToRemove){
 		long tic = Debugger.tic();
 
 		if (Is.nullOrEmpty(docId)){
@@ -1116,12 +1120,23 @@ public class DB {
 		
 		//Create script
 		String dataAssign = "if (ctx._source.user != params.user){ ctx.op = 'noop'; } else { ";		//BEGIN
+		
+		//add stuff
+		JSON.forEach(itemsToAdd, obj -> {
+			JSONObject addThis = (JSONObject) obj;
+			
+		});
+		JSON.forEach(itemsToRemove, obj -> {
+			JSONObject removeThis = (JSONObject) obj;
+			
+		});
 		/*for(Object keyObj : listData.keySet()){
 			String key = (String) keyObj;
 			dataAssign += ("ctx._source." + key + "=params." + key + "; ");
 		}*/
 		
 		//TODO: use https://iridakos.com/programming/2019/05/02/add-update-delete-elasticsearch-nested-objects
+		
 		
 		dataAssign += ("ctx._source.lastEdit=params.lastEdit" + "; }");				//END
 		
