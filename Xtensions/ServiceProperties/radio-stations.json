@@ -59,7 +59,7 @@
         "1LIVE": "http://www1.wdr.de/radio/1live/on-air/1live-playlist/index.html",
         "WDR 2": "http://www1.wdr.de/radio/wdr2/titelsuche-wdrzwei-124.html",
         "DELUXE LOUNGE RADIO": "http://onlineradiobox.com/de/radiodeluxelounge/playlist/",
-		"SIZE RADIO": "http://www.size-radio.com",
+		"SIZE RADIO": "https://www.size-radio.com",
 		"RADIO BOB Harte Seite": "https://www.radiobob.de/musik/playlist",
 		"RADIO BOB Best Of Rock": "https://www.radiobob.de/musik/playlist"
     },
@@ -80,7 +80,7 @@
 			"m1_fm_clubmix"
 		],
 		"size": [{
-			"streamURL": "http://stream.radiojar.com/atr1e8aswa5tv",
+			"streamURL": "https://stream.radiojar.com/atr1e8aswa5tv",
 			"name": "SIZE RADIO"
 		}],
 		"delta_föhnfrisur": [{
