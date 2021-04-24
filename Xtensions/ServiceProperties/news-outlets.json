@@ -9,7 +9,7 @@
 		{ "name": "FAZ", "url": "https://www.faz.net/rss/aktuell/", "name_html": "<span style='color:#000; font-family:serif'><b>Frankfurter Allgemeine</b></span>" },
 		{ "name": "Bild", "url": "https://www.bild.de/rssfeeds/vw-home/vw-home-16725562,sort=1,view=rss2.bild.xml", "name_html": "<b><span style='color:#D91918;'>Bild</span><span style='color:#000;'>.de</span></b>" },
 		{ "name": "Sportschau", "url": "https://www.sportschau.de//sportschauindex100~_type-rss.feed", "name_html": "<span style='color:#002C6B;'><b>SPORTSCHAU</b></span>" },
-		{ "name": "Sportschau - Bundesliga", "url": "https://www.sportschau.de/fussball/bundesliga/fussballbundesligaindex100~_type-rss.feed", "name_html": "<span style='color:#002C6B;'><b>SPORTSCHAU</b></span> - <span style='color:#EE1C25;'><b>BUNDESLIGA</b></span>" },
+		{ "name": "Sportschau - Bundesliga", "url": "https://www.sportschau.de/fussball/bundesliga/fussball-bundesliga-index-100~_type-rss.feed", "name_html": "<span style='color:#002C6B;'><b>SPORTSCHAU</b></span> - <span style='color:#EE1C25;'><b>BUNDESLIGA</b></span>" },
 		{ "name": "Sportschau - Fussball", "url": "https://www.sportschau.de/fussball/fussballindex100~_type-rss.feed", "name_html": "<span style='color:#002C6B;'><b>SPORTSCHAU</b></span> - <span style='color:#000000;'><b>FUSSBALL</b></span>" },
 		{ "name": "Sport1", "url": "https://www.sport1.de/news.rss", "name_html": "<b><span style='color:#3D464C;'>sport</span><span style='color:#F6A800;'>1</span></b>" },
 		{ "name": "Kicker", "url": "https://rss.kicker.de/news/aktuell", "name_html": "<span style='color:#CC0000;'><b>kicker</b></span>" },
