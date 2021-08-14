@@ -32,7 +32,21 @@ export MARYTTS_SERVER_OPTS="-Dsocket.addr=0.0.0.0 -Dsocket.port=59125"
 bash marytts-server
 ```
 
-SEPIA settings 'marytts_server'
+Finally update your 'marytts_server' field in SEPIA settings.
+
+### Solving CORS Problems
+
+If you want to access your Mary-TTS server from the web browser (different domain) or SEPIA client via the direct-access setting (custom TTS voice options) you will likely get CORS errors because the Mary-TTS server only allows requests from its own domain.
+So far there is no known settings option to prevent this, but we can use a reverse-proxy to solve the problem. If you've installed Nginx during your SEPIA server setup add the following lines (replacing [mary-tts-server-IP]) to any of your '.conf' files:
+
+```
+location /marytts/ {
+	add_header Access-Control-Allow-Origin "$http_origin" always;
+	add_header Access-Control-Allow-Headers "Origin, Content-Type, Accept" always;
+	add_header Access-Control-Allow-Methods "GET, POST, PUT, OPTIONS, DELETE" always;
+	proxy_pass http://[mary-tts-server-IP]:59125/;
+}
+```
 
 ### Server endpoints
 
@@ -55,4 +69,4 @@ Default address is "http://localhost:59125/" followed e.g. by:
 * features?voice=hmm-slt - requests the list of available features that can be computed for the given voice
 * vocalizations?voice=dfki-poppy - requests the list of vocalization names that are available with the given voice
 * styles?voice=dfki-pavoque-styles - requests the list of style names that are available with the given voice
-* process - requests the synthesis of some text (see below).
+* process - requests the synthesis of some text, e.g.: `/process?INPUT_TEXT=test&INPUT_TYPE=TEXT&LOCALE=en_GB&VOICE=dfki-prudence-hsmm&OUTPUT_TYPE=AUDIO&AUDIO=WAVE_FILE`
