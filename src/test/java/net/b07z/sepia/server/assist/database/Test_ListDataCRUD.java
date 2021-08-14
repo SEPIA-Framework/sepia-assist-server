@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.server.Config;
@@ -56,8 +57,9 @@ public class Test_ListDataCRUD {
 		
 		//-------- Update one item --------
 		System.out.println("\nUpdating item in lists ...");
-		JSONObject listDataEntry = new JSONObject();
-		System.out.println(DB.updateListData(userId, idsToDelete.get(0), false, listDataEntry));
+		JSONArray itemsToAdd = new JSONArray();
+		JSONArray itemsToRemove = new JSONArray();
+		System.out.println(DB.updateListData(userId, idsToDelete.get(0), itemsToAdd, itemsToRemove));
 		
 		System.out.println("\nChecking item update ...");
 		Debugger.sleep(1000);
