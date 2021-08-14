@@ -44,6 +44,7 @@ import net.b07z.sepia.server.core.tools.JSON;
 public class MusicSearch implements ServiceInterface{
 	
 	public static final String CARD_TYPE = "musicSearch";
+	public static final String CARD_TYPE_WEB_SEARCH = "websearch";
 	public static final String CARD_BRAND_YOUTUBE = "YouTube";
 	public static final String CARD_BRAND_SPOTIFY = "Spotify";
 	public static final String CARD_BRAND_APPLE_MUSIC = "Apple Music";
@@ -176,21 +177,23 @@ public class MusicSearch implements ServiceInterface{
 			Object defaultClientService = nluResult.input.getCustomDataObject(NluInput.DATA_DEFAULT_MUSIC_APP);
 			if (defaultClientService != null){
 				service = (String) defaultClientService;
+				serviceLocal = MusicService.getLocal("<" + service + ">", api.language);
 			}
 			//System.out.println("defaultMusicApp: " + service);		//DEBUG
 		}
+		String rootService = service.replace("_link", "").replace("_embedded", "").trim();	//Note: there are variations
 		boolean isSpotifyService = service.startsWith(MusicService.Service.spotify.name());
 		boolean isAppleMusic = service.startsWith(MusicService.Service.apple_music.name());
 		boolean isYouTube = service.startsWith(MusicService.Service.youtube.name());
-		boolean requiresUri = service.contains("_link") || service.contains("_embedded");
-		String rootService = service.replace("_link", "").replace("_embedded", "").trim();
+		boolean servicesUsesDirectUrl = service.contains("_link");
+		boolean handleSearchViaWidget = service.equals(MusicService.Service.embedded.name()) || service.contains("_embedded");
 		
 		//check if embedding is desired and possible
-		boolean requestEmbedded = false;
-		if (isYouTube || service.contains("_embedded")){		//NOTE: YouTube embedding is usually a common feature in the client used for search as well
+		boolean clientSupportsServiceEmbedding = false;
+		if (handleSearchViaWidget){
 			Object embeddingsObj = nluResult.input.getCustomDataObject(NluInput.DATA_EMBEDDED_MEDIA_PLAYERS);
 			if (embeddingsObj != null){
-				requestEmbedded = ((JSONArray) embeddingsObj).contains(rootService);
+				clientSupportsServiceEmbedding = ((JSONArray) embeddingsObj).contains(rootService);
 			}
 		}
 		
@@ -207,8 +210,8 @@ public class MusicSearch implements ServiceInterface{
 		String cardIconUrl = Config.urlWebImages + "cards/music_default.png";
 		String cardBrand = "default"; 
 		
-		//Use YouTube for URI
-		if (service.equals(MusicService.Service.youtube.name()) || service.isEmpty()){
+		//Use YouTube for URI (or undefined service)
+		if (service.isEmpty() || isYouTube){
 			//Icon
 			cardIconUrl = Config.urlWebImages + "brands/youtube-logo.png";
 			cardBrand = CARD_BRAND_YOUTUBE;
@@ -320,7 +323,7 @@ public class MusicSearch implements ServiceInterface{
 				}
 			}else{
 				//We need an URI via API call but got none?
-				if (requiresUri){
+				if (servicesUsesDirectUrl){
 					//add some info here about missing key
 					api.setCustomAnswer("default_no_access_0a");
 					
@@ -418,8 +421,10 @@ public class MusicSearch implements ServiceInterface{
 			JSON.put(controlData, "uri", foundUri);
 		}
 		
-		//Actions (only if its not a card embedding)
-		if (!requestEmbedded){
+		//Actions
+		if (!servicesUsesDirectUrl && !handleSearchViaWidget){
+			//Music search action without widget
+			
 			//client control action
 			api.addAction(ACTIONS.CLIENT_CONTROL_FUN);
 			api.putActionInfo("fun", controlFun);
@@ -430,43 +435,58 @@ public class MusicSearch implements ServiceInterface{
 			api.putActionInfo("fun", "controlFun;;" + controlFun + ";;" + controlData.toJSONString());
 			api.putActionInfo("title", Is.notNullOrEmpty(serviceLocal)? serviceLocal : "Button");
 		}
-		
-		//Cards (or web-search?)
-		if (Is.notNullOrEmpty(foundUri)){
-			Card card = new Card(Card.TYPE_SINGLE);
-			JSONObject cardData = JSON.make(
-				"title", cardTitle, 
-				"desc", cardSubtitle,
-				"type", CARD_TYPE,
-				"brand", cardBrand
-			); 
-			if (requestEmbedded){
-				JSON.put(cardData, "embedded", true);
-				JSON.put(cardData, "autoplay", true);
-			}
-			//JSONObject linkCard = 
-			card.addElement(ElementType.link, 
-					cardData,
-					null, null, "", 
-					foundUri, 
-					cardIconUrl, 
-					null, null);
-			//JSON.put(linkCard, "imageBackground", "#f0f0f0");	//use any CSS background option you wish
-			api.addCard(card.getJSON());
-		}else{
-			//web-search action
+		if (servicesUsesDirectUrl && Is.nullOrEmpty(foundUri)){
+			//URL required but not found - Fallback: web-search action button
 			api.addAction(ACTIONS.BUTTON_CMD);
 			api.putActionInfo("title", "Web Search");
 			api.putActionInfo("info", "direct_cmd");
 			api.putActionInfo("cmd", CmdBuilder.getWebSearch(nluResult.input.textRaw));
 			api.putActionInfo("options", JSON.make(ACTIONS.OPTION_SKIP_TTS, true));
-			
+				
 			/* -- we leave this to the client --
 			if (!platform.equals(Platform.android)){
 				//we have no other option to search for music (like e.g. Android Intent)
 				api.setCustomAnswer("music_0b");
-			}
+			} 
 			*/
+		}
+		
+		//Cards
+		boolean showMusicSearchCard = handleSearchViaWidget && clientSupportsServiceEmbedding;
+		if (showMusicSearchCard || Is.notNullOrEmpty(foundUri)){
+			Card card = new Card(Card.TYPE_SINGLE);
+			JSONObject cardData;
+			if (showMusicSearchCard){
+				//music-search card for embedded services that don't use control action
+				cardData = JSON.make(
+					"title", cardTitle, 
+					"desc", cardSubtitle,
+					"type", CARD_TYPE,
+					"brand", cardBrand,
+					"musicSearch", controlData
+				);
+				JSON.put(cardData, "embedded", true);
+				JSON.put(cardData, "autoplay", true);
+			}else{
+				//simple URL link card
+				cardTitle = serviceLocal + " URL";
+				cardSubtitle = foundUri;
+				cardData = JSON.make(
+					"title", serviceLocal + " URL", 
+					"desc", cardSubtitle,
+					"type", CARD_TYPE_WEB_SEARCH
+				);
+			}
+			//JSONObject linkCard = 
+			card.addElement(ElementType.link, 
+				cardData,
+				null, null, "", 
+				foundUri, 
+				cardIconUrl, 
+				null, null
+			);
+			//JSON.put(linkCard, "imageBackground", "#f0f0f0");	//use any CSS background option you wish
+			api.addCard(card.getJSON());
 		}
 
 		//all good
