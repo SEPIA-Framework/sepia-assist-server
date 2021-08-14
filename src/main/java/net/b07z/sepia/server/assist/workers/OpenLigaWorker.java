@@ -346,7 +346,7 @@ public class OpenLigaWorker implements WorkerInterface {
 	//----------------- API -------------------
 	
 	public static final String BUNDESLIGA = "bl1";
-	public static final String BUNDESLIGA_SEASON = "2020";		//TODO: update automatically after season?
+	public static final String BUNDESLIGA_SEASON = "2021";		//TODO: update automatically after season?
 	public static final String BUNDESLIGA_2 = "bl2";
 	public static final String DFB_POKAL = "DFB";
 	public static final String PRIMERA_DIVISION = "PD";

@@ -44,6 +44,7 @@ public class SportsTeam implements ParameterHandler{
 			+ "duesseldorf(er|)|"
 			+ "paderborn(er|)|"
 			+ "bielefeld(er|)|"
+			+ "fuerth|"
 			+ "essen kray(er|)|essen(er|)|kray(er|)|"
 			+ "duisburg(er|)|"
 			+ "istanbul|london|liverpool|manchester|leicester|barcelona|madrid"
@@ -74,6 +75,7 @@ public class SportsTeam implements ParameterHandler{
 			+ "duesseldorf|"
 			+ "paderborn|"
 			+ "bielefeld|"
+			+ "fuerth|"
 			+ "essen kray|essen|kray|"
 			+ "duisburg|"
 			+ "istanbul|london|liverpool|manchester|leicester|barcelona|madrid"
@@ -107,6 +109,7 @@ public class SportsTeam implements ParameterHandler{
 			+ "(1\\. |1 |erster |)(fc |)union berlin|"
 			+ "sc paderborn( 07|)|"
 			+ "arminia bielefeld|arminia|"
+			+ "(spvgg |)greuther fuerth|"
 			+ "(fc |)(st |)pauli|"
 			+ "(fc |)kray|rot weiss essen|rwe|"
 			+ "msv duisburg|msv|"
@@ -141,6 +144,7 @@ public class SportsTeam implements ParameterHandler{
 			+ "(1\\. |1 |)(fc |)union berlin|"
 			+ "sc paderborn( 07|)|"
 			+ "arminia bielefeld|arminia|"
+			+ "(spvgg |)greuther fuerth|"
 			+ "(fc |)(st |st\\. |)pauli|"
 			+ "(fc |)kray|rot weiss essen|rwe|"
 			+ "msv duisburg|msv|"
@@ -164,7 +168,7 @@ public class SportsTeam implements ParameterHandler{
 		soccerIDs_bundesliga.put("<fc_schalke_04>", 		9l);		shortNames.put(9l, "Schalke");
 		soccerIDs_bundesliga.put("<eintracht_frankfurt>", 	91l);		shortNames.put(91l, "Frankfurt");
 		soccerIDs_bundesliga.put("<rb_leipzig>", 			1635l);		shortNames.put(1635l, "Leipzig");
-		soccerIDs_bundesliga.put("<tsg_1899_hoffenheim>", 	123l);		shortNames.put(123l, "Hoffenheim");
+		soccerIDs_bundesliga.put("<tsg_1899_hoffenheim>", 	175l);		shortNames.put(175l, "Hoffenheim");		//NOTE: changed from 123
 		soccerIDs_bundesliga.put("<bayer_04_leverkusen>", 	6l);		shortNames.put(6l, "Leverkusen");
 		soccerIDs_bundesliga.put("<sc_freiburg>", 			112l);		shortNames.put(112l, "Freiburg");
 		soccerIDs_bundesliga.put("<fsv_mainz_05>", 			81l);		shortNames.put(81l, "Mainz");
@@ -180,6 +184,8 @@ public class SportsTeam implements ParameterHandler{
 		soccerIDs_bundesliga.put("<sc_paderborn_07>", 		31l);		shortNames.put(31l, "Paderborn");
 		soccerIDs_bundesliga.put("<1_fc_union_berlin>", 	80l);		shortNames.put(80l, "Union");
 		soccerIDs_bundesliga.put("<arminia_bielefeld>", 	83l);		shortNames.put(83l, "Arminia");
+		soccerIDs_bundesliga.put("<vfl_bochum>", 			129l);		shortNames.put(129l, "Bochum");
+		soccerIDs_bundesliga.put("<greuther_fuerth>", 		115l);		shortNames.put(115l, "Fürth");
 		
 		soccerIDs.putAll(soccerIDs_bundesliga);
 	}
@@ -329,6 +335,7 @@ public class SportsTeam implements ParameterHandler{
 		else if (NluTools.stringContains(item, "paderborn(er|)")){						return "<sc_paderborn_07>";		}
 		else if (NluTools.stringContains(item, "arminia|bielefeld(er|)")){				return "<arminia_bielefeld>";		}
 		else if (NluTools.stringContains(item, "union|(?<!(hertha|bsc) )berlin(er|)")){		return "<1_fc_union_berlin>";		}
+		else if (NluTools.stringContains(item, "greuther fuerth")){						return "<greuther_fuerth>";		}
 		
 		else if (NluTools.stringContains(item, "kray(er|)")){							return "<fc_kray>";		}
 		else if (NluTools.stringContains(item, "essen(er|)|rwe")){						return "<rot_weiss_essen>";		}

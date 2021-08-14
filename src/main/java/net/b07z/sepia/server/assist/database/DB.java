@@ -1092,6 +1092,7 @@ public class DB {
 				dataAssign += ("ctx._source." + key + "=params." + key + "; ");
 			}
 			JSONObject script = JSON.make("lang", "painless",
+					//make sure user is really the same
 					"inline", "if (ctx._source.user != params.user) { ctx.op = 'noop' } else { " + dataAssign.trim() + "}",
 					"params", listData);
 			JSON.put(newListData, "script", script);//"ctx.op = ctx._source.user == " + userId + "? 'update' : 'none'");
