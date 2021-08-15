@@ -207,7 +207,7 @@ public class MusicSearch implements ServiceInterface{
 		String foundType = "";
 		String cardTitle = "";
 		String cardSubtitle = "";
-		String cardIconUrl = Config.urlWebImages + "cards/music_default.png";
+		String cardIconUrl = "";	//Config.urlWebImages + "cards/music_default.png";
 		String cardBrand = "default"; 
 		
 		//Use YouTube for URI (or undefined service)
@@ -396,6 +396,30 @@ public class MusicSearch implements ServiceInterface{
 			//TODO: any other options? (can we even reach this code?)
 		}
 		
+		//No title?
+		if (Is.nullOrEmpty(cardTitle)){
+			if (Is.notNullOrEmpty(playlistName)){
+				cardTitle = "Playlist: " + playlistName;
+			}else if (Is.notNullOrEmpty(song) && Is.notNullOrEmpty(album)){
+				cardTitle = "Song: " + song + ", Album: " + album;
+			}else if (Is.notNullOrEmpty(song) && Is.notNullOrEmpty(artist)){
+				cardTitle = "Song: " + song + ", Artist: " + artist;
+			}else if (Is.notNullOrEmpty(album)){
+				if (Is.notNullOrEmpty(artist)){
+					cardTitle = "Artist: " + artist + ", Album: " + album;
+				}else{
+					cardTitle = "Album: " + album;
+				}
+			}else if (Is.notNullOrEmpty(artist)){
+				cardTitle = "Playlist: " + artist;
+			}else if (Is.notNullOrEmpty(genre)){
+				cardTitle = "Playlist: " + genre;
+			}else if (Is.notNullOrEmpty(song)){
+				cardTitle = "Q: " + song;
+			}
+			cardSubtitle = "Music Search";
+		}
+		
 		//If we have only a song we should declare the 'search' field and not rely on song-name
 		boolean hasOnlySong = Is.notNullOrEmpty(song) && 
 				Is.nullOrEmpty(artist) && Is.nullOrEmpty(album) && Is.nullOrEmpty(playlistName) && Is.nullOrEmpty(genre);
@@ -463,7 +487,7 @@ public class MusicSearch implements ServiceInterface{
 					"desc", cardSubtitle,
 					"type", CARD_TYPE,
 					"brand", cardBrand,
-					"musicSearch", controlData
+					"typeData", controlData
 				);
 				JSON.put(cardData, "embedded", true);
 				JSON.put(cardData, "autoplay", true);

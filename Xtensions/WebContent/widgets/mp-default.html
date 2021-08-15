@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<!-- web app settings -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=0">
+	<title>Embedded Player</title>
+	<style>
+		* {
+			box-sizing: border-box;
+		}
+		html, body {
+			font-family: sans-serif;
+			width: 100%;
+			height: 100%;
+			margin: 0;
+			padding: 0;
+			background-color: #fff;
+			color: #000;
+		}
+		#card-body {
+			width: 100%;
+			display: flex;
+		}
+		#audio-player {
+			width: 100%;
+		}
+	</style>
+</head>
+<body >
+	<!-- Card Body -->
+	<div id="card-body">
+		<audio id="audio-player" controls src="../../sounds/empty.mp3"></audio>
+	</div>
+	<!-- JS -->
+	<script type="text/javascript">
+		//postMessage listener
+		window.addEventListener('message', function(message){
+			if (message.data && message.data.type){
+				if (message.data.type == "sepia-embedded-player-event" && message.data.ev){
+					eventHandler(message.data.ev);
+				}
+			}
+		});
+		//postMessage to parent window
+		function postMsg(ev){
+			//post only if really a child
+			if (window !== parent){
+				parent.postMessage({
+					type: "sepia-embedded-player-event",
+					ev: ev
+				}, "*");
+			}
+		}
+
+		//handle events
+		function eventHandler(ev){
+			console.error("event", ev);
+		}
+
+		//--------- DEMO START ---------
+
+		var cardBody = document.getElementById("card-body");
+		var player = document.getElementById("audio-player");
+
+		player.preload = "auto";
+		player.oncanplay = function(){
+			console.error("oncanplay", arguments);		//DEBUG
+		};
+		player.onplay = function(){
+			console.error("onplay", arguments);			//DEBUG
+		};
+		player.onpause = function(){
+			console.error("onpause", arguments);		//DEBUG
+		};
+		player.onended = function(){
+			console.error("onended", arguments);		//DEBUG
+		};
+		player.onvolumechange = function(){
+			console.error("onvolumechange", player.volume);		//DEBUG
+		};
+		player.onerror = function(err){
+			console.error("onerror", err);				//DEBUG
+		};
+		player.onerror = function(error){
+			if (player.error && player.error.code === 4){
+				console.error("Cannot play the selected audio stream.");
+			}else if (error && error.name && error.name == "NotAllowedError"){
+				console.error("Cannot play audio because access was denied! This can happen if the user didn't interact with the client first.");
+			}else if (error && error.name){
+				console.error("Cannot play audio - Error: " + error.name);
+			}
+		};
+		//player.src = "...";
+
+		//--------- DEMO END ---------
+
+		//ready
+		setTimeout(function(){
+			postMsg({
+				state: 1,	//1: ready
+				size: {
+					height: (cardBody.getBoundingClientRect().height + "px")
+				}
+			});
+		}, 3000);
+	</script>
+</body>
+</html>
