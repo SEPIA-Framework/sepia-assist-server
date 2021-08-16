@@ -493,10 +493,9 @@ public class MusicSearch implements ServiceInterface{
 				JSON.put(cardData, "autoplay", true);
 			}else{
 				//simple URL link card
-				cardTitle = serviceLocal + " URL";
-				cardSubtitle = foundUri;
+				cardSubtitle = serviceLocal + " URL";
 				cardData = JSON.make(
-					"title", serviceLocal + " URL", 
+					"title", cardTitle, 
 					"desc", cardSubtitle,
 					"type", CARD_TYPE_WEB_SEARCH
 				);
