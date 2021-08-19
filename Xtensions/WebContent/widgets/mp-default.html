@@ -30,7 +30,7 @@
 <body >
 	<!-- Card Body -->
 	<div id="card-body">
-		<audio id="audio-player" controls src="../../sounds/empty.mp3"></audio>
+		<audio id="audio-player" controls></audio>
 	</div>
 	<!-- JS -->
 	<script type="text/javascript">
@@ -52,26 +52,120 @@
 				}, "*");
 			}
 		}
+		function postState(stateId, data){
+			postMsg({
+				state: stateId,	//1: ready, 2: play, 3: pause, ... tbd
+				data: data
+			});
+		}
+		function postError(name, message, errorCode){
+			postMsg({
+				state: 10,		//10: error
+				name: name,		//1: UnknownEvent, 2: NoMediaMatch, 3: PlayerErrorNotAllowed, 4: PlayerError (any)
+				message: message,
+				code: errorCode
+			});
+		}
+		//get URL parameters
+		function getURLParameter(name){
+			return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null;
+		}
+		//e.g.: skinStyle, skinId
 
 		//handle events
 		function eventHandler(ev){
-			console.error("event", ev);
+			if (ev.controls){
+				//controls
+				handleControls(ev);
+			}else if (ev.mediaRequest){
+				//mediaRequest
+				handleMediaRequest(ev);
+			}else{
+				console.error("event", ev);
+			}
 		}
 
 		//--------- DEMO START ---------
 
 		var cardBody = document.getElementById("card-body");
 		var player = document.getElementById("audio-player");
+		
+		var autoplay = false;
+		
+		function handleControls(ev){
+			//play, pause, ...
+			console.error("Controls", ev.controls);
+			var ctrl = ev.controls;
+			if (player){
+				switch (ev.controls){
+					case "play":
+						player.play();
+						break;
+					case "pause":
+					case "stop":
+						player.pause();
+						break;
+					default:
+						//Error: UnknownEvent
+						postError("UnknownEvent", "Unknown control event: " + ev.controls, 1);
+						break;
+				}
+			}
+		}
+		
+		function handleMediaRequest(ev){
+			console.error("Media request", ev.mediaRequest);
+			var mr = ev.mediaRequest;
+			/* type: music:
+			{
+				"song": "",
+				"search": "",
+				"playlist": "",
+				"artist": "",
+				"album": "",
+				"service": "",
+				"genre": "",
+				"uri": ""
+			}*/
+			var safeRequest = ev.safeRequest;	//request came from assistant or private channel?
+			autoplay = ev.autoplay;
+			
+			//"search" music:
+			var url = "";
+			if (mr.song && mr.song.trim().toLowerCase().indexOf("twister") >= 0){
+				url = "http://www.openmusicarchive.org/audio/Eddies_Twister.mp3";
+			
+			}else if (mr.artist && mr.artist.toLowerCase() == "ed"){
+				url = "http://www.openmusicarchive.org/audio/Eddies_Twister.mp3";
+			}
+			
+			if (url){
+				//Load music
+				if (safeRequest){
+					player.preload = "auto";
+				}else{
+					player.preload = "none";
+				}
+				player.src = url;
+			}else{
+				//Error: NoMediaMatch
+				postError("NoMediaMatch", "Found no music to play", 2);
+			}
+		}
 
-		player.preload = "auto";
 		player.oncanplay = function(){
 			console.error("oncanplay", arguments);		//DEBUG
+			if (autoplay){
+				player.play();
+			}
 		};
 		player.onplay = function(){
 			console.error("onplay", arguments);			//DEBUG
+			postState(2);
 		};
 		player.onpause = function(){
 			console.error("onpause", arguments);		//DEBUG
+			postState(3);
 		};
 		player.onended = function(){
 			console.error("onended", arguments);		//DEBUG
@@ -80,30 +174,31 @@
 			console.error("onvolumechange", player.volume);		//DEBUG
 		};
 		player.onerror = function(err){
-			console.error("onerror", err);				//DEBUG
-		};
-		player.onerror = function(error){
+			console.error("onerror", err, player.error);		//DEBUG
 			if (player.error && player.error.code === 4){
-				console.error("Cannot play the selected audio stream.");
-			}else if (error && error.name && error.name == "NotAllowedError"){
-				console.error("Cannot play audio because access was denied! This can happen if the user didn't interact with the client first.");
-			}else if (error && error.name){
-				console.error("Cannot play audio - Error: " + error.name);
+				postError("PlayerError", "Cannot play the selected media data.", 4);
+			}else if (err && err.name && err.name == "NotAllowedError"){
+				//This can happen if the user didn't interact with the client first
+				postError("PlayerErrorNotAllowed", "Cannot play audio because client denied access!", 3);
+			}else if (err && err.name){
+				postError("PlayerError", err.name, 4);
+			}else{
+				postError("PlayerError", "Unknown", 4);
 			}
 		};
+		//player.preload = "auto";
 		//player.src = "...";
 
 		//--------- DEMO END ---------
 
 		//ready
 		setTimeout(function(){
-			postMsg({
-				state: 1,	//1: ready
+			postState(1, {
 				size: {
 					height: (cardBody.getBoundingClientRect().height + "px")
 				}
 			});
-		}, 3000);
+		}, 300);
 	</script>
 </body>
 </html>
