@@ -186,16 +186,17 @@ public class MusicSearch implements ServiceInterface{
 		boolean isAppleMusic = service.startsWith(MusicService.Service.apple_music.name());
 		boolean isYouTube = service.startsWith(MusicService.Service.youtube.name());
 		boolean servicesUsesDirectUrl = service.contains("_link");
-		boolean handleSearchViaWidget = service.equals(MusicService.Service.embedded.name()) || service.contains("_embedded");
 		
 		//check if embedding is desired and possible
 		boolean clientSupportsServiceEmbedding = false;
-		if (handleSearchViaWidget){
+		if (!servicesUsesDirectUrl){
 			Object embeddingsObj = nluResult.input.getCustomDataObject(NluInput.DATA_EMBEDDED_MEDIA_PLAYERS);
 			if (embeddingsObj != null){
 				clientSupportsServiceEmbedding = ((JSONArray) embeddingsObj).contains(rootService);
 			}
 		}
+		boolean handleSearchViaWidget = service.equals(MusicService.Service.embedded.name()) 
+				|| service.contains("_embedded") || clientSupportsServiceEmbedding;
 		
 		//Basically this service cannot fail here ... only inside client ... but we'll also try to get some more data:
 		
@@ -411,9 +412,9 @@ public class MusicSearch implements ServiceInterface{
 					cardTitle = "Album: " + album;
 				}
 			}else if (Is.notNullOrEmpty(artist)){
-				cardTitle = "Playlist: " + artist;
+				cardTitle = "Artist: " + artist;
 			}else if (Is.notNullOrEmpty(genre)){
-				cardTitle = "Playlist: " + genre;
+				cardTitle = "Playlist (genre): " + genre;
 			}else if (Is.notNullOrEmpty(song)){
 				cardTitle = "Q: " + song;
 			}
