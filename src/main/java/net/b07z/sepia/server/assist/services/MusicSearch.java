@@ -454,6 +454,7 @@ public class MusicSearch implements ServiceInterface{
 			api.addAction(ACTIONS.CLIENT_CONTROL_FUN);
 			api.putActionInfo("fun", controlFun);
 			api.putActionInfo("controlData", controlData);
+			api.putActionInfo("delayUntilIdle", true);
 					
 			//... and action button
 			api.addAction(ACTIONS.BUTTON_CUSTOM_FUN);

@@ -93,17 +93,23 @@
 		var autoplay = false;
 		
 		function handleControls(ev){
-			//play, pause, ...
+			//play, pause, fadeOut, fadeIn, next, previous, volumeUp, volumeDown, ... tbd
 			console.error("Controls", ev.controls);
 			var ctrl = ev.controls;
 			if (player){
 				switch (ev.controls){
 					case "play":
+					case "fadeIn":		//for now just stop (alt.: reduce volume)
 						player.play();
 						break;
 					case "pause":
 					case "stop":
+					case "fadeOut":		//for now just resume (alt.: restore volume)
 						player.pause();
+						break;
+					case "volumeUp":
+					case "volumeDown":
+						//ignore for now
 						break;
 					default:
 						//Error: UnknownEvent
@@ -135,10 +141,16 @@
 			if (mr.song && mr.song.trim().toLowerCase().indexOf("twister") >= 0){
 				url = "http://www.openmusicarchive.org/audio/Eddies_Twister.mp3";
 			
+			}else if (mr.song && mr.song.trim().toLowerCase().indexOf("titanic") >= 0){
+				url = "http://www.openmusicarchive.org/audio/Titanic_Blues.mp3";
+			
 			}else if (mr.artist && mr.artist.toLowerCase() == "ed"){
 				url = "http://www.openmusicarchive.org/audio/Eddies_Twister.mp3";
-			}
 			
+			}else if (mr.artist && mr.artist.toLowerCase() == "virginia"){
+				url = "http://www.openmusicarchive.org/audio/Titanic_Blues.mp3";
+			}
+						
 			if (url){
 				//Load music
 				if (safeRequest){

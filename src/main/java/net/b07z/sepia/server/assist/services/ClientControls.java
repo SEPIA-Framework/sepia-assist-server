@@ -8,6 +8,7 @@ import net.b07z.sepia.server.assist.answers.AnswerTools;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
+import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.parameters.Action;
 import net.b07z.sepia.server.assist.parameters.ClientFunction;
 import net.b07z.sepia.server.assist.parameters.MediaControls;
@@ -134,6 +135,7 @@ public class ClientControls implements ServiceInterface{
 		String action = actionP.getValueAsString().replaceAll("^<|>$", "").trim();
 		Parameter mediaControlsP = nluResult.getOptionalParameter(PARAMETERS.MEDIA_CONTROLS, "");
 		String mediaControls = mediaControlsP.getValueAsString().replaceAll("^<|>$", "").trim();	//note: < and > are typically already removed
+		String mediaControlsLocal = (String) mediaControlsP.getDataFieldOrDefault(InterviewData.VALUE_LOCAL);
 		boolean isActionOpen = (action.equals(Action.Type.show.name()) || action.equals(Action.Type.on.name()));
 		boolean isActionClose = (action.equals(Action.Type.remove.name()) || action.equals(Action.Type.off.name()));
 		boolean isActionIncrease = (action.equals(Action.Type.increase.name()) || action.equals(Action.Type.add.name()));
@@ -169,6 +171,7 @@ public class ClientControls implements ServiceInterface{
 		
 		//split by control function
 		String actionName = "";
+		boolean delayUntilIdle = false;
 		if (isSettings){
 			//settings support
 			if (isActionOpen){
@@ -188,12 +191,16 @@ public class ClientControls implements ServiceInterface{
 				actionName = "pause";
 			}else if (mediaControls.equals(MediaControls.Type.next.name())){
 				actionName = "next";
+				delayUntilIdle = true;
 			}else if (mediaControls.equals(MediaControls.Type.previous.name())){
 				actionName = "previous";
+				delayUntilIdle = true;
 			}else if (mediaControls.equals(MediaControls.Type.resume.name())){
 				actionName = "resume";
+				delayUntilIdle = true;
 			}else if (mediaControls.equals(MediaControls.Type.play.name()) || isActionOpen){
 				actionName = "play";
+				delayUntilIdle = true;
 			/*}else if (isActionOpen){
 				
 			}else if (isActionClose){*/
@@ -247,16 +254,19 @@ public class ClientControls implements ServiceInterface{
 			//Mesh-Node / CLEXI / Runtime (e.g. via CLEXI) support
 			actionName = data; 		//this call requires a custom data block
 		}
-		JSONObject a = JSON.make("action", actionName);
+		JSONObject controlData = JSON.make(
+			"action", actionName
+		);
 		api.addAction(ACTIONS.CLIENT_CONTROL_FUN);
 		api.putActionInfo("fun", controlFun);
-		api.putActionInfo("controlData", a);
+		api.putActionInfo("controlData", controlData);
+		api.putActionInfo("delayUntilIdle", delayUntilIdle);
 		
 		//some buttons - we use the custom function button but the client needs to parse the string itself!
 		if (isSettings && isActionOpen){
 			//open settings button
 			api.addAction(ACTIONS.BUTTON_CUSTOM_FUN);
-			api.putActionInfo("fun", "controlFun;;" + controlFun + ";;" + a.toJSONString());
+			api.putActionInfo("fun", "controlFun;;" + controlFun + ";;" + controlData.toJSONString());
 			api.putActionInfo("title", controlFunLocal);
 		}else if (isVolume){
 			//volume up/down buttons
@@ -268,10 +278,14 @@ public class ClientControls implements ServiceInterface{
 			api.putActionInfo("fun", "controlFun;;" + controlFun + ";;{\"action\":\"down\"}");
 			api.putActionInfo("title", controlFunLocal + " -");
 		}else{
-			//e.g. Mesh-Node action button
+			String btnTitle = "Button";
+			if (isMedia && Is.notNullOrEmpty(controlFunLocal) && Is.notNullOrEmpty(mediaControlsLocal)){
+				btnTitle = controlFunLocal + ": " + mediaControlsLocal;
+			}
+			//e.g. other media controls or Mesh-Node action button
 			api.addAction(ACTIONS.BUTTON_CUSTOM_FUN);
-			api.putActionInfo("fun", "controlFun;;" + controlFun + ";;" + a.toJSONString());
-			api.putActionInfo("title", "Button");
+			api.putActionInfo("fun", "controlFun;;" + controlFun + ";;" + controlData.toJSONString());
+			api.putActionInfo("title", btnTitle);
 		}
 		
 		//Cards
