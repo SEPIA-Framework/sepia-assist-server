@@ -15,7 +15,7 @@
 			height: 100%;
 			margin: 0;
 			padding: 0;
-			background-color: #fff;
+			background-color: transparent;
 			color: #000;
 		}
 		#card-body {
@@ -30,7 +30,7 @@
 <body >
 	<!-- Card Body -->
 	<div id="card-body">
-		<audio id="audio-player" controls></audio>
+		<audio id="audio-player" class="media-player-demo" controls></audio>
 	</div>
 	<!-- JS -->
 	<script type="text/javascript">
@@ -58,6 +58,11 @@
 				data: data
 			});
 		}
+		function postSettings(data){
+			postMsg({
+				settings: data	//any app-specific settings that should be restored e.g. when widget reloads/moves
+			});
+		}
 		function postError(name, message, errorCode){
 			postMsg({
 				state: 10,		//10: error
@@ -70,7 +75,7 @@
 		function getURLParameter(name){
 			return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null;
 		}
-		//e.g.: skinStyle, skinId
+		//e.g.: skinStyle, skinId, lang (e.g.: de, en), mobile (true/false)
 
 		//handle events
 		function eventHandler(ev){
@@ -80,6 +85,9 @@
 			}else if (ev.mediaRequest){
 				//mediaRequest
 				handleMediaRequest(ev);
+			}else if (ev.settings){
+				//settings previously sent by the widget (widget/app specific etc. - NOTE: avoid autoplay!)
+				handleSettingsRestore(ev);
 			}else{
 				console.error("event", ev);
 			}
@@ -91,6 +99,18 @@
 		var player = document.getElementById("audio-player");
 		
 		var autoplay = false;
+		var restoreSettings = {};
+		
+		function handleSettingsRestore(ev){
+			//any widget specific data submitted by widget itself (either via 'postSettings' or during 'ready')
+			console.error("Settings", ev.settings);
+			var settings = ev.settings;
+			//restore
+			autoplay = settings.autoplay || false;
+			player.preload = settings.preload || "none";
+			if (settings.src) player.src = settings.src;
+			player.title = settings.title || "";
+		}
 		
 		function handleControls(ev){
 			//play, pause, fadeOut, fadeIn, next, previous, volumeUp, volumeDown, ... tbd
@@ -138,17 +158,21 @@
 			
 			//"search" music:
 			var url = "";
+			var title = "";
+			
 			if (mr.song && mr.song.trim().toLowerCase().indexOf("twister") >= 0){
 				url = "http://www.openmusicarchive.org/audio/Eddies_Twister.mp3";
+				title = "Eddies Twister";
+			}else if (mr.artist && mr.artist.toLowerCase() == "ed"){
+				url = "http://www.openmusicarchive.org/audio/Eddies_Twister.mp3";
+				title = "Eddies Twister";
 			
 			}else if (mr.song && mr.song.trim().toLowerCase().indexOf("titanic") >= 0){
 				url = "http://www.openmusicarchive.org/audio/Titanic_Blues.mp3";
-			
-			}else if (mr.artist && mr.artist.toLowerCase() == "ed"){
-				url = "http://www.openmusicarchive.org/audio/Eddies_Twister.mp3";
-			
+				title = "Titanic Blues";
 			}else if (mr.artist && mr.artist.toLowerCase() == "virginia"){
 				url = "http://www.openmusicarchive.org/audio/Titanic_Blues.mp3";
+				title = "Titanic Blues";
 			}
 						
 			if (url){
@@ -159,6 +183,16 @@
 					player.preload = "none";
 				}
 				player.src = url;
+				
+				//Set title
+				player.title = title || "";
+				
+				//Backup settings
+				restoreSettings.src = player.src
+				restoreSettings.autoplay = false;	//this should only be true at actualy requests
+				restoreSettings.title = player.title;
+				restoreSettings.preload = player.preload;	//add?
+				postSettings(restoreSettings);
 			}else{
 				//Error: NoMediaMatch
 				postError("NoMediaMatch", "Found no music to play", 2);
@@ -173,7 +207,12 @@
 		};
 		player.onplay = function(){
 			console.error("onplay", arguments);			//DEBUG
-			postState(2);
+			postState(2, {
+				meta: {
+					title: player.title,
+					url: player.src
+				}
+			});
 		};
 		player.onpause = function(){
 			console.error("onpause", arguments);		//DEBUG

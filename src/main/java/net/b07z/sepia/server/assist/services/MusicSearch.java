@@ -48,6 +48,7 @@ public class MusicSearch implements ServiceInterface{
 	public static final String CARD_BRAND_YOUTUBE = "YouTube";
 	public static final String CARD_BRAND_SPOTIFY = "Spotify";
 	public static final String CARD_BRAND_APPLE_MUSIC = "Apple Music";
+	public static final String CARD_BRAND_SOUNDCLOUD = "SoundCloud";
 	
 	//Define some sentences for testing:
 	
@@ -512,6 +513,16 @@ public class MusicSearch implements ServiceInterface{
 			);
 			//JSON.put(linkCard, "imageBackground", "#f0f0f0");	//use any CSS background option you wish
 			api.addCard(card.getJSON());
+		
+		}else if (handleSearchViaWidget && !clientSupportsServiceEmbedding){
+			//TODO: missing alternative
+						
+			//abort
+			api.setStatusOkay();
+			
+			//build the API_Result
+			ServiceResult result = api.buildResult();
+			return result;
 		}
 
 		//all good

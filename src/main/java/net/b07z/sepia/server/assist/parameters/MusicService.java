@@ -35,6 +35,7 @@ public class MusicService implements ParameterHandler{
 		amazon_music,
 		deezer,
 		soundcloud,
+		soundcloud_embedded,
 		youtube,
 		youtube_link,
 		youtube_embedded,
@@ -54,6 +55,7 @@ public class MusicService implements ParameterHandler{
 		musicServices.put("<amazon_music>", "Amazon Music");
 		musicServices.put("<deezer>", "Deezer");
 		musicServices.put("<soundcloud>", "SoundCloud");
+		musicServices.put("<soundcloud_embedded>", "SoundCloud");
 		musicServices.put("<youtube>", "YouTube");
 		musicServices.put("<youtube_link>", "YouTube");
 		musicServices.put("<youtube_embedded>", "YouTube");
