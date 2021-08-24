@@ -33,6 +33,7 @@ import net.b07z.sepia.server.assist.interpreters.NormalizerLightTR;
 import net.b07z.sepia.server.assist.services.ServiceAccessManager;
 import net.b07z.sepia.server.assist.smarthome.OpenHAB;
 import net.b07z.sepia.server.assist.smarthome.SmartDevicesElasticsearch;
+import net.b07z.sepia.server.assist.tools.GeoCoding;
 import net.b07z.sepia.server.assist.tools.RssFeedReader;
 import net.b07z.sepia.server.assist.tools.SpotifyApi;
 import net.b07z.sepia.server.assist.tts.TtsInterface;
@@ -326,6 +327,9 @@ public class Config {
 	public static double threshold_chats_last_chance = 0.55;	//approximate chats threshold if nothing else gave a result
 	public static double threshold_personal_cmd = 0.85;			//approximate personal commands threshold - first check 
 	public static double threshold_personal_cmd_2nd = 0.55;		//approximate personal commands threshold on second chance
+	
+	//API Settings
+	public static String default_geo_api = GeoCoding.GOOGLE;
 
 	//API Keys - loaded from config file
 	public static String amazon_dynamoDB_access = "";
@@ -335,6 +339,7 @@ public class Config {
 	public static String forecast_io_key = "";
 	public static String spotify_client_id = "";
 	public static String spotify_client_secret = "";
+	public static String youtube_api_key = "";
 	public static String dirble_key = "";
 	public static String acapela_vaas_app = "";
 	public static String acapela_vaas_key = "";
@@ -590,6 +595,8 @@ public class Config {
 					protectedAccounts.put(ue[0].trim(), ue[1].trim());
 				}
 			}
+			//API defaults
+			default_geo_api = settings.getProperty("default_geo_api");
 			//API keys
 			amazon_dynamoDB_access = settings.getProperty("amazon_dynamoDB_access");
 			amazon_dynamoDB_secret = settings.getProperty("amazon_dynamoDB_secret");
@@ -598,6 +605,7 @@ public class Config {
 			forecast_io_key = settings.getProperty("forecast_io_key");
 			spotify_client_id = settings.getProperty("spotify_client_id");
 			spotify_client_secret = settings.getProperty("spotify_client_secret");
+			youtube_api_key = settings.getProperty("youtube_api_key");
 			dirble_key = settings.getProperty("dirble_key");
 			acapela_vaas_app = settings.getProperty("acapela_vaas_app");
 			acapela_vaas_key = settings.getProperty("acapela_vaas_key");
