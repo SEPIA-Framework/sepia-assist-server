@@ -23,6 +23,7 @@ import net.b07z.sepia.server.assist.services.ServiceInterface;
 import net.b07z.sepia.server.assist.services.ServiceResult;
 import net.b07z.sepia.server.assist.tools.ITunesApi;
 import net.b07z.sepia.server.assist.tools.SpotifyApi;
+import net.b07z.sepia.server.assist.tools.YouTubeApi;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.core.assistant.ACTIONS;
@@ -210,7 +211,8 @@ public class MusicSearch implements ServiceInterface{
 		String cardTitle = "";
 		String cardSubtitle = "";
 		String cardIconUrl = "";	//Config.urlWebImages + "cards/music_default.png";
-		String cardBrand = "default"; 
+		String cardBrand = "default";
+		JSONObject serviceResult = null;	//this is specific to certain service and should be handled by service widget
 		
 		//Use YouTube for URI (or undefined service)
 		if (service.isEmpty() || isYouTube){
@@ -222,43 +224,63 @@ public class MusicSearch implements ServiceInterface{
 			String q = "";
 			try{
 				if (Is.notNullOrEmpty(playlistName)){
-					q = URLEncoder.encode(playlistName + " playlist", "UTF-8");
+					q = playlistName + " playlist";
 					cardTitle = "Playlist: " + playlistName;
 				
 				}else if (Is.notNullOrEmpty(song) && Is.notNullOrEmpty(album)){
-					q = URLEncoder.encode(song + ", " + album + " album", "UTF-8");
+					q = song + ", " + album + " album";
 					cardTitle = "Song: " + song + ", Album: " + album;
 				
 				}else if (Is.notNullOrEmpty(song) && Is.notNullOrEmpty(artist)){
-					q = URLEncoder.encode(song + ", " + artist, "UTF-8");
+					q = song + ", " + artist;
 					cardTitle = "Song: " + song + ", Artist: " + artist;
 				
 				}else if (Is.notNullOrEmpty(album)){
 					if (Is.notNullOrEmpty(artist)){
-						q = URLEncoder.encode(artist + ", " + album + " album", "UTF-8");
+						q = artist + ", " + album + " album";
 						cardTitle = "Artist: " + artist + ", Album: " + album;
 					}else{
-						q = URLEncoder.encode(album + " album", "UTF-8");
+						q = album + " album";
 						cardTitle = "Album: " + album;
 					}
-					
+
 				}else if (Is.notNullOrEmpty(artist)){
-					q = URLEncoder.encode(artist + " playlist", "UTF-8");
+					q = artist + " playlist";
 					cardTitle = "Playlist: " + artist;
 					
 				}else if (Is.notNullOrEmpty(genre)){
-					q = URLEncoder.encode(genre + " playlist", "UTF-8");
+					q = genre + " playlist";
 					cardTitle = "Playlist: " + genre;
 				
 				}else if (Is.notNullOrEmpty(song)){
-					q = URLEncoder.encode(song, "UTF-8");
+					q = song;
 					cardTitle = "Q: " + song;
+				}
+				boolean foundGoodUri = false;
+				if (!q.isEmpty()){
+					//Try API?
+					JSONObject apiResult = YouTubeApi.searchVideoForEmbedding(q, 10);
+					if (JSON.getIntegerOrDefault(apiResult, "status", -1) == 200){
+						JSONArray matches = JSON.getJArray(apiResult, "result");
+						if (matches != null && matches.size() > 0){
+							serviceResult = JSON.make("matches", matches);
+							String videoId = JSON.getString(matches, 0, "videoId");
+							if (Is.notNullOrEmpty(videoId)){
+								//foundUri = "https://www.youtube.com/watch?v=" + videoId;
+								foundUri = "https://www.youtube.com/embed/" + videoId;
+								cardTitle = JSON.getString(matches, 0, "title");
+								cardSubtitle = "";
+								foundGoodUri = true;
+							}
+						}
+					}
+				}
+				//Fallback
+				if (!foundGoodUri && !q.isEmpty()){
+					foundUri = "https://www.youtube.com/results?search_query=" + URLEncoder.encode(q, "UTF-8");
 				}
 			}catch (Exception e){
 				//ignore
-			}
-			if (!q.isEmpty()){
-				foundUri = "https://www.youtube.com/results?search_query=" + q;
 			}
 
 		//Spotify API
@@ -445,6 +467,9 @@ public class MusicSearch implements ServiceInterface{
 		JSON.put(controlData, "search", search);
 		if (Is.notNullOrEmpty(foundUri)){
 			JSON.put(controlData, "uri", foundUri);
+		}
+		if (serviceResult != null){
+			JSON.put(controlData, "serviceResult", serviceResult);
 		}
 		
 		//Actions

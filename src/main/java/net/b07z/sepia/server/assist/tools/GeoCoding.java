@@ -24,7 +24,10 @@ import net.b07z.sepia.server.core.tools.URLBuilder;
  */
 public class GeoCoding {
 	
-	//TODO: improve tools to enable storing results in BatchWrite processes 
+	//engines - TODO: use 'Config.default_geo_api'
+	public static final String OSM = "osm";						//TODO: implement
+	public static final String GOOGLE = "google";
+	public static final String GRAPHHOPPER = "graphhopper"; 	//TODO: add missing features
 	
 	/**
 	 * Is geo-coding supported?

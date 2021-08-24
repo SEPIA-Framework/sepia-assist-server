@@ -89,7 +89,7 @@
 				//settings previously sent by the widget (widget/app specific etc. - NOTE: avoid autoplay!)
 				handleSettingsRestore(ev);
 			}else{
-				console.error("event", ev);
+				console.error("event", ev);		//DEBUG
 			}
 		}
 
@@ -103,7 +103,7 @@
 		
 		function handleSettingsRestore(ev){
 			//any widget specific data submitted by widget itself (either via 'postSettings' or during 'ready')
-			console.error("Settings", ev.settings);
+			console.error("Settings", ev.settings);		//DEBUG
 			var settings = ev.settings;
 			//restore
 			autoplay = settings.autoplay || false;
@@ -114,33 +114,35 @@
 		
 		function handleControls(ev){
 			//play, pause, fadeOut, fadeIn, next, previous, volumeUp, volumeDown, ... tbd
-			console.error("Controls", ev.controls);
+			console.error("Controls", ev.controls);		//DEBUG
 			var ctrl = ev.controls;
-			if (player){
-				switch (ev.controls){
-					case "play":
-					case "fadeIn":		//for now just stop (alt.: reduce volume)
-						player.play();
-						break;
-					case "pause":
-					case "stop":
-					case "fadeOut":		//for now just resume (alt.: restore volume)
-						player.pause();
-						break;
-					case "volumeUp":
-					case "volumeDown":
-						//ignore for now
-						break;
-					default:
-						//Error: UnknownEvent
-						postError("UnknownEvent", "Unknown control event: " + ev.controls, 1);
-						break;
-				}
+			switch (ev.controls){
+				case "play":
+				case "fadeIn":		//for now just resume (alt.: restore volume)
+					player.play();
+					break;
+				case "pause":
+				case "stop":
+				case "fadeOut":		//for now just pause (alt.: reduce volume)
+					player.pause();
+					break;
+				case "next":
+				case "previous":
+					//TODO: ignored for now
+					break;
+				case "volumeUp":
+				case "volumeDown":
+					//TODO: ignored for now
+					break;
+				default:
+					//Error: UnknownEvent
+					postError("UnknownEvent", "Unknown control event: " + ev.controls, 1);
+					break;
 			}
 		}
 		
 		function handleMediaRequest(ev){
-			console.error("Media request", ev.mediaRequest);
+			console.error("Media request", ev.mediaRequest);		//DEBUG
 			var mr = ev.mediaRequest;
 			/* type: music:
 			{
@@ -151,7 +153,8 @@
 				"album": "",
 				"service": "",
 				"genre": "",
-				"uri": ""
+				"uri": "",
+				"serviceResult": {...}	//specific to service
 			}*/
 			var safeRequest = ev.safeRequest;	//request came from assistant or private channel?
 			autoplay = ev.autoplay;
@@ -188,7 +191,7 @@
 				player.title = title || "";
 				
 				//Backup settings
-				restoreSettings.src = player.src
+				restoreSettings.src = player.src;
 				restoreSettings.autoplay = false;	//this should only be true at actualy requests
 				restoreSettings.title = player.title;
 				restoreSettings.preload = player.preload;	//add?
