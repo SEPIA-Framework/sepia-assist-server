@@ -31,8 +31,8 @@ public class SpotifyApi {
 	public long lastRefreshTry = 0;
 	public static final long FAILED_AUTH_TIMEOUT = 1000*60*15;
 	
-	public static final String spotifyAuthUrl = "https://accounts.spotify.com/api/token";
-	public static final String spotifySearchUrl = "https://api.spotify.com/v1/search";
+	private static final String spotifyAuthUrl = "https://accounts.spotify.com/api/token";
+	private static final String spotifySearchUrl = "https://api.spotify.com/v1/search";
 	
 	public static final String TYPE_TRACK = "track";
 	public static final String TYPE_ALBUM = "album";
