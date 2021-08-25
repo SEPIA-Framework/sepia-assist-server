@@ -36,6 +36,12 @@ public class YouTubeApi {
 		if (Is.nullOrEmpty(Config.youtube_api_key)){
 			return JSON.make("error", "Missing API key", "status", 400);
 		}
+		//optimize search term - NOTE: not really working as planned yet ^^
+		/*
+		if (!searchTerm.matches("(?i).*lesson(s|).*")){
+			searchTerm += " -lesson";
+		}
+		*/
 		try {
 			//build URL
 			String url = youTubeSearchApi

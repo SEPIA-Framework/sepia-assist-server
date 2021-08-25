@@ -52,7 +52,7 @@ public class OpenCustomLink {
 		
 		//URL
 		String url = nluResult.getParameter(PARAMETERS.URL).trim();	//the URL to call (can include wildcards in the form ***)
-		if (!url.matches("^[a-zA-Z-_]+:.*")) url = ""; 				//no surprises in the protocol plz ;-)
+		if (!url.matches("^[a-zA-Z0-9-_]+:.*")) url = ""; 			//no surprises in the protocol plz ;-)
 		if (url.matches("(?i)^(javascript|data):.*")) url = "";		//we don't allow JavaScript or data
 		
 		String parameter_set = nluResult.getParameter("parameter_set");		//the parameters filling the wildcards connected by "&&"
@@ -68,7 +68,7 @@ public class OpenCustomLink {
 		
 		String iconUrl = nluResult.getParameter(ICON_URL);				//icon URL to be used for link-card
 		boolean isCustomIcon = !iconUrl.isEmpty(); 
-		if (!isCustomIcon)	iconUrl = Config.urlWebImages + "/cards/link.png";
+		if (!isCustomIcon) iconUrl = Config.urlWebImages + "/cards/link.png";
 		
 		//custom data?
 		String addedData = nluResult.getParameter(PARAMETERS.DATA);
@@ -172,6 +172,7 @@ public class OpenCustomLink {
 		if (!isSourceLinkshareSlashCmd){
 			api.addAction(ACTIONS.OPEN_IN_APP_BROWSER);
 			api.putActionInfo("url", callURL);
+			api.putActionInfo("skipIfEmbeddable", true); 	//if we are sure there is a card as fallback...
 			/*
 			api.actionInfo_add_action(ACTIONS.BUTTON_URL);
 			api.actionInfo_put_info("url", callURL);
