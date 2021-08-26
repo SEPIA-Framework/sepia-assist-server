@@ -1,5 +1,6 @@
 package net.b07z.sepia.server.assist.services;
 
+import net.b07z.sepia.server.assist.assistant.ActionBuilder;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.data.Card;
 import net.b07z.sepia.server.assist.data.Parameter;
@@ -13,7 +14,6 @@ import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.assist.tools.DateTimeConverters;
 import net.b07z.sepia.server.assist.tools.GeoCoding;
-import net.b07z.sepia.server.core.assistant.ACTIONS;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Converters;
@@ -240,10 +240,8 @@ public class WeatherDarkSky implements ServiceInterface {
 			api.setCustomAnswer(answerNoApiKey);
 			//TODO: we can distinguish between weather API keys and e.g. Geo-Coder API keys for Googlemaps ...
 			
-			//add button that links to help
-			api.addAction(ACTIONS.BUTTON_IN_APP_BROWSER);
-			api.putActionInfo("url", "https://github.com/SEPIA-Framework/sepia-docs/wiki/API-keys");
-			api.putActionInfo("title", "Info: API-Keys");
+			//add button that links to API-key help
+			ActionBuilder.addApiKeyInfoButton(api);
 			
 			//all clear?
 			api.setStatusOkay();

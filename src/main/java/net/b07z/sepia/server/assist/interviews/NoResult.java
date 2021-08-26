@@ -1,7 +1,7 @@
 package net.b07z.sepia.server.assist.interviews;
 
 import net.b07z.sepia.server.assist.answers.Answers;
-import net.b07z.sepia.server.assist.assistant.CmdBuilder;
+import net.b07z.sepia.server.assist.assistant.ActionBuilder;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.services.ServiceBuilder;
@@ -48,11 +48,7 @@ public class NoResult {
 		api.answerClean = Converters.removeHTML(api.answer);
 		
 		//websearch action
-		api.addAction(ACTIONS.BUTTON_CMD);
-		api.putActionInfo("title", "Web Search");
-		api.putActionInfo("info", "direct_cmd");
-		api.putActionInfo("cmd", CmdBuilder.getWebSearch(nluResult.input.textRaw));
-		api.putActionInfo("options", JSON.make(ACTIONS.OPTION_SKIP_TTS, true));
+		ActionBuilder.addWebSearchButton(api, nluResult.input.textRaw, null);
 		
 		//help button
 		api.addAction(ACTIONS.BUTTON_HELP);

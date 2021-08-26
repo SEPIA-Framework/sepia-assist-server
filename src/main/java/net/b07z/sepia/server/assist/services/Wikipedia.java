@@ -1,6 +1,7 @@
 package net.b07z.sepia.server.assist.services;
 
 import net.b07z.sepia.server.assist.answers.Answers;
+import net.b07z.sepia.server.assist.assistant.ActionBuilder;
 import net.b07z.sepia.server.assist.assistant.CmdBuilder;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
@@ -86,11 +87,8 @@ public class Wikipedia implements ServiceInterface{
 				api.htmlInfo = "";
 				api.hasInfo = false;	api.hasCard = false;	
 				
-				api.addAction(ACTIONS.BUTTON_CMD);
-				api.putActionInfo("title", "Web Search");
-				api.putActionInfo("info", "direct_cmd");
-				api.putActionInfo("cmd", CmdBuilder.getWebSearch(search));
-				api.putActionInfo("options", JSON.make(ACTIONS.OPTION_SKIP_TTS, true));
+				//add web-search button
+				ActionBuilder.addWebSearchButton(api, search, null);
 				
 				api.hasAction = true;	
 			
@@ -408,11 +406,8 @@ public class Wikipedia implements ServiceInterface{
 					api.htmlInfo = "";
 					api.hasInfo = false;	api.hasCard = false;	
 					
-					api.addAction(ACTIONS.BUTTON_CMD);
-					api.putActionInfo("title", "Web Search");
-					api.putActionInfo("info", "direct_cmd");
-					api.putActionInfo("cmd", CmdBuilder.getWebSearch(search));
-					api.putActionInfo("options", JSON.make(ACTIONS.OPTION_SKIP_TTS, true));
+					//add web-search button
+					ActionBuilder.addWebSearchButton(api, search, null);
 					
 					api.hasAction = true;	
 					

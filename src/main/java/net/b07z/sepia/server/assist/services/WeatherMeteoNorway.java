@@ -11,6 +11,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.answers.AnswerStatics;
+import net.b07z.sepia.server.assist.assistant.ActionBuilder;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.data.Card;
 import net.b07z.sepia.server.assist.data.Parameter;
@@ -25,7 +26,6 @@ import net.b07z.sepia.server.assist.server.Statistics;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.assist.tools.DateTimeConverters;
-import net.b07z.sepia.server.core.assistant.ACTIONS;
 import net.b07z.sepia.server.core.assistant.ENVIRONMENTS;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Connectors;
@@ -352,10 +352,8 @@ public class WeatherMeteoNorway implements ServiceInterface {
 			service.setStatusOkay();
 			service.setCustomAnswer(missingGeoData);
 			
-			//add button that links to help
-			service.addAction(ACTIONS.BUTTON_IN_APP_BROWSER);
-			service.putActionInfo("url", "https://github.com/SEPIA-Framework/sepia-docs/wiki/API-keys");
-			service.putActionInfo("title", "Info: API-Keys");
+			//add button that links to API-key help - NOTE: this refers to Geo-Coder - might need to be replaced
+			ActionBuilder.addApiKeyInfoButton(service);
 			
 			ServiceResult result = service.buildResult(); 
 			return result;
