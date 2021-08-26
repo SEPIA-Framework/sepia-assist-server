@@ -18,9 +18,23 @@
 			background-color: transparent;
 			color: #000;
 		}
+		a {
+			color: #08a0c8;
+		}
+		.dark a {
+			color: #ceff1a;
+		}
 		#card-body {
 			width: 100%;
 			display: flex;
+			font-size: 15px;
+		}
+		#card-body {
+			width: 100%;
+			display: flex;
+			flex-direction: column;
+			background: #080808;
+			color: #eee;
 		}
 		#audio-player {
 			width: 100%;
@@ -65,6 +79,11 @@
 				data: data
 			});
 		}
+		function postProperties(props){
+			postMsg({
+				properties: props	//properties like "size" to adjust UI
+			});
+		}
 		function postSettings(data){
 			postMsg({
 				settings: data	//any app-specific settings that should be restored e.g. when widget reloads/moves
@@ -83,6 +102,18 @@
 			return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null;
 		}
 		//e.g.: skinStyle, skinId
+		var skinStyle = getURLParameter("skinStyle");
+		var skinId = getURLParameter("skinId");
+		
+		//adjust skin
+		if (skinStyle && skinStyle.indexOf("dark") >= 0){
+			document.body.classList.add("dark");
+		}else{
+			document.body.classList.add("light");
+		}
+		if (skinId != undefined){
+			document.body.classList.add("skin-id-" + skinId);
+		}
 
 		//handle events
 		function eventHandler(ev){
@@ -96,11 +127,13 @@
 				//settings previously sent by the widget (widget/app specific etc. - NOTE: avoid autoplay!)
 				handleSettingsRestore(ev);
 			}else{
-				console.error("event", ev);
+				console.error("MediaPlayer widget event unhandled", ev);
 			}
 		}
 
 		//--------- YOUTUBE ---------
+		
+		//some references: https://developers.google.com/youtube/player_parameters
 		
 		var youTubeMessageListenerExists = false;
 		var youTubePlayerState = 0;		//States I know: -1-unstarted, 0-ended/off, 1-playing, 2-paused, 3-buffering, 5-queued (??)
@@ -114,7 +147,7 @@
 		
 		function handleSettingsRestore(ev){
 			//any widget specific data submitted by widget itself (either via 'postSettings' or during 'ready')
-			console.error("Settings", ev.settings);		//DEBUG
+			//console.error("Settings", ev.settings);		//DEBUG
 			var settings = ev.settings;
 			//restore
 			autoplay = settings.autoplay || false;
@@ -123,7 +156,7 @@
 		
 		function handleControls(ev){
 			//play, pause, ...
-			console.error("Controls", ev.controls);
+			//console.error("Controls", ev.controls); 		//DEBUG
 			var ctrl = ev.controls;
 			switch (ev.controls){
 				case "play":
@@ -139,11 +172,13 @@
 					youTubePlayerControls("next");
 					break;
 				case "previous":
-					//TODO: ignored for now
+					youTubePlayerControls("previous");
 					break;
 				case "volumeUp":
 				case "volumeDown":
+				case "volumeSet":
 					//TODO: ignored for now
+					console.error("YouTube Media-Player cmd '" + ev.controls + "' not yet supported", ev.data);
 					break;
 				default:
 					//Error: UnknownEvent
@@ -153,41 +188,66 @@
 		}
 		
 		function handleMediaRequest(ev){
-			console.error("Media request", ev.mediaRequest);
+			console.error("Media request", ev.mediaRequest); 		//DEBUG
 			var mr = ev.mediaRequest;
 			/* type: music:
 			{
-				"song": "",
 				"search": "",
+				"song": "",
 				"playlist": "",
 				"artist": "",
 				"album": "",
-				"service": "",
 				"genre": "",
 				"uri": "",
+				"service": "",
 				"serviceResult": {"matches": [{...}]}
 			}*/
 			var safeRequest = ev.safeRequest;	//request came from assistant or private channel?
 			autoplay = ev.autoplay;
 			
 			var ytUrl = "";
-			if (mr.serviceResult && mr.serviceResult.length && mr.serviceResult[0].videoId){
-				ytUrl = "https://www.youtube.com/embed/" + encodeURIComponent(mr.serviceResult[0].videoId);
+			var ytUrlPlaylistParam = "";
+			var srMatches = mr.serviceResult && mr.serviceResult.matches;
+			var baseUrl = "https://www.youtube.com/embed/";		//NOTE: 'https://www.youtube-nocookie.com' doesn't work with 'youTubeEventListener' :-(
+			if (srMatches.length && srMatches[0].videoId){
+				if (srMatches.length > 1){
+					//make 'playlist' from all results: playlist=vidId1,vidId2,...
+					ytUrl = baseUrl;
+					ytUrlPlaylistParam = "playlist=";
+					srMatches.forEach(function(r, i){
+						if (r.videoId){
+							ytUrlPlaylistParam += encodeURIComponent(r.videoId) + ",";
+						}
+					});
+					ytUrlPlaylistParam = ytUrlPlaylistParam.replace(/,$/, "").trim();
+				}else{
+					ytUrl = baseUrl + srMatches[0].videoId;
+				}
 			}else if (mr.uri){
 				ytUrl = mr.uri;
 			}
 			if (ytUrl){
+				//handle a bunch of URLs
 				if (ytUrl.indexOf("search_query=") > 0){
 					//will fail due to iframe restrictions, e.g.: https://www.youtube.com/results?search_query=purple+haze%2C+jimi+hendrix
 					//TODO: add error message
 					ytUrl = undefined;
 					playerFrame.src = "";
-				}else if (ytUrl.indexOf("v=") > 0){
-					var videoId = ytUrl.replace(/.*v=/, "").replace(/(\?|&).*/, "").trim();
-					ytUrl = addYouTubeEmbedUrlParameters("https://www.youtube.com/embed/" + videoId);
+				}else if (!!ytUrl.match(/(&|\?)v=.+/)){
+					//https://www.youtube.com/watch?v=H-RBJNqdnoM&list=RDEMrHVi-mxOgy0ZqOdSlMHqjA&start_radio=1
+					var videoId = ytUrl.replace(/.*(&|\?)v=/, "").replace(/&.*/, "").trim();
+					ytUrl = addYouTubeEmbedUrlParameters(baseUrl + videoId);
+					playerFrame.src = ytUrl;
+				}else if ((!!ytUrl.match(/(&|\?)listType=playlist/) || ytUrl.indexOf("/playlist?") >= 23) && !!ytUrl.match(/(&|\?)list=.+/)){
+					//https://www.youtube.com/embed?listType=playlist&list=OLAK5uy_nMLnwHRhSOAO6sO7LmFRkp21RATGG6mT8&start_radio=1
+					//https://www.youtube.com/playlist?list=OLAK5uy_nMLnwHRhSOAO6sO7LmFRkp21RATGG6mT8
+					var playlistId = ytUrl.replace(/.*(&|\?)list=/, "").replace(/&.*/, "").trim();
+					ytUrl = addYouTubeEmbedUrlParameters(baseUrl) + "&listType=playlist&list=" + playlistId;
 					playerFrame.src = ytUrl;
 				}else{
-					ytUrl = addYouTubeEmbedUrlParameters(ytUrl);
+					//https://www.youtube.com/embed/dkNfNR1WYMY
+					//https://www.youtube-nocookie.com/embed/dkNfNR1WYMY
+					ytUrl = addYouTubeEmbedUrlParameters(ytUrl, ytUrlPlaylistParam);
 					playerFrame.src = ytUrl;
 				}
 				youTubeLastUrlRequest = ytUrl;
@@ -195,6 +255,8 @@
 			if (!playerFrame.src){
 				//Error: NoMediaMatch
 				postError("NoMediaMatch", "Found no video to play", 2);
+			}else{
+				console.error("YouTube URL:", playerFrame.src);		//DEBUG
 			}
 			//Backup settings
 			restoreSettings.src = playerFrame.src;
@@ -203,12 +265,15 @@
 		}
 		
 		//make sure we have correct URL parameters for embedded link
-		function addYouTubeEmbedUrlParameters(url){
-			return (
-				url.replace(/\?.*/, "").trim()
+		function addYouTubeEmbedUrlParameters(url, add){
+			var u = (
+				url.replace("youtube-nocookie.com", "youtube.com")	//for controls bug :-(
+				.replace(/\?.*/, "").trim()
 				+ "?autoplay=" + (autoplay? 1 : 0)
 				+ "&enablejsapi=1&playsinline=1&iv_load_policy=3&fs=1"
 			);
+			if (add) u = u + "&" + add;
+			return u;
 		}
 		
 		//add interface
@@ -221,21 +286,19 @@
 			playerFrame.contentWindow.postMessage(JSON.stringify({event:'listening', id: playerFrame.id}), "*");
 		};
 		function youTubeEventListener(e){
-			if (e.origin == "https://www.youtube.com" && e.data && typeof e.data == "string" && e.data.indexOf("{") == 0){
+			//NOTE: It would be great to use 'https://www.youtube-nocookie.com' but it doesn't work here atm :-(
+			if ((e.origin == "https://www.youtube.com" || e.origin == "https://www.youtube-nocookie.com") 
+					&& e.data && typeof e.data == "string" && e.data.indexOf("{") == 0){
 				var data = JSON.parse(e.data);
 				if (data && data.id){
 					if (data.event == 'onReady'){
-						console.error("YouTube: player ready");	//DEBUG
+						console.error("YouTube: player ready");		//DEBUG
 						
 					}else if (data.event == 'infoDelivery' && data.info && data.info.playerState != undefined){
 						youTubePlayerState = data.info.playerState;
 						
-						if (data.info.playerState == -1){
-							console.error("YouTube: player error");	//DEBUG - is it error?
-							postError("PlayerError", "Unknown", 4);
-							
-						}else if (data.info.playerState == 1){
-							console.error("YouTube: player start", data.info);	//DEBUG
+						if (data.info.playerState == 1){
+							//console.error("YouTube: player start", data.info);	//DEBUG
 							var title = "YouTube";
 							var url = youTubeLastUrlRequest;
 							if (data.info.videoData){
@@ -250,9 +313,13 @@
 							});
 						
 						}else if (data.info.playerState == 2 || data.info.playerState == 0){
-							console.error("YouTube: player pause", data.info);	//DEBUG - 0 is ended so ...?
+							//console.error("YouTube: player pause", data.info); 	//DEBUG
 							postState(3);
-						}
+						
+						}/*else if (data.info.playerState == -1){
+							console.error("YouTube: player error");	//DEBUG - is it error? its not ...
+							postError("PlayerError", "Unknown", 4);
+						}*/
 					}
 				}
 			}
@@ -265,26 +332,187 @@
 			//send control event
 			if (cmd == "stop" || cmd == "pause"){
 				playerFrame.contentWindow.postMessage(JSON.stringify({event:'command', func:'pauseVideo'}), "*"); 	//NOTE: we use pause for now because stop triggers next video
-				return 1;	
+				return 1;
 			}else if (cmd == "play" || cmd == "resume"){
 				playerFrame.contentWindow.postMessage(JSON.stringify({event:'command', func:'playVideo'}), "*");
 				return 1;
 			}else if (cmd == "next"){
 				playerFrame.contentWindow.postMessage(JSON.stringify({event:'command', func:'nextVideo'}), "*");
-				return 1;	
+				return 1;
+			}else if (cmd == "previous"){
+				playerFrame.contentWindow.postMessage(JSON.stringify({event:'command', func:'previousVideo'}), "*");
+				return 1;
 			}else{
 				return 0;
 			}
 			//frameEle.contentWindow.postMessage(JSON.stringify({event:'command', func:'stopVideo'}), "*"); //playVideo, paus.., stop.., next..,
 		}
 		
+		//------ YouTube Card Controls ------
+		
+		/* OLD INTERFACE
+		var youTubeMessageListenerExists = false;
+		var youTubePlayersTriedToStart = {};
+		var youTubeLastActivePlayerId = undefined;
+		var youTubeLastActivePlayerState = undefined;
+		var youTubePlayConfirmTimer = undefined;
+		var youTubePlayerIsOnHold = false;
+		var youTubePlayerStopRequested = false;
+		var youTubePlayerAutoPlay = true;
+
+		function addYouTubeControls(frameEle, startWhenReady){
+			//reset some stuff first
+			youTubePlayerIsOnHold = false;
+			youTubePlayerStopRequested = false;
+			//add interface
+			frameEle.onload = function(){
+				//API
+				if (youTubeMessageListenerExists){
+					//just reset auto-play
+					youTubePlayerAutoPlay = startWhenReady;
+				}else{
+					youTubeMessageListenerExists = true;
+					youTubePlayerAutoPlay = startWhenReady;
+					window.addEventListener('message', youTubeEventListener);
+				}
+				frameEle.contentWindow.postMessage(JSON.stringify({event:'listening', id: frameEle.id}), "*");
+			};
+			//set/update fade listener
+			youTubeRegisterFadeInOutListener();
+		}
+		function youTubeEventListener(e){
+			if (e.origin == "https://www.youtube.com" && e.data && typeof e.data == "string" && e.data.indexOf("{") == 0){
+				var data = JSON.parse(e.data);
+				if (data && data.id){
+					var $player = $('#' + data.id);
+					//console.log("YouTube iframe event: " + data.event);
+					if ($player.length == 0){
+						return;
+					}
+					if (data.event == 'onReady'){
+						SepiaFW.debug.info("Cards - YouTube: player ready.");
+						if (youTubePlayerAutoPlay){
+							setTimeout(function(){
+								Cards.youTubePlayerControls("resume", $player[0].id);
+							}, 1000);
+						}
+					}else if (data.event == 'infoDelivery' && data.info){
+						//console.log(JSON.stringify(data));
+						if (data.info.playerState != undefined){
+							SepiaFW.debug.info("Cards - YouTube: player state: " + data.info.playerState);
+							youTubeLastActivePlayerState = data.info.playerState;
+						}
+						youTubeLastActivePlayerId = data.id;
+						if (data.info.playerState == -1){
+							//Skip if faulty
+							if (youTubePlayerAutoPlay){
+								youTubeSkipIfNotPlayed(data, $player); 		//TODO: this is tricky, we should reactivate this when user presses play
+							}
+						}else if (data.info.playerState == 1){
+							clearTimeout(youtubeSkipTimer);
+							clearTimeout(youTubePlayConfirmTimer);
+							//SepiaFW.audio.broadcastAudioEvent("youtube-embedded", "start");
+						}else if (data.info.playerState == 2){
+							//SepiaFW.audio.broadcastAudioEvent("youtube-embedded", "pause");
+						}
+					}
+				}
+			}
+		}
+		var youtubeSkipTimer = undefined;
+		function youTubeSkipIfNotPlayed(data, $player, skipFirstTest){
+			if (skipFirstTest || data.info.availableQualityLevels.length == 0){
+				//console.log(data.info.playlist.length - 1);
+				//console.log(data.info.playlistIndex);
+				if (!youTubePlayersTriedToStart[data.id] && data.info.playlistIndex == 0){
+					youTubePlayersTriedToStart[data.id] = true;
+					//console.log('--- next A ---');
+					clearTimeout(youtubeSkipTimer);
+					youtubeSkipTimer = setTimeout(function(){
+						Cards.youTubePlayerControls("next", $player[0].id);
+					}, 1000);
+				}else if (data.info.playlist && data.info.playlist.length > 0){
+					if (data.info.playlistIndex != undefined && data.info.playlistIndex < (data.info.playlist.length - 1)){
+						//console.log('--- next B ---');
+						clearTimeout(youtubeSkipTimer);
+						youtubeSkipTimer = setTimeout(function(){
+							Cards.youTubePlayerControls("next", $player[0].id);
+						}, 1000);
+						delete youTubePlayersTriedToStart[data.id];
+					}
+				}
+			}else{
+				//confirm play
+				clearTimeout(youtubeSkipTimer);
+				youTubeSetConfirmTimer(data, $player);
+			}
+		}
+		function youTubeSetConfirmTimer(data, $player){
+			clearTimeout(youTubePlayConfirmTimer);
+			youTubePlayConfirmTimer = setTimeout(function(){
+				//console.log('--- confirm check ---');
+				if (Cards.youTubePlayerGetState() != 1){
+					data.info.playlistIndex++;
+					youTubeSkipIfNotPlayed(data, $player, true);
+				}
+			}, 3000);
+		}
+		Cards.youTubePlayerGetState = function(){
+			//States I know: 0-off, 1-playing, 2-paused (??)
+			if (youTubeLastActivePlayerId){
+				var $player = $('#' + youTubeLastActivePlayerId);
+				if ($player.length == 0){
+					return 0;
+				}else{
+					return youTubeLastActivePlayerState;
+				}
+			}else{
+				return 0;
+			}
+		}
+		Cards.youTubePlayerIsOnHold = function(){
+			return youTubePlayerIsOnHold;
+		}
+		Cards.youTubePlayerControls = function(cmd, playerId){
+			//reset some stuff first
+			youTubePlayerIsOnHold = false;			//NOTE: we assume any interaction with the player resets this to false
+			youTubePlayerStopRequested = false;
+			clearTimeout(youTubePlayConfirmTimer);
+
+			var playerState = (playerId)? 2 : Cards.youTubePlayerGetState();	//NOTE: since we cannot read states of arbitrary players we need to assume 2 here
+			if (playerId || (youTubeLastActivePlayerId && youTubeLastActivePlayerState > 0)){
+				var $player = (playerId)? $('#' + playerId) : $('#' + youTubeLastActivePlayerId);
+				if ($player.length == 0){
+					return 0;
+				}else{
+					SepiaFW.debug.info("Cards - YouTube: sending command: " + cmd);
+					if (cmd == "stop" || cmd == "pause"){
+						$player[0].contentWindow.postMessage(JSON.stringify({event:'command', func:'pauseVideo'}), "*"); 	//NOTE: we use pause for now because stop triggers next video
+						youTubePlayerStopRequested = true;
+						return 1;	
+					}else if (cmd == "resume" && playerState == 2){
+						$player[0].contentWindow.postMessage(JSON.stringify({event:'command', func:'playVideo'}), "*");
+						return 1;
+					}else if (cmd == "next"){
+						$player[0].contentWindow.postMessage(JSON.stringify({event:'command', func:'nextVideo'}), "*");
+						return 1;	
+					}else{
+						return 0;
+					}
+					//frameEle.contentWindow.postMessage(JSON.stringify({event:'command', func:'stopVideo'}), "*"); //playVideo, paus.., stop.., next..,
+				}
+			}
+		}
+		*/
+		
 		//ready
 		setTimeout(function(){
-			postState(1, {
+			postProperties({
 				size: {
 					height: (cardBody.getBoundingClientRect().height + "px")
 				}
 			});
+			postState(1, {});
 		}, 300);
 	</script>
 </body>

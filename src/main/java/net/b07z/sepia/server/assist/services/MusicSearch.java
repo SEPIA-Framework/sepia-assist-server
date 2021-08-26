@@ -6,7 +6,7 @@ import java.util.TreeSet;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import net.b07z.sepia.server.assist.assistant.CmdBuilder;
+import net.b07z.sepia.server.assist.assistant.ActionBuilder;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.data.Card;
 import net.b07z.sepia.server.assist.data.Card.ElementType;
@@ -86,8 +86,9 @@ public class MusicSearch implements ServiceInterface{
 		Parameter p4 = new Parameter(PARAMETERS.MUSIC_ARTIST);
 		Parameter p5 = new Parameter(PARAMETERS.SONG);
 		Parameter p6 = new Parameter(PARAMETERS.PLAYLIST_NAME);
+		Parameter p7 = new Parameter(PARAMETERS.DATA);
 		
-		info.addParameter(p1).addParameter(p2).addParameter(p3).addParameter(p4).addParameter(p5).addParameter(p6);
+		info.addParameter(p1).addParameter(p2).addParameter(p3).addParameter(p4).addParameter(p5).addParameter(p6).addParameter(p7);
 		
 		//Default answers
 		info.addSuccessAnswer("music_1c")
@@ -129,6 +130,34 @@ public class MusicSearch implements ServiceInterface{
 		
 		Parameter playlistP = nluResult.getOptionalParameter(PARAMETERS.PLAYLIST_NAME, "");
 		String playlistName = playlistP.getValueAsString();
+		
+		Parameter dataP = nluResult.getOptionalParameter(PARAMETERS.DATA, "");
+		String data = dataP.getValueAsString().trim();
+		JSONObject dataJson = null;
+		if (!data.isEmpty()){
+			/* expected (all fields optional):
+			{
+				"uri": "",
+				"song": "",		//we can use 'song' as general search fallback
+				"service": "",
+				"serviceLocal": "",
+				"serviceResult": {...}	//TODO: ignored in some services
+			}*/
+			if (data.startsWith("{")){
+				dataJson = JSON.parseString(data);
+			}else if (data.startsWith("https://") || data.startsWith("http://")){
+				dataJson = JSON.make(
+					"uri", data
+				);
+			}
+			//apply some right away
+			if (dataJson != null){
+				if (service.isEmpty()) service = JSON.getStringOrDefault(dataJson, "service", "");
+				if (Is.nullOrEmpty(serviceLocal)) serviceLocal = JSON.getStringOrDefault(dataJson, "serviceLocal", "");
+				if (song.isEmpty()) song = JSON.getStringOrDefault(dataJson, "song", "");
+			}
+		}
+		String givenUri = (dataJson != null)? JSON.getStringOrDefault(dataJson, "uri", "") : "";
 		
 		boolean hasMinimalInfo = Is.notNullOrEmpty(song) || Is.notNullOrEmpty(artist) 
 				|| Is.notNullOrEmpty(album) || Is.notNullOrEmpty(playlistName) || Is.notNullOrEmpty(genre);
@@ -179,19 +208,20 @@ public class MusicSearch implements ServiceInterface{
 			Object defaultClientService = nluResult.input.getCustomDataObject(NluInput.DATA_DEFAULT_MUSIC_APP);
 			if (defaultClientService != null){
 				service = (String) defaultClientService;
-				serviceLocal = MusicService.getLocal("<" + service + ">", api.language);
 			}
-			//System.out.println("defaultMusicApp: " + service);		//DEBUG
+		}
+		if (!service.isEmpty() && serviceLocal.isEmpty()){
+			serviceLocal = MusicService.getLocal("<" + service + ">", api.language);
 		}
 		String rootService = service.replace("_link", "").replace("_embedded", "").trim();	//Note: there are variations
 		boolean isSpotifyService = service.startsWith(MusicService.Service.spotify.name());
 		boolean isAppleMusic = service.startsWith(MusicService.Service.apple_music.name());
 		boolean isYouTube = service.startsWith(MusicService.Service.youtube.name());
-		boolean servicesUsesDirectUrl = service.contains("_link");
+		boolean serviceUsesDirectUrl = service.contains("_link");
 		
 		//check if embedding is desired and possible
 		boolean clientSupportsServiceEmbedding = false;
-		if (!servicesUsesDirectUrl){
+		if (!serviceUsesDirectUrl){
 			Object embeddingsObj = nluResult.input.getCustomDataObject(NluInput.DATA_EMBEDDED_MEDIA_PLAYERS);
 			if (embeddingsObj != null){
 				clientSupportsServiceEmbedding = ((JSONArray) embeddingsObj).contains(rootService);
@@ -207,12 +237,13 @@ public class MusicSearch implements ServiceInterface{
 		String foundAlbum = "";
 		String foundPlaylist = "";
 		String foundUri = "";
-		String foundType = "";
 		String cardTitle = "";
 		String cardSubtitle = "";
 		String cardIconUrl = "";	//Config.urlWebImages + "cards/music_default.png";
 		String cardBrand = "default";
 		JSONObject serviceResult = null;	//this is specific to certain service and should be handled by service widget
+		
+		boolean missingApiKey = false;
 		
 		//Use YouTube for URI (or undefined service)
 		if (service.isEmpty() || isYouTube){
@@ -220,7 +251,7 @@ public class MusicSearch implements ServiceInterface{
 			cardIconUrl = Config.urlWebImages + "brands/youtube-logo.png";
 			cardBrand = CARD_BRAND_YOUTUBE;
 			cardSubtitle = "YouTube Search";
-			//Search
+			//Search/build
 			String q = "";
 			try{
 				if (Is.notNullOrEmpty(playlistName)){
@@ -257,7 +288,14 @@ public class MusicSearch implements ServiceInterface{
 					cardTitle = "Q: " + song;
 				}
 				boolean foundGoodUri = false;
-				if (!q.isEmpty()){
+				if (!givenUri.isEmpty()){
+					//build with DATA
+					foundUri = givenUri;
+					foundGoodUri = true;
+					if (dataJson != null){
+						serviceResult = JSON.getJObject(dataJson, "serviceResult");
+					}
+				}else if (!q.isEmpty()){
 					//Try API?
 					JSONObject apiResult = YouTubeApi.searchVideoForEmbedding(q, 10);
 					if (JSON.getIntegerOrDefault(apiResult, "status", -1) == 200){
@@ -267,12 +305,15 @@ public class MusicSearch implements ServiceInterface{
 							String videoId = JSON.getString(matches, 0, "videoId");
 							if (Is.notNullOrEmpty(videoId)){
 								//foundUri = "https://www.youtube.com/watch?v=" + videoId;
-								foundUri = "https://www.youtube.com/embed/" + videoId;
+								//foundUri = "https://www.youtube-nocookie.com/embed/" + videoId;
+								foundUri = "https://www.youtube.com/embed/" + videoId;		//NOTE: it looks like 'nocookie' has broken control interface
 								cardTitle = JSON.getString(matches, 0, "title");
 								cardSubtitle = "";
 								foundGoodUri = true;
 							}
 						}
+					}else{
+						missingApiKey = Is.nullOrEmpty(Config.youtube_api_key);
 					}
 				}
 				//Fallback
@@ -285,15 +326,22 @@ public class MusicSearch implements ServiceInterface{
 
 		//Spotify API
 		}else if (isSpotifyService){
-			//we need the API (in early version it was possible to call it without registration)
-			if (Config.spotifyApi != null){
-				//Icon
-				cardIconUrl = Config.urlWebImages + "brands/spotify-logo.png";
-				cardBrand = CARD_BRAND_SPOTIFY;
+			//Icon
+			cardIconUrl = Config.urlWebImages + "brands/spotify-logo.png";
+			cardBrand = CARD_BRAND_SPOTIFY;
+			//Search/build
+			if (!givenUri.isEmpty()){
+				//build with DATA
+				foundUri = givenUri;
+				if (dataJson != null){
+					serviceResult = JSON.getJObject(dataJson, "serviceResult");
+				}
+			}else if (Config.spotifyApi != null){
+				//we need the API (in early version it was possible to call it without registration)
 				//Search
 				JSONObject spotifyBestItem = Config.spotifyApi.searchBestItem(song, artist, album, playlistName, genre);
+				String foundType = JSON.getString(spotifyBestItem, "type");
 				foundUri = JSON.getString(spotifyBestItem, "uri");
-				foundType = JSON.getString(spotifyBestItem, "type");
 				//get URI and build Card data
 				if (Is.notNullOrEmpty(foundUri)){
 					//get info by type
@@ -345,24 +393,10 @@ public class MusicSearch implements ServiceInterface{
 						//foundUri = foundUri + ":play";		//not supported? breaks link?
 					}
 				}
-			}else{
-				//We need an URI via API call but got none?
-				if (servicesUsesDirectUrl){
-					//add some info here about missing key
-					api.setCustomAnswer("default_no_access_0a");
-					
-					//add button that links to help
-					api.addAction(ACTIONS.BUTTON_IN_APP_BROWSER);
-					api.putActionInfo("url", "https://github.com/SEPIA-Framework/sepia-docs/wiki/API-keys");
-					api.putActionInfo("title", "Info: API-Keys");
-					
-					//all clear?
-					api.setStatusOkay();
-					
-					//finally build the API_Result
-					ServiceResult result = api.buildResult();
-					return result;
-				}
+			}
+			//We need an URI via API call but got none?
+			if (Is.nullOrEmpty(foundUri)){
+				missingApiKey = (Config.spotifyApi == null);
 			}
 		
 		//Apple Music
@@ -370,48 +404,57 @@ public class MusicSearch implements ServiceInterface{
 			//Icon
 			cardIconUrl = Config.urlWebImages + "brands/apple-music-logo.png";
 			cardBrand = CARD_BRAND_APPLE_MUSIC;
-			//Search (we use the open iTunes API instead of Apple Music API (because it is too hard to get an Apple Music key)
-			ITunesApi iTunesApi = new ITunesApi((nluResult.language.equals(LANGUAGES.DE))? "DE" : "US");		//TODO: add more country codes if we need them ...
-			JSONObject iTunesBestItem = iTunesApi.searchBestMusicItem(song, artist, album, playlistName, genre);
-			foundUri = JSON.getString(iTunesBestItem, "uri");
-			foundType = JSON.getString(iTunesBestItem, "type");
-			//get URI and build Card data 		- 		TODO: this code is mostly identical to spotify card ... we can combine it ...
-			if (Is.notNullOrEmpty(foundUri)){
-				//get info by type
-				if (foundType.equals(ITunesApi.TYPE_TRACK)){
-					foundTrack = JSON.getString(iTunesBestItem, "name");
-					foundArtist = JSON.getString(iTunesBestItem, "primary_artist");
-					foundAlbum =  JSON.getString(iTunesBestItem, "album");
-					cardTitle = "Song: " + foundTrack;
-					cardSubtitle = (foundAlbum.isEmpty())? foundArtist : (foundArtist + ", " + foundAlbum);
-					//add play tag to URI
-					foundUri = foundUri + "&mt=1&app=music";
-					
-				}else if (foundType.equals(ITunesApi.TYPE_ALBUM)){
-					foundArtist = JSON.getString(iTunesBestItem, "primary_artist");
-					foundAlbum =  JSON.getString(iTunesBestItem, "name");
-					cardTitle = "Album: " + foundAlbum;
-					cardSubtitle = foundArtist;
-					//add play tag to URI	
-					foundUri = foundUri + "&mt=1&app=music";
-					
-				}else if (foundType.equals(ITunesApi.TYPE_ARTIST)){
-					foundArtist = JSON.getString(iTunesBestItem, "name");
-					JSONArray genres = JSON.getJArray(iTunesBestItem, "genres");
-					String genresString = "";
-					if (Is.notNullOrEmpty(genres)){
-						for (int i=0; i<Math.min(genres.size(),3); i++){
-							genresString += (genres.get(i).toString() + ", ");
+			//Search/build
+			if (!givenUri.isEmpty()){
+				//build with DATA
+				foundUri = givenUri;
+				if (dataJson != null){
+					serviceResult = JSON.getJObject(dataJson, "serviceResult");
+				}
+			}else{
+				//Search (we use the open iTunes API instead of Apple Music API (because it is too hard to get an Apple Music key)
+				ITunesApi iTunesApi = new ITunesApi((nluResult.language.equals(LANGUAGES.DE))? "DE" : "US");		//TODO: add more country codes if we need them ...
+				JSONObject iTunesBestItem = iTunesApi.searchBestMusicItem(song, artist, album, playlistName, genre);
+				String foundType = JSON.getString(iTunesBestItem, "type");
+				foundUri = JSON.getString(iTunesBestItem, "uri");
+				//get URI and build Card data 		- 		TODO: this code is mostly identical to spotify card ... we can combine it ...
+				if (Is.notNullOrEmpty(foundUri)){
+					//get info by type
+					if (foundType.equals(ITunesApi.TYPE_TRACK)){
+						foundTrack = JSON.getString(iTunesBestItem, "name");
+						foundArtist = JSON.getString(iTunesBestItem, "primary_artist");
+						foundAlbum =  JSON.getString(iTunesBestItem, "album");
+						cardTitle = "Song: " + foundTrack;
+						cardSubtitle = (foundAlbum.isEmpty())? foundArtist : (foundArtist + ", " + foundAlbum);
+						//add play tag to URI
+						foundUri = foundUri + "&mt=1&app=music";
+						
+					}else if (foundType.equals(ITunesApi.TYPE_ALBUM)){
+						foundArtist = JSON.getString(iTunesBestItem, "primary_artist");
+						foundAlbum =  JSON.getString(iTunesBestItem, "name");
+						cardTitle = "Album: " + foundAlbum;
+						cardSubtitle = foundArtist;
+						//add play tag to URI	
+						foundUri = foundUri + "&mt=1&app=music";
+						
+					}else if (foundType.equals(ITunesApi.TYPE_ARTIST)){
+						foundArtist = JSON.getString(iTunesBestItem, "name");
+						JSONArray genres = JSON.getJArray(iTunesBestItem, "genres");
+						String genresString = "";
+						if (Is.notNullOrEmpty(genres)){
+							for (int i=0; i<Math.min(genres.size(),3); i++){
+								genresString += (genres.get(i).toString() + ", ");
+							}
+							genresString = genresString.replaceFirst(", $", "").trim();
 						}
-						genresString = genresString.replaceFirst(", $", "").trim();
+						cardTitle = "Artist: " + foundArtist;
+						cardSubtitle = (Is.notNullOrEmpty(genresString))? genresString : "";
+						//add play tag to URI
+						foundUri = foundUri + "&mt=1&app=music";
+						
+					}else if (foundType.equals(ITunesApi.TYPE_PLAYLIST)){
+						//no support yet
 					}
-					cardTitle = "Artist: " + foundArtist;
-					cardSubtitle = (Is.notNullOrEmpty(genresString))? genresString : "";
-					//add play tag to URI
-					foundUri = foundUri + "&mt=1&app=music";
-					
-				}else if (foundType.equals(ITunesApi.TYPE_PLAYLIST)){
-					//no support yet
 				}
 			}
 		
@@ -451,12 +494,6 @@ public class MusicSearch implements ServiceInterface{
 		
 		String controlFun = ClientFunction.Type.searchForMusic.name();
 		JSONObject controlData = JSON.make(
-				/*
-				"artist", artist,
-				"song", song,
-				"album", album,
-				"playlist", playlistName,
-				*/
 				"artist", (foundArtist.isEmpty())? artist : foundArtist,
 				"song", (foundTrack.isEmpty())? song : foundTrack,
 				"album", (foundAlbum.isEmpty())? album : foundAlbum,
@@ -472,8 +509,50 @@ public class MusicSearch implements ServiceInterface{
 			JSON.put(controlData, "serviceResult", serviceResult);
 		}
 		
+		//Check if we have enough info - else build OKAY result
+		if (serviceUsesDirectUrl && Is.nullOrEmpty(foundUri)){
+			//URL required but not found - Fallback: web-search action button
+			ActionBuilder.addWebSearchButton(api, nluResult.input.textRaw, null);
+			
+			if (missingApiKey){
+				//add button that links to API-key help
+				ActionBuilder.addApiKeyInfoButton(api);
+				
+				//adjust answer
+				api.setCustomAnswer("default_no_access_0a");
+			
+			}else{
+				//assume no music found - or is this error?
+				api.setCustomAnswer("music_0b");
+			}
+			
+			/* -- we leave this to the client --
+			if (!platform.equals(Platform.android)){
+				//we have no other option to search for music (like e.g. Android Intent)
+				api.setCustomAnswer("music_0b");
+			} 
+			*/
+			
+			//end with OK
+			api.setStatusOkay();
+			
+			//build the API_Result
+			ServiceResult result = api.buildResult();
+			return result;
+				
+		}else if (handleSearchViaWidget && !clientSupportsServiceEmbedding){
+			//TODO: missing alternative
+						
+			//abort
+			api.setStatusOkay();
+			
+			//build the API_Result
+			ServiceResult result = api.buildResult();
+			return result;
+		}
+		
 		//Actions
-		if (!servicesUsesDirectUrl && !handleSearchViaWidget){
+		if (!serviceUsesDirectUrl && !handleSearchViaWidget){
 			//Music search action without widget
 			
 			//client control action
@@ -486,21 +565,6 @@ public class MusicSearch implements ServiceInterface{
 			api.addAction(ACTIONS.BUTTON_CUSTOM_FUN);
 			api.putActionInfo("fun", "controlFun;;" + controlFun + ";;" + controlData.toJSONString());
 			api.putActionInfo("title", Is.notNullOrEmpty(serviceLocal)? serviceLocal : "Button");
-		}
-		if (servicesUsesDirectUrl && Is.nullOrEmpty(foundUri)){
-			//URL required but not found - Fallback: web-search action button
-			api.addAction(ACTIONS.BUTTON_CMD);
-			api.putActionInfo("title", "Web Search");
-			api.putActionInfo("info", "direct_cmd");
-			api.putActionInfo("cmd", CmdBuilder.getWebSearch(nluResult.input.textRaw));
-			api.putActionInfo("options", JSON.make(ACTIONS.OPTION_SKIP_TTS, true));
-				
-			/* -- we leave this to the client --
-			if (!platform.equals(Platform.android)){
-				//we have no other option to search for music (like e.g. Android Intent)
-				api.setCustomAnswer("music_0b");
-			} 
-			*/
 		}
 		
 		//Cards
@@ -538,16 +602,6 @@ public class MusicSearch implements ServiceInterface{
 			);
 			//JSON.put(linkCard, "imageBackground", "#f0f0f0");	//use any CSS background option you wish
 			api.addCard(card.getJSON());
-		
-		}else if (handleSearchViaWidget && !clientSupportsServiceEmbedding){
-			//TODO: missing alternative
-						
-			//abort
-			api.setStatusOkay();
-			
-			//build the API_Result
-			ServiceResult result = api.buildResult();
-			return result;
 		}
 
 		//all good

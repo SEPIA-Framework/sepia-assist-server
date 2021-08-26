@@ -18,9 +18,30 @@
 			background-color: transparent;
 			color: #000;
 		}
+		a {
+			color: #08a0c8;
+		}
+		.dark a {
+			color: #ceff1a;
+		}
 		#card-body {
 			width: 100%;
 			display: flex;
+			flex-direction: column;
+			background: #fcfcfc;
+			color: #000;
+			font-size: 15px;
+		}
+		.dark #card-body {
+			background: #212327;
+			color: #eee;
+		}
+		#card-body > div {
+			width: 100%;
+		}
+		#demo-player-info {
+			padding: 5px;
+			text-align: center;
 		}
 		#audio-player {
 			width: 100%;
@@ -30,7 +51,13 @@
 <body >
 	<!-- Card Body -->
 	<div id="card-body">
-		<audio id="audio-player" class="media-player-demo" controls></audio>
+		<div id="demo-player-info">
+			<p><b>Embedded Player - Placeholder</b></p>
+			<p>Learn how to customize it: <a href="https://github.com/SEPIA-Framework/sepia-docs/wiki#customizing-sepia" target=_blank>SEPIA Docs</a></p>
+		</div>
+		<div>
+			<audio id="audio-player" class="media-player-demo" controls></audio>
+		</div>
 	</div>
 	<!-- JS -->
 	<script type="text/javascript">
@@ -58,6 +85,11 @@
 				data: data
 			});
 		}
+		function postProperties(props){
+			postMsg({
+				properties: props	//properties like "size" or "volume" to adjust UI
+			});
+		}
 		function postSettings(data){
 			postMsg({
 				settings: data	//any app-specific settings that should be restored e.g. when widget reloads/moves
@@ -76,6 +108,18 @@
 			return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null;
 		}
 		//e.g.: skinStyle, skinId, lang (e.g.: de, en), mobile (true/false)
+		var skinStyle = getURLParameter("skinStyle");
+		var skinId = getURLParameter("skinId");
+		
+		//adjust skin
+		if (skinStyle && skinStyle.indexOf("dark") >= 0){
+			document.body.classList.add("dark");
+		}else{
+			document.body.classList.add("light");
+		}
+		if (skinId != undefined){
+			document.body.classList.add("skin-id-" + skinId);
+		}
 
 		//handle events
 		function eventHandler(ev){
@@ -131,14 +175,25 @@
 					//TODO: ignored for now
 					break;
 				case "volumeUp":
+					playerSetVolume(playerGetVolume() + 1);
 				case "volumeDown":
-					//TODO: ignored for now
+					playerSetVolume(playerGetVolume() - 1);
+				case "volumeSet":
+					if (ev.data != undefined) playerSetVolume(ev.data);
 					break;
 				default:
 					//Error: UnknownEvent
 					postError("UnknownEvent", "Unknown control event: " + ev.controls, 1);
 					break;
 			}
+		}
+		function playerGetVolume(){
+			return Math.round(10.0 * player.volume);
+		}
+		function playerSetVolume(newVol){
+			var setVol = newVol/10.0;
+			player.volume = Math.min(1, Math.max(0, setVol));
+			postProperties({volume: playerGetVolume()});
 		}
 		
 		function handleMediaRequest(ev){
@@ -247,11 +302,12 @@
 
 		//ready
 		setTimeout(function(){
-			postState(1, {
+			postProperties({
 				size: {
 					height: (cardBody.getBoundingClientRect().height + "px")
 				}
 			});
+			postState(1, {});
 		}, 300);
 	</script>
 </body>
