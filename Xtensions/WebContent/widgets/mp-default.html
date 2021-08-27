@@ -61,6 +61,10 @@
 	</div>
 	<!-- JS -->
 	<script type="text/javascript">
+		//NOTE: This is a demo implementation of the SEPIA Client Media-Player Widget
+		
+		//--------- COMMON WIDGET INTERFACE ---------
+		
 		//postMessage listener
 		window.addEventListener('message', function(message){
 			if (message.data && message.data.type){
@@ -133,7 +137,7 @@
 				//settings previously sent by the widget (widget/app specific etc. - NOTE: avoid autoplay!)
 				handleSettingsRestore(ev);
 			}else{
-				console.error("event", ev);		//DEBUG
+				console.error("MediaPlayer - Unknown event", ev);		//DEBUG
 			}
 		}
 
@@ -147,7 +151,7 @@
 		
 		function handleSettingsRestore(ev){
 			//any widget specific data submitted by widget itself (either via 'postSettings' or during 'ready')
-			console.error("Settings", ev.settings);		//DEBUG
+			console.error("MediaPlayer - Settings", ev.settings);		//DEBUG
 			var settings = ev.settings;
 			//restore
 			autoplay = settings.autoplay || false;
@@ -158,7 +162,7 @@
 		
 		function handleControls(ev){
 			//play, pause, fadeOut, fadeIn, next, previous, volumeUp, volumeDown, ... tbd
-			console.error("Controls", ev.controls);		//DEBUG
+			console.error("MediaPlayer - Controls", ev.controls);		//DEBUG
 			var ctrl = ev.controls;
 			switch (ev.controls){
 				case "play":
@@ -171,13 +175,17 @@
 					player.pause();
 					break;
 				case "next":
+					//TODO: ignored for now
+					break;
 				case "previous":
 					//TODO: ignored for now
 					break;
 				case "volumeUp":
 					playerSetVolume(playerGetVolume() + 1);
+					break;
 				case "volumeDown":
 					playerSetVolume(playerGetVolume() - 1);
+					break;
 				case "volumeSet":
 					if (ev.data != undefined) playerSetVolume(ev.data);
 					break;
@@ -197,27 +205,29 @@
 		}
 		
 		function handleMediaRequest(ev){
-			console.error("Media request", ev.mediaRequest);		//DEBUG
+			console.error("MediaPlayer - mediaRequest", ev.mediaRequest, ev.autoplay);		//DEBUG
 			var mr = ev.mediaRequest;
 			/* type: music:
 			{
 				"song": "",
-				"search": "",
 				"playlist": "",
 				"artist": "",
 				"album": "",
-				"service": "",
 				"genre": "",
+				"search": "",
 				"uri": "",
+				"service": "",
 				"serviceResult": {...}	//specific to service
 			}*/
 			var safeRequest = ev.safeRequest;	//request came from assistant or private channel?
 			autoplay = ev.autoplay;
 			
-			//"search" music:
 			var url = "";
 			var title = "";
 			
+			//"Search" Music - SIMPLE DEMO:
+			//Possible search terms - Artist: "ed", "virginia", Song: "twister", "titanic"
+			//
 			if (mr.song && mr.song.trim().toLowerCase().indexOf("twister") >= 0){
 				url = "http://www.openmusicarchive.org/audio/Eddies_Twister.mp3";
 				title = "Eddies Twister";
@@ -233,8 +243,8 @@
 				title = "Titanic Blues";
 			}
 						
+			//Load music
 			if (url){
-				//Load music
 				if (safeRequest){
 					player.preload = "auto";
 				}else{
@@ -258,13 +268,13 @@
 		}
 
 		player.oncanplay = function(){
-			console.error("oncanplay", arguments);		//DEBUG
+			console.error("MediaPlayer - oncanplay", arguments);		//DEBUG
 			if (autoplay){
 				player.play();
 			}
 		};
 		player.onplay = function(){
-			console.error("onplay", arguments);			//DEBUG
+			console.error("MediaPlayer - onplay", arguments);			//DEBUG
 			postState(2, {
 				meta: {
 					title: player.title,
@@ -273,17 +283,20 @@
 			});
 		};
 		player.onpause = function(){
-			console.error("onpause", arguments);		//DEBUG
+			console.error("MediaPlayer - onpause", arguments);		//DEBUG
 			postState(3);
 		};
 		player.onended = function(){
-			console.error("onended", arguments);		//DEBUG
+			console.error("MediaPlayer - onended", arguments);		//DEBUG
 		};
 		player.onvolumechange = function(){
-			console.error("onvolumechange", player.volume);		//DEBUG
+			console.error("MediaPlayer - onvolumechange", player.volume);		//DEBUG
+			postProperties({
+				volume: playerGetVolume()
+			});
 		};
 		player.onerror = function(err){
-			console.error("onerror", err, player.error);		//DEBUG
+			console.error("MediaPlayer - onerror", err, player.error);		//DEBUG
 			if (player.error && player.error.code === 4){
 				postError("PlayerError", "Cannot play the selected media data.", 4);
 			}else if (err && err.name && err.name == "NotAllowedError"){
@@ -300,12 +313,13 @@
 
 		//--------- DEMO END ---------
 
-		//ready
+		//Send 'ready' event:
 		setTimeout(function(){
 			postProperties({
 				size: {
 					height: (cardBody.getBoundingClientRect().height + "px")
-				}
+				},
+				volume: playerGetVolume()
 			});
 			postState(1, {});
 		}, 300);
