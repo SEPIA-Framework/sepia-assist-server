@@ -8,6 +8,8 @@
 		<!-- Page 2 -->
 		<div id="sepiaFW-frame-page-2" class='sepiaFW-frames-page sepiaFW-carousel-pane'>
 			<h3>Page 2 - Microphone and chat output</h3>
+			<input id="sepiaFW-frame-c-text-in" style="width: calc(100% - 113px); height: 40px; margin: 8px 8px 8px 0; border-bottom: 1px solid;" placeholder="input text">
+			<button style="width: 100px; margin: 0;" onclick="SepiaFW.frames.currentScope.sendText();">SEND</button>
 			<textarea id="sepiaFW-frame-c-stt-data" style="width: 100%; height: calc(50% - 35px);"></textarea>
 			<textarea id="sepiaFW-frame-c-chat-data" style="width: 100%; height: calc(50% - 35px);"></textarea>
 		</div>
@@ -55,6 +57,9 @@
 		//Theme (frame: light, dark, mod.: flat, screen: dark_full)
 		theme: "light",		//e.g.: "dark_full flat"
 		
+		//You can use the NLU-prefix to redirect input to this custom view frame via SDK or Teach-UI commands (make sure to use _..._ format)
+		nluPrefix: "_demo_frame_",
+		
 		//Load scope (default method, kind of like a 'onDocumentReady')
 		load: function(){
 			$('#sepiaFW-frames-mic').attr('class', 'entry icon-button');
@@ -92,7 +97,29 @@
 		
 		//For custom 'frames_view_action' (only)
 		actionHandler: function(action){
-			console.error(action);
+			console.log("Custom frame action", action);
+			if (action.functionName && typeof action.functionName == "string" && action.functionName.toLowerCase() == "test"){
+				console.log("Custom frame action: TEST", action.data);
+			}
+		},
+		
+		//--Custom functions--
+		
+		//Send text from input field and add NLU-prefix automatically
+		sendText: function(text){
+			var $textInput = $('#sepiaFW-frame-page-2 #sepiaFW-frame-c-text-in');
+			if (!text){
+				text = $textInput.val();
+				$textInput.val("");
+			}
+			if (text){
+				text = text.trim();
+				if (SepiaFW.frames.currentScope.nluPrefix && text.indexOf(SepiaFW.frames.currentScope.nluPrefix) != 0){
+					text = SepiaFW.frames.currentScope.nluPrefix + " " + text;
+				}
+				$('#sepiaFW-frame-page-2 #sepiaFW-frame-c-stt-data').val(text);
+				SepiaFW.client.sendInputText(text);
+			}
 		}
 	}
 	SepiaFW.frames.currentScope.load();
