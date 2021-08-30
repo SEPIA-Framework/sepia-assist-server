@@ -55,8 +55,6 @@
 	</div>
 	<!-- JS -->
 	<script type="text/javascript">
-		//--------- COMMON WIDGET INTERFACE ---------
-		
 		//postMessage listener
 		window.addEventListener('message', function(message){
 			if (message.data && message.data.type){
@@ -139,6 +137,8 @@
 		
 		var youTubeMessageListenerExists = false;
 		var youTubePlayerState = 0;		//States I know: -1-unstarted, 0-ended/off, 1-playing, 2-paused, 3-buffering, 5-queued (??)
+		var youTubePlayerWaitingForPlay = false;
+		var youTubePlaybackQuality = "";	//this is more of a "does it load" fallback than actual relevant info ;-)
 		var youTubeLastUrlRequest = "";
 
 		var cardBody = document.getElementById("card-body");
@@ -190,7 +190,7 @@
 		}
 		
 		function handleMediaRequest(ev){
-			//console.error("Media request", ev.mediaRequest); 		//DEBUG
+			//console.error("Media request", ev.mediaRequest, ev.autoplay); 		//DEBUG
 			var mr = ev.mediaRequest;
 			/* type: music:
 			{
@@ -295,37 +295,58 @@
 				if (data && data.id){
 					if (data.event == 'onReady'){
 						//console.error("YouTube: player ready");		//DEBUG
+						youTubePlaybackQuality = "";
+						if (autoplay){
+							youTubePlayerWaitingForPlay = true;
+							//this is an autoplay-fallback to make sure it actually starts (problems on Android)
+							autoplayTimer = setTimeout(function(){
+								if (youTubePlayerState != 1 && !youTubePlaybackQuality) youTubePlayerControls("play");
+								//if (youTubePlayerState != 1 && !youTubePlaybackQuality) console.error("should play now");
+							}, 3000);
+						}else{
+							youTubePlayerWaitingForPlay = false;
+						}
 						
-					}else if (data.event == 'infoDelivery' && data.info && data.info.playerState != undefined){
-						youTubePlayerState = data.info.playerState;
-						
-						if (data.info.playerState == 1){
-							//console.error("YouTube: player start", data.info);	//DEBUG
-							var title = "YouTube";
-							var url = youTubeLastUrlRequest;
-							if (data.info.videoData){
-								title = data.info.videoData.title;
-								url = "https://www.youtube.com/embed/" + encodeURIComponent(data.info.videoData.video_id);
-							}
-							postState(2, {
-								meta: {
-									title: title,
-									url: url
+					}else if (data.event == 'infoDelivery' && data.info){
+						if (data.info.playerState != undefined){
+							youTubePlayerState = data.info.playerState;
+							
+							if (data.info.playerState == 1){
+								//console.error("YouTube: player start", data.info);	//DEBUG
+								youTubePlayerWaitingForPlay = false;
+								clearTimeout(autoplayTimer);
+								var title = "YouTube";
+								var url = youTubeLastUrlRequest;
+								if (data.info.videoData){
+									title = data.info.videoData.title;
+									url = "https://www.youtube.com/embed/" + encodeURIComponent(data.info.videoData.video_id);
 								}
-							});
-						
-						}else if (data.info.playerState == 2 || data.info.playerState == 0){
-							//console.error("YouTube: player pause", data.info); 	//DEBUG
-							postState(3);
-						
-						}/*else if (data.info.playerState == -1){
-							console.error("YouTube: player error");	//DEBUG - is it error? its not ...
-							postError("PlayerError", "Unknown", 4);
-						}*/
+								postState(2, {
+									meta: {
+										title: title,
+										url: url
+									}
+								});
+							
+							}else if (data.info.playerState == 2 || data.info.playerState == 0){
+								//console.error("YouTube: player pause", data.info); 	//DEBUG
+								youTubePlayerWaitingForPlay = false;
+								clearTimeout(autoplayTimer);
+								postState(3);
+							
+							}/*else if (data.info.playerState == -1){
+								console.error("YouTube: player error");	//DEBUG - is it error? its not ...
+								postError("PlayerError", "Unknown", 4);
+							}*/
+						}else if (youTubePlayerWaitingForPlay && data.info.playbackQuality){
+							youTubePlaybackQuality = data.info.playbackQuality;
+							//console.error("YouTube: playbackQuality", youTubePlaybackQuality);	//DEBUG
+						}
 					}
 				}
 			}
 		}
+		var autoplayTimer = undefined;
 		
 		function youTubePlayerControls(cmd){
 			//reset some stuff first

@@ -230,19 +230,20 @@
 			
 			//"Search" Music - SIMPLE DEMO:
 			//Possible search terms - Artist: "ed", "virginia", Song: "twister", "titanic"
-			//
+			var edMp3 = "https://sepia-framework.github.io/files/pub/music/Eddies_Twister.mp3"; //org.: http://www.openmusicarchive.org/audio/Eddies_Twister.mp3
+			var virginiaMp3 = "https://sepia-framework.github.io/files/pub/music/Titanic_Blues.mp3"; //org.: http://www.openmusicarchive.org/audio/Titanic_Blues.mp3
 			if (mr.song && mr.song.trim().toLowerCase().indexOf("twister") >= 0){
-				url = "http://www.openmusicarchive.org/audio/Eddies_Twister.mp3";
+				url = edMp3;
 				title = "Eddies Twister";
 			}else if (mr.artist && mr.artist.toLowerCase() == "ed"){
-				url = "http://www.openmusicarchive.org/audio/Eddies_Twister.mp3";
+				url = edMp3;
 				title = "Eddies Twister";
 			
 			}else if (mr.song && mr.song.trim().toLowerCase().indexOf("titanic") >= 0){
-				url = "http://www.openmusicarchive.org/audio/Titanic_Blues.mp3";
+				url = virginiaMp3;
 				title = "Titanic Blues";
 			}else if (mr.artist && mr.artist.toLowerCase() == "virginia"){
-				url = "http://www.openmusicarchive.org/audio/Titanic_Blues.mp3";
+				url = virginiaMp3;
 				title = "Titanic Blues";
 			}
 						
