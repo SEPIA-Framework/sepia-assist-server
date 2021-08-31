@@ -312,12 +312,11 @@ public class MusicSearch implements ServiceInterface{
 								foundGoodUri = true;
 							}
 						}
-					}else{
-						missingApiKey = Is.nullOrEmpty(Config.youtube_api_key);
 					}
 				}
 				//Fallback
 				if (!foundGoodUri && !q.isEmpty()){
+					missingApiKey = Is.nullOrEmpty(Config.youtube_api_key);
 					foundUri = "https://www.youtube.com/results?search_query=" + URLEncoder.encode(q, "UTF-8");
 				}
 			}catch (Exception e){
@@ -517,6 +516,7 @@ public class MusicSearch implements ServiceInterface{
 			if (missingApiKey){
 				//add button that links to API-key help
 				ActionBuilder.addApiKeyInfoButton(api);
+				missingApiKey = false;
 				
 				//adjust answer
 				api.setCustomAnswer("default_no_access_0a");
@@ -602,6 +602,11 @@ public class MusicSearch implements ServiceInterface{
 			);
 			//JSON.put(linkCard, "imageBackground", "#f0f0f0");	//use any CSS background option you wish
 			api.addCard(card.getJSON());
+			
+			//add button that links to API-key help?
+			if (missingApiKey){
+				ActionBuilder.addApiKeyInfoButton(api);
+			}
 		}
 
 		//all good

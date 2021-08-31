@@ -43,6 +43,16 @@
 			background: #000;
 			color: #fff;
 		}
+		#player-info-msg {
+			width: 100%;
+			height: auto;
+			padding: 6px;
+			background: #000;
+			color: #fff;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
 	</style>
 </head>
 <body >
@@ -52,6 +62,7 @@
 			height="280"
 			allowtransparency="true" allow="autoplay *; encrypted-media *;"
 		></iframe>
+		<div id="player-info-msg"></div>
 	</div>
 	<!-- JS -->
 	<script type="text/javascript">
@@ -114,6 +125,13 @@
 		if (skinId != undefined){
 			document.body.classList.add("skin-id-" + skinId);
 		}
+		function updateSize(){
+			postProperties({
+				size: {
+					height: (cardBody.getBoundingClientRect().height + "px")
+				}
+			});
+		}
 
 		//handle events
 		function eventHandler(ev){
@@ -143,6 +161,7 @@
 
 		var cardBody = document.getElementById("card-body");
 		var playerFrame = document.getElementById("audio-player");
+		var playerInfoMsgEle = document.getElementById("player-info-msg");
 		
 		var autoplay = false;
 		var restoreSettings = {};
@@ -228,19 +247,21 @@
 			}else if (mr.uri){
 				ytUrl = mr.uri;
 			}
+			var errorMessage = "";
 			if (ytUrl){
 				//handle a bunch of URLs
 				if (ytUrl.indexOf("search_query=") > 0){
 					//will fail due to iframe restrictions, e.g.: https://www.youtube.com/results?search_query=purple+haze%2C+jimi+hendrix
 					//TODO: add error message
 					ytUrl = undefined;
-					playerFrame.src = "";
+					playerFrame.src = "about:blank";
+					errorMessage = "Embedded search requires API now :-(";
 				}else if (!!ytUrl.match(/(&|\?)v=.+/)){
 					//https://www.youtube.com/watch?v=H-RBJNqdnoM&list=RDEMrHVi-mxOgy0ZqOdSlMHqjA&start_radio=1
 					var videoId = ytUrl.replace(/.*(&|\?)v=/, "").replace(/&.*/, "").trim();
 					ytUrl = addYouTubeEmbedUrlParameters(baseUrl + videoId);
 					playerFrame.src = ytUrl;
-				}else if ((!!ytUrl.match(/(&|\?)listType=playlist/) || ytUrl.indexOf("/playlist?") >= 23) && !!ytUrl.match(/(&|\?)list=.+/)){
+				}else if ((!!ytUrl.match(/(&|\?)listType=playlist/) || ytUrl.indexOf("/playlist?") >= 10) && !!ytUrl.match(/(&|\?)list=.+/)){
 					//https://www.youtube.com/embed?listType=playlist&list=OLAK5uy_nMLnwHRhSOAO6sO7LmFRkp21RATGG6mT8&start_radio=1
 					//https://www.youtube.com/playlist?list=OLAK5uy_nMLnwHRhSOAO6sO7LmFRkp21RATGG6mT8
 					var playlistId = ytUrl.replace(/.*(&|\?)list=/, "").replace(/&.*/, "").trim();
@@ -248,17 +269,31 @@
 					playerFrame.src = ytUrl;
 				}else{
 					//https://www.youtube.com/embed/dkNfNR1WYMY
-					//https://www.youtube-nocookie.com/embed/dkNfNR1WYMY
-					ytUrl = addYouTubeEmbedUrlParameters(ytUrl, ytUrlPlaylistParam);
+					//https://www.youtube-nocookie.com/embed/dkNfNR1WYMY	//has control bug :-(
+					//https://youtu.be/tAGnKpE4NCI
+					//https://m.youtube.com/embed/tAGnKpE4NCI
+					ytUrl = addYouTubeEmbedUrlParameters(
+						ytUrl.replace(/https:\/\/.*?\/(embed\/|)/, "https://www.youtube.com/embed/"), ytUrlPlaylistParam);
 					playerFrame.src = ytUrl;
 				}
 				youTubeLastUrlRequest = ytUrl;
+			}else{
+				playerFrame.src = "about:blank";
 			}
-			if (!playerFrame.src){
+			if (!ytUrl){
 				//Error: NoMediaMatch
 				postError("NoMediaMatch", "Found no video to play", 2);
+				playerInfoMsgEle.textContent = errorMessage || "No Media";
+				playerInfoMsgEle.style.display = "";
+				playerFrame.style.display = "none";
+				updateSize();
 			}else{
 				//console.error("YouTube URL:", playerFrame.src);		//DEBUG
+				if (playerFrame.style.display == "none"){
+					playerInfoMsgEle.style.display = "none";
+					playerFrame.style.display = "";
+					updateSize();
+				}
 			}
 			//Backup settings
 			restoreSettings.src = playerFrame.src;
@@ -269,8 +304,7 @@
 		//make sure we have correct URL parameters for embedded link
 		function addYouTubeEmbedUrlParameters(url, add){
 			var u = (
-				url.replace("youtube-nocookie.com", "youtube.com")	//for controls bug :-(
-				.replace(/\?.*/, "").trim()
+				url.replace(/\?.*/, "").trim()
 				+ "?autoplay=" + (autoplay? 1 : 0)
 				+ "&enablejsapi=1&playsinline=1&iv_load_policy=3&fs=1"
 			);
@@ -373,11 +407,7 @@
 				
 		//ready
 		setTimeout(function(){
-			postProperties({
-				size: {
-					height: (cardBody.getBoundingClientRect().height + "px")
-				}
-			});
+			updateSize();
 			postState(1, {});
 		}, 300);
 	</script>
