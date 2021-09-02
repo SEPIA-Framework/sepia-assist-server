@@ -6,6 +6,7 @@ import java.util.TreeSet;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import net.b07z.sepia.server.assist.answers.AnswerTools;
 import net.b07z.sepia.server.assist.assistant.ActionBuilder;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.data.Card;
@@ -158,6 +159,9 @@ public class MusicSearch implements ServiceInterface{
 			}
 		}
 		String givenUri = (dataJson != null)? JSON.getStringOrDefault(dataJson, "uri", "") : "";
+		
+		//custom answer?
+		String reply = nluResult.getParameter(PARAMETERS.REPLY);	//can be defined e.g. via Teach-UI
 		
 		boolean hasMinimalInfo = Is.notNullOrEmpty(song) || Is.notNullOrEmpty(artist) 
 				|| Is.notNullOrEmpty(album) || Is.notNullOrEmpty(playlistName) || Is.notNullOrEmpty(genre);
@@ -615,6 +619,12 @@ public class MusicSearch implements ServiceInterface{
 		}else{
 			api.setStatusSuccess();
 		}*/
+		
+		//custom reply?
+		if (!reply.isEmpty()){
+			reply = AnswerTools.handleUserAnswerSets(reply);
+			api.setCustomAnswer(reply);
+		}
 		api.setStatusSuccess();
 		
 		//build the API_Result

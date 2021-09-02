@@ -1,5 +1,6 @@
 package net.b07z.sepia.server.assist.services;
 
+import net.b07z.sepia.server.assist.answers.AnswerTools;
 import net.b07z.sepia.server.assist.data.Card;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.data.Card.ElementType;
@@ -99,6 +100,9 @@ public class MusicRadioMixed implements ServiceInterface {
 			//String stream = (String) NLU_result.getOptionalParameter(PARAMETERS.URL, "").getDataFieldOrDefault(InterviewData.VALUE);
 			String stream = nluResult.getParameter(PARAMETERS.URL);	//this parameter is not extractable but can be submitted by direct commands for example
 			
+			//custom answer?
+			String reply = nluResult.getParameter(PARAMETERS.REPLY);	//can be defined e.g. via Teach-UI
+			
 			Debugger.println("cmd: Music radio, station: " + station + ", genre: " + genre + ", action: " + action, 2);				//debug
 			
 			/*
@@ -186,7 +190,13 @@ public class MusicRadioMixed implements ServiceInterface {
 				api.addCard(card.getJSON());
 				api.hasCard = true;
 				
-				api.setCustomAnswer(streamResultAns);
+				//default or custom reply?
+				if (!reply.isEmpty()){
+					reply = AnswerTools.handleUserAnswerSets(reply);
+					api.setCustomAnswer(reply);
+				}else{
+					api.setCustomAnswer(streamResultAns);
+				}
 				api.setStatusSuccess();
 				
 				ServiceResult result = api.buildResult();
@@ -447,6 +457,12 @@ public class MusicRadioMixed implements ServiceInterface {
 				}
 				
 				api.hasAction = true;
+				
+				//custom success reply?
+				if (!reply.isEmpty()){
+					reply = AnswerTools.handleUserAnswerSets(reply);
+					api.setCustomAnswer(reply);
+				}
 			}
 		
 		//some error occurred somewhere 
