@@ -6,6 +6,7 @@ import org.json.simple.JSONObject;
 import net.b07z.sepia.server.assist.services.ServiceBuilder;
 import net.b07z.sepia.server.assist.services.ServiceResult;
 import net.b07z.sepia.server.core.assistant.ACTIONS;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 
 /**
@@ -74,6 +75,8 @@ public class ActionBuilder {
 	public JSONArray getArray(){
 		return this.actionArray;
 	}
+	
+	//--- some convenience methods ---
 
 	/**
 	 * Get the default "Click here to open" text in local version.
@@ -86,5 +89,29 @@ public class ActionBuilder {
 			return "Click here to open";
 		}
 	}
+	
+	/**
+	 * Add basic web-search.
+	 * @param service - ServiceBuilder used to create service result
+	 * @param searchTerm - term to search
+	 */
+	public static void addWebSearchButton(ServiceBuilder service, String searchTerm, String customTitle){
+		//add button that links to help
+		service.addAction(ACTIONS.BUTTON_CMD);
+		service.putActionInfo("title", Is.notNullOrEmpty(customTitle)? customTitle : "Web Search");
+		service.putActionInfo("info", "direct_cmd");
+		service.putActionInfo("cmd", CmdBuilder.getWebSearch(searchTerm));
+		service.putActionInfo("options", JSON.make(ACTIONS.OPTION_SKIP_TTS, true));
+	}
 
+	/**
+	 * Add a button-action that links to API-Key help page.
+	 * @param service - ServiceBuilder used to create service result
+	 */
+	public static void addApiKeyInfoButton(ServiceBuilder service){
+		//add button that links to help
+		service.addAction(ACTIONS.BUTTON_IN_APP_BROWSER);
+		service.putActionInfo("url", "https://github.com/SEPIA-Framework/sepia-docs/wiki/API-keys");
+		service.putActionInfo("title", "Info: API-Keys");
+	}
 }

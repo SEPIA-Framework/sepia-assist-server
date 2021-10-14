@@ -3,7 +3,7 @@ package net.b07z.sepia.server.assist.events;
 import java.util.ArrayList;
 
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
-import net.b07z.sepia.server.assist.tools.RandomGen;
+import net.b07z.sepia.server.core.tools.RandomGen;
 
 /**
  * Produces text messages for pro-active dialogs.

@@ -1,7 +1,7 @@
 package net.b07z.sepia.server.assist.interviews;
 
 import net.b07z.sepia.server.assist.answers.Answers;
-import net.b07z.sepia.server.assist.assistant.CmdBuilder;
+import net.b07z.sepia.server.assist.assistant.ActionBuilder;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.services.ServiceBuilder;
 import net.b07z.sepia.server.assist.services.ServiceInfo;
@@ -9,11 +9,9 @@ import net.b07z.sepia.server.assist.services.ServiceInterface;
 import net.b07z.sepia.server.assist.services.ServiceResult;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
-import net.b07z.sepia.server.core.assistant.ACTIONS;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
-import net.b07z.sepia.server.core.tools.JSON;
 
 /**
  * In case there is a non-final result use this "quasi"-API class.
@@ -68,11 +66,7 @@ public class RedirectResult implements ServiceInterface{
 		api.answerClean = Converters.removeHTML(api.answer);
 		
 		//websearch action
-		api.addAction(ACTIONS.BUTTON_CMD);
-		api.putActionInfo("title", "Web Search");
-		api.putActionInfo("info", "direct_cmd");
-		api.putActionInfo("cmd", CmdBuilder.getWebSearch(nluResult.input.textRaw));
-		api.putActionInfo("options", JSON.make(ACTIONS.OPTION_SKIP_TTS, true));
+		ActionBuilder.addWebSearchButton(api, nluResult.input.textRaw, null);
 		
 		api.resultInfoPut("cmd", nluResult.getCommand());
 		

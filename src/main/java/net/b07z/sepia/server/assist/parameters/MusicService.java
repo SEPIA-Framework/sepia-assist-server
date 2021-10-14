@@ -25,6 +25,7 @@ import net.b07z.sepia.server.core.tools.JSON;
 public class MusicService implements ParameterHandler{
 	
 	public static enum Service {
+		embedded,		//handled in client custom widget (not part of NLU atm)
 		spotify,
 		spotify_link,
 		spotify_embedded,
@@ -34,7 +35,9 @@ public class MusicService implements ParameterHandler{
 		amazon_music,
 		deezer,
 		soundcloud,
+		soundcloud_embedded,
 		youtube,
+		youtube_link,
 		youtube_embedded,
 		vlc_media_player
 	}
@@ -42,6 +45,7 @@ public class MusicService implements ParameterHandler{
 	//-------data-------
 	public static Map<String, String> musicServices = new HashMap<>();
 	static {
+		musicServices.put("<embedded>", "Media Player");
 		musicServices.put("<spotify>", "Spotify");
 		musicServices.put("<spotify_link>", "Spotify");
 		musicServices.put("<spotify_embedded>", "Spotify");
@@ -51,7 +55,9 @@ public class MusicService implements ParameterHandler{
 		musicServices.put("<amazon_music>", "Amazon Music");
 		musicServices.put("<deezer>", "Deezer");
 		musicServices.put("<soundcloud>", "SoundCloud");
+		musicServices.put("<soundcloud_embedded>", "SoundCloud");
 		musicServices.put("<youtube>", "YouTube");
+		musicServices.put("<youtube_link>", "YouTube");
 		musicServices.put("<youtube_embedded>", "YouTube");
 		musicServices.put("<vlc_media_player>", "VLC Media Player");
 	}
@@ -144,12 +150,16 @@ public class MusicService implements ParameterHandler{
 		this.found = service; 
 		
 		if (!service.isEmpty()){
+			//URL based variant of service?
 			if (NluTools.stringContains(service, "link")){
 				if (NluTools.stringContains(service, spotify)){
 					service = "<" + Service.spotify_link.name() + ">";
 				}else if (NluTools.stringContains(service, appleMusic)){
 					service = "<" + Service.apple_music_link.name() + ">";
+				}else if (NluTools.stringContains(service, youTube)){
+					service = "<" + Service.youtube_link.name() + ">";
 				}
+			//custom widget based variant of service?
 			}else if (NluTools.stringContains(service, "(embedded)$")){
 				if (NluTools.stringContains(service, spotify)){
 					service = "<" + Service.spotify_embedded.name() + ">";
@@ -158,6 +168,7 @@ public class MusicService implements ParameterHandler{
 				}else if (NluTools.stringContains(service, youTube)){
 					service = "<" + Service.youtube_embedded.name() + ">";
 				}
+			//app or default
 			}else if (NluTools.stringContains(service, spotify)){
 				service = "<" + Service.spotify.name() + ">";
 			}else if (NluTools.stringContains(service, appleMusic)){

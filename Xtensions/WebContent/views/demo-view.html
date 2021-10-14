@@ -10,51 +10,72 @@
 			<h3>Page 2 - Microphone and chat output</h3>
 			<input id="sepiaFW-frame-c-text-in" style="width: calc(100% - 113px); height: 40px; margin: 8px 8px 8px 0; border-bottom: 1px solid;" placeholder="input text">
 			<button style="width: 100px; margin: 0;" onclick="SepiaFW.frames.currentScope.sendText();">SEND</button>
-			<textarea id="sepiaFW-frame-c-stt-data" style="width: 100%; height: calc(50% - 65px);"></textarea>
-			<textarea id="sepiaFW-frame-c-chat-data" style="width: 100%; height: calc(50% - 65px);"></textarea>
+			<textarea id="sepiaFW-frame-c-stt-data" style="width: 100%; height: calc(50% - 35px);"></textarea>
+			<textarea id="sepiaFW-frame-c-chat-data" style="width: 100%; height: calc(50% - 35px);"></textarea>
 		</div>
 	</div>
 </div>
 <div id="sepiaFW-frames-nav-bar" class='sepiaFW-layer-header'>
-	<button id="sepiaFW-frames-close" class='entry'>
+	<button id="sepiaFW-frames-close" class="entry icon-button">
 		<i class="material-icons md-btn2">close</i>
 	</button>
-	<button id="sepiaFW-frames-mic" class='entry'>
+	<button id="sepiaFW-frames-mic" class="entry icon-button">
 		<i class="material-icons md-btn2">mic</i>
 	</button>
-	<button id="sepiaFW-frames-show-prev-page" class='entry'>
+	<button id="sepiaFW-frames-show-prev-page" class="entry">
 		<i class="material-icons md-btn2">keyboard_arrow_left</i><span data-localize="back">back</span>
 	</button>
-	<button id="sepiaFW-frames-show-next-page" class='entry'>
+	<button id="sepiaFW-frames-show-next-page" class="entry">
 		<span data-localize="next">next</span><i class="material-icons md-btn2">keyboard_arrow_right</i>
 	</button>
 	<div id="sepiaFW-frames-nav-bar-page-indicator"><div>&nbsp;</div><div>&nbsp;</div></div>
 </div>
 <script>
+	//NOTE: this is a more basic version of "<assist_server>/views/custom-view-demo.html"
+	
+	//Use this action in your service (or Teach-UI) to trigger the demo frame:
+	//Action name: "open_frames_view";
+	//Action data: "info": {"pageUrl": "<custom_data>/views/demo-view.html"}
+	
+	//Localize some UI text
 	$('#sepiaFW-frame-carousel').find('[data-localize]').each(function(){
 		$(this).html(SepiaFW.local.g(this.dataset.localize));
 	});
+	/* Currently available frame events:
+		onFinishSetup
+		onOpen
+		onFramePageChange
+		onClose
+		onMessageHandler
+		onMissedMessageHandler
+		onSpeechToTextInputHandler
+		onChatOutputHandler
+		actionHandler (for custom actions of type: 'frames_view_action')
+	*/
 	//Define scope
 	SepiaFW.frames.currentScope = {
-		//Load scope (default method, kind of like a 'onDocumentReady')
-		load: function(){
-			$('#sepiaFW-frames-mic').attr('class', 'entry');
-		},
+		//Theme (frame: light, dark, mod.: flat, screen: dark_full)
+		theme: "light",		//e.g.: "dark_full flat"
+		
 		//You can use the NLU-prefix to redirect input to this custom view frame via SDK or Teach-UI commands (make sure to use _..._ format)
 		nluPrefix: "_demo_frame_",
 		
-		//--Interface functions--
-		
-		sayHelloOnOpen: function(){
+		//Load scope (default method, kind of like a 'onDocumentReady')
+		load: function(){
+			$('#sepiaFW-frames-mic').attr('class', 'entry icon-button');
+		},
+		onOpen: function(){
 			//we use '$('#sepiaFW-frame-page-...')' to avoid conflicts with global ID:
 			$('#sepiaFW-frame-page-1 #sepiaFW-frame-c-hello').html(
 				"<p>Welcome to the Demo-View frame.</p>" 
-				+ "<p>This frame is loaded from the SEPIA assist server but runs inside the scope of the SEPIA client and has open access to all features.</p>"
-				+ "<p>This is allowed because the SEPIA server is considered a safe origin.</p>"
-				+ "<p>You can make use of this feature to build more complex custom views e.g. for SDK services.</p>"
+				+ "<p>This frame runs inside the scope of the SEPIA client and has open access to all features.</p>"
+				+ "<p>This type of frames can only be used when loaded from safe origins (e.g. app folder, or SEPIA server).</p>"
 			);
 		},
-		handleSttData: function(data){
+		onClose: function(){
+			console.log("BYE BYE");
+		},
+		onSpeechToTextInputHandler: function(data){
 			$('#sepiaFW-frame-page-2 #sepiaFW-frame-c-stt-data').val(JSON.stringify(data, "", 2));
 			//modify text to include custom tag (can be used to redirect all input to a custom service for example)
 			if (data.text && data.isFinal){
@@ -62,14 +83,19 @@
 				return textWithPrefix;	//<-- return the data to actually modify it
 			}
 		},
-		handleChatOutput: function(data){
+		onChatOutputHandler: function(data){
 			$('#sepiaFW-frame-page-2').find('#sepiaFW-frame-c-chat-data').val(JSON.stringify(data, "", 2));
 		},
+		
+		//Page change event
+		onFramePageChange: function(currentPage, triggeredByOpenEvent){},
+		
 		//Animation state "listener" (listening, speaking, loading, idle, etc.)
 		onAnimationStateChange: function(animState){
-			$('#sepiaFW-frames-mic').attr('class', 'entry state-' + animState);
+			$('#sepiaFW-frames-mic').attr('class', 'entry icon-button state-' + animState);
 		},
-		//Custom actions
+		
+		//For custom 'frames_view_action' (only)
 		actionHandler: function(action){
 			console.log("Custom frame action", action);
 			if (action.functionName && typeof action.functionName == "string" && action.functionName.toLowerCase() == "test"){
@@ -95,10 +121,6 @@
 				SepiaFW.client.sendInputText(text);
 			}
 		}
-		
-		//Use this action in your service to trigger the demo frame:
-		//Action name: "open_frames_view";
-		//Action data: "info": {"pageUrl": "<assist_server>/views/custom-view-demo.html", "onOpen": "sayHelloOnOpen", "onSpeechToTextInputHandler": "handleSttData", "onChatOutputHandler": "handleChatOutput"}
 	}
 	SepiaFW.frames.currentScope.load();
 </script>

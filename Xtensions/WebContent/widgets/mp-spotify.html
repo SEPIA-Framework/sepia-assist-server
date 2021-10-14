@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<!-- web app settings -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=0">
+	<title>Embedded Player</title>
+	<style>
+		* {
+			box-sizing: border-box;
+		}
+		html, body {
+			font-family: sans-serif;
+			width: 100%;
+			height: 100%;
+			margin: 0;
+			padding: 0;
+			background-color: transparent;
+			color: #000;
+		}
+		#card-body {
+			width: 100%;
+			display: flex;
+		}
+		#audio-player {
+			width: 100%;
+		}
+	</style>
+</head>
+<body >
+	<!-- Card Body -->
+	<div id="card-body">
+		<iframe id="audio-player" 
+			height="80" frameborder="0"
+			allowtransparency="true" allow="autoplay *; encrypted-media *;"
+		></iframe>
+	</div>
+	<!-- JS -->
+	<script type="text/javascript">
+		//postMessage listener
+		window.addEventListener('message', function(message){
+			if (message.data && message.data.type){
+				if (message.data.type == "sepia-embedded-player-event" && message.data.ev){
+					eventHandler(message.data.ev);
+				}
+			}
+		});
+		//postMessage to parent window
+		function postMsg(ev){
+			//post only if really a child
+			if (window !== parent){
+				parent.postMessage({
+					type: "sepia-embedded-player-event",
+					ev: ev
+				}, "*");
+			}
+		}
+		function postState(stateId, data){
+			postMsg({
+				state: stateId,	//1: ready, 2: play, 3: pause, ... tbd
+				data: data
+			});
+		}
+		function postProperties(props){
+			postMsg({
+				properties: props	//properties like "size" to adjust UI
+			});
+		}
+		function postSettings(data){
+			postMsg({
+				settings: data	//any app-specific settings that should be restored e.g. when widget reloads/moves
+			});
+		}
+		function postError(name, message, errorCode){
+			postMsg({
+				state: 10,		//10: error
+				name: name,		//1: UnknownEvent, 2: NoMediaMatch, 3: PlayerErrorNotAllowed, 4: PlayerError (any)
+				message: message,
+				code: errorCode
+			});
+		}
+		//get URL parameters
+		function getURLParameter(name){
+			return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null;
+		}
+		//e.g.: skinStyle, skinId
+		var skinStyle = getURLParameter("skinStyle");
+		var skinId = getURLParameter("skinId");
+		
+		//adjust skin
+		if (skinStyle && skinStyle.indexOf("dark") >= 0){
+			document.body.classList.add("dark");
+		}else{
+			document.body.classList.add("light");
+		}
+		if (skinId != undefined){
+			document.body.classList.add("skin-id-" + skinId);
+		}
+
+		//handle events
+		function eventHandler(ev){
+			if (ev.controls){
+				handleControls(ev);
+			}else if (ev.mediaRequest){
+				handleMediaRequest(ev);
+			}else{
+				console.error("event", ev);
+			}
+		}
+
+		//--------- SPOTIFY START ---------
+
+		var cardBody = document.getElementById("card-body");
+		
+		var spotifyFrame = document.getElementById("audio-player");
+		//spotifyFrame.src = "";
+		
+		function handleControls(ev){
+			//TODO: no controls possible atm
+			console.error("Spotify controls", ev);
+		}
+		
+		function handleMediaRequest(ev){
+			//type 'music':
+			/*{
+				"song": "",
+				"search": "",
+				"playlist": "",
+				"artist": "",
+				"album": "",
+				"service": "",
+				"genre": "",
+				"uri": ""
+			}*/
+			console.error("Spotify request", ev);
+			if (ev.mediaRequest.uri){
+				addSpotifyUrl(ev.mediaRequest.uri);
+			}
+		}
+		
+		function addSpotifyUrl(linkUrl){
+			var contentUrl = "https://" + linkUrl.replace("spotify:", "open.spotify.com/embed/").replace(":play", "").replace(/:/g, "/").trim();
+			spotifyFrame.src = contentUrl;
+		}
+
+		//--------- SPOTIFY END ---------
+
+		//ready
+		setTimeout(function(){
+			postProperties({
+				size: {
+					height: (cardBody.getBoundingClientRect().height + "px")
+				}
+			});
+			postState(1, {});
+		}, 300);
+	</script>
+</body>
+</html>

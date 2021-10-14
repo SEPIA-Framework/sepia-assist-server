@@ -22,11 +22,11 @@ public class DefaultReplies {
 	 */
 	public static void setupDefaults(){
 		questions = new HashMap<>();
-		questions.put(PARAMETERS.LOCATION_START, "flights_ask_start_0a");
-		questions.put(PARAMETERS.LOCATION_END, "flights_ask_end_0a");
-		questions.put(PARAMETERS.TIME, "flights_ask_time_0a");
+		questions.put(PARAMETERS.LOCATION_START, "directions_ask_start_0a");
+		questions.put(PARAMETERS.LOCATION_END, "directions_ask_end_0a");
+		//questions.put(PARAMETERS.TIME, "flights_ask_time_0a");
 		
-		//TODO: add more or replace by list or DB
+		//TODO: add more or replace by list or DB --- UPDATE PLZ
 	}
 	
 	/**

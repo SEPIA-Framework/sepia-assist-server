@@ -185,7 +185,7 @@ public class RssFeedReader {
 				}
 				JSONObject jo = new JSONObject();
 				String title = se.getTitle();
-				if (title.contains("[Anzeige]")){
+				if (title == null || title.contains("[Anzeige]")){
 					continue;
 				}
 				title = title.replaceAll("\\r\\n|\\r|\\n|\\t", " ").replaceAll("\u00A0|\u200B", " ")

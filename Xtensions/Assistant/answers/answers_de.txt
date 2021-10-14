@@ -15,6 +15,8 @@ error_region_not_supported_0a;;		rep=0|mood=5;;		Es tut mir leid, aber dieser Se
 error_client_control_0a;;		rep=0|mood=5;;		<user_name>, die Steuerungsfunktion konnte nicht ausgeführt werden. Ich weiß leider nicht warum. 		;;char=neutral
 error_client_control_0b;;		rep=0|mood=5;;		<user_name>, die Steuerungsfunktion konnte nicht ausgeführt werden. 		;;char=neutral
 error_client_support_0a;;		rep=0|mood=5;;		Sorry, aber diese Version der App unterstütz die aufgerufene Aktion nicht. 		;;char=neutral
+error_media_player_0a;;		rep=0|mood=5;;		Sorry, aber es gab einen Fehler bei der Medienwiedergabe. Weiß nicht genau warum. 		;;char=neutral
+error_media_player_0b;;		rep=0|mood=5;;		Sorry, aber ich konnte nichts zum Abspielen finden. 		;;char=neutral
 error_missing_display_0a;;		rep=0|mood=5;;		Sorry, aber dafür benötige ich ein aktives Display. ;;char=neutral
 error_missing_display_0a;;		rep=1|mood=5;;		Ohne ein aktives Display kann ich das Ergebnis nicht anzeigen. ;;char=neutral
 error_missing_display_0a;;		rep=2|mood=5;;		<user_name>, ohne angeschlossenes und aktiviertes Display kommen wir hier leider nicht weiter. ;;char=neutral
@@ -133,18 +135,6 @@ search_vehicle_1b;;		rep=0|mood=5;;		Guck mal, hier sind die Suchergebnisse für
 search_vehicle_ask_0a;;		rep=0|mood=5;;		Suchst du eine bestimmte Marke oder ein konkretes Modell? ;;char=neutral
 search_vehicle_ask_0b;;		rep=0|mood=5;;		Suchst du eine bestimmte Marke oder ein konkretes Modell? ;;char=neutral
 search_vehicle_ask_0c;;		rep=0|mood=5;;		Und wie heißt es? ;;char=neutral
-cs_telcom_0a;;		rep=0|mood=5;;		Es tut mir leid, aber die Hilfe Funktion für Telekommunikationsanbieter steht noch nicht zur Verfügung.	;;char=polite,neutral
-cs_telcom_0b;;		rep=0|mood=5;;		Es tut mir leid, aber für dieses Produkt kann ich dir gerade kein Angebot machen. Frag mich doch später noch mal.	;;char=polite,neutral
-cs_telcom_0c;;		rep=0|mood=5;;		Ich konnte dich leider nicht verstehen, lass uns doch noch mal neu anfangen.	;;char=polite,neutral
-cs_telcom_0d;;		rep=0|mood=5;;		Da habe ich wohl was verpasst <user_name>, ich kenne leider deinen aktuellen Vertrag noch nicht!	;;char=polite,neutral,cool
-cs_telcom_1a;;		rep=0|mood=5;;		Ok, habe alles vorbereitet, schau mal!	;;char=cool,neutral
-cs_telcom_2a;;		rep=0|mood=5;;		Hier ist dein persönliches Angebot <user_name>.	;;char=neutral
-cs_telcom_ask_info_0a;;		rep=0|mood=5;;		Interessierst du dich für einen pre-paid oder Zweijahresvertrag?	;;char=neutral
-cs_telcom_ask_type_0a;;		rep=0|mood=5;;		Interessierst du dich für einen pre-paid oder Zweijahresvertrag?	;;char=neutral
-cs_telcom_ask_type_0a;;		rep=1|mood=5;;		Sorry, wie war das? pre-paid oder zwei Jahre?	;;char=polite,neutral
-cs_telcom_ask_type_0a;;		rep=2|mood=5;;		Sorry, ich habe es immer noch nicht verstanden. Also die Möglichkeiten sind pre-paid Vertrag und Zweijahresvertrag!	;;char=rude,neutral
-cs_telcom_ask_sell_0a;;		rep=0|mood=5;;		Zu einem pre-paid Vertrag empfehlen wir die Datenoption 500 MB für 10 €. Bist du daran interessiert?	;;char=polite,neutral
-cs_telcom_ask_sell_0b;;		rep=0|mood=5;;		Für 10 € extra pro Monat kannst du high-speed LTE genießen. Interessiert?	;;char=cool,neutral
 insurance_0a;;		rep=0|mood=5;;		Es tut mir leid, aber die Hilfe Funktion für Versicherungen steht noch nicht zur Verfügung. ;;char=polite,neutral
 insurance_0b;;		rep=0|mood=5;;		Es tut mir leid, aber für dieses Objekt kann ich dir gerade kein Angebot machen. Frag mich doch später noch mal. ;;char=cool,neutral
 insurance_0c;;		rep=0|mood=5;;		Ich konnte dich leider nicht verstehen, lass uns doch noch mal neu anfangen. ;;char=polite,neutral
@@ -181,7 +171,7 @@ match_1a;;		rep=0|mood=5;;		Guck mal, habe dir was rausgesucht. ;;char=cool,rude
 match_1a;;		rep=0|mood=5;;		Hier sind die besten Treffer dazu. ;;char=neutral
 match_ask_0a;;		rep=0|mood=5;;		Was soll ich für dich suchen? ;;char=neutral
 match_ask_0a;;		rep=0|mood=5;;		Was möchtest du gerne wissen? ;;char=polite,neutral
-music_0a;;		rep=0|mood=5;;		<user_name>, ich kann gerade leider nicht auf meine Musik zugreifen. Weiß auch nicht wieso. ;;char=cool,rude,neutral
+music_0a;;		rep=0|mood=5;;		<user_name>, ich kann gerade leider nicht auf die Musik zugreifen. Weiß auch nicht wieso. ;;char=cool,rude,neutral
 music_0b;;		rep=0|mood=5;;		<user_name>, zu diesem Suchbegriff habe ich leider keine Musik gefunden. ;;char=polite,neutral
 music_0c;;		rep=0|mood=5;;		Im Moment kann ich <1> leider nicht abspielen, sorry. Hast du schon eine Radio Suche probiert? ;;char=cool,polite,neutral
 music_0d;;		rep=0|mood=5;;		Im Moment kann ich <1> von <2> leider nicht abspielen, sorry. Hast du schon eine Radio Suche probiert? ;;char=cool,polite,neutral
@@ -209,7 +199,7 @@ music_radio_1f;;		rep=0|mood=5;;		Radio wird gestartet. Habe diese <1> Sender ge
 music_radio_2a;;		rep=0|mood=5;;		Erledigt <user_name>. ;;char=neutral
 server_music_0a;;		rep=0|mood=5;;		<user_name>, ich kann die Musik leider nicht finden. ;;char=cool,polite,neutral
 server_music_0a;;		rep=0|mood=5;;		Tut mir leid, aber ich kann die Musik nicht finden. ;;char=cool,polite,neutral
-server_music_0b;;		rep=0|mood=5;;		Tut mir leid, aber es scheint ein Problem mit dem Musikprogramm zu geben. ;;polite,neutral
+server_music_0b;;		rep=0|mood=5;;		Tut mir leid, aber es scheint ein Problem mit dem Musik-Player zu geben. ;;polite,neutral
 server_music_0c;;		rep=0|mood=5;;		Tut mir leid, aber ich kann kein Gerät finden um Musik abzuspielen. ;;char=cool,polite,neutral
 server_music_0d;;		rep=0|mood=5;;		Hörst du Musik? ich höre nix. ;;char=rude
 server_music_1a;;		rep=0|mood=5;;		Alles klar, Musik wird gestartet. ;;char=cool,rude,neutral

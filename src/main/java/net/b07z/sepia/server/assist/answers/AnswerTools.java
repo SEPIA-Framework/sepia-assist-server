@@ -10,7 +10,7 @@ import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.services.ServiceBuilder;
 import net.b07z.sepia.server.assist.services.ServiceInfo;
 import net.b07z.sepia.server.assist.tools.DateTimeConverters;
-import net.b07z.sepia.server.assist.tools.RandomGen;
+import net.b07z.sepia.server.core.tools.RandomGen;
 
 /**
  * Tools to prepare answers.

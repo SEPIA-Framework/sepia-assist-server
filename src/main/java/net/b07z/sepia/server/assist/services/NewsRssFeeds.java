@@ -15,7 +15,6 @@ import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.Statistics;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
-import net.b07z.sepia.server.assist.tools.RandomGen;
 import net.b07z.sepia.server.core.assistant.ACTIONS;
 import net.b07z.sepia.server.core.assistant.ENVIRONMENTS;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
@@ -23,6 +22,7 @@ import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
+import net.b07z.sepia.server.core.tools.RandomGen;
 
 import java.util.List;
 import java.util.Map;

@@ -15,6 +15,8 @@ error_region_not_supported_0a;;		rep=0|mood=5;;		I'm sorry but this service does
 error_client_control_0a;;		rep=0|mood=5;;		<user_name>, the control function could not be executed. I don't know why, sorry. 		;;char=neutral
 error_client_control_0b;;		rep=0|mood=5;;		<user_name>, the control function could not be executed. 		;;char=neutral
 error_client_support_0a;;		rep=0|mood=5;;		Sorry, but this version of the app does not support the requested action. 		;;char=neutral
+error_media_player_0a;;		rep=0|mood=5;;		Sorry, but there was a media playback error. I'm not sure why. 		;;char=neutral
+error_media_player_0b;;		rep=0|mood=5;;		Sorry, but I couldn't find anything to play. 		;;char=neutral
 error_missing_display_0a;;		rep=0|mood=5;;		Sorry, but I need an active display to do that. ;;char=neutral
 error_missing_display_0a;;		rep=1|mood=5;;		Without an active display I cannot show the result. ;;char=neutral
 error_missing_display_0a;;		rep=2|mood=5;;		<user_name>, without a connected and active display we cannot continue, sorry. ;;char=neutral
@@ -169,7 +171,7 @@ match_1a;;		rep=0|mood=5;;		Have a look at what I've found for you. ;;char=neutr
 match_1a;;		rep=0|mood=5;;		I hope that helps, have a look please. ;;char=polite,neutral
 match_ask_0a;;		rep=0|mood=5;;		How can I help you? ;;char=polite,neutral
 match_ask_0a;;		rep=0|mood=5;;		What do you want to know? ;;char=neutral
-music_0a;;		rep=0|mood=5;;		<user_name>, I can't access my music right now. Don't know why. ;;char=neutral
+music_0a;;		rep=0|mood=5;;		<user_name>, I can't access the music right now. Don't know why. ;;char=neutral
 music_0b;;		rep=0|mood=5;;		Sorry, but I can't find any music for that. ;;char=polite,neutral
 music_0c;;		rep=0|mood=5;;		Right now I can't play <1>, sorry. Did you try a radio search? ;;char=polite,neutral
 music_0d;;		rep=0|mood=5;;		Right now I can't play <1> by <2>, sorry. Did you try a radio search? ;;char=polite,neutral

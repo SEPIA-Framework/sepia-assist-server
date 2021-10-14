@@ -1,0 +1,253 @@
+<div id='sepiaFW-frame-carousel' class="sepiaFW-inner-container sepiaFW-carousel">
+<style>
+	#sepiaFW-frame-page-1 {
+		background-color: #00a99e;
+	}
+	.clock-widget {
+		position: relative;
+		height: 200px;
+		width: 200px;
+		background: white;
+		box-sizing: border-box;
+		border-radius: 100%;
+		border: 10px solid #67d2c8;
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		margin: auto;
+		cursor: pointer;
+	}
+	.clock-widget .clock-tick-top,
+	.clock-widget .clock-tick-right,
+	.clock-widget .clock-tick-bottom,
+	.clock-widget .clock-tick-left {
+		position: absolute;
+		background: #262626;
+		margin: auto;
+	}
+	.clock-widget .clock-tick-top {
+		width: 3px;
+		height: 8px;
+		top: 0;
+		left: 0;
+		right: 0;
+	}
+	.clock-widget .clock-tick-right {
+		width: 8px;
+		height: 3px;
+		top: 0;
+		bottom: 0;
+		right: 0;
+	}
+	.clock-widget .clock-tick-bottom {
+		width: 3px;
+		height: 8px;
+		left: 0;
+		right: 0;
+		bottom: 0;
+	}
+	.clock-widget .clock-tick-left {
+		width: 8px;
+		height: 3px;
+		top: 0;
+		bottom: 0;
+		left: 0;
+	}
+	.clock-widget .clock-face {
+		height: 6px;
+		width: 6px;
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 0;
+		bottom: 0;
+		margin: auto;
+		background: #262626;
+		border-radius: 100%;
+	}
+	.clock-widget .clock-shadow {
+		height: 200px;
+		width: 200px;
+		position: absolute;
+		left: 60px;
+		top: 60px;
+		transform: rotate(135deg);
+		background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1));
+	}
+	.clock-widget .clock-digital,
+	.clock-widget .clock-date {
+		position: absolute;
+		bottom: 32px;
+		left: 0;
+		width: 100%;
+		text-align: center;
+		font-weight: bold;
+		opacity: 0;
+		transition: opacity 2s;
+	}
+	.clock-widget .clock-date {
+		top: 32px;
+		bottom: unset;
+	}
+	.clock-widget .clock-digital.visible,
+	.clock-widget .clock-date.visible {
+		opacity: 1;
+	}
+	.clock-widget .clock-hour {
+		width: 3px;
+		height: 100%;
+		position: absolute;
+		left: 0;
+		right: 0;
+		margin: 0 auto;
+		transition: transform .75s;
+	}
+	.clock-widget .clock-hour:before {
+		position: absolute;
+		content: "";
+		background: #262626;
+		height: 40px;
+		width: 3px;
+		top: 50px;
+	}
+	.clock-widget .clock-minute {
+		width: 2px;
+		height: 100%;
+		position: absolute;
+		left: 0;
+		right: 0;
+		margin: 0 auto;
+		transition: transform .75s;
+	}
+	.clock-widget .clock-minute:before {
+		position: absolute;
+		content: "";
+		background: #262626;
+		height: 60px;
+		width: 2px;
+		top: 30px;
+	}
+	.clock-widget .clock-second {
+		width: 2px;
+		height: 100%;
+		position: absolute;
+		left: 0;
+		right: 0;
+		margin: 0 auto;
+		/*animation: time 60s infinite linear;*/
+		transition: transform .75s;
+	}
+	.clock-widget .clock-second:before {
+		position: absolute;
+		content: "";
+		background: #fd1111;
+		height: 45px;
+		width: 2px;
+		top: 45px;
+	}
+	/*@keyframes time {
+		to { transform: rotate(360deg); }
+	}*/
+</style>
+	<div class='sepiaFW-carousel-pane-container'>
+		<!-- Page 1 -->
+		<div id="sepiaFW-frame-page-1" class='sepiaFW-frames-page sepiaFW-carousel-pane'>
+			<div class="clock-widget">
+				<div class="clock-tick-top"></div>
+				<div class="clock-tick-right"></div>
+				<div class="clock-tick-bottom"></div>
+				<div class="clock-tick-left"></div>
+				<div class="clock-face"></div>
+				<div class="clock-shadow"></div>
+				<div class="clock-date"></div>
+				<div class="clock-digital"></div>
+				<div class="clock-hour"></div>
+				<div class="clock-minute"></div>
+				<div class="clock-second"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="sepiaFW-frames-nav-bar" class='sepiaFW-layer-header'>
+	<button id="sepiaFW-frames-close" class="entry icon-button">
+		<i class="material-icons md-btn2">close</i>
+	</button>
+	<button id="sepiaFW-frames-mic" class="entry icon-button">
+		<i class="material-icons md-btn2">mic</i>
+	</button>
+	<!--<button id="sepiaFW-frames-show-prev-page" class='entry'>
+		<i class="material-icons md-btn2">keyboard_arrow_left</i><span data-localize="back">back</span>
+	</button>
+	<button id="sepiaFW-frames-show-next-page" class='entry'>
+		<span data-localize="next">next</span><i class="material-icons md-btn2">keyboard_arrow_right</i>
+	</button>-->
+	<div id="sepiaFW-frames-nav-bar-page-indicator"><div>&nbsp;</div></div>
+</div>
+<script>
+	//INFO: This is a very simple custom view. To learn more visit: 
+	//https://github.com/SEPIA-Framework/sepia-extensions
+	
+	$('#sepiaFW-frame-carousel').find('[data-localize]').each(function(){
+		$(this).html(SepiaFW.local.g(this.dataset.localize));
+	});
+	//Define scope
+	SepiaFW.frames.currentScope = {
+		//Theme
+		theme: "dark flat",
+		
+		//Load scope (default method, kind of like a 'onDocumentReady')
+		load: function(){
+			$('#sepiaFW-frames-mic').attr('class', 'entry icon-button');	//start clean
+			
+			//Code Pen: https://codepen.io/MyXoToD/pen/psLen
+			//Code Pen Ref.: http://dribbble.com/shots/1015985-Clock
+			//Tweaks and Javascript: FQ / bytemind.de
+			
+			var $container = $('#sepiaFW-frame-page-1').find(".clock-widget").first();
+			var hour = $container.find(".clock-hour")[0];
+			var minute = $container.find(".clock-minute")[0];
+			var second = $container.find(".clock-second")[0];
+			
+			var digital = $container.find(".clock-digital")[0];
+			var date = $container.find(".clock-date")[0];
+			var dateTimer;
+			
+			$container.on("click", function(){
+				clearTimeout(dateTimer);
+				date.classList.add("visible");
+				digital.classList.add("visible");
+				dateTimer = setTimeout(function(){
+					date.classList.remove("visible");
+					digital.classList.remove("visible");
+				}, 5000);
+			});
+			
+			setInterval(function(){
+				var d = new Date();
+				var s = d.getSeconds();
+				var m = d.getMinutes();
+				var h = d.getHours();
+				hour.style.transform = "rotate(" + Math.floor(360/12 * h) + "deg)";
+				minute.style.transform = "rotate(" + Math.floor((h * 360) + (360/60 * m)) + "deg)";
+				second.style.transform = "rotate(" + Math.floor((m * 360) + (360/60 * s)) + "deg)";
+				date.textContent = d.toLocaleDateString();
+				digital.textContent = d.toLocaleTimeString();
+			}, 1000);
+		},
+		onOpen: function(){
+			
+		},
+		
+		//Animation state "listener" (listening, speaking, loading, idle, etc.)
+		onAnimationStateChange: function(animState){
+			$('#sepiaFW-frames-mic').attr('class', 'entry icon-button state-' + animState);
+		},
+		//Custom actions
+		actionHandler: function(action){
+			console.error(action);
+		}
+	}
+	SepiaFW.frames.currentScope.load();
+</script>

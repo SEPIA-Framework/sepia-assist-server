@@ -3,41 +3,50 @@
 		"my": [
 			"size",
 			"ego_fm_pure", 
-			"1live_diggi", 
-			"you_fm_just_music",
+			"1live_diggi",
 			"m1_fm_clubmix",
+			"bob_best_of_rock",
 			"deluxe_lounge",
+			"jam_fm_workout",
 			"m1_fm_charts"
 		],
 		"rock": [ 
 			"antenne_bayern_classic_rock",
 			"delta_indie",
-			"laut_fm_musikhitmix"
+			"laut_fm_musikhitmix",
+			"ego_fm_riff",
+			"bob_best_of_rock",
+			"bob_deutschrock"
 		],
 		"classicrock": [ 
-			"antenne_bayern_classic_rock"
+			"antenne_bayern_classic_rock",
+			"bob_classic_rock"
 		],
 		"metal": [
 			"delta_radio_föhnfrisur",
 			"rock_antenne_heavy_metal", 
+			"bob_harte_seite",
 			"hotmixradio_metal"
 		],
 		"alternative": [
 			"kexp",
 			"delta_indie",
 			"ego_fm_pure",
-			"size"
+			"size",
+			"bob_alternative_rock"
 		],
 		"chill": [
 			"deluxe_lounge",
 			"antenne_bayern_chillout",
-			"ego_fm_soul"
+			"ego_fm_soul",
+			"jam_fm_new_chill"
+		],
+		"hiphop": [
+			"ego_fm_rap",
+			"jam_fm_rap",
+			"antenne_bayern_black_beats",
+			"1live_hip_hop"
 		]
-	},
-	"deprecations": {
-		"antenne_bayern_alpensound": "ANTENNE BAYERN Alpensound",
-		"laut_fm_charts": "laut.fm MyHit Charts",
-		"laut_fm_musikhitmix": "laut.fm Musikhitmix"
 	},
     "playlists": {
         "WDR 5": "http://www1.wdr.de/radio/wdr5/musik/titelsuche-wdrfuenf-104.html",
@@ -50,21 +59,28 @@
         "1LIVE": "http://www1.wdr.de/radio/1live/on-air/1live-playlist/index.html",
         "WDR 2": "http://www1.wdr.de/radio/wdr2/titelsuche-wdrzwei-124.html",
         "DELUXE LOUNGE RADIO": "http://onlineradiobox.com/de/radiodeluxelounge/playlist/",
-		"SIZE RADIO": "http://www.size-radio.com"
+		"SIZE RADIO": "https://www.size-radio.com",
+		"RADIO BOB Harte Seite": "https://www.radiobob.de/musik/playlist",
+		"RADIO BOB Best Of Rock": "https://www.radiobob.de/musik/playlist"
     },
     "stations": {
 		"night": [
 			"deluxe_lounge",
 			"antenne_bayern_chillout",
 			"ego_fm_flash",
-			"you_fm_club",
 			"1live_dj",
 			"ego_fm_soul", 
 			"antenne_bayern_lovesongs",
 			"1live_fiehe"
 		],
+		"club": [
+			"ego_fm_flash",
+			"1live_dj",
+			"jam_fm_elektro",
+			"m1_fm_clubmix"
+		],
 		"size": [{
-			"streamURL": "http://stream.radiojar.com/atr1e8aswa5tv",
+			"streamURL": "https://stream.radiojar.com/atr1e8aswa5tv",
 			"name": "SIZE RADIO"
 		}],
 		"delta_föhnfrisur": [{
@@ -146,6 +162,93 @@
 			"streamURL": "http://tuner.m1.fm/clubmix.mp3",
 			"name": "M1.FM Clubmix"
 		}],
+		"jam_fm": [{
+            "streamURL": "http://stream.jam.fm/jamfm-live/mp3-192/",
+            "name": "JAM FM Live"
+        }, 
+			"jam_fm_charts", 
+			"jam_fm_study", 
+			"jam_fm_elektro", 
+			"jam_fm_rap",
+			"jam_fm_workout",
+			"jam_fm_party", 
+			"jam_fm_black_label",
+			"jam_fm_new_music",
+			"jam_fm_new_chill",
+			"jam_fm_deutsch_rap"
+		],
+		"jam_fm_charts": [{
+            "streamURL": "http://stream.jam.fm/charts/mp3-192/",
+            "name": "JAM FM Charts"
+        }],
+		"jam_fm_study": [{
+            "streamURL": "http://stream.jam.fm/study/mp3-192/",
+            "name": "JAM FM Study"
+        }],
+		"jam_fm_elektro": [{
+            "streamURL": "http://stream.jam.fm/elektro/mp3-192/",
+            "name": "JAM FM Elektro"
+        }],
+		"jam_fm_black_label": [{
+            "streamURL": "http://stream.jam.fm/jamfm-bl/mp3-192/",
+            "name": "JAM FM Black Label"
+        }],
+		"jam_fm_rap": [{
+            "streamURL": "http://stream.jam.fm/rap/mp3-192/",
+            "name": "JAM FM Rap"
+        }],
+		"jam_fm_party": [{
+            "streamURL": "http://stream.jam.fm/party/mp3-192/",	
+            "name": "JAM FM Party"
+        }],
+		"jam_fm_new_music": [{
+            "streamURL": "http://stream.jam.fm/jamfm-nmr/mp3-192/",
+            "name": "JAM FM New Music"
+        }],
+		"jam_fm_workout": [{
+            "streamURL": "http://stream.jam.fm/workout/mp3-192/",
+            "name": "JAM FM Workout"
+        }],
+		"jam_fm_new_chill": [{
+            "streamURL": "http://stream.jam.fm/chill/mp3-192/",
+            "name": "JAM FM Chill"
+        }],
+		"jam_fm_deutsch_rap": [{
+            "streamURL": "http://stream.jam.fm/deutschrap/mp3-192/",
+            "name": "JAM FM Deutsch Rap"
+        }],
+		"bob": [
+			"bob_best_of_rock",
+			"bob_harte_seite", 
+			"bob_classic_rock", 
+			"bob_alternative_rock",
+			"bob_deutschrock",
+			"bob_live"
+		],
+		"bob_harte_seite": [{
+            "streamURL": "https://bob.hoerradar.de/radiobob-hartesaite-mp3-hq",
+            "name": "RADIO BOB Harte Seite"
+        }],
+		"bob_classic_rock": [{
+            "streamURL": "https://bob.hoerradar.de/radiobob-classicrock-mp3-hq",
+            "name": "RADIO BOB Classic Rock"
+        }],
+		"bob_alternative_rock": [{
+            "streamURL": "https://bob.hoerradar.de/radiobob-alternativerock-mp3-hq",
+            "name": "RADIO BOB Alternative Rock"
+        }],
+		"bob_best_of_rock": [{
+            "streamURL": "https://bob.hoerradar.de/radiobob-bestofrock-mp3-hq",
+            "name": "RADIO BOB Best Of Rock"
+        }],
+		"bob_deutschrock": [{
+            "streamURL": "https://bob.hoerradar.de/radiobob-deutschrock-mp3-hq",
+            "name": "RADIO BOB Deutschrock"
+        }],
+		"bob_live": [{
+            "streamURL": "https://bob.hoerradar.de/radiobob-live-mp3-hq",
+            "name": "RADIO BOB Live"
+        }],
         "ndr3": null,
         "ndr2": null,
         "ndr1": null,
@@ -255,17 +358,6 @@
         "you_fm": [{
             "streamURL": "https://hr-youfm-live.cast.addradio.de/hr/youfm/live/mp3/128/stream.mp3",
             "name": "YOU FM"
-        },
-			"you_fm_club",
-			"you_fm_just_music"
-		],
-		"you_fm_club": [{
-            "streamURL": "https://hr-youfm-club.cast.addradio.de/hr/youfm/club/mp3/128/stream.mp3",
-            "name": "YOU FM Club"
-        }],
-		"you_fm_just_music": [{
-            "streamURL": "https://hr-youfm-justmusic.cast.addradio.de/hr/youfm/justmusic/mp3/128/stream.mp3",
-            "name": "YOU FM Just Music"
         }],
         "ffn": null,
         "regenbogen": null,
@@ -331,5 +423,18 @@
         }],
         "jam_fm": null,
         "ballermann": null
-    }
+    },
+	"deprecations": {
+		"antenne_bayern_alpensound": "ANTENNE BAYERN Alpensound",
+		"laut_fm_charts": "laut.fm MyHit Charts",
+		"laut_fm_musikhitmix": "laut.fm Musikhitmix",
+		"you_fm_club": [{
+            "streamURL": "https://hr-youfm-club.cast.addradio.de/hr/youfm/club/mp3/128/stream.mp3",
+            "name": "YOU FM Club"
+        }],
+		"you_fm_just_music": [{
+            "streamURL": "https://hr-youfm-justmusic.cast.addradio.de/hr/youfm/justmusic/mp3/128/stream.mp3",
+            "name": "YOU FM Just Music"
+        }]
+	},
 }

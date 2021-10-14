@@ -32,12 +32,8 @@ import net.b07z.sepia.server.core.tools.JSON;
  */
 public class CustomFrameControl implements ServiceInterface {
 	
-	private static final String DEMO_FRAME_URL = "<assist_server>/views/custom-view-demo.html";
-	private static final JSONObject DEMO_FRAME_DATA = JSON.make(
-		"onOpen", "sayHelloOnOpen",
-		"onSpeechToTextInputHandler", "handleSttData", 
-		"onChatOutputHandler", "handleChatOutput"
-	);
+	private static final String DEMO_FRAME_URL = "<assist_server>/views/demo-view.html";
+	private static final JSONObject DEMO_FRAME_DATA = new JSONObject();  //Note: not data required for default events
 	
 	//Define some sentences for testing:
 	

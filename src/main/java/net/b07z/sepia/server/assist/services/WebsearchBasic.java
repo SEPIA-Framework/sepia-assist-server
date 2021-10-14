@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
@@ -17,7 +16,6 @@ import net.b07z.sepia.server.assist.data.Card.ElementType;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
-import net.b07z.sepia.server.assist.parameters.MusicService;
 import net.b07z.sepia.server.assist.parameters.SearchSection;
 import net.b07z.sepia.server.assist.parameters.WebSearchEngine;
 import net.b07z.sepia.server.assist.server.Config;
@@ -160,7 +158,7 @@ public class WebsearchBasic implements ServiceInterface{
 		api.actionInfo_put_info("title", title1);
 		*/
 		//Card 1
-		boolean addUrlAction = true;	//this is usually enabled, but if engine is YouTube and embedding is possible we should skip this
+		boolean addUrlAction = true;	//this is usually enabled, but if engine is embeddable we should skip this
 		Card card = new Card(Card.TYPE_SINGLE);
 		JSONObject cardData = JSON.make(
 			"title", title1 + ":", 
@@ -172,6 +170,7 @@ public class WebsearchBasic implements ServiceInterface{
 			JSON.put(cardData, "brand", MusicSearch.CARD_BRAND_YOUTUBE);
 			JSON.put(cardData, "autoplay", false);
 			//check if embedding is possible
+			/* - NOTE: we skip this atm because YouTube embedded search is broken (without API) -
 			Object embeddingsObj = nluResult.input.getCustomDataObject(NluInput.DATA_EMBEDDED_MEDIA_PLAYERS);
 			if (embeddingsObj != null){
 				if (((JSONArray) embeddingsObj).contains(MusicService.Service.youtube.name())){
@@ -179,6 +178,7 @@ public class WebsearchBasic implements ServiceInterface{
 					JSON.put(cardData, "embedded", true);
 				}
 			}
+			*/
 		}
 		/*JSONObject linkCard = */
 		card.addElement(ElementType.link, 

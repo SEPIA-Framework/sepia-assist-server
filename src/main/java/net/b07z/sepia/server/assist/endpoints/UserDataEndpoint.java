@@ -57,6 +57,8 @@ public class UserDataEndpoint {
 		JSONObject set = params.getJson("set");
 		JSONObject delete = params.getJson("delete");
 		
+		//TODO: support options here? e.g.: "setOptions" (lastEdit check?), "deleteOptions" ...
+		
 		//no action
 		if (get == null && set == null && delete == null){
 			//FAIL

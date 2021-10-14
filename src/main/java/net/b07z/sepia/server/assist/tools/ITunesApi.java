@@ -22,7 +22,7 @@ public class ITunesApi {
 	
 	//https://developer.apple.com/library/archive/documentation/AudioVideo/Conceptual/iTuneSearchAPI/Searching.html#//apple_ref/doc/uid/TP40017632-CH5-SW1
 	
-	public static final String searchUrl = "https://itunes.apple.com/search";
+	private static final String searchUrl = "https://itunes.apple.com/search";
 	
 	public static final String ENTITY_SONG = "song";
 	public static final String ENTITY_ARTIST = "musicArtist";
