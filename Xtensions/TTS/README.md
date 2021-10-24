@@ -25,6 +25,11 @@ Quality of the voices can vary from 'quite high' to 'rather basic' so be sure to
 See the [mary-tts readme](marytts/INSTALL.md) for more info.  
 NOTE: This extension requires at least 2GB of memory when running in parallel to the SEPIA server, but you can run the server on a different machine as well (see SEPIA settings 'marytts_server').
 
+## Larynx
+
+[Larynx](https://github.com/rhasspy/larynx) is an open-source server for (experimental) high-quality, next-gen voices that is compatible with MaryTTS API and SEPIA since Larynx version 1.0.3..  
+It is pretty resource hungry but you can try and experiment with the low and medium quality settings on Raspberry Pi 4. It is recommended to use the 64bit version (aarch64 on RPi) for better performance.
+
 ## Acapela
 
 [Acapela](https://www.acapela-group.com/demos/) is a commercial system that generates state-of-the-art high quality voices. There is basic support for Acapela but it has NOT been tested for a long time.
