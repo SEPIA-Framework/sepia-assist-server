@@ -1,15 +1,16 @@
 package net.b07z.sepia.server.assist.assistant;
 
-import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.answers.AnswerStatics;
+import net.b07z.sepia.server.assist.geo.GeoCoderInterface;
+import net.b07z.sepia.server.assist.geo.GeoCoderResult;
+import net.b07z.sepia.server.assist.geo.GeoFactory;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
-import net.b07z.sepia.server.assist.tools.GeoCoding;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.tools.JSON;
 
@@ -90,7 +91,7 @@ public class LOCATION {
 														POSTAL_CODE, CITY, STATE, COUNTRY);
 	}
 	/**
-	 * Return pre-loaded full address of specific user location as JSON string.
+	 * Return pre-loaded full address of specific user location (user.getUserSpecificLocation...) as JSON string.
 	 * @param user - user with loaded data
 	 * @param user_param - parameter like &lt;user_home&gt;
 	 * @return JSONObject, fields can be empty
@@ -163,19 +164,10 @@ public class LOCATION {
 	 * @param searchTerm - hint of the address in any form
 	 * @param nluInput - {@link NluInput} object
 	 */
-	public static JSONObject getInfoBySearch(String searchTerm, NluInput nluInput){
-		if (GeoCoding.isSupported()){
-			JSONObject jo = new JSONObject();
-			Map<String, Object> result = GeoCoding.getCoordinates(searchTerm, nluInput.language);
-			if (result.get(LAT) != null)	JSON.add(jo, LAT, result.get(LAT));
-			if (result.get(LNG) != null)	JSON.add(jo, LNG, result.get(LNG));
-			if (result.get(STREET_NBR) != null)	JSON.add(jo, STREET_NBR, result.get(STREET_NBR));
-			if (result.get(STREET) != null)		JSON.add(jo, STREET, result.get(STREET));
-			if (result.get(POSTAL_CODE) != null)JSON.add(jo, POSTAL_CODE, result.get(POSTAL_CODE));
-			if (result.get(CITY) != null)		JSON.add(jo, CITY, result.get(CITY));
-			if (result.get(STATE) != null)		JSON.add(jo, STATE, result.get(STATE));
-			if (result.get(COUNTRY) != null)	JSON.add(jo, COUNTRY, result.get(COUNTRY));
-			return jo;
+	public static GeoCoderResult getInfoBySearch(String searchTerm, NluInput nluInput){
+		GeoCoderInterface geoCoder = GeoFactory.createGeoCoder();
+		if (geoCoder.isSupported()){
+			return geoCoder.getCoordinates(searchTerm, nluInput.language);
 		}else{
 			return null;
 		}

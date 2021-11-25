@@ -17,6 +17,7 @@ import net.b07z.sepia.server.assist.database.DB;
 import net.b07z.sepia.server.assist.database.DataLoader;
 import net.b07z.sepia.server.assist.database.Elasticsearch;
 import net.b07z.sepia.server.assist.email.SendEmailBasicSmtp;
+import net.b07z.sepia.server.assist.geo.GeoFactory;
 import net.b07z.sepia.server.assist.interpreters.InterpretationChain;
 import net.b07z.sepia.server.assist.interpreters.InterpretationStep;
 import net.b07z.sepia.server.assist.interpreters.NluInterface;
@@ -33,7 +34,6 @@ import net.b07z.sepia.server.assist.interpreters.NormalizerLightTR;
 import net.b07z.sepia.server.assist.services.ServiceAccessManager;
 import net.b07z.sepia.server.assist.smarthome.OpenHAB;
 import net.b07z.sepia.server.assist.smarthome.SmartDevicesElasticsearch;
-import net.b07z.sepia.server.assist.tools.GeoCoding;
 import net.b07z.sepia.server.assist.tools.RssFeedReader;
 import net.b07z.sepia.server.assist.tools.SpotifyApi;
 import net.b07z.sepia.server.assist.tts.TtsInterface;
@@ -61,7 +61,7 @@ import net.b07z.sepia.server.core.tools.Is;
  */
 public class Config {
 	public static final String SERVERNAME = "SEPIA-Assist-API"; 		//public server name
-	public static final String apiVersion = "v2.5.2";					//API version
+	public static final String apiVersion = "v2.6.0";					//API version
 	public static String privacyPolicyLink = "";						//Link to privacy policy
 	
 	//helper for dynamic class creation (e.g. from strings in config-file) - TODO: reduce dependencies further 
@@ -329,7 +329,9 @@ public class Config {
 	public static double threshold_personal_cmd_2nd = 0.55;		//approximate personal commands threshold on second chance
 	
 	//API Settings
-	public static String default_geo_api = GeoCoding.GOOGLE;
+	public static String default_geo_api = GeoFactory.OSM;
+	public static String default_poi_api = GeoFactory.GOOGLE;
+	public static String default_directions_api = GeoFactory.GOOGLE;
 
 	//API Keys - loaded from config file
 	public static String amazon_dynamoDB_access = "";
@@ -340,6 +342,7 @@ public class Config {
 	public static String spotify_client_id = "";
 	public static String spotify_client_secret = "";
 	public static String youtube_api_key = "";
+	public static String youtube_api_url = "";
 	public static String dirble_key = "";
 	public static String acapela_vaas_app = "";
 	public static String acapela_vaas_key = "";
@@ -596,7 +599,9 @@ public class Config {
 				}
 			}
 			//API defaults
-			default_geo_api = settings.getProperty("default_geo_api");
+			default_geo_api = settings.getProperty("default_geo_api", GeoFactory.OSM);
+			default_poi_api = settings.getProperty("default_poi_api", GeoFactory.GOOGLE);
+			default_directions_api = settings.getProperty("default_directions_api", GeoFactory.GOOGLE);
 			//API keys
 			amazon_dynamoDB_access = settings.getProperty("amazon_dynamoDB_access");
 			amazon_dynamoDB_secret = settings.getProperty("amazon_dynamoDB_secret");
@@ -606,6 +611,7 @@ public class Config {
 			spotify_client_id = settings.getProperty("spotify_client_id");
 			spotify_client_secret = settings.getProperty("spotify_client_secret");
 			youtube_api_key = settings.getProperty("youtube_api_key");
+			youtube_api_url = settings.getProperty("youtube_api_url", "https://youtube.googleapis.com/youtube/v3/search");
 			dirble_key = settings.getProperty("dirble_key");
 			acapela_vaas_app = settings.getProperty("acapela_vaas_app");
 			acapela_vaas_key = settings.getProperty("acapela_vaas_key");

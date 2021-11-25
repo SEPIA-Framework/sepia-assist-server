@@ -263,14 +263,6 @@ public class DirectionsGoogleMaps implements ServiceInterface{
 		//ALTERNATIVES?
 		if (hasOptions && showAlternatives){
 			//build alternatives list
-			//String data = buildEndAlternativesHTML(optionsArray, api.language, start, wp, googleTravelType, googleViews);
-			//add action
-			/*
-			api.actionInfo_add_action(ACTIONS.SHOW_HTML_RESULT);
-			api.actionInfo_put_info("data", data);
-			api.hasAction = true;
-			*/
-			
 			ArrayList<Card> alternativeLinkCards = buildEndAlternativeCards(optionsArray, api.language, start, wp, googleTravelType, googleViews);
 			
 			//build cards
@@ -513,37 +505,6 @@ public class DirectionsGoogleMaps implements ServiceInterface{
 		return appleMapsURL;
 	}
 	
-	public static String buildEndAlternativesHTML(JSONArray options, String language, String start, String wp, String googleTravelType, String googleViews){
-		String htmlData = "";
-		for (Object o : options){
-			JSONObject locJSON = (JSONObject) o;
-			String loc = locJSON.get(InterviewData.LOCATION_LAT) + "," + locJSON.get(InterviewData.LOCATION_LNG);
-			String locCity = JSON.getStringOrDefault(locJSON, InterviewData.LOCATION_CITY, "");
-			String locStreet = JSON.getStringOrDefault(locJSON, InterviewData.LOCATION_STREET, "");
-			String locAddr = JSON.getStringOrDefault(locJSON, InterviewData.LOCATION_ADDRESS_TEXT, "");
-			String locName = JSON.getStringOrDefault(locJSON, InterviewData.LOCATION_NAME, "");
-			String locImage = JSON.getStringOrDefault(locJSON, InterviewData.LOCATION_IMAGE, Config.urlWebImages + "cards/location_img_default.png");
-			String mapUrl = "";
-			try{
-				mapUrl = makeGoogleMapsURL(start, loc, wp, googleTravelType, googleViews);
-			}catch(Exception e){
-				mapUrl = "";
-			}
-			String data = "<div class='card-box'><div class='inner-container'>";
-				data += "<div class='img-container'>";
-					data += "<img src='" + locImage + "'>";
-				data += "</div>";
-				data += "<div class='text-container'>";
-					data += locName.isEmpty()? "" : (locName + "<br>");
-					if (locCity.isEmpty() && locStreet.isEmpty())	data += (locAddr.isEmpty()? "" : locAddr);
-					else data += ((locStreet.isEmpty())? "" : (locStreet + ", ")) + locCity;
-				data += "</div>";
-				data += "<a class='button-overlay' href='" + mapUrl + "' target='_blank'></a>";
-			data += "</div></div>";
-			htmlData += data;
-		}
-		return htmlData;
-	}
 	/**
 	 * Build cards array from location options.
 	 * @param options

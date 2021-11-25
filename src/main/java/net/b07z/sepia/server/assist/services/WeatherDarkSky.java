@@ -5,6 +5,7 @@ import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.data.Card;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.data.Card.ElementType;
+import net.b07z.sepia.server.assist.geo.GeoFactory;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.parameters.DateAndTime.DateType;
@@ -13,7 +14,6 @@ import net.b07z.sepia.server.assist.server.Statistics;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.assist.tools.DateTimeConverters;
-import net.b07z.sepia.server.assist.tools.GeoCoding;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Converters;
@@ -160,7 +160,7 @@ public class WeatherDarkSky implements ServiceInterface {
 		//parameter adaptation to service format
 		String coords = null;
 		boolean missingGeoCoder = false;
-		if (placeJSON.containsKey("error") && !GeoCoding.isSupported()){
+		if (placeJSON.containsKey("error") && !GeoFactory.createGeoCoder().isSupported()){
 			missingGeoCoder = true;
 		}else{
 			coords = placeJSON.get(InterviewData.LOCATION_LAT).toString() + "," + placeJSON.get(InterviewData.LOCATION_LNG).toString();

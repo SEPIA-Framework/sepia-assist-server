@@ -9,6 +9,9 @@ import org.json.simple.JSONObject;
 import net.b07z.sepia.server.assist.answers.AnswerStatics;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.assistant.LOCATION;
+import net.b07z.sepia.server.assist.geo.GeoCoderResult;
+import net.b07z.sepia.server.assist.geo.GeoFactory;
+import net.b07z.sepia.server.assist.geo.PoiFinderInterface;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interpreters.RegexParameterSearch;
@@ -16,7 +19,6 @@ import net.b07z.sepia.server.assist.interpreters.Normalizer;
 import net.b07z.sepia.server.assist.interviews.Interview;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.server.Config;
-import net.b07z.sepia.server.assist.tools.GeoCoding;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Debugger;
@@ -247,12 +249,13 @@ public class LocationStart implements ParameterHandler{
 			//call the places API with new searchPOI
 			//System.out.println("searchPOI: " + searchPOI); 		//debug
 			String poiType = Place.getPoiType(searchPOI, nluInput.language);
-			JSONArray places = GeoCoding.getPOI(searchPOI, poiType, "", "", nluInput.language);
+			PoiFinderInterface poiFinder = GeoFactory.createPoiFinder();
+			JSONArray places = poiFinder.getPOI(searchPOI, poiType, null, null, nluInput.language);
 			if (places.isEmpty() && !searchPOI_coarse.isEmpty()){
-				places = GeoCoding.getPOI(searchPOI_coarse, poiType, "", "", nluInput.language);
+				places = poiFinder.getPOI(searchPOI_coarse, poiType, null, null, nluInput.language);
 				Debugger.println("LocationParameter POI - performed 2nd try (types: " + poiType + ") to find: " + searchPOI, 3);
 				if (places.isEmpty()){
-					places = GeoCoding.getPOI(searchPOI_coarse, "", "", "", nluInput.language);
+					places = poiFinder.getPOI(searchPOI_coarse, "", null, null, nluInput.language);
 					Debugger.println("LocationParameter POI - performed 3rd try (without type) to find: " + searchPOI, 3);
 				}
 			}
@@ -282,18 +285,21 @@ public class LocationStart implements ParameterHandler{
 		//-the input was not empty and none of the personals gave a result. Now we have to work with what we have ^^
 		//TODO: double-check the geocoder result for sanity
 		//TODO: add a flag that this data is a guess
-		JSONObject locationJSON = LOCATION.getInfoBySearch(input, nluInput); //new JSONObject();
+		GeoCoderResult locationData = LOCATION.getInfoBySearch(input, nluInput);
+		JSONObject locationJSON;
 		//System.out.println("loc: " + locationJSON.toJSONString()); 		//debug
-		if (locationJSON == null || locationJSON.isEmpty()){
-			if (GeoCoding.isSupported()){
+		if (locationData == null){
+			if (GeoFactory.createGeoCoder().isSupported()){
 				return new Object[]{ buildSuccess, Interview.ERROR_API_FAIL + ";;" + Interview.TYPE_GEOCODING + ";;" + "get_coordinates"};
 			}else{
 				locationJSON = JSON.make("search", input, "error", "missing GeoCoding support");
 				Debugger.println("LOCATION.getInfoBySearch - FAILED due to missing Geo-Coder support (no API keys?).", 3);
 			}
+		}else{
+			locationJSON = locationData.exportJson();
 		}
 		//add input too
-		JSON.add(locationJSON, InterviewData.INPUT, input);
+		JSON.put(locationJSON, InterviewData.INPUT, input);
 		buildSuccess = true;
 		//return locationJSON.toJSONString();
 		return new Object[]{ buildSuccess, locationJSON.toJSONString()}; 
