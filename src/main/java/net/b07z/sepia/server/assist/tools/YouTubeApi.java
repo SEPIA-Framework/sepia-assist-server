@@ -21,8 +21,6 @@ import net.b07z.sepia.server.core.tools.JSON;
  */
 public class YouTubeApi {
 	
-	private static String youTubeSearchApi = "https://youtube.googleapis.com/youtube/v3/search";
-	
 	/**
 	 * Send request to YouTubeAPI and return array of matches.
 	 * @param searchTerm - YouTube search term
@@ -44,7 +42,7 @@ public class YouTubeApi {
 		*/
 		try {
 			//build URL
-			String url = youTubeSearchApi
+			String url = Config.youtube_api_url
 				+ "?part=snippet"
 				+ "&maxResults=" + maxResults
 				+ "&q=" + URLEncoder.encode(searchTerm, "UTF-8")
