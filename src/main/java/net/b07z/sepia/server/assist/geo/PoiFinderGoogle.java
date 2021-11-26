@@ -13,9 +13,34 @@ import net.b07z.sepia.server.core.tools.JSON;
 import net.b07z.sepia.server.core.tools.URLBuilder;
 
 public class PoiFinderGoogle implements PoiFinderInterface {
+	
+	@Override
+	public boolean isSupported(){
+		//requirements
+		return !Is.nullOrEmpty(Config.google_maps_key);
+	}
+	
+	@Override
+	public String buildCloseToSearch(String place, JSONObject locationJSON, String language){
+		//build close to there search
+		String searchPlace = "";
+		String city = (String) locationJSON.get(LOCATION.CITY);
+		String street = (String) locationJSON.get(LOCATION.STREET);
+		if ((city != null && !city.isEmpty()) && (street != null && !street.isEmpty())){
+			searchPlace = place + " close to " + street + ", " + city;
+		}else if (city != null && !city.isEmpty()){
+			searchPlace = place + " close to " + city;
+		}else if (street != null && !street.isEmpty()){
+			searchPlace = place + " close to " + street;
+		}else{
+			searchPlace = place;
+			Debugger.println("PoiFinderGoogle - buildCloseToSearch - location info is incomplete (req. city or street)!", 1);
+		}
+		return searchPlace;
+	}
 
 	@Override
-	public JSONArray getPOI(String search, String types, Double latitude, Double longitude, String language){
+	public JSONArray getPOI(String search, String[] types, Double latitude, Double longitude, String language){
 		//requirements
 		if (Is.nullOrEmpty(Config.google_maps_key)){
 			Debugger.println("GeoCoding - Google API-key is missing! Please add one via the config file to use Maps.", 1);
@@ -33,7 +58,7 @@ public class PoiFinderGoogle implements PoiFinderInterface {
 			//use types?
 			String addTypes = "";
 			if (types != null){
-				addTypes = types;
+				addTypes = String.join("|", types);
 			}
 			String addKey = "";
 			if (!Config.google_maps_key.equals("test")){
@@ -62,8 +87,7 @@ public class PoiFinderGoogle implements PoiFinderInterface {
 			JSONArray results = (JSONArray) response.get("results");
 			if (results != null && !results.isEmpty()){
 				int i = 0;
-				for (Object obj : results)
-				{
+				for (Object obj : results){
 					JSONObject placeJSON = new JSONObject();
 					JSONObject resJSON = (JSONObject) obj;
 					/*
@@ -89,11 +113,10 @@ public class PoiFinderGoogle implements PoiFinderInterface {
 			}
 			
 		}catch (Exception e) {
-			Debugger.println("google_get_POI - failed due to: " + e.getMessage(), 1);
+			Debugger.println("PoiFinderGoogle:getPOI - failed due to: " + e.getMessage(), 1);
 			Debugger.printStackTrace(e, 5);
 			return new JSONArray();
 		}
 		return places;
 	}
-
 }

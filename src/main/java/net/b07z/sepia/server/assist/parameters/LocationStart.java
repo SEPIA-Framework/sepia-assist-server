@@ -208,6 +208,7 @@ public class LocationStart implements ParameterHandler{
 		*/
 		//-check for point of interest
 		JSONObject poiJSON = Place.getPOI(input, nluInput.language);
+		//System.out.println("poiJSON: " + poiJSON); 		//debug
 		String poi = (String) poiJSON.get("poi");
 		if (!poi.isEmpty()){
 			//System.out.println("inputPOI: " + input); 		//debug
@@ -225,10 +226,10 @@ public class LocationStart implements ParameterHandler{
 					}
 					//build close to here search
 					searchPOI_coarse = input;
-					searchPOI = Place.buildCloseToSearch(input, userLocationJSON);
+					searchPOI = Place.buildCloseToSearch(input, userLocationJSON, nluInput.language);
 					
 				}else{
-					//build close to location search
+					//build close to location search - TODO: this depends on the POI API! Fix it!
 					String distanceTag = (String) poiJSON.get("distanceTag");
 					if (distanceTag.equals("<in>")){
 						searchPOI = input + " in " + poiLocation;
@@ -248,15 +249,21 @@ public class LocationStart implements ParameterHandler{
 			//System.out.println("POI selected: " + searchPOI); 	//debug
 			//call the places API with new searchPOI
 			//System.out.println("searchPOI: " + searchPOI); 		//debug
-			String poiType = Place.getPoiType(searchPOI, nluInput.language);
+			String[] poiTypes = Place.getPoiType(searchPOI, nluInput.language);
 			PoiFinderInterface poiFinder = GeoFactory.createPoiFinder();
-			JSONArray places = poiFinder.getPOI(searchPOI, poiType, null, null, nluInput.language);
-			if (places.isEmpty() && !searchPOI_coarse.isEmpty()){
-				places = poiFinder.getPOI(searchPOI_coarse, poiType, null, null, nluInput.language);
-				Debugger.println("LocationParameter POI - performed 2nd try (types: " + poiType + ") to find: " + searchPOI, 3);
-				if (places.isEmpty()){
-					places = poiFinder.getPOI(searchPOI_coarse, "", null, null, nluInput.language);
-					Debugger.println("LocationParameter POI - performed 3rd try (without type) to find: " + searchPOI, 3);
+			JSONArray places;
+			if (!poiFinder.isSupported()){
+				Debugger.println("LocationParameter POI - skipped because PoiFinderInterface was 'not supported'.", 1);
+				places = new JSONArray();
+			}else{
+				places = poiFinder.getPOI(searchPOI, poiTypes, null, null, nluInput.language);
+				if (places.isEmpty() && !searchPOI_coarse.isEmpty()){
+					places = poiFinder.getPOI(searchPOI_coarse, poiTypes, null, null, nluInput.language);
+					Debugger.println("LocationParameter POI - performed 2nd try (types: " + String.join(",", poiTypes) + ") to find: " + searchPOI, 3);
+					if (places.isEmpty()){
+						places = poiFinder.getPOI(searchPOI_coarse, null, null, null, nluInput.language);
+						Debugger.println("LocationParameter POI - performed 3rd try (without type) to find: " + searchPOI, 3);
+					}
 				}
 			}
 			if (!places.isEmpty()){

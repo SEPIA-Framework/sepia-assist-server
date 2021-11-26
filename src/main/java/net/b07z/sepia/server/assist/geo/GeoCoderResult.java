@@ -1,8 +1,12 @@
 package net.b07z.sepia.server.assist.geo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.assistant.LOCATION;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 
 /**
@@ -39,6 +43,9 @@ public class GeoCoderResult {
 		this.longitude = longitude;
 	}
 	
+	/**
+	 * Export non-null data as JSON.
+	 */
 	public JSONObject exportJson(){
 		JSONObject json = new JSONObject();
 		if ( name != null) JSON.put(json, LOCATION.NAME, name);
@@ -51,5 +58,33 @@ public class GeoCoderResult {
 		if ( latitude != null) JSON.put(json, LOCATION.LAT, latitude);
 		if ( longitude != null) JSON.put(json, LOCATION.LNG, longitude);
 		return json;
+	}
+	
+	/**
+	 * Build an address text from all known data (except GPS).
+	 * @param language - TBD
+	 * @return
+	 */
+	public String buildAddressText(String language){
+		//TODO: this is valid for German and maybe English but use language?
+		List<String> addr = new ArrayList<>();
+		if (Is.notNullOrEmpty(this.street)){
+			if (Is.notNullOrEmpty(this.streetNumber)){
+				addr.add(this.street + " " + this.streetNumber);
+			}else{
+				addr.add(this.street);
+			}
+		}
+		if (Is.notNullOrEmpty(this.city)){
+			if (Is.notNullOrEmpty(this.postalCode)){
+				addr.add(this.postalCode + " " + this.city);
+			}else{
+				addr.add(this.city);
+			}
+		}
+		if (Is.notNullOrEmpty(this.country)){
+			addr.add(this.country);
+		}
+		return String.join(", ", addr);
 	}
 }

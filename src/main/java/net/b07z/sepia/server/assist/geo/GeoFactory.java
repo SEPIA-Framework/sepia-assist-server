@@ -35,8 +35,14 @@ public class GeoFactory {
 	 * Create POI-finder according to configuration.
 	 */
 	public static PoiFinderInterface createPoiFinder(){
-		if (Config.default_poi_api.equals(GOOGLE)){
+		if (Config.default_geo_api.equals(OSM)){
+			//TODO: implement
+			Debugger.println("GeoFactory - unknown PoiFinderInterface: " + Config.default_geo_api, 1);
+			return null;
+		}else if (Config.default_poi_api.equals(GOOGLE)){
 			return new PoiFinderGoogle();
+		}else if (Config.default_geo_api.equals(GRAPHHOPPER)){
+			return new PoiFinderGraphhopper();
 		}else{
 			Debugger.println("GeoFactory - unknown PoiFinderInterface: " + Config.default_poi_api, 1);
 			return null;

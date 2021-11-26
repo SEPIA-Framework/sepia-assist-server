@@ -213,7 +213,8 @@ public class GeoCoderGoogle implements GeoCoderInterface {
 					latitude, longitude
 				);
 			}else{
-				return null;	//TODO: return null or empty class?
+				return new GeoCoderResult(null, null, null, null, null, null, null, 
+					latitude, longitude);	//TODO: return null or empty class?
 			}
 			
 		}catch (Exception e) {
