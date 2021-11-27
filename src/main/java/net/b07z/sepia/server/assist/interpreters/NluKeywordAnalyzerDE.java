@@ -14,6 +14,7 @@ import net.b07z.sepia.server.assist.parameters.FashionShopping;
 import net.b07z.sepia.server.assist.parameters.FoodClass;
 import net.b07z.sepia.server.assist.parameters.FoodItem;
 import net.b07z.sepia.server.assist.parameters.Language;
+import net.b07z.sepia.server.assist.parameters.Place;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
@@ -763,7 +764,7 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 		if (NluTools.stringContains(text, "wo (ist|sind|bin|gibt es|liegt|liegen|befindet|befinden)| wo wir (hier |)sind| wo ich (hier |)bin|"
 				+ "wo .* (ist|sind|liegt|liegen|befinden|befindet|wohn(t|en|e))|"
 				+ "(gibt es(?! neues)|kriege ich|finde ich|kann man)\\b.*\\b(hier|in)|"
-				+ "(suche|zeig|finde) .*(\\b)("+ RegexParameterSearch.get_POI_list(language) +")|"
+				+ "(suche|zeig|finde) .*(\\b)("+ Place.getPoiRegExpList(language) +")|"
 				+ "(suche|zeig|finde|wo) .*(\\b)auf (der |einer |)(karte|map|maps)|"
 				//+ "(suche|zeig|finde) .*(\\b)in der naehe$|"			//TODO: broken!??
 				+ "adresse .*") 

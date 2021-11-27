@@ -14,6 +14,7 @@ import net.b07z.sepia.server.assist.parameters.FashionShopping;
 import net.b07z.sepia.server.assist.parameters.FoodClass;
 import net.b07z.sepia.server.assist.parameters.FoodItem;
 import net.b07z.sepia.server.assist.parameters.Language;
+import net.b07z.sepia.server.assist.parameters.Place;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
@@ -701,7 +702,7 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 		//locations
 		if (NluTools.stringContains(text, "where (is|lies|are|am) .*|where can (i|one) .*| where we are| where i am|where .* (is|are|live|lives|lies|lie|lay)|"
 				+ "(is there|are there|can (i|one) get) .*\\b(close|near|around|here|in)|"
-				+ "(search|show|find|look(up| for)|looking for) .*(\\b)("+ RegexParameterSearch.get_POI_list(language) +")|"
+				+ "(search|show|find|look(up| for)|looking for) .*(\\b)("+ Place.getPoiRegExpList(language) +")|"
 				+ "(show|search|find|look(up| for|)) .*(\\b)on (the |a |)(map|maps)|"
 				//+ "(show|search|find|look for) .*(\\b)(close|near|around)( to| by|)( me|)$|"	//TODO: broken!??
 				//+ "(show|search|find|look for) (on |)((the|a) map|maps) .*|"

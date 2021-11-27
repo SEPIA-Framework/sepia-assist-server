@@ -7,6 +7,7 @@ import net.b07z.sepia.server.assist.assistant.CURRENCY;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.parameters.Action;
 import net.b07z.sepia.server.assist.parameters.DateAndTime;
+import net.b07z.sepia.server.assist.parameters.Place;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.tools.Converters;
@@ -750,7 +751,7 @@ public class RegexParameterSearch {
 		HashMap<String, String> dates = new HashMap<String, String>();
 		
 		//German
-		if (language.matches("de")){
+		if (language.equals(LANGUAGES.DE)){
 			//prepare
 			location_input = input.replaceFirst("\\b(zu hause)\\b", "hause");
 			location_input = replace_personal_locations(location_input, language);
@@ -889,7 +890,7 @@ public class RegexParameterSearch {
 			}
 		
 		//English
-		}else if (language.matches("en")){
+		}else if (language.equals(LANGUAGES.EN)){
 			location_input = input.replaceFirst("\\b(at home)\\b", "home");
 			location_input = input.replaceFirst("\\b(way home)\\b", "way to home");
 			location_input = input.replaceFirst("\\b(me home)\\b", "me to home");
@@ -1026,7 +1027,7 @@ public class RegexParameterSearch {
 		//get POI from list
 		//TODO: it is too simple! e.g. POI "Hotel" could well be "XY Hotel" or "Hotel XY" ... 
 		//TODO: how does that work together with Place.getPOI... method again???
-		poi = NluTools.stringFindFirst(location_input, get_POI_list(language));
+		poi = NluTools.stringFindFirst(location_input, Place.getPoiRegExpList(language));
 		//try to predict POI - not that you cannot replace afterwards (see description)
 		if (poi.isEmpty()){
 			poi = get_POI_guess(input, language);
@@ -1044,7 +1045,7 @@ public class RegexParameterSearch {
 			}
 		}
 		
-		//TODO: should be replace this result by its own class?
+		//TODO: should create a new class for this?
 		pv.put("location", location.trim());
 		pv.put("location_start", location_start.trim());
 		pv.put("location_waypoint", location_waypoint.trim());
@@ -2309,30 +2310,6 @@ public class RegexParameterSearch {
 		return input;
 	}
 	
-	/**
-	 * Return a list of POIs (places of interest) in a certain language to use for parameter search methods.
-	 * @param language - language code
-	 * @return String ready to use for search method, e.g. "bar|restaurant|..."
-	 */
-	public static String get_POI_list(String language){
-		String pois = "";
-		if (language.matches("de")){
-			pois = "bar|bars|pub|pubs|cafe|cafes|kaffee|coffeeshop|coffee-shop|baeckerei|baecker|"
-					+ "krankenhaus|krankenhaeuser|apotheke|"
-					+ "(pizza |doener |pommes |schnitzel )(laden|laeden|bude|buden)|" + "(\\b\\w{3,}(sches |sche )|)(restaurant|restaurants)|"
-					+ "tankstelle|tankstellen|kiosk|disco|discos|club|clubs|"
-					+ "polizei|hotel|hotels|sehenswuerdigkeit|sehenswuerdigkeiten|burg|burgen|"
-					+ "aldi|lidl|penny|edeka|netto|rewe|supermarkt|supermaerkte";
-		}else{
-			pois = "bar|bars|pub|pubs|cafe|cafes|coffee|coffeeshop|coffee-shop|coffeehouse|bakery|bakers|bakehouse|"
-					+ "hospital|hospitals|pharmacy|drugstore|"
-					+ "(pizza |doener |pommes |schnitzel )(restaurant|restaurants|place|places)|" + "(\\b\\w{3,}an |\\b\\w{3,}nese |)(restaurant|restaurants)|"
-					+ "(gas|petrol) station|(gas|petrol) stations|disco|discos|club|clubs|food|"
-					+ "police|hotel|hotels|places of interest|landmark|landmarks|castle|castles|"
-					+ "aldi|lidl|penny|edeka|netto|rewe|supermarket|shop|shops|store|stores";
-		}
-		return pois;
-	}
 	/**
 	 * Try to guess a POI from sentence if you didn't find it with the list. Note that this cannot be used to replace POI afterwards 
 	 * as it might change the words (e.g. eat to restaurant).
