@@ -26,12 +26,16 @@ public class PoiFinderGraphhopper implements PoiFinderInterface {
 		String searchPlace = "";
 		String city = (String) locationJSON.get(LOCATION.CITY);
 		String street = (String) locationJSON.get(LOCATION.STREET);
+		String poiLoc = (String) locationJSON.get("poiLocation");	//unspecific location, probably some name
+		//String distanceTag = (String) locationJSON.get("distanceTag");	//could be <in> but ignored here
 		if ((city != null && !city.isEmpty()) && (street != null && !street.isEmpty())){
 			searchPlace = place + ", " + street + ", " + city;
 		}else if (city != null && !city.isEmpty()){
 			searchPlace = place + ", " + city;
 		}else if (street != null && !street.isEmpty()){
 			searchPlace = place + ", " + street;
+		}else if (poiLoc != null && !poiLoc.isEmpty()){
+			searchPlace = place + ", " + poiLoc;
 		}else{
 			searchPlace = place;
 			Debugger.println("PoiFinderGraphhopper - buildCloseToSearch - location info is incomplete (req. city or street)!", 1);

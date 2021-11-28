@@ -23,6 +23,7 @@ import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.users.User;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 
 public class Place implements ParameterHandler{
@@ -90,14 +91,16 @@ public class Place implements ParameterHandler{
 	
 	/**
 	 * Get a POI out of the list. 
-	 * Careful if you search "Jesus Hospital SomeCity" then it will ONLY return "hospital"!
+	 * Careful if you search "jesus hospital somecity" then it will ONLY return "hospital"!
+	 * @param input - normalized(!) input string
+	 * @param language - language code
+	 * @return
 	 */
 	public static JSONObject getPOI(String input, String language){
 		JSONObject poiJSON = new JSONObject();
 		String poi = "";
 		String poiLocation = "";
 		String distanceTag = "";
-		input = input.toLowerCase();
 		if (language.equals(LANGUAGES.DE)){
 			poi = NluTools.stringFindFirst(input, pois_de);
 			//exceptions
@@ -491,7 +494,7 @@ public class Place implements ParameterHandler{
 			//search all locations
 			locations = RegexParameterSearch.get_locations(input, nluInput.language);
 			//System.out.println("Locations:");	//DEBUG
-			//Debugger.printMap(locations);	//DEBUG
+			//Debugger.printMap(locations);		//DEBUG
 			
 			//store it
 			pr = new ParameterResult(PARAMETERS.PLACE, locations, "");
@@ -500,14 +503,48 @@ public class Place implements ParameterHandler{
 		place = locations.get(returnKey).trim();
 		String found = place;
 		
-		//reconstruct original phrase to get proper item names
-		Normalizer normalizer = Config.inputNormalizers.get(nluInput.language);
-		place = normalizer.reconstructPhrase(nluInput.textRaw, place);
-		
 		//return value
-		//String returnValue = found + ";;" + place;
+		String returnValue = "";
+		String locationAddInfo = "";
+		if (Is.notNullOrEmpty(found)){
+			//to reconstruct original phrase
+			Normalizer normalizer = Config.inputNormalizers.get(nluInput.language);
+			
+			//is lone tag or added info?
+			String specialTag = NluTools.stringFindFirst(place, "<\\w+>");
+			if (!specialTag.isEmpty() && !found.equalsIgnoreCase(specialTag)){
+				//store as additional info and remove - assumes 'close to' currently
+				locationAddInfo = specialTag;
+				if (nluInput.language.equals(LANGUAGES.DE)){
+					place = place.replaceFirst("(in |)" + Pattern.quote(specialTag) + ".*", "").trim();
+					
+				}else if (nluInput.language.equals(LANGUAGES.EN)){
+					place = place.replaceFirst("(in |)" + Pattern.quote(specialTag) + ".*", "").trim();
+				}
+				//TODO: "found" is rather useless in this case :-/
+				found = place;
+			}
+			
+			//optimize location additional info
+			/*
+			boolean containsPoi = Boolean.parseBoolean(locations.get("contains_poi"));
+			if (containsPoi){
+				String poi = locations.getOrDefault("poi", locations.get("location"));
+				if (place.contains(poi)){...}
+			}
+			*/
+			
+			//reconstruct original phrase to get proper item names
+			place = normalizer.reconstructPhrase(nluInput.textRaw, place);
+			
+			if (locationAddInfo.isEmpty()){
+				returnValue = found + ";;" + place;
+			}else{
+				returnValue = found + ";;" + place + ";;" + locationAddInfo;
+			}
+		}
 
-		return new LocationExtractResult(returnKey, place, found);
+		return new LocationExtractResult(returnKey, returnValue, found);
 	}
 	
 	/**
@@ -517,13 +554,36 @@ public class Place implements ParameterHandler{
 	public static LocationBuildResult buildLocation(String input, NluInput nluInput, User user) {
 		//TODO: fuse all 3 types (specific location, personal location and contacts) into one?!?
 		
+		//check if we have more info ... - TODO: should we call extract again if ";;" is not given?
+		String inputReconstructed = "";
+		String locationAddInfo = "";
+		String[] inputArray = input.split(";;");
+		if (inputArray.length == 3){
+			input = inputArray[0];
+			inputReconstructed = inputArray[1];
+			locationAddInfo = inputArray[2];
+		}else if (inputArray.length == 2){
+			input = inputArray[0];
+			inputReconstructed = inputArray[1];
+		}else{
+			inputReconstructed = input;		//at least anything
+		}
+		
 		boolean buildSuccess = false;
-		//System.out.println("buildLocation input: " + input); 			//DEBUG
+		//System.out.println("buildLocation input: " + input + " - reconst.: " + inputReconstructed); 			//DEBUG
 		
 		//-check for user specific location ("<user_home>" etc.)
-		String specificLocation_tag = User.containsUserSpecificLocation(input, user);
+		String specificLocation_tag;
+		boolean hasAddedSpecLocation = false;
+		JSONObject specificLocationJSON = null;
+		if (!locationAddInfo.isEmpty()){
+			specificLocation_tag = User.containsUserSpecificLocation(locationAddInfo, user);
+			hasAddedSpecLocation = true;
+		}else{
+			specificLocation_tag = User.containsUserSpecificLocation(input, user);
+		}
 		if (!specificLocation_tag.isEmpty()){
-			JSONObject specificLocationJSON = LOCATION.getFullAddressJSON(user, specificLocation_tag);
+			specificLocationJSON = LOCATION.getFullAddressJSON(user, specificLocation_tag);
 			//System.out.println("SPEC. LOCATION: " + specificLocation_tag); 		//DEBUG
 			//System.out.println("SPEC. LOCATION JSON: " + specificLocationJSON); 	//DEBUG
 			if (specificLocationJSON != null && !specificLocationJSON.isEmpty()){
@@ -532,7 +592,7 @@ public class Place implements ParameterHandler{
 				if (testLAT == null || testLAT.isEmpty() || testLNG == null || testLNG.isEmpty()){
 					return new LocationBuildResult(buildSuccess, null, Interview.ERROR_API_FAIL + ";;" + Interview.TYPE_GEOCODING + ";;" + specificLocation_tag);
 				}else{
-					JSON.add(specificLocationJSON, InterviewData.INPUT, input); 	//add input always
+					JSON.add(specificLocationJSON, InterviewData.INPUT, inputReconstructed); 	//add input always - TODO: probably useless here
 					if (specificLocation_tag.equals("<user_location>")){
 						JSON.add(specificLocationJSON, LOCATION.NAME, AnswerStatics.get(AnswerStatics.HERE, nluInput.language));
 					}else if (specificLocation_tag.equals("<user_home>")){
@@ -540,8 +600,11 @@ public class Place implements ParameterHandler{
 					}else if (specificLocation_tag.equals("<user_work>")){
 						JSON.add(specificLocationJSON, LOCATION.NAME, AnswerStatics.get(AnswerStatics.WORK, nluInput.language));
 					}
-					buildSuccess = true;
-					return new LocationBuildResult(buildSuccess, specificLocationJSON, null);
+					//return if primary info (not added)
+					if (!hasAddedSpecLocation){
+						buildSuccess = true;
+						return new LocationBuildResult(buildSuccess, specificLocationJSON, null);
+					}
 				}
 			}else{
 				if (specificLocation_tag.equals("<user_location>")){
@@ -578,7 +641,7 @@ public class Place implements ParameterHandler{
 		Object[] contactsSearch = User.containsContact(input, user);
 		String contactMatch = User.getContact(contactsSearch);
 		//TODO: choose when multiple hits
-		//TODO: rework that completly?
+		//TODO: rework that completely?
 		if (!contactMatch.isEmpty()){
 			//multiple matches (name but no meta, should only happen in this case)
 			if (contactMatch.contains("<meta>")){
@@ -600,51 +663,56 @@ public class Place implements ParameterHandler{
 			return new Object[]{ buildSuccess, Interview.ACTION_ADD + ";;" + Interview.TYPE_PERSONAL_CONTACT + ";;" + User.getAttribute(contactMatch, "name")};
 		}
 		*/
-		//-check for point of interest
+		//-check for point of interest (NOTE: we could use extracted POI but it could be a different location (end, start, waypoint, etc.))
 		//System.out.println("Place build: " + input); 	//DEBUG
 		JSONObject poiJSON = getPOI(input, nluInput.language);
 		//System.out.println("poiJSON: " + poiJSON); 		//DEBUG
 		String poi = (String) poiJSON.get("poi");
 		if (!poi.isEmpty()){
 			//System.out.println("inputPOI: " + input); 		//debug
+			String inputNorm = input;
 			String searchPOI = "";
 			String searchPOI_coarse = "";
 			//System.out.println("POI to discuss: " + input); 	//debug
 			//try to add a "close to" search if POI is the input or ends on the POI so chance is high that it is a local POI
-			if (input.toLowerCase().equals(poi) || input.toLowerCase().matches(".* " + Pattern.quote(poi) + "$")){
-				//build a string that is optimized for google places geocoder
+			if (input.equals(poi) || input.matches(".* " + Pattern.quote(poi) + "$")){
+				//build a string that is optimized for places APIs
 				String poiLocation = (String) poiJSON.get("poiLocation");
-				if (poiLocation.isEmpty()){
+				if (hasAddedSpecLocation && specificLocationJSON != null){
+					//additional info is assumed to be 'close to' currently
+					searchPOI_coarse = inputReconstructed;
+					searchPOI = buildCloseToSearch(inputReconstructed, specificLocationJSON, nluInput.language);	//TODO: use GPS coords?
+					
+				}else if (poiLocation.isEmpty()){
 					JSONObject userLocationJSON = LOCATION.getFullAddressJSON(user, "<user_location>");
 					if (userLocationJSON == null || userLocationJSON.isEmpty()){
 						return new LocationBuildResult(buildSuccess, null, Interview.ERROR_MISSING + ";;" + Interview.TYPE_SPECIFIC_LOCATION + ";;" + "<user_location>");
 					}
 					//build close to here search
-					searchPOI_coarse = input;
-					searchPOI = buildCloseToSearch(input, userLocationJSON, nluInput.language);
+					searchPOI_coarse = inputReconstructed;
+					searchPOI = buildCloseToSearch(inputReconstructed, userLocationJSON, nluInput.language);		//TODO: use GPS coords?
 					
 				}else{
 					//build close to location search
 					String distanceTag = (String) poiJSON.get("distanceTag");
 					if (distanceTag.equals("<in>")){
-						searchPOI = input + " in " + poiLocation;			//TODO: this depends on the POI API! Fix it!
+						searchPOI = buildCloseToSearch(inputReconstructed, poiJSON, nluInput.language);
 					}else if (distanceTag.equals("<close>")){
-						searchPOI = input + " close to " + poiLocation;		//TODO: this depends on the POI API! Fix it!
+						searchPOI = buildCloseToSearch(inputReconstructed, poiJSON, nluInput.language);
 					}else{
 						//searchPOI = poi;
-						searchPOI = input;
+						searchPOI = inputReconstructed;
 					}
-					searchPOI_coarse = input;
+					searchPOI_coarse = inputReconstructed;
 				}
 				
 			//take what is given
 			}else{
-				searchPOI = input;
+				searchPOI = inputReconstructed;
 			}
-			//System.out.println("POI selected: " + searchPOI); 	//debug
 			//call the places API with new searchPOI
 			//System.out.println("searchPOI: " + searchPOI); 		//debug
-			String[] poiTypes = getPoiType(searchPOI, nluInput.language);
+			String[] poiTypes = getPoiType(inputNorm, nluInput.language);
 			PoiFinderInterface poiFinder = GeoFactory.createPoiFinder();
 			JSONArray places;
 			if (!poiFinder.isSupported()){
@@ -673,7 +741,7 @@ public class Place implements ParameterHandler{
 					JSON.add(locationJSON, InterviewData.OPTIONS, options);
 				}
 				//add input too
-				JSON.add(locationJSON, InterviewData.INPUT, input);
+				JSON.add(locationJSON, InterviewData.INPUT, inputReconstructed);
 				JSON.add(locationJSON, InterviewData.LOCATION_NAME, locationJSON.get(LOCATION.NAME));
 				buildSuccess = true;
 				//return locationJSON.toJSONString();
@@ -687,21 +755,21 @@ public class Place implements ParameterHandler{
 		//-the input was not empty and none of the personals gave a result. Now we have to work with what we have ^^
 		//TODO: double-check the geocoder result for sanity
 		//TODO: add a flag that this data is a guess
-		GeoCoderResult locationData = LOCATION.getInfoBySearch(input, nluInput);
+		GeoCoderResult locationData = LOCATION.getInfoBySearch(inputReconstructed, nluInput);
 		JSONObject locationJSON;
-		//System.out.println("loc: " + locationJSON.toJSONString()); 		//debug
 		if (locationData == null){
 			if (GeoFactory.createGeoCoder().isSupported()){
 				return new LocationBuildResult(buildSuccess, null, Interview.ERROR_API_FAIL + ";;" + Interview.TYPE_GEOCODING + ";;" + "get_coordinates");
 			}else{
-				locationJSON = JSON.make("search", input, "error", "missing GeoCoding support");
+				locationJSON = JSON.make("search", inputReconstructed, "error", "missing GeoCoding support");
 				Debugger.println("LOCATION.getInfoBySearch - FAILED due to missing Geo-Coder support (no API keys?).", 3);
 			}
 		}else{
 			locationJSON = locationData.exportJson();
 		}
+		//System.out.println("normal loc.: " + locationJSON.toJSONString()); 		//debug
 		//add input too
-		JSON.put(locationJSON, InterviewData.INPUT, input);
+		JSON.put(locationJSON, InterviewData.INPUT, inputReconstructed);
 		buildSuccess = true;
 		return new LocationBuildResult(buildSuccess, locationJSON, null); 
 	}

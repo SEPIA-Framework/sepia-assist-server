@@ -26,12 +26,20 @@ public class PoiFinderGoogle implements PoiFinderInterface {
 		String searchPlace = "";
 		String city = (String) locationJSON.get(LOCATION.CITY);
 		String street = (String) locationJSON.get(LOCATION.STREET);
-		if ((city != null && !city.isEmpty()) && (street != null && !street.isEmpty())){
-			searchPlace = place + " close to " + street + ", " + city;
-		}else if (city != null && !city.isEmpty()){
-			searchPlace = place + " close to " + city;
-		}else if (street != null && !street.isEmpty()){
-			searchPlace = place + " close to " + street;
+		String poiLoc = (String) locationJSON.get("poiLocation");	//unspecific location, probably some name
+		String tag = " close to ";
+		String distanceTag = (String) locationJSON.get("distanceTag");
+		if (Is.notNullOrEmpty(distanceTag) && distanceTag.equals("<in>")){
+			tag = " in ";
+		}
+		if (Is.notNullOrEmpty(city) && Is.notNullOrEmpty(street)){
+			searchPlace = place + tag + street + ", " + city;
+		}else if (Is.notNullOrEmpty(city)){
+			searchPlace = place + tag + city;
+		}else if (Is.notNullOrEmpty(street)){
+			searchPlace = place + tag + street;
+		}else if (Is.notNullOrEmpty(poiLoc)){
+			searchPlace = place + tag + poiLoc;
 		}else{
 			searchPlace = place;
 			Debugger.println("PoiFinderGoogle - buildCloseToSearch - location info is incomplete (req. city or street)!", 1);

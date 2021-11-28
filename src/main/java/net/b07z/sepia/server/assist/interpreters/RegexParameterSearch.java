@@ -732,7 +732,7 @@ public class RegexParameterSearch {
 	 * @param language - ... language code as usual 
 	 * @return HashMap with keys: 
 	 * 			location, location_start, location_waypoint, location_end, 
-	 * 			poi, travel_type, travel_time, travel_time_end
+	 * 			poi, contains_poi, travel_type, travel_time, travel_time_end
 	 */
 	public static HashMap<String, String> get_locations(String input, String language){
 		//store all parameters
@@ -740,9 +740,10 @@ public class RegexParameterSearch {
 		String location = "";
 		String location_start = "";
 		String location_waypoint = "";
-		boolean is_local_waypoint = false;		//keeps track if the wp should be close to the start
+		boolean is_local_waypoint = false;		//keeps track if the wp should be close to the start (some few selected POIs)
 		String location_end = "";
 		String poi = "";
+		boolean contains_poi = false;
 		String travel_type = "";
 		String travel_time = "";
 		String travel_time_end = "";
@@ -1027,14 +1028,18 @@ public class RegexParameterSearch {
 		//get POI from list
 		//TODO: it is too simple! e.g. POI "Hotel" could well be "XY Hotel" or "Hotel XY" ... 
 		//TODO: how does that work together with Place.getPOI... method again???
+		//TODO: what if start AND end are POIs?
 		poi = NluTools.stringFindFirst(location_input, Place.getPoiRegExpList(language));
 		//try to predict POI - not that you cannot replace afterwards (see description)
 		if (poi.isEmpty()){
 			poi = get_POI_guess(input, language);
 		}
-		//double check poi against location
-		if (!location.isEmpty() && location.contains(poi)){
-			poi = "";
+		if (!poi.isEmpty()){
+			//double check poi against location
+			if (!location.isEmpty() && location.contains(poi)){
+				poi = "";
+			}
+			contains_poi = true;	//TODO: include guess?
 		}
 		
 		//check once more for personal locations
@@ -1045,13 +1050,14 @@ public class RegexParameterSearch {
 			}
 		}
 		
-		//TODO: should create a new class for this?
+		//TODO: should create a new class for this? Result caching currently requires Map
 		pv.put("location", location.trim());
 		pv.put("location_start", location_start.trim());
 		pv.put("location_waypoint", location_waypoint.trim());
 		pv.put("is_local_waypoint", String.valueOf(is_local_waypoint).trim());
 		pv.put("location_end", location_end.trim());
 		pv.put("poi", poi.trim());
+		pv.put("contains_poi", String.valueOf(contains_poi).trim());
 		pv.put("travel_type", travel_type.trim());
 		pv.put("travel_time", travel_time.trim());
 		pv.put("travel_time_end", travel_time_end.trim());
