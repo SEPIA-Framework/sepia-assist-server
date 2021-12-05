@@ -1,16 +1,22 @@
 package net.b07z.sepia.server.assist.endpoints;
 
+import java.util.Map;
+
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import net.b07z.sepia.server.assist.database.DB;
 import net.b07z.sepia.server.assist.messages.Clients;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.Start;
 import net.b07z.sepia.server.assist.server.Statistics;
+import net.b07z.sepia.server.assist.users.ACCOUNT;
 import net.b07z.sepia.server.assist.users.Authenticator;
 import net.b07z.sepia.server.core.server.RequestGetOrFormParameters;
 import net.b07z.sepia.server.core.server.RequestParameters;
 import net.b07z.sepia.server.core.server.SparkJavaFw;
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 import spark.Request;
 import spark.Response;
@@ -47,17 +53,52 @@ public class RemoteActionEndpoint {
 			Statistics.addOtherApiHit("RemoteAction endpoint");
 			Statistics.addOtherApiTime("RemoteAction endpoint", 1);
 			
+			//sender and receiver
+			String sender = token.getUserID();
+			String receiver = params.getString("receiver");
+			//cross-account actions?
+			if (Is.nullOrEmpty(receiver)){
+				receiver = sender;
+			}else if (!receiver.equals(sender)){
+				//check if access is allowed
+				boolean allowAccess = false;
+				Map<String, Object> accPermsData = DB.getAccountInfos(receiver, ACCOUNT.SHARED_ACCESS_PERMISSIONS);
+				JSONObject accPerms = (accPermsData != null)? ((JSONObject) accPermsData.get(ACCOUNT.SHARED_ACCESS_PERMISSIONS)) : null;
+				if (accPerms != null && accPerms.containsKey("remoteActions")){
+					JSONArray remoteAccPerms = (JSONArray) accPerms.get("remoteActions");
+					//System.out.println("remoteAccPerms: " + remoteAccPerms);		//DEBUG
+					if (remoteAccPerms != null){
+						for (Object obj : remoteAccPerms){
+							String allowedUser = JSON.getString((JSONObject) obj, "user");
+							if (allowedUser != null && allowedUser.equals(sender)){
+								//allow sender to execute RA for receiver
+								allowAccess = true;
+								break;
+							}
+						}
+					}
+				}
+				//allow?
+				if (!allowAccess){
+					//FAIL
+					JSONObject msg = new JSONObject();
+					JSON.add(msg, "result", "fail");
+					JSON.add(msg, "error", "'receiver' ID not allowed");
+					return SparkJavaFw.returnResult(request, response, msg.toJSONString(), 403);
+				}
+			}
+			
 			//get action
-			String type =  params.getString("type");			//e.g.: RemoteActionType.hotkey.name()
+			String type = params.getString("type");			//e.g.: RemoteActionType.hotkey.name()
 			//get action info
-			String action =  params.getString("action");
+			String action = params.getString("action");
 			//get target channel
-			String targetChannelId =  params.getString("targetChannelId");
+			String targetChannelId = params.getString("targetChannelId");
 			if (targetChannelId == null || targetChannelId.isEmpty())	targetChannelId = "<auto>";
 			//get target device
-			String targetDeviceId =  params.getString("targetDeviceId");
+			String targetDeviceId = params.getString("targetDeviceId");
 			if (targetDeviceId == null || targetDeviceId.isEmpty())		targetDeviceId = "<auto>";
-			String skipDeviceId =  params.getString("skipDeviceId");
+			String skipDeviceId = params.getString("skipDeviceId");
 			
 			//validate
 			if (type == null || type.isEmpty() || action == null || action.isEmpty()){
@@ -73,7 +114,7 @@ public class RemoteActionEndpoint {
 			SocketMessage sMessage = new SocketMessage("<auto>", Config.assistantId, Config.assistantDeviceId, "", "", data);
 			boolean msgSent = Clients.webSocketMessenger.send(sMessage, 2000);
 			*/
-			boolean msgSent = Clients.sendAssistantRemoteAction(token.getUserID(), 
+			boolean msgSent = Clients.sendAssistantRemoteAction(receiver, 
 					type, action, targetDeviceId, targetChannelId, skipDeviceId
 			);
 			
@@ -88,7 +129,7 @@ public class RemoteActionEndpoint {
 			}else{
 				msg = JSON.make(
 						"result", "success", 
-						"info", "Action received"
+						"info", "Action sent"
 				);
 			}
 			
