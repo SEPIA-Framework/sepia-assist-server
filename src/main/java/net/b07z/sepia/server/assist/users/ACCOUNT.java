@@ -61,16 +61,18 @@ public class ACCOUNT {
 	public static final String USER_NAME_LAST = USER_NAME + "." + Name.LAST;		//last name
 	public static final String USER_NAME_NICK = USER_NAME + "." + Name.NICK;		//nick name
 	
-	//infos
+	//infos (basics)
 	public static final String USER_BIRTH = INFOS + ".birth";						//birthday - CAREFUL! Its hard coded inside account load basics
 	public static final String USER_PREFERRED_LANGUAGE = INFOS + ".lang_code";		//preferred language ISO code - CAREFUL! Its hard coded inside account load basics
 	public static final String USER_GENDER = INFOS + ".gender";						//gender - not (yet?) in basics
 	public static final String USER_PREFERRED_UNIT_TEMP = INFOS + ".unit_pref_temp";	//preferred unit for temperature
-	public static final String USER_APP_SETTINGS = INFOS + ".app_settings";				//user settings for different apps - NOTE: followed by ".deviceId"
 	//infos - bot
 	public static final String BOT_CHARACTER = INFOS + ".bot_char";					//preset assistant character
-	//infos - app settings
-	public static final String APP_SETTINGS = INFOS + ".app_settings";				//settings for user clients, sorted by device ID
+	
+	//infos - user app settings
+	public static final String APP_SETTINGS = INFOS + ".app_settings";		//user settings for different apps - NOTE: followed by ".deviceId"
+	//infos - shared access permissions (other users/clients)
+	public static final String SHARED_ACCESS_PERMISSIONS = INFOS + ".shared_access";	//access permissions of other clients/users to certain functions 
 	
 	//special tokens
 	public static final String ACCESS_LVL_TOKEN = "incAccLvl";			//token (in tokens) generated to increase access level

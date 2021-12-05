@@ -97,66 +97,14 @@ public final class User {
 			language = input.language;
 		}
 		
-		//get basics from account if there are some - NOTE: this uses the generalized names BUT stores the classic ACCOUNT names in 'info' 
-		if (token.getBasicInfo() != null){
-			//NOTE: compared to "check" and "validate" from Start.java here the keys MUST have the account values
-			//IDs
-			if (token.getBasicInfo().containsKey(Authenticator.EMAIL)){
-				email = (String) token.getBasicInfo().get(Authenticator.EMAIL);
-				if (email.equals("-")){
-					email = "";
-				}else{
-					info.put(ACCOUNT.EMAIL, email);
-				}
-				checked.put(ACCOUNT.EMAIL, true);
-			}
-			if (token.getBasicInfo().containsKey(Authenticator.PHONE)){
-				phone = (String) token.getBasicInfo().get(Authenticator.PHONE);
-				if (phone.equals("-")){
-					phone = "";
-				}else{
-					info.put(ACCOUNT.PHONE, phone);
-				}
-				checked.put(ACCOUNT.PHONE, true);
-			}
-			//roles
-			if (token.getBasicInfo().containsKey(Authenticator.USER_ROLES)){
-				@SuppressWarnings("unchecked")
-				List<Object> roleObjects = (List<Object>) token.getBasicInfo().get(Authenticator.USER_ROLES);
-				List<String> roles = new ArrayList<>(); 
-				for (Object o : roleObjects){
-					roles.add(o.toString()); 		//we need to make a proper transformation
-				}
-				this.userRoles = roles;
-				info.put(ACCOUNT.ROLES, roles);
-				checked.put(ACCOUNT.ROLES, true);
-			}
-			//name
-			if (token.getBasicInfo().containsKey(Authenticator.USER_NAME)){
-				@SuppressWarnings("unchecked")
-				Map<String, Object> nameJson = (Map<String, Object>) token.getBasicInfo().get(Authenticator.USER_NAME);
-				this.userName = new Name(nameJson); 
-				info.put(ACCOUNT.USER_NAME, nameJson); 		//Note: we gotta avoid confusion here :-|
-				checked.put(ACCOUNT.USER_NAME, true);
-			}
-			//infos
-			if (token.getBasicInfo().containsKey(Authenticator.USER_BIRTH)){
-				info.put(ACCOUNT.USER_BIRTH, (String) token.getBasicInfo().get(Authenticator.USER_BIRTH));
-				checked.put(ACCOUNT.USER_BIRTH, true);
-			}
-			if (token.getBasicInfo().containsKey(Authenticator.USER_LANGUAGE)){
-				info.put(ACCOUNT.USER_PREFERRED_LANGUAGE, (String) token.getBasicInfo().get(Authenticator.USER_LANGUAGE));
-				checked.put(ACCOUNT.USER_PREFERRED_LANGUAGE, true);
-			}
-			if (token.getBasicInfo().containsKey(Authenticator.BOT_CHARACTER)){
-				info.put(ACCOUNT.BOT_CHARACTER, (String) token.getBasicInfo().get(Authenticator.BOT_CHARACTER));
-				checked.put(ACCOUNT.BOT_CHARACTER, true);
-			}
-			if (token.getBasicInfo().containsKey(Authenticator.USER_PREFERRED_UNIT_TEMP)){
-				info.put(ACCOUNT.USER_PREFERRED_UNIT_TEMP, (String) token.getBasicInfo().get(Authenticator.USER_PREFERRED_UNIT_TEMP));
-				checked.put(ACCOUNT.USER_PREFERRED_UNIT_TEMP, true);
-			}
-		}
+		//get basics from account if there are some - copy from token to user 
+		AuthenticationCommons.copyBasicInfo(this, token.getBasicInfo(), this.checked);
+		/* fills info for example with:
+		ACCOUNT.EMAIL, ACCOUNT.PHONE, ACCOUNT.ROLES,
+		ACCOUNT.USER_NAME, ACCOUNT.USER_BIRTH, ACCOUNT.USER_PREFERRED_LANGUAGE, 
+		ACCOUNT.BOT_CHARACTER, ACCOUNT.USER_PREFERRED_UNIT_TEMP, 
+		...
+		*/
 	}
 	
 	/**

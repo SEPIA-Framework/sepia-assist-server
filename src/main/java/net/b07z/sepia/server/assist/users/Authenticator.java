@@ -51,6 +51,7 @@ public class Authenticator {
 	public static final String USER_BIRTH = "user_birth";
 	public static final String BOT_CHARACTER = "bot_character";
 	public static final String USER_PREFERRED_UNIT_TEMP = "unit_pref_temp";
+	public static final String SHARED_ACCESS_PERMISSIONS = "shared_access";
 	
 	//Account protection against brute force login-attempts 
 	private static Map<String, AtomicInteger> protectedAccountsFailedLoginAttempts = new HashMap<>();
@@ -273,6 +274,11 @@ public class Authenticator {
 			String unit_pref_temp = (String) basics.get(USER_PREFERRED_UNIT_TEMP);
 			if (unit_pref_temp != null && !unit_pref_temp.isEmpty()){
 				JSON.add(msg, USER_PREFERRED_UNIT_TEMP, unit_pref_temp);
+			}
+			//SHARED ACCESS PERMISSIONS
+			JSONObject shared_acc_perm = (JSONObject) basics.get(SHARED_ACCESS_PERMISSIONS);
+			if (shared_acc_perm != null && !shared_acc_perm.isEmpty()){
+				JSON.add(msg, SHARED_ACCESS_PERMISSIONS, shared_acc_perm);
 			}
 		}		
 	}
