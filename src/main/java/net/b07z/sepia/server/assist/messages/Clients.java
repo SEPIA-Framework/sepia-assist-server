@@ -118,13 +118,14 @@ public class Clients {
 	 * @param targetDeviceId - target a specific device ID (e.g. ID, empty=auto, ;&ltall;&gt)
 	 * @param targetChannelId - target a specific chat channel (e.g. ID, empty=auto)
 	 * @param skipDeviceId - device IDs to skip (useful for targetDeviceId 'auto' or 'all')
+	 * @param originalSender - if sender is not receiver then this is not null but original sender ID
 	 * @return true if sent, false if not
 	 */
 	public static boolean sendAssistantRemoteAction(String receiver, String actionType, String action, 
-			String targetDeviceId, String targetChannelId, String skipDeviceId){
+			String targetDeviceId, String targetChannelId, String skipDeviceId, String originalSender){
 		if (assistantSocket != null){
 			return assistantSocket.sendRemoteAction(receiver, actionType, action, 
-					targetDeviceId, targetChannelId, skipDeviceId);
+					targetDeviceId, targetChannelId, skipDeviceId, originalSender);
 		}else{
 			return false;
 		}

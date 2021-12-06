@@ -81,14 +81,14 @@ public class AssistantSocketClient extends SepiaSocketClient {
 		return sendMessage(msg, 3000);		//TODO: is this timeout to short?
 	}
 	/**
-	 * See: {@link Clients#sendAssistantRemoteAction(String, String, String, String, String, String)}
+	 * See: {@link Clients#sendAssistantRemoteAction(String, String, String, String, String, String, String)}
 	 */
 	public boolean sendRemoteAction(String receiver, String actionType, String action, 
-			String targetDeviceId, String targetChannelId, String skipDeviceId){
+			String targetDeviceId, String targetChannelId, String skipDeviceId, String originalSender){
 		
 		SocketMessage msg = buildRemoteActionMessage(actionType, action, 
 				targetDeviceId, targetChannelId, skipDeviceId, 
-				receiver
+				receiver, originalSender
 		);
 		return sendMessage(msg, 3000);		//TODO: is this timeout to short?
 	}
@@ -301,14 +301,15 @@ public class AssistantSocketClient extends SepiaSocketClient {
      */
     private SocketMessage buildRemoteActionMessage(String actionType, String action, 
 			String targetDeviceId, String targetChannelId, String skipDeviceId, 
-			String receiver){
+			String receiver, String originalSender){
 		        
         JSONObject data = JSON.make(
 				"dataType", DataType.remoteAction.name(), 
 				"remoteUserId", receiver,
 				"targetDeviceId", targetDeviceId,
 				"targetChannelId", targetChannelId,
-				"skipDeviceId", skipDeviceId
+				"skipDeviceId", skipDeviceId,
+				"originalSender", originalSender
 		);
 		JSON.put(data, "type", actionType);
 		JSON.put(data, "action", action);

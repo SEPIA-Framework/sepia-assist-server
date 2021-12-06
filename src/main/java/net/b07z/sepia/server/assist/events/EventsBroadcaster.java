@@ -86,7 +86,7 @@ public class EventsBroadcaster {
 	private static void scheduleRemoteActionEvent(long delay, String userId, String senderDeviceId, JSONObject data){
 		ThreadManager.scheduleBackgroundTaskAndForget(delay, () -> {
 			Clients.sendAssistantRemoteAction(userId, RemoteActionType.sync.name(), data.toJSONString(), 
-				"<all>", "", senderDeviceId
+				"<all>", "", senderDeviceId, null
 			);
 		});
 	}

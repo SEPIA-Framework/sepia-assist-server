@@ -56,6 +56,7 @@ public class RemoteActionEndpoint {
 			//sender and receiver
 			String sender = token.getUserID();
 			String receiver = params.getString("receiver");
+			String originalSender = null;
 			//cross-account actions?
 			if (Is.nullOrEmpty(receiver)){
 				receiver = sender;
@@ -73,6 +74,7 @@ public class RemoteActionEndpoint {
 							if (allowedUser != null && allowedUser.equals(sender)){
 								//allow sender to execute RA for receiver
 								allowAccess = true;
+								originalSender = sender;
 								break;
 							}
 						}
@@ -115,7 +117,7 @@ public class RemoteActionEndpoint {
 			boolean msgSent = Clients.webSocketMessenger.send(sMessage, 2000);
 			*/
 			boolean msgSent = Clients.sendAssistantRemoteAction(receiver, 
-					type, action, targetDeviceId, targetChannelId, skipDeviceId
+					type, action, targetDeviceId, targetChannelId, skipDeviceId, originalSender
 			);
 			
 			JSONObject msg;		//response to api call
