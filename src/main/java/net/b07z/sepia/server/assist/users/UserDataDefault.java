@@ -29,7 +29,7 @@ import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 
 /**
- * Default implementation of UserData_Interface.
+ * Default implementation of {@link UserDataInterface}.
  * 
  * @author Florian Quirin
  *

@@ -1,23 +1,20 @@
 package net.b07z.sepia.server.assist.endpoints;
 
-import java.util.Map;
-
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import net.b07z.sepia.server.assist.database.DB;
 import net.b07z.sepia.server.assist.messages.Clients;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.Start;
 import net.b07z.sepia.server.assist.server.Statistics;
-import net.b07z.sepia.server.assist.users.ACCOUNT;
 import net.b07z.sepia.server.assist.users.Authenticator;
+import net.b07z.sepia.server.assist.users.SharedAccess;
 import net.b07z.sepia.server.core.server.RequestGetOrFormParameters;
 import net.b07z.sepia.server.core.server.RequestParameters;
 import net.b07z.sepia.server.core.server.SparkJavaFw;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
+import net.b07z.sepia.server.core.users.SharedAccessItem;
 import spark.Request;
 import spark.Response;
 
@@ -57,40 +54,8 @@ public class RemoteActionEndpoint {
 			String sender = token.getUserID();
 			String receiver = params.getString("receiver");
 			String originalSender = null;
-			//cross-account actions?
-			if (Is.nullOrEmpty(receiver)){
-				receiver = sender;
-			}else if (!receiver.equals(sender)){
-				//check if access is allowed
-				boolean allowAccess = false;
-				Map<String, Object> accPermsData = DB.getAccountInfos(receiver, ACCOUNT.SHARED_ACCESS_PERMISSIONS);
-				JSONObject accPerms = (accPermsData != null)? ((JSONObject) accPermsData.get(ACCOUNT.SHARED_ACCESS_PERMISSIONS)) : null;
-				if (accPerms != null && accPerms.containsKey("remoteActions")){
-					JSONArray remoteAccPerms = (JSONArray) accPerms.get("remoteActions");
-					//System.out.println("remoteAccPerms: " + remoteAccPerms);		//DEBUG
-					if (remoteAccPerms != null){
-						for (Object obj : remoteAccPerms){
-							String allowedUser = JSON.getString((JSONObject) obj, "user");
-							if (allowedUser != null && allowedUser.equals(sender)){
-								//allow sender to execute RA for receiver
-								allowAccess = true;
-								originalSender = sender;
-								break;
-							}
-						}
-					}
-				}
-				//allow?
-				if (!allowAccess){
-					//FAIL
-					JSONObject msg = new JSONObject();
-					JSON.add(msg, "result", "fail");
-					JSON.add(msg, "error", "'receiver' ID not allowed");
-					return SparkJavaFw.returnResult(request, response, msg.toJSONString(), 403);
-				}
-			}
 			
-			//get action
+			//get action type
 			String type = params.getString("type");			//e.g.: RemoteActionType.hotkey.name()
 			//get action info
 			String action = params.getString("action");
@@ -102,13 +67,40 @@ public class RemoteActionEndpoint {
 			if (targetDeviceId == null || targetDeviceId.isEmpty())		targetDeviceId = "<auto>";
 			String skipDeviceId = params.getString("skipDeviceId");
 			
-			//validate
+			//validate parameters
 			if (type == null || type.isEmpty() || action == null || action.isEmpty()){
 				//FAIL
 				JSONObject msg = new JSONObject();
 				JSON.add(msg, "result", "fail");
-				JSON.add(msg, "error", "'type' and 'action' missing or invalid");
+				JSON.add(msg, "error", "'type' and/or 'action' missing or invalid");
 				return SparkJavaFw.returnResult(request, response, msg.toJSONString(), 200);
+			}
+			
+			//cross-account actions?
+			if (Is.nullOrEmpty(receiver)){
+				//simple access (own account)
+				receiver = sender;
+				
+			}else if (!receiver.equals(sender)){
+				long tic = Debugger.tic(); 
+				//check if access is allowed
+				boolean allowAccess = SharedAccess.checkPermissions(receiver, SharedAccess.DT_REMOTE_ACTIONS, 
+						new SharedAccessItem(sender, targetDeviceId.equals("<auto>")? null : targetDeviceId, JSON.make("type", type)));		
+						//TODO: add 'action' to 'details'?
+				//allow?
+				if (allowAccess){
+					originalSender = sender;
+				}else{
+					Debugger.println("RemoteAction: User '" + sender + "' requested access to '" + receiver 
+							+ "' but was NOT allowed (or client was offline)!", 1);
+					Statistics.addOtherApiHit("RemoteAction shared-access failed");
+					Statistics.addOtherApiTime("RemoteAction shared-access failed", Debugger.toc(tic));
+					//FAIL
+					JSONObject msg = new JSONObject();
+					JSON.add(msg, "result", "fail");
+					JSON.add(msg, "error", "'receiver' ID not allowed or no client online. Request has been logged.");
+					return SparkJavaFw.returnResult(request, response, msg.toJSONString(), 403);
+				}
 			}
 			
 			//send socket message
