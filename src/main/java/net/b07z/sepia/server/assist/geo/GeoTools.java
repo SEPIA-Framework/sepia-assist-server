@@ -74,6 +74,24 @@ public class GeoTools {
 	}
 	
 	/**
+	 * Convert Google-Maps travel type like '' to OSM compatible ones.
+	 * @param travelType - e.g.: 'transit', 'bicycling', 'driving', 'walking'
+	 * @return new type or empty
+	 */
+	public static String convertGoogleMapsTravelTypeToOsm(String travelType){
+		return googleToOsmTravelType.getOrDefault(travelType, "");
+	}
+	private static Map<String, String> googleToOsmTravelType = new HashMap<>();
+	static {
+		//TODO: add more variants? (e.g. car -> car_delivery, hike etc.)
+		//see: https://docs.graphhopper.com/#section/Map-Data-and-Routing-Profiles/OpenStreetMap
+		googleToOsmTravelType.put("driving", "car");
+		googleToOsmTravelType.put("bicycling", "bike");
+		googleToOsmTravelType.put("transit", "");		//TODO: this is a bit special for APIs
+		googleToOsmTravelType.put("walking", "foot");
+	}
+	
+	/**
 	 * Calculate (approximate) shift of longitude coordinate with regard to starting point.
 	 * @param meters - meters to shift
 	 * @param latStart - latitude start coordinate

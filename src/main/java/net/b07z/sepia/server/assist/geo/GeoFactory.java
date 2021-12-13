@@ -9,9 +9,9 @@ import net.b07z.sepia.server.core.tools.Debugger;
 public class GeoFactory {
 
 	//engines
-	public static final String OSM = "osm";						//TODO: implement
+	public static final String OSM = "osm";		//TODO: implement
 	public static final String GOOGLE = "google";
-	public static final String GRAPHHOPPER = "graphhopper"; 	//TODO: add missing features
+	public static final String GRAPHHOPPER = "graphhopper";
 		
 	/**
 	 * Create geo-coder according to configuration.
@@ -35,13 +35,13 @@ public class GeoFactory {
 	 * Create POI-finder according to configuration.
 	 */
 	public static PoiFinderInterface createPoiFinder(){
-		if (Config.default_geo_api.equals(OSM)){
+		if (Config.default_poi_api.equals(OSM)){
 			//TODO: implement
-			Debugger.println("GeoFactory - unknown PoiFinderInterface: " + Config.default_geo_api, 1);
+			Debugger.println("GeoFactory - unknown PoiFinderInterface: " + Config.default_poi_api, 1);
 			return null;
 		}else if (Config.default_poi_api.equals(GOOGLE)){
 			return new PoiFinderGoogle();
-		}else if (Config.default_geo_api.equals(GRAPHHOPPER)){
+		}else if (Config.default_poi_api.equals(GRAPHHOPPER)){
 			return new PoiFinderGraphhopper();
 		}else{
 			Debugger.println("GeoFactory - unknown PoiFinderInterface: " + Config.default_poi_api, 1);
@@ -53,8 +53,17 @@ public class GeoFactory {
 	 * Create directions-API according to configuration.
 	 */
 	public static DirectionsApiInterface createDirectionsApi(){
-		//TODO: implement
-		Debugger.println("GeoFactory - unknown DirectionsApiInterface: " + Config.default_directions_api, 1);
-		return null;
+		if (Config.default_directions_api.equals(OSM)){
+			//TODO: implement
+			Debugger.println("GeoFactory - unknown DirectionsApiInterface: " + Config.default_directions_api, 1);
+			return null;
+		}else if (Config.default_directions_api.equals(GOOGLE)){
+			return new DirectionsApiGoogle();
+		}else if (Config.default_directions_api.equals(GRAPHHOPPER)){
+			return new DirectionsApiGraphhopper();
+		}else{
+			Debugger.println("GeoFactory - unknown DirectionsApiInterface: " + Config.default_directions_api, 1);
+			return null;
+		}
 	}
 }

@@ -599,7 +599,7 @@ public class Config {
 				}
 			}
 			//API defaults
-			default_geo_api = settings.getProperty("default_geo_api", GeoFactory.OSM);
+			default_geo_api = settings.getProperty("default_geo_api", GeoFactory.GOOGLE);
 			default_poi_api = settings.getProperty("default_poi_api", GeoFactory.GOOGLE);
 			default_directions_api = settings.getProperty("default_directions_api", GeoFactory.GOOGLE);
 			//API keys
