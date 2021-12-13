@@ -11,13 +11,26 @@ import net.b07z.sepia.server.core.tools.Is;
  */
 public class TtsTools {
 	
+	/**
+	 * TTS engines available.
+	 */
 	public static enum EngineType {
 		undefined,
 		espeak,
+		espeak_mbrola,
 		flite,
 		pico,
 		marytts,
 		acapela
+	}
+	/**
+	 * TTS voice gender types.
+	 */
+	public static enum GenderCode {
+		male,
+		female,
+		diverse,
+		robot
 	}
 
 	/**
