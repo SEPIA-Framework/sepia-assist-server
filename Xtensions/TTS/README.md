@@ -9,6 +9,11 @@ It generates a rather robotic (male-ish) voice but fits very well to SEPIA :-). 
   
 See the [espeak-ng readme](espeak-ng/README.md) for more info. If you install TTS via the SEPIA setup on Linux it will be available automatically.
 
+### Espeak-NG MBROLA Extension
+
+MBROLA voices are available for many languages and can sound considerably better than classic espeak while still being very fast and resource friendly.  
+Read more about it and about the LICENSE conditions in the [espeak-ng-mbrola readme](espeak-ng-mbrola/README.md).
+
 ## Pico TTS
 
 Pico is a voice engine by SVOX that was initially developed as free version and used in Android on-device TTS. 
