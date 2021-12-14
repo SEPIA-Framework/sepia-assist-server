@@ -517,18 +517,19 @@ public class TtsOpenEmbedded implements TtsInterface {
 			
 			//build command line action
 			boolean generatedFile;
+			String typeActive = voiceTrait.getType();
 			//ESPEAK
-			if (voiceTrait.getType().equals(EngineType.espeak.name())){
+			if (typeActive.equals(EngineType.espeak.name()) || typeActive.equals(EngineType.espeak_mbrola.name())){
 				//run process - note: its thread blocking but this should be considered "intended" here ;-)
 				String[] command = buildEspeakCmd(readThis, voiceTrait, this.speedFactor, this.toneFactor, audioFilePath);
 				generatedFile = runRuntimeProcess(command, audioFilePath);
 			//PICO
-			}else if (voiceTrait.getType().equals(EngineType.pico.name())){
+			}else if (typeActive.equals(EngineType.pico.name())){
 				//run process - note: its thread blocking but this should be considered "intended" here ;-)
 				String[] command = buildPicoCmd(readThis, voiceTrait, this.speedFactor, this.toneFactor, audioFilePath);
 				generatedFile = runRuntimeProcess(command, audioFilePath);
 			//MARY-TTS
-			}else if (voiceTrait.getType().equals(EngineType.marytts.name())){
+			}else if (typeActive.equals(EngineType.marytts.name())){
 				//call server
 				String url = buildMaryTtsUrl(readThis, voiceTrait, this.speedFactor, this.toneFactor);
 				generatedFile = callServerProcess(url, audioFilePath);
