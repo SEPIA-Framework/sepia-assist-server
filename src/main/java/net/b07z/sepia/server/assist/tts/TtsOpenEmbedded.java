@@ -166,6 +166,24 @@ public class TtsOpenEmbedded implements TtsInterface {
 				Debugger.println("TTS module - MBROLA found. Please make sure you comply with the LICENSE conditions!", 3);
 			}
 		}
+		//TXT2PHO-MBROLA
+		supportedEngines.put(EngineType.txt2pho_mbrola, false);
+		if (Is.systemWindows()){
+			//test support - no Windows support (yet ... technically it's probably possible)
+			supportedEngines.put(EngineType.txt2pho_mbrola, false);
+		}else{
+			//test support
+			if (new File(Config.ttsEngines + "txt2pho/txt2pho-speak.sh").exists()){
+				RuntimeResult rtr = RuntimeInterface.runCommand(new String[]{"command -v mbrola"}, 5000, false);
+				int code = rtr.getStatusCode();
+				if (code == 0 && Is.notNullOrEmpty(rtr.getOutput())){
+					supportedEngines.put(EngineType.txt2pho_mbrola, true);
+				}
+			}
+		}
+		if (supportedEngines.get(EngineType.txt2pho_mbrola)){
+			Debugger.println("TTS module - txt2pho and MBROLA found. Please make sure you comply with the LICENSE conditions!", 3);
+		}
 		//PICO
 		supportedEngines.put(EngineType.pico, false);
 		if (Is.systemWindows()){
@@ -518,14 +536,19 @@ public class TtsOpenEmbedded implements TtsInterface {
 			//build command line action
 			boolean generatedFile;
 			String typeActive = voiceTrait.getType();
-			//ESPEAK
+			//ESPEAK / ESPEAK-MBROLA
 			if (typeActive.equals(EngineType.espeak.name()) || typeActive.equals(EngineType.espeak_mbrola.name())){
-				//run process - note: its thread blocking but this should be considered "intended" here ;-)
+				//run process
 				String[] command = buildEspeakCmd(readThis, voiceTrait, this.speedFactor, this.toneFactor, audioFilePath);
+				generatedFile = runRuntimeProcess(command, audioFilePath);
+			//TXT2PHO-MBROLA
+			}else if (typeActive.equals(EngineType.txt2pho_mbrola.name())){
+				//run process
+				String[] command = buildTxt2PhoMbrolaCmd(readThis, voiceTrait, this.speedFactor, this.toneFactor, audioFilePath);
 				generatedFile = runRuntimeProcess(command, audioFilePath);
 			//PICO
 			}else if (typeActive.equals(EngineType.pico.name())){
-				//run process - note: its thread blocking but this should be considered "intended" here ;-)
+				//run process
 				String[] command = buildPicoCmd(readThis, voiceTrait, this.speedFactor, this.toneFactor, audioFilePath);
 				generatedFile = runRuntimeProcess(command, audioFilePath);
 			//MARY-TTS
@@ -707,6 +730,7 @@ public class TtsOpenEmbedded implements TtsInterface {
 	}
 	
 	public static String[] buildFliteCmd(){
+		//TODO: implement
 		String[] cmd = new String[]{};
 		return cmd;
 	}
@@ -728,5 +752,32 @@ public class TtsOpenEmbedded implements TtsInterface {
 				"-w", filePath,
 				text
 		};
+	}
+	
+	public static String[] buildTxt2PhoMbrolaCmd(String text, TtsVoiceTrait voiceTrait, double globalSpeedFactor, double globalToneFactor, String filePath){
+		String systemVoiceName = voiceTrait.getSystemName();
+		String gender = voiceTrait.getGenderCode();
+		String txt2phoGender = "m";
+		if (gender.equals(GenderCode.female.name())){
+			txt2phoGender = "f";
+		}else if (gender.equals(GenderCode.male.name())){
+			txt2phoGender = "m";
+		}else{
+			//diverse and robot need to define gender extra
+			JSONObject data = voiceTrait.getData();
+			if (data != null){
+				txt2phoGender = JSON.getStringOrDefault(data, "genderOverride", "m");
+			}
+		}
+		String cmd;
+		//get cmd
+		if (Is.systemWindows()){
+			//Windows
+			throw new RuntimeException("Txt2pho for Windows is not implemented yet!");
+		}else{
+			//Other
+			cmd = (Config.ttsEngines + "txt2pho/txt2pho-speak.sh");
+		}
+		return new String[]{cmd, txt2phoGender, systemVoiceName, text, filePath};
 	}
 }

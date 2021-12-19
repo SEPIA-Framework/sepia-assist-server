@@ -28,6 +28,10 @@ make
 sudo cp Bin/mbrola /usr/bin/mbrola
 echo ""
 echo "Downloading voices..."
+mkdir -p "voices/de2"
+wget -O voices/de2/de2 "https://github.com/numediart/MBROLA-voices/blob/master/data/de2/de2?raw=true"
+mkdir -p "voices/de3"
+wget -O voices/de3/de3 "https://github.com/numediart/MBROLA-voices/blob/master/data/de3/de3?raw=true"
 mkdir -p "voices/de4"
 wget -O voices/de4/de4 "https://github.com/numediart/MBROLA-voices/blob/master/data/de4/de4?raw=true"
 mkdir -p "voices/de5"

@@ -154,6 +154,37 @@
 				"volume": 100
 			}]
 		},
+		"deDE_txt2pho_mbrola_f1": {
+			"type": "txt2pho_mbrola",
+			"name": "de-DE txt2pho-mbrola f1",
+			"languageCode": "de",
+			"genderCode": "female",
+			"moods": [{
+				"moodIndex": 0,
+				"systemName": "de3/de3"
+			}]
+		},
+		"deDE_txt2pho_mbrola_m1": {
+			"type": "txt2pho_mbrola",
+			"name": "de-DE txt2pho-mbrola m1",
+			"languageCode": "de",
+			"genderCode": "male",
+			"moods": [{
+				"moodIndex": 0,
+				"systemName": "de2/de2"
+			}]
+		},
+		"deDE_txt2pho_mbrola_d1": {
+			"type": "txt2pho_mbrola",
+			"name": "de-DE txt2pho-mbrola d1",
+			"languageCode": "de",
+			"genderCode": "diverse",
+			"moods": [{
+				"moodIndex": 0,
+				"systemName": "de2/de2",
+				"genderOverride": "f"
+			}]
+		},
 		"deDE_pico_f1": {
 			"type": "pico",
 			"name": "de-DE pico f",
@@ -187,6 +218,42 @@
 				"moodIndex": 0,
 				"data": {
 					"l": "en-US"
+				}
+			}]
+		},
+		"esES_pico_f1": {
+			"type": "pico",
+			"name": "es-ES pico f",
+			"languageCode": "es",
+			"genderCode": "female",
+			"moods": [{
+				"moodIndex": 0,
+				"data": {
+					"l": "es-ES"
+				}
+			}]
+		},
+		"frFR_pico_f1": {
+			"type": "pico",
+			"name": "fr-FR pico f",
+			"languageCode": "fr",
+			"genderCode": "female",
+			"moods": [{
+				"moodIndex": 0,
+				"data": {
+					"l": "fr-FR"
+				}
+			}]
+		},
+		"itIT_pico_f1": {
+			"type": "pico",
+			"name": "it-IT pico f",
+			"languageCode": "it",
+			"genderCode": "female",
+			"moods": [{
+				"moodIndex": 0,
+				"data": {
+					"l": "it-IT"
 				}
 			}]
 		},
