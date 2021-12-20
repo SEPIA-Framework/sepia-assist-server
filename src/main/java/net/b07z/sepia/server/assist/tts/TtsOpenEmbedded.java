@@ -718,6 +718,8 @@ public class TtsOpenEmbedded implements TtsInterface {
 			//Other
 			cmd = "espeak-ng";
 		}
+		//cheap hack to avoid breaking command with input like "-1" (because its interpreted as option O_o)
+		text = " " + text;
 		return new String[]{ cmd,
 				"-a", Integer.toString(volume), 
 				"-p", Integer.toString(tone), 
@@ -746,6 +748,8 @@ public class TtsOpenEmbedded implements TtsInterface {
 			//Other
 			cmd = "pico2wave";
 		}
+		//cheap hack to avoid breaking command with input like "-1" (because its interpreted as option O_o)
+		text = " " + text;
 		//Languages: en-US en-GB de-DE es-ES fr-FR it-IT
 		return new String[]{ cmd,
 				"-l", JSON.getStringOrDefault(dataMod, "l", "en-GB"),

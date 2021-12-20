@@ -97,7 +97,7 @@
 			"moods": [{
 				"moodIndex": 0,
 				"systemName": "mb/mb-de4",
-				"speed": 160,
+				"speed": 185,
 				"pitch": 50,
 				"volume": 100
 			}]
@@ -110,7 +110,7 @@
 			"moods": [{
 				"moodIndex": 0,
 				"systemName": "mb/mb-de5",
-				"speed": 160,
+				"speed": 180,
 				"pitch": 50,
 				"volume": 100
 			}]
@@ -123,7 +123,7 @@
 			"moods": [{
 				"moodIndex": 0,
 				"systemName": "mb/mb-de6",
-				"speed": 160,
+				"speed": 185,
 				"pitch": 50,
 				"volume": 100
 			}]
@@ -136,7 +136,7 @@
 			"moods": [{
 				"moodIndex": 0,
 				"systemName": "mb/mb-de7",
-				"speed": 160,
+				"speed": 180,
 				"pitch": 50,
 				"volume": 100
 			}]
@@ -181,8 +181,8 @@
 			"genderCode": "diverse",
 			"moods": [{
 				"moodIndex": 0,
-				"systemName": "de2/de2",
-				"genderOverride": "f"
+				"systemName": "de3/de3",
+				"genderOverride": "m"
 			}]
 		},
 		"deDE_pico_f1": {

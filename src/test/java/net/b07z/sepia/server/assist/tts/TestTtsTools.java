@@ -49,6 +49,11 @@ public class TestTtsTools {
 				.equals("Eine Dollar LINUX Variable."));
 		assertTrue(TtsTools.optimizePronunciation("$(LINUX)", language, engine)
 				.equals("Dollar (LINUX)."));
+		assertTrue(TtsTools.optimizePronunciation("`pwd`", language, engine)
+				.equals("`pwd`."));
+		
+		//System.out.println(TtsTools.optimizePronunciation("Heute ist der 19.12.2021", language, engine));
+		//System.out.println(TtsTools.optimizePronunciation("Heute ist er 19", language, engine));
 		
 		language = LANGUAGES.EN;
 		
