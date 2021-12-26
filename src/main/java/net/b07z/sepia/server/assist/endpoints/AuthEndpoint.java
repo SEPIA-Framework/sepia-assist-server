@@ -199,6 +199,7 @@ public class AuthEndpoint {
 			//authenticate
 			Authenticator token = Start.authenticate(params, request);
 			if (!token.authenticated()){
+				//TODO: add time-out?
 				return SparkJavaFw.returnNoAccess(request, response, token.getErrorCode());
 			}else{
 				//success: make a new token and save it in the database 

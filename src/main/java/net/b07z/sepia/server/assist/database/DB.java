@@ -1136,7 +1136,8 @@ public class DB {
 			dataAssign += ("ctx._source." + key + "=params." + key + "; ");
 		}*/
 		
-		//TODO: use https://iridakos.com/programming/2019/05/02/add-update-delete-elasticsearch-nested-objects
+		//TODO: finish method  
+		//use https://iridakos.com/programming/2019/05/02/add-update-delete-elasticsearch-nested-objects
 		
 		
 		dataAssign += ("ctx._source.lastEdit=params.lastEdit" + "; }");				//END
