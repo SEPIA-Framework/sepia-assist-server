@@ -182,7 +182,9 @@
 			"moods": [{
 				"moodIndex": 0,
 				"systemName": "de3/de3",
-				"genderOverride": "m"
+				"data": {
+					"genderOverride": "m"
+				}
 			}]
 		},
 		"deDE_pico_f1": {
