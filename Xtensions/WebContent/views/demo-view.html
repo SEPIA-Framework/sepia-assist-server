@@ -62,13 +62,14 @@
 		load: function(){
 			$('#sepiaFW-frames-mic').attr('class', 'entry icon-button');
 		},
-		onOpen: function(){
+		onOpen: function(data){
 			//we use '$('#sepiaFW-frame-page-...')' to avoid conflicts with global ID:
 			$('#sepiaFW-frame-page-1 #sepiaFW-frame-c-hello').html(
 				"<p>Welcome to the Demo-View frame.</p>" 
 				+ "<p>This frame runs inside the scope of the SEPIA client and has open access to all features.</p>"
 				+ "<p>This type of frames can only be used when loaded from safe origins (e.g. app folder, or SEPIA server).</p>"
 			);
+			//optionally handle your custom 'data' here or in 'onFinishSetup'
 		},
 		onClose: function(){
 			console.log("BYE BYE");
