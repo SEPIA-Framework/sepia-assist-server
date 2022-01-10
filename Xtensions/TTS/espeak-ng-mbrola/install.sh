@@ -20,7 +20,7 @@ else
 fi
 # Install MBROLA
 echo "Downloading and building MBROLA..."
-sudo apt-get update
+sudo apt update
 sudo apt-get install git make gcc
 if [ -d "MBROLA" ]; then
 	echo "Cleaning up old MBROLA folder..."
