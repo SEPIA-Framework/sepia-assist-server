@@ -43,6 +43,7 @@ public class ParameterConfig {
 		//NOTE: If you ever rename any of the handlers this breaks! (use the test method!)
 		handlerToParameter.put(PARAMETERS.YES_NO, YesNo.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.NUMBER, net.b07z.sepia.server.assist.parameters.Number.class.getCanonicalName());
+		handlerToParameter.put(PARAMETERS.GENERAL_VALUE, GeneralValue.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.ACTION, Action.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.PLACE, Place.class.getCanonicalName());
 		handlerToParameter.put(PARAMETERS.TIME, DateAndTime.class.getCanonicalName());
