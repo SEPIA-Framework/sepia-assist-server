@@ -21,6 +21,7 @@ import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.assist.smarthome.SmartHomeDevice;
 import net.b07z.sepia.server.assist.smarthome.SmartHomeHub;
+import net.b07z.sepia.server.assist.smarthome.SmartHomeDevice.StateType;
 import net.b07z.sepia.server.assist.tools.StringCompare;
 import net.b07z.sepia.server.assist.tools.StringCompare.StringCompareResult;
 import net.b07z.sepia.server.core.assistant.ACTIONS;
@@ -110,7 +111,8 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		Parameter p2 = new Parameter(PARAMETERS.ACTION, Action.Type.toggle); 	//toggle seems to be the most reasonable default action "lights" -> "light on"
 		Parameter p3 = new Parameter(PARAMETERS.SMART_DEVICE_VALUE, "");
 		Parameter p4 = new Parameter(PARAMETERS.ROOM, "");
-		info.addParameter(p2).addParameter(p3).addParameter(p4);
+		Parameter p5 = new Parameter(PARAMETERS.GENERAL_VALUE, "");		//used only when SMART_DEVICE_VALUE is missing (or unclear?)
+		info.addParameter(p2).addParameter(p3).addParameter(p4).addParameter(p5);
 		
 		//Answers (these are the default answers, you can add a custom answer at any point in the module with api.setCustomAnswer(..)):
 		info.addSuccessAnswer("smartdevice_0c")		//a default success answer, usually more specific answers will be set depending on the action
@@ -216,6 +218,15 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		String targetSetValue = deviceValue.getValueAsString();
 		String targetValueType = JSON.getStringOrDefault(deviceValue.getData(), 
 				InterviewData.SMART_DEVICE_VALUE_TYPE, SmartHomeDevice.StateType.number_plain.name());
+		
+		Parameter deviceGenValue = nluResult.getOptionalParameter(PARAMETERS.GENERAL_VALUE, "");	//any text input from "set value to X"
+		String targetSetGenValue = deviceGenValue.getValueAsString();
+		String targetSetGenValueType = StateType.text_raw.name();		//NOTE: currently required
+		//this only is relevant if 'targetSetValue' is empty so we remove this for now if that's not the case
+		if (!targetSetValue.isEmpty()){
+			targetSetGenValue = "";
+			targetSetGenValueType = "";
+		}
 		
 		//Default user temperature unit - used during state adaptation in set
 		//String userPrefTempUnit = (String) nluResult.input.getCustomDataObject("prefTempUnit");
@@ -425,7 +436,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		}
 		
 		//Convert TOGGLE and ON (with value) to specific action
-		if (!targetSetValue.isEmpty() && (actionIs(actionValue, Action.Type.toggle) || actionIs(actionValue, Action.Type.on))){
+		if ((!targetSetValue.isEmpty() || !targetSetGenValue.isEmpty()) && (actionIs(actionValue, Action.Type.toggle) || actionIs(actionValue, Action.Type.on))){
 			actionValue = Action.Type.set.name();
 		}
 		if (actionIs(actionValue, Action.Type.toggle)){
@@ -536,15 +547,20 @@ public class SmartHomeHubConnector implements ServiceInterface {
 	
 		//SET
 		}else if (actionIs(actionValue, Action.Type.set)){
+			//assign right values
+			String newValue = targetSetGenValue.isEmpty()? targetSetValue : targetSetGenValue;
+			String newValueType = targetSetGenValue.isEmpty()? targetValueType : targetSetGenValueType;
+			boolean isGeneralValue = !targetSetGenValue.isEmpty();
+			
 			//check if we have a value or need to ask
-			if (targetSetValue.isEmpty()){ 
+			if (newValue.isEmpty()){ 
 				service.setIncompleteAndAsk(PARAMETERS.SMART_DEVICE_VALUE, askStateValue);
 				return service.buildResult();
 			
 			//set
 			}else{
-				//already set?
-				if (Is.notNullOrEmpty(selectedDeviceState) && selectedDeviceState.equalsIgnoreCase(targetSetValue)){
+				//already set? - TODO: do we need a better check for 'StateType.text_raw' ?
+				if (Is.notNullOrEmpty(selectedDeviceState) && (selectedDeviceState.equalsIgnoreCase(newValue))){
 					//response info
 					service.resultInfoPut("state", SmartHomeDevice.getStateLocal(selectedDeviceState, service.language));
 					//answer
@@ -557,14 +573,21 @@ public class SmartHomeHubConnector implements ServiceInterface {
 				}else{
 					//adapt state and type
 					if (Is.notNullOrEmpty(selectedDeviceStateType)){
+						if (isGeneralValue && !Is.typeEqual(newValueType, SmartHomeDevice.StateType.text_raw)){
+							//has to be raw text for now - abort
+							Debugger.println(SmartHomeHub.class.getSimpleName() + " failed, general-value expected device type 'text_raw', was: " + selectedDeviceStateType, 3);
+							service.setStatusOkay();
+							service.setCustomAnswer(actionNotPossible);			//"soft"-fail with "action not possible" answer
+							return service.buildResult();
+						}
 						try{
 							SimpleEntry<String, String> adaptedStateAndType = SmartHomeDevice.adaptToDeviceStateTypeOrFail(
-									targetSetValue, targetValueType, 
+									newValue, newValueType, 
 									deviceType, selectedDeviceStateType, 
 									nluResult.input
 							);
-							targetSetValue = adaptedStateAndType.getValue();
-							targetValueType = adaptedStateAndType.getKey();
+							newValue = adaptedStateAndType.getValue();
+							newValueType = adaptedStateAndType.getKey();
 						}catch (Exception e){
 							Debugger.printStackTrace(e, 3);
 							//action not supported or makes no sense
@@ -573,16 +596,16 @@ public class SmartHomeHubConnector implements ServiceInterface {
 							return service.buildResult();
 						}
 					}else{
-						if (Is.typeEqual(targetValueType, SmartHomeDevice.StateType.number_plain)){
-							targetValueType = SmartHomeDevice.makeSmartTypeAssumptionForPlainNumber(SmartDevice.Types.valueOf(deviceType));
+						if (Is.typeEqual(newValueType, SmartHomeDevice.StateType.number_plain)){
+							newValueType = SmartHomeDevice.makeSmartTypeAssumptionForPlainNumber(SmartDevice.Types.valueOf(deviceType));
 						}
 					}
 					//send
 					//System.out.println("send to device: " + targetSetValue + " - " + targetValueType);		//DEBUG
-					boolean setSuccess = smartHomeHUB.setDeviceState(selectedDevice, targetSetValue, targetValueType);
+					boolean setSuccess = smartHomeHUB.setDeviceState(selectedDevice, newValue, newValueType);
 					if (setSuccess){
 						//response info
-						service.resultInfoPut("state", SmartHomeDevice.getStateLocal(targetSetValue, service.language));
+						service.resultInfoPut("state", SmartHomeDevice.getStateLocal(newValue, service.language));
 						//answer
 						if (hasRoom){
 							service.setCustomAnswer(setDeviceToStateWithRoom);

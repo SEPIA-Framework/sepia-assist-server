@@ -677,7 +677,7 @@ public class SmartHomeDevice {
 			//TODO: need to properly convert state to newInputState?
 		}
 		//devices with state value type temp. only accept plain number or temp. number
-		if (deviceStateType.startsWith(StateType.number_temperature.name())){	
+		if (deviceStateType.startsWith(StateType.number_temperature.name())){
 			//NOTE: this has to be either C or F (unknown unit not allowed as device state type)
 			if (newInputStateType.startsWith(StateType.number_temperature.name())){
 				//check if temp. unit is given. If not try to get it from client
@@ -737,6 +737,11 @@ public class SmartHomeDevice {
 					String cmd = Converters.obj2StringOrDefault(setCmds.get("disable"), null);
 					if (Is.notNullOrEmpty(cmd)){
 						return cmd;
+					}
+				}else if (Is.typeEqual(stateType, StateType.text_raw)){
+					String cmd = Converters.obj2StringOrDefault(setCmds.get("raw"), null);
+					if (Is.notNullOrEmpty(cmd)){
+						return cmd.replaceAll("<val>|<value>", state);
 					}
 				}
 			}
