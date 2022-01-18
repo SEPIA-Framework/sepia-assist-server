@@ -452,7 +452,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		//SHOW
 		if (actionIs(actionValue, Action.Type.show)){
 			//response info
-			service.resultInfoPut("state", SmartHomeDevice.getStateLocal(selectedDeviceState, service.language));
+			service.resultInfoPut("state", SmartHomeDevice.getStateLocal(selectedDeviceState, service.language, selectedDeviceStateType));
 			//System.out.println("type: " + stateType); 		//DEBUG
 			//answer
 			if (hasRoom){
@@ -476,7 +476,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 			//already on?
 			if (hasStateAlready){
 				//response info
-				service.resultInfoPut("state", SmartHomeDevice.getStateLocal(selectedDeviceState, service.language));
+				service.resultInfoPut("state", SmartHomeDevice.getStateLocal(selectedDeviceState, service.language, selectedDeviceStateType));
 				//answer
 				if (hasRoom){
 					service.setCustomAnswer(showDeviceStateWithRoom);
@@ -488,7 +488,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 				boolean setSuccess = smartHomeHUB.setDeviceState(selectedDevice, targetState, SmartHomeDevice.StateType.text_binary.name());
 				if (setSuccess){
 					//response info
-					service.resultInfoPut("state", SmartHomeDevice.getStateLocal(targetState, service.language));
+					service.resultInfoPut("state", SmartHomeDevice.getStateLocal(targetState, service.language, selectedDeviceStateType));
 					//answer
 					if (hasRoom){
 						service.setCustomAnswer(setDeviceToStateWithRoom);
@@ -518,7 +518,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 			//already off?
 			if (hasStateAlready){
 				//response info
-				service.resultInfoPut("state", SmartHomeDevice.getStateLocal(selectedDeviceState, service.language));
+				service.resultInfoPut("state", SmartHomeDevice.getStateLocal(selectedDeviceState, service.language, selectedDeviceStateType));
 				//answer
 				if (hasRoom){
 					service.setCustomAnswer(showDeviceStateWithRoom);
@@ -530,7 +530,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 				boolean setSuccess = smartHomeHUB.setDeviceState(selectedDevice, targetState, SmartHomeDevice.StateType.text_binary.name());
 				if (setSuccess){
 					//response info
-					service.resultInfoPut("state", SmartHomeDevice.getStateLocal(targetState, service.language));
+					service.resultInfoPut("state", SmartHomeDevice.getStateLocal(targetState, service.language, selectedDeviceStateType));
 					//answer
 					if (hasRoom){
 						service.setCustomAnswer(setDeviceToStateWithRoom);
@@ -562,7 +562,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 				//already set? - TODO: do we need a better check for 'StateType.text_raw' ?
 				if (Is.notNullOrEmpty(selectedDeviceState) && (selectedDeviceState.equalsIgnoreCase(newValue))){
 					//response info
-					service.resultInfoPut("state", SmartHomeDevice.getStateLocal(selectedDeviceState, service.language));
+					service.resultInfoPut("state", SmartHomeDevice.getStateLocal(selectedDeviceState, service.language, selectedDeviceStateType));
 					//answer
 					if (hasRoom){
 						service.setCustomAnswer(showDeviceStateWithRoom);
@@ -605,7 +605,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 					boolean setSuccess = smartHomeHUB.setDeviceState(selectedDevice, newValue, newValueType);
 					if (setSuccess){
 						//response info
-						service.resultInfoPut("state", SmartHomeDevice.getStateLocal(newValue, service.language));
+						service.resultInfoPut("state", SmartHomeDevice.getStateLocal(newValue, service.language, selectedDeviceStateType));
 						//answer
 						if (hasRoom){
 							service.setCustomAnswer(setDeviceToStateWithRoom);
@@ -624,7 +624,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		//NOT POSSIBLE
 		}else{
 			//response info
-			service.resultInfoPut("state", SmartHomeDevice.getStateLocal(selectedDeviceState, service.language));
+			service.resultInfoPut("state", SmartHomeDevice.getStateLocal(selectedDeviceState, service.language, selectedDeviceStateType));
 			
 			//action not supported or makes no sense
 			service.setStatusOkay();

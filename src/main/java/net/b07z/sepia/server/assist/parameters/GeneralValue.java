@@ -32,20 +32,20 @@ public class GeneralValue implements ParameterHandler {
 	String found = "";		//exact (not generalized) string found during extraction (or guess?)
 	
 	@Override
-	public void setup(NluInput nluInput) {
+	public void setup(NluInput nluInput){
 		this.nluInput = nluInput;
 		this.user = nluInput.user;
 		this.language = nluInput.language;
 	}
 	@Override
-	public void setup(NluResult nluResult) {
+	public void setup(NluResult nluResult){
 		this.nluInput = nluResult.input;
 		this.user = nluResult.input.user;
 		this.language = nluResult.language;
 	}
 	
 	@Override
-	public String extract(String input) {
+	public String extract(String input){
 		//check storage first
 		ParameterResult pr = nluInput.getStoredParameterResult(PARAMETERS.GENERAL_VALUE);
 		if (pr != null){
@@ -87,17 +87,17 @@ public class GeneralValue implements ParameterHandler {
 	}
 	
 	@Override
-	public String guess(String input) {
+	public String guess(String input){
 		return "";
 	}
 	
 	@Override
-	public String getFound() {
+	public String getFound(){
 		return found;
 	}
 
 	@Override
-	public String remove(String input, String found) {
+	public String remove(String input, String found){
 		if (language.equals(LANGUAGES.DE)){
 			found = "(auf |zu )(den |der |dem |)wert " + Pattern.quote(found) + "(| (fest|)setzen$| (ein|)stellen$)";
 		}else{
@@ -117,10 +117,12 @@ public class GeneralValue implements ParameterHandler {
 	}
 
 	@Override
-	public String build(String input) {
+	public String build(String input){
 		//build default result
 		JSONObject itemResultJSON = new JSONObject();
-			JSON.add(itemResultJSON, InterviewData.INPUT_RAW, nluInput.textRaw);
+			//JSON.add(itemResultJSON, InterviewData.INPUT_RAW, nluInput.textRaw);
+			//JSON.add(itemResultJSON, InterviewData.VALUE_LOCAL, localValue);
+			//JSON.add(itemResultJSON, InterviewData.EXTRAS, extras);
 			JSON.add(itemResultJSON, InterviewData.VALUE, input);
 		
 		buildSuccess = true;
@@ -128,7 +130,7 @@ public class GeneralValue implements ParameterHandler {
 	}
 
 	@Override
-	public boolean validate(String input) {
+	public boolean validate(String input){
 		if (input.matches("^\\{\".*\"(\\s|):.+\\}$") && input.contains("\"" + InterviewData.VALUE + "\"")){
 			//System.out.println("IS VALID: " + input); 		//debug
 			return true;
