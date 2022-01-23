@@ -844,34 +844,48 @@ public class RegexParameterSearch {
 			}else if (location_input.matches(".*\\b(bis nach|nach|zu|zum|zur|bis|richtung)\\s.*")){
 				location_end = location_input.replaceFirst(".*?\\b(bis nach|nach|zu|zum|zur|bis|richtung)\\b", "").trim();
 				
-			}else if (location_input.matches(".*\\b((adresse|ort) (des|der|von)|am|in|im|an|fuer|auf(?!( (der|einer) (karte|map)| maps)))\\s.*")){
+			}else if (location_input.matches(".*\\b(wo (ist|sind|gibt es|liegt|liegen|(befindet|befinden) sich) .+ (in(?! der naehe)|auf(?! (\\w+ |)(karte(n|)|map(s|)))) .+)")){
+				//NOTE: we have to put this here or the next check consumes "... in ..."
+				location = location_input.replaceFirst(".*?\\b(wo (ist|sind|gibt es|liegt|liegen|(befindet|befinden) sich))", "").trim();
+				location = location.replaceFirst("^(der|die|das|eine|ein|einen|den)\\b", "").trim();
+				location = location.replaceFirst("^(nahes|naechste(n|)|naechstgelegene(n|))\\b", "").trim();
+			
+			}else if (location_input.matches(".*\\b(wo (in(?! der naehe)|auf(?! (\\w+ |)(karte(n|)|map(s|)))) .+ (ist|sind|gibt es|liegt|liegen|(befindet|befinden) sich) .+)")){
+				//NOTE: we have to put this here or the next check consumes "... in ..."
+				location = location_input.replaceFirst(".*?\\b(wo (?<A>in|auf) (?<B>.+) (ist|sind|gibt es|liegt|liegen|(befindet|befinden) sich) (?<C>.+))", "${C} ${A} ${B}").trim();
+				location = location.replaceFirst("^(der|die|das|eine|ein|einen|den)\\b", "").trim();
+				location = location.replaceFirst("^(nahes|naechste(n|)|naechstgelegene(n|))\\b", "").trim();
+				
+			}else if (location_input.matches(".*\\b((adresse|ort) (des|der|von)|am|in|im|an|fuer|auf(?! (\\w+ |)(karte(n|)|map(s|))))\\s.*")){
 				location = location_input.replaceFirst(".*?\\b((adresse|ort) (des|der|von)|am|in|im|an|fuer|auf)\\b", "").trim();
-				location = location.replaceFirst("\\b(auf (der|einer) (karte|map)$|auf maps$)", "").trim();
+				location = location.replaceFirst("\\b(auf (\\w+ |)(karte(n|)|map(s|))$)", "").trim();
 				
 			}else if (location_input.matches(".*\\b(der |die |das |ein |eine |einen |den |dem |)(nahes|naechste(n|)|naechstgelegene(n|))\\s.*")){
-				location = location_input.replaceFirst(".*?\\b(nahes|naechste(n|)|naechstgelegene(n|))\\b", "").trim();	
-				location = location.replaceFirst("\\b(auf (der|einer) (karte|map)$|auf maps$)", "").trim();
+				location = location_input.replaceFirst(".*?\\b(nahes|naechste(n|)|naechstgelegene(n|))\\b", "").trim();
+				location = location.replaceFirst("\\b(auf (\\w+ |)(karte(n|)|map(s|))$)", "").trim();
 				location = location.replaceFirst("\\b(ist$|sind$|liegt$|liegen$)", "").trim();
 				
-			}else if (location_input.matches(".*\\b(suche|zeig|finde) .*(\\b)(auf|in) (der |einer |)(karte|map|maps|naehe)\\b.*")){
+			}else if (location_input.matches(".*\\b(suche|zeig|finde) .*(\\b)(auf|in) (\\w+ |)(karte(n|)|map(s|)|naehe)\\b.*")){
 				location = location_input.replaceFirst(".*?\\b((suche|zeig|finde)( mir|)"
-						+ "( auf (der |einer |)(karte|map|maps)|))\\b", "").trim();
+						+ "( auf (\\w+ |)(karte(n|)|map(s|))|))\\b", "").trim();
 				location = location.replaceFirst("^(der|die|das|eine|ein|einen|den)\\b", "").trim();
-				location = location.replaceFirst("\\b(auf (der|einer) (karte|map)$|auf maps$)", "").trim();
+				location = location.replaceFirst("^(nahes|naechste(n|)|naechstgelegene(n|))\\b", "").trim();
+				location = location.replaceFirst("\\b(auf (\\w+ |)(karte(n|)|map(s|))$)", "").trim();
 				location = location.replaceFirst("\\b(in der naehe$)", "").trim();
 				
-			}else if (location_input.matches(".*\\b(wo (ist|sind|gibt es|liegt|liegen|befindet|befinden|auf (der|einer|) (karte|map|maps)))\\b.*")){
+			}else if (location_input.matches(".*\\b(wo (ist|sind|gibt es|liegt|liegen|befindet|befinden|auf (\\w+ |)(karte(n|)|map(s|))))\\b.*")){
 				location = location_input.replaceFirst(".*?\\b(wo (auf (der |einer |)(karte|map|maps) |)"
 						+ "(ist|sind|liegt|liegen|gibt es|finde ich|befinde(t|n) sich)( hier|))\\b", "").trim();
 				location = location.replaceFirst("^(der|die|das|eine|ein|einen|den)\\b", "").trim();
-				location = location.replaceFirst("\\b(auf (der|einer) (karte|map)$|auf maps$)", "").trim();
+				location = location.replaceFirst("^(nahes|naechste(n|)|naechstgelegene(n|))\\b", "").trim();
+				location = location.replaceFirst("\\b(auf (\\w+ |)(karte(n|)|map(s|))$)", "").trim();
 				location = location.replaceFirst("\\b(in der naehe$)", "").trim();
 			
 			}else if (location_input.matches(".*\\b(wo .* (ist|sind|liegt|liegen|befindet|befinden))\\b.*")){
 				location = location_input.replaceFirst(".*?\\b(wo (sich|))\\b", "").trim();
 				location = location.replaceFirst("^(der|die|das|eine|ein|einen|den)\\b", "").trim();
 				location = location.replaceFirst("\\b(ist|sind|liegt|liegen|befindet|befinden)\\b", "").trim();
-				location = location.replaceFirst("\\b(auf (der|einer) (karte|map)$|auf maps$)", "").trim();
+				location = location.replaceFirst("\\b(auf (\\w+ |)(karte(n|)|map(s|))$)", "").trim();
 				location = location.replaceFirst("\\b(in der naehe$)", "").trim();
 			}
 						
@@ -974,47 +988,57 @@ public class RegexParameterSearch {
 			}else if (location_input.matches(".*\\b((?<!(close |near ))to)\\s.*")){ 		//negative lookbehind "close to" "near to"
 				location_end = location_input.replaceFirst(".*?\\b(to)\\b", "").trim();
 				
-			}else if (location_input.matches(".*\\b((address|location) (of)|in|at|for|on(?!( (the|a) map| maps)))\\s.*")){
+			}else if (location_input.matches(".*\\b(where (is|are|lies|can (i|one) (find)) .+ (in|on(?! (\\w+ |)(map(s|)))) .+)")){
+				//NOTE: we have to put this here or the next check consumes "... in ..."
+				location = location_input.replaceFirst(".*?\\b(where (is|are|lies|can (i|one) (find)))", "").trim();
+				location = location.replaceFirst("^(the( closest| nearest| next|)|a)\\b", "").trim();
+			
+			}else if (location_input.matches(".*\\b(where (in|on(?! (\\w+ |)(map(s|)))) .+ (is|are|lies|can (i|one) (find)) .+)")){
+				//NOTE: we have to put this here or the next check consumes "... in ..."
+				location = location_input.replaceFirst(".*?\\b(where (?<A>in|on) (?<B>.+) (is|are|lies|can (i|one) (find)) (?<C>.+))", "${C} ${A} ${B}").trim();
+				location = location.replaceFirst("^(the( closest| nearest| next|)|a)\\b", "").trim();
+				
+			}else if (location_input.matches(".*\\b((address|location) (of)|in|at|for|on(?! (\\w+ |)(map(s|))))\\s.*")){
 				location = location_input.replaceFirst(".*?\\b((address|location) (of)|in|at|for|on)\\b", "").trim();
-				location = location.replaceFirst("\\b(on (the |a |)(map|maps)$)", "").trim();
+				location = location.replaceFirst("\\b(on (\\w+ |)(map(s|))$)", "").trim();
 				
 			}else if (location_input.matches(".*\\b(the )(closest|nearest|next)\\s.*")){
 				location = location_input.replaceFirst(".*?\\b(closest|nearest|next)\\b", "").trim();	
-				location = location.replaceFirst("\\b(on (the |a |)(map|maps)$)", "").trim();
+				location = location.replaceFirst("\\b(on (\\w+ |)(map(s|))$)", "").trim();
 				location = location.replaceFirst("\\b(is|are|lies)( here|)$", "").trim();
 			
-			}else if (location_input.matches(".*\\b((show|search|find|look(up| for|)) .*(\\b)(on (the |a |)(map|maps)|(close|near|around)))\\b.*")){
+			}else if (location_input.matches(".*\\b((show|search|find|look(up| for|)) .*(\\b)(on (\\w+ |)(map(s|))|(close|near|around)))\\b.*")){
 				location = location_input.replaceFirst(".*?\\b((show|search|find|look(up| for|))( me|)"
 						+ "( on (the |a |)(map|maps)|))\\b", "").trim();
 				location = location.replaceFirst("^(the|a)\\b", "").trim();
-				location = location.replaceFirst("\\b(on (the |a |)(map|maps)$)", "").trim();
+				location = location.replaceFirst("\\b(on (\\w+ |)(map(s|))$)", "").trim();
 				location = location.replaceFirst("\\b(close|near|around)( to| by|)( me|)$", "").trim();
 				
-			}else if (location_input.matches(".*\\b(where (is|lies|are|does|can (i|one) (find|get)|on (the |a |)(map|maps)))\\b.*")){
+			}else if (location_input.matches(".*\\b(where (is|lies|are|does|can (i|one) (find|get)|on (\\w+ |)(map(s|))))\\b.*")){
 				location = location_input.replaceFirst(".*?\\b(where (on (the |a |)(map|maps) |)"
 						+ "(is|lies|are|does|can (i|one) (get|find)))\\b", "").trim();
 				location = location.replaceFirst("^(the|a)\\b", "").trim();
 				location = location.replaceFirst("^(lie|lay)\\b", "").trim();
-				location = location.replaceFirst("\\b(on (the |a |)(map|maps)$)", "").trim();
+				location = location.replaceFirst("\\b(on (\\w+ |)(map(s|))$)", "").trim();
 				location = location.replaceFirst("\\b(close|near|around)( to| by|)( me|)( here|)$", "").trim();
 
 			}else if (location_input.matches(".*\\b(where .* (is|are|lie|lies|lay))\\b.*")){
 				location = location_input.replaceFirst(".*?\\b(where (does|))\\b", "").trim();
 				location = location.replaceFirst("^(the|a)\\b", "").trim();
 				location = location.replaceFirst("\\b(is|are|lie|lies|lay)\\b", "").trim();
-				location = location.replaceFirst("\\b(on (the |a |)(map|maps)$)", "").trim();
+				location = location.replaceFirst("\\b(on (\\w+ |)(map(s|))$)", "").trim();
 				location = location.replaceFirst("\\b(close|near|around)( to| by|)( me|)( here|)$", "").trim();
 			}
 			
 			//clean up a bit
 			if (!location_end.isEmpty()){
-				location_end = location_end.replaceFirst("\\b(on (the|a) map$|on maps$)", "").trim();
+				location_end = location_end.replaceFirst("\\b(on (\\w+ |)map(s|)$)", "").trim();
 				location_end = location_end.replaceFirst("^(to)\\b", "").trim();
 				location_end = location_end.replaceFirst("^(a|the)\\b", "").trim();
 				location_end = location_end.replaceFirst("^(closest|nearest|next)\\b", "").trim();
 			}
 			if (!location_start.isEmpty()){
-				location_start = location_start.replaceFirst("\\b(on (the|a) map$|on maps$)", "").trim();
+				location_start = location_start.replaceFirst("\\b(on (\\w+ |)map(s|)$)", "").trim();
 				location_start = location_start.replaceFirst("^(from)\\b", "").trim();
 				location_start = location_start.replaceFirst("^(a|the)\\b", "").trim();
 				location_start = location_start.replaceFirst("^(closest|nearest|next)\\b", "").trim();
