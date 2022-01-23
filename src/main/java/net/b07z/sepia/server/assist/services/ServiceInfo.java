@@ -81,9 +81,10 @@ public class ServiceInfo {
 	public List<String> answerParameters;			//list of parameters that are used to build the answer. The order matters! - TODO: a Map would be cool! But impossible to change now :-(
 	
 	//custom trigger sentences and custom regEx - note: not in InterviewInfo (yet?)
-	public Map<String, String> customTriggerRegEx = new HashMap<>();
-	public int customTriggerRegExScoreBoost = 0;
-	public Map<String, List<String>> customTriggerSentences = new HashMap<>();	//a list of sentences that can trigger the service sorted by language.
+	private Map<String, String> customTriggerRegEx = new HashMap<>();			//match this ...
+	private Map<String, String> customTriggerExcludeRegEx = new HashMap<>();		//... but not if this matches as well
+	private int customTriggerRegExScoreBoost = 0;
+	private Map<String, List<String>> customTriggerSentences = new HashMap<>();	//a list of sentences that can trigger the service sorted by language.
 	
 	/**
 	 * Build common info object. Use this if you need to set the legacy argument 'worksStandalone'.
@@ -249,13 +250,44 @@ public class ServiceInfo {
 		return this;
 	}
 	/**
-	 * Set a language dependent custom trigger regular expression for this service. 
+	 * Set a language dependent custom trigger regular expression for this service.<br>
+	 * You can use capturing groups to define input for parameters. This can be especially useful for custom services and parameters for example: "Set x to (?&ltMyParameter&gt.*$)".
 	 * @param regX - regular expression that is used to trigger scoring for this service. Score will decide the probability that this service is selected later and depends on parameters too.
 	 * @param language - language code
 	 */
 	public ServiceInfo setCustomTriggerRegX(String regX, String language){
 		customTriggerRegEx.put(language, regX);
 		return this;
+	}
+	/**
+	 * Set a language dependent 'exclude' custom trigger regular expression for this service.<br>
+	 * This will be checked after 'customTriggerRegEx' match and will nullify the previous match. Use it if it's too complicated to put the 'exclude' condition into the matching regular expression.
+	 * @param regX - regular expression to match the 'exclude' condition 
+	 * @param language - language code
+	 */
+	public ServiceInfo setCustomTriggerExcludeRegX(String regX, String language){
+		customTriggerExcludeRegEx.put(language, regX);
+		return this;
+	}
+	/**
+	 * Get the previously stored custom trigger regular expression for a given language.
+	 * @param language - ISO code as usual
+	 */
+	public String getCustomTriggerRegX(String language){
+		return customTriggerRegEx.get(language);
+	}
+	/**
+	 * Get the previously stored 'exclude' custom trigger regular expression for a given language.
+	 * @param language - ISO code as usual
+	 */
+	public String getCustomTriggerExcludeRegX(String language){
+		return customTriggerExcludeRegEx.get(language);
+	}
+	/**
+	 * Does this service have regX for any language?
+	 */
+	public boolean hasCustomTriggerRegX(){
+		return !customTriggerRegEx.isEmpty();
 	}
 	/**
 	 * Custom score boost that can be applied when the regEx is so strong that it should be weighted higher in scoring just for being found in 'text' already (typically 0 or 1)
@@ -269,19 +301,6 @@ public class ServiceInfo {
 	 */
 	public int getCustomTriggerRegXscoreBoost() {
 		return customTriggerRegExScoreBoost;
-	}
-	/**
-	 * Get the previously stored custom trigger regular expression for a given language.
-	 * @param language - ISO code as usual
-	 */
-	public String getCustomTriggerRegX(String language){
-		return customTriggerRegEx.get(language);
-	}
-	/**
-	 * Does this service have regX for any language?
-	 */
-	public boolean hasCustomTriggerRegX(){
-		return !customTriggerRegEx.isEmpty();
 	}
 	/**
 	 * Add a custom trigger sentence for a given language to the collection. 
@@ -361,5 +380,11 @@ public class ServiceInfo {
 		sentence = sentence + ";;" + Converters.makeCommandSummary(this.intendedCommand, extParameters);
 		list.add(sentence);
 		return this;
+	}
+	/**
+	 * Get custom trigger sentences.
+	 */
+	public Map<String, List<String>> getCustomTriggerSentences(){
+		return customTriggerSentences;
 	}
 }

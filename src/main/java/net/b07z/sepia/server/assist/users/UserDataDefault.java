@@ -212,7 +212,7 @@ public class UserDataDefault implements UserDataInterface {
 		
 		//add triggers
 		int i=0, j=0;
-		for (Entry<String, List<String>> entry : serviceInfo.customTriggerSentences.entrySet()){
+		for (Entry<String, List<String>> entry : serviceInfo.getCustomTriggerSentences().entrySet()){
 			List<String> triggers = entry.getValue();
 			String language = entry.getKey();
 			String source = "SDK " + userId + " " + command;

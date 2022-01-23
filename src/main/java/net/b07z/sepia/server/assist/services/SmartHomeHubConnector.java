@@ -82,6 +82,8 @@ public class SmartHomeHubConnector implements ServiceInterface {
 				+ "^smart( |)home|"
 				+ "(smart( |)home|geraet(e|)|sensor(en|))( |)(control|kontrolle|steuer(ung|n)|status|zustand)"
 				+ "", LANGUAGES.DE);
+		info.setCustomTriggerExcludeRegX(
+				"^(suche nach )", LANGUAGES.DE);	//exclude search ... phrases
 		info.setCustomTriggerRegX(""
 				+ SmartDevice.lightRegEx_en + "|"
 				+ SmartDevice.heaterRegEx_en + "|"
@@ -97,7 +99,10 @@ public class SmartHomeHubConnector implements ServiceInterface {
 				+ "^smart( |)home|"
 				+ "(smart( |)home|device|sensor) (control|stat(us|e))"
 				+ "", LANGUAGES.EN);
-		//info.setCustomTriggerRegXscoreBoost(2);		//boost service a bit to increase priority over similar ones
+		info.setCustomTriggerExcludeRegX(
+				"^(search for )", LANGUAGES.EN);	//exclude search ... phrases
+		
+		//info.setCustomTriggerRegXscoreBoost(2);	//boost service a bit to increase priority over similar ones
 		
 		//Parameters:
 		
