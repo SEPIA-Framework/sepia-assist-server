@@ -445,8 +445,11 @@ public class SmartHomeHubConnector implements ServiceInterface {
 			actionValue = Action.Type.set.name();
 		}
 		if (actionIs(actionValue, Action.Type.toggle)){
-			if (Is.notNullOrEmpty(selectedDeviceState) && !selectedDeviceState.equals("0") && (selectedDeviceState.matches("\\d+") 
-					|| Is.typeEqualIgnoreCase(selectedDeviceState, SmartHomeDevice.State.on))){
+			if (Is.nullOrEmpty(selectedDeviceState)){
+				actionValue = Action.Type.on.name();
+			}else if (Is.typeEqualIgnoreCase(selectedDeviceState, SmartHomeDevice.State.on)
+					|| (selectedDeviceState.matches("(%|pct|)( |)\\d+( |)(%|pct|)") && !selectedDeviceState.matches("(%|pct|)( |)(0)( |)(%|pct|)"))
+					|| selectedDeviceState.matches("(?i)(true|on|open|connected)")){
 				actionValue = Action.Type.off.name();
 			}else{
 				actionValue = Action.Type.on.name();
