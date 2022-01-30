@@ -56,6 +56,6 @@ What date is today;;		command=chat;;		reply=Today is the <local_date_MMddyyyy>
 What is the date of today;;		command=chat;;		reply=Today is the <local_date_MMddyyyy>
 The date of today please;;		command=chat;;		reply=Today is the <local_date_MMddyyyy>
 Client Mesh-Node test;;		command=client_controls;;		client_fun=<meshNode>;;		data={"url":"http://localhost:20780", "plugin":"HelloPlugin"};;		action=<on>;;
-Shutdown system;; 	command=client_controls;;	client_fun=<runtimeCommands>;;	data={"value": {"shortcut":"os_shutdown", "delay":16000}};;		action=<set>;;		reply=Ok I'll try;;"
-Reboot system;; 	command=client_controls;;	client_fun=<runtimeCommands>;;	data={"value": {"shortcut":"os_reboot", "delay":16000}};;		action=<set>;;		reply=Ok I'll try;;"
+Shutdown system;; 	command=client_controls;;	client_fun=<runtimeCommands>;;	data={"value": {"shortcut":"os_shutdown", "delay":16000}};;		action=<set>;;		reply=Ok I'll try;;
+Reboot system;; 	command=client_controls;;	client_fun=<runtimeCommands>;;	data={"value": {"shortcut":"os_reboot", "delay":16000}};;		action=<set>;;		reply=Ok I'll try;;
 Linebreak;;			command=chat;;		reply=This is line 1.  And this is line 2.  END

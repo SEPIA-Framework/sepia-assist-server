@@ -12,15 +12,17 @@ import net.b07z.sepia.server.assist.assistant.LOCATION;
 import net.b07z.sepia.server.assist.data.Address;
 import net.b07z.sepia.server.assist.data.Name;
 import net.b07z.sepia.server.assist.data.SentenceMatch;
+import net.b07z.sepia.server.assist.geo.GeoCoderResult;
+import net.b07z.sepia.server.assist.geo.GeoFactory;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.services.ServiceAccessManager;
-import net.b07z.sepia.server.assist.tools.GeoCoding;
 import net.b07z.sepia.server.core.data.Role;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
 import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 import net.b07z.sepia.server.core.tools.ThreadManager;
 
@@ -95,66 +97,14 @@ public final class User {
 			language = input.language;
 		}
 		
-		//get basics from account if there are some - NOTE: this uses the generalized names BUT stores the classic ACCOUNT names in 'info' 
-		if (token.getBasicInfo() != null){
-			//NOTE: compared to "check" and "validate" from Start.java here the keys MUST have the account values
-			//IDs
-			if (token.getBasicInfo().containsKey(Authenticator.EMAIL)){
-				email = (String) token.getBasicInfo().get(Authenticator.EMAIL);
-				if (email.equals("-")){
-					email = "";
-				}else{
-					info.put(ACCOUNT.EMAIL, email);
-				}
-				checked.put(ACCOUNT.EMAIL, true);
-			}
-			if (token.getBasicInfo().containsKey(Authenticator.PHONE)){
-				phone = (String) token.getBasicInfo().get(Authenticator.PHONE);
-				if (phone.equals("-")){
-					phone = "";
-				}else{
-					info.put(ACCOUNT.PHONE, phone);
-				}
-				checked.put(ACCOUNT.PHONE, true);
-			}
-			//roles
-			if (token.getBasicInfo().containsKey(Authenticator.USER_ROLES)){
-				@SuppressWarnings("unchecked")
-				List<Object> roleObjects = (List<Object>) token.getBasicInfo().get(Authenticator.USER_ROLES);
-				List<String> roles = new ArrayList<>(); 
-				for (Object o : roleObjects){
-					roles.add(o.toString()); 		//we need to make a proper transformation
-				}
-				this.userRoles = roles;
-				info.put(ACCOUNT.ROLES, roles);
-				checked.put(ACCOUNT.ROLES, true);
-			}
-			//name
-			if (token.getBasicInfo().containsKey(Authenticator.USER_NAME)){
-				@SuppressWarnings("unchecked")
-				Map<String, Object> nameJson = (Map<String, Object>) token.getBasicInfo().get(Authenticator.USER_NAME);
-				this.userName = new Name(nameJson); 
-				info.put(ACCOUNT.USER_NAME, nameJson); 		//Note: we gotta avoid confusion here :-|
-				checked.put(ACCOUNT.USER_NAME, true);
-			}
-			//infos
-			if (token.getBasicInfo().containsKey(Authenticator.USER_BIRTH)){
-				info.put(ACCOUNT.USER_BIRTH, (String) token.getBasicInfo().get(Authenticator.USER_BIRTH));
-				checked.put(ACCOUNT.USER_BIRTH, true);
-			}
-			if (token.getBasicInfo().containsKey(Authenticator.USER_LANGUAGE)){
-				info.put(ACCOUNT.USER_PREFERRED_LANGUAGE, (String) token.getBasicInfo().get(Authenticator.USER_LANGUAGE));
-				checked.put(ACCOUNT.USER_PREFERRED_LANGUAGE, true);
-			}
-			if (token.getBasicInfo().containsKey(Authenticator.BOT_CHARACTER)){
-				info.put(ACCOUNT.BOT_CHARACTER, (String) token.getBasicInfo().get(Authenticator.BOT_CHARACTER));
-				checked.put(ACCOUNT.BOT_CHARACTER, true);
-			}
-			if (token.getBasicInfo().containsKey(Authenticator.USER_PREFERRED_UNIT_TEMP)){
-				info.put(ACCOUNT.USER_PREFERRED_UNIT_TEMP, (String) token.getBasicInfo().get(Authenticator.USER_PREFERRED_UNIT_TEMP));
-				checked.put(ACCOUNT.USER_PREFERRED_UNIT_TEMP, true);
-			}
-		}
+		//get basics from account if there are some - copy from token to user 
+		AuthenticationCommons.copyBasicInfo(this, token.getBasicInfo(), this.checked);
+		/* fills info for example with:
+		ACCOUNT.EMAIL, ACCOUNT.PHONE, ACCOUNT.ROLES,
+		ACCOUNT.USER_NAME, ACCOUNT.USER_BIRTH, ACCOUNT.USER_PREFERRED_LANGUAGE, 
+		ACCOUNT.BOT_CHARACTER, ACCOUNT.USER_PREFERRED_UNIT_TEMP, 
+		...
+		*/
 	}
 	
 	/**
@@ -601,35 +551,34 @@ public final class User {
 						//System.out.println("do geo search for: " + geo_search);		//debug
 						
 						//GET
-						Map<String, Object> geo_info = GeoCoding.getCoordinates(geo_search, user.language);
-						Object latitude = geo_info.get(LOCATION.LAT);
-						Object longitude = geo_info.get(LOCATION.LNG);
-						String f_city = (String) geo_info.get(LOCATION.CITY);
-						String f_country = (String) geo_info.get(LOCATION.COUNTRY);
-						String f_street = (String) geo_info.get(LOCATION.STREET);
-						//System.out.println("found: " + latitude + ", " + longitude + ", city: " + f_city + ", country: " + f_country);		//debug
+						GeoCoderResult geoRes = GeoFactory.createGeoCoder().getCoordinates(geo_search, user.language);
+						//System.out.println("found: " + geoRes.latitude + ", " + geoRes.longitude + ", city: " + geoRes.city + ", country: " + geoRes.country);		//debug
+						
+						//cache coordinates in any case
+						if (geoRes.latitude != null && geoRes.longitude != null){
+							taggedAdr.latitude = geoRes.latitude.toString();
+							taggedAdr.longitude = geoRes.longitude.toString();
+							//Note: use 'buildJSON' below
+						}
 						
 						//CHECK
 						String city = user.getUserSpecificLocation(match, LOCATION.CITY);
 						String country = user.getUserSpecificLocation(match, LOCATION.COUNTRY);
-						String street = user.getUserSpecificLocation(match, LOCATION.STREET);
-						if ( (!city.isEmpty() && f_city != null && !f_city.isEmpty()) 
-								&& (!country.isEmpty() && f_country != null && !f_country.isEmpty())
-								&& (!street.isEmpty() && f_street != null && !f_street.isEmpty())
-							){
-							//System.out.println("check: " + city + " = " + f_city + ", street: " + street + " = " + f_street +	", country: " + country + " = " + f_country);		//debug
-							SentenceMatch streetMatch = new SentenceMatch(street, f_street).getEditDistance();
-							double streetNoMatchProb = (double) streetMatch.editDistance/(double) Math.max(street.length(), f_street.length());
+						String street = user.getUserSpecificLocation(match, LOCATION.STREET);	//NOTE: for some cases 'city' might be enough ...
+						if (!city.isEmpty() && Is.notNullOrEmpty(geoRes.city)
+								&& !country.isEmpty() && Is.notNullOrEmpty(geoRes.country)
+								&& !street.isEmpty() && Is.notNullOrEmpty(geoRes.street)){
+							
+							SentenceMatch streetMatch = new SentenceMatch(street, geoRes.street).getEditDistance();
+							double streetNoMatchProb = (double) streetMatch.editDistance/(double) Math.max(street.length(), geoRes.street.length());
 							//System.out.println("no match prob. " + streetNoMatchProb); 		//debug
-							if (city.toLowerCase().trim().equals(f_city.toLowerCase().trim()) 
-								&& country.toLowerCase().trim().equals(f_country.toLowerCase().trim())
-								//&& street.toLowerCase().trim().equals(f_street.toLowerCase().trim())
-								&& (streetNoMatchProb < 0.5f)
-									){
+							if (city.toLowerCase().trim().equals(geoRes.city.toLowerCase().trim()) 
+									&& country.toLowerCase().trim().equals(geoRes.country.toLowerCase().trim())
+									//&& street.toLowerCase().trim().equals(f_street.toLowerCase().trim())
+									&& (streetNoMatchProb < 0.5f)){
 								
 								//Update data on-the-fly to have it available NOW ... then save it to DB
-								taggedAdr.latitude = latitude.toString();
-								taggedAdr.longitude = longitude.toString();
+								taggedAdr.street = geoRes.street;
 								taggedAdr.buildJSON();		//we need to update this because the "key"-lookup is done in JSON - TODO: upgrade
 								
 								//TODO: here we need to replace stuff with the new system (make it work for all addresses?)
@@ -637,27 +586,23 @@ public final class User {
 								//SAVE HOME
 								if (match.equals("<user_home>")){
 									user.getUserDataAccess().setOrUpdateSpecialAddress(user, Address.USER_HOME_TAG, null, JSON.make(
-											LOCATION.LAT, latitude,
-											LOCATION.LNG, longitude,
-											LOCATION.STREET, f_street
+										LOCATION.LAT, geoRes.latitude,
+										LOCATION.LNG, geoRes.longitude,
+										LOCATION.STREET, geoRes.street
 									));
-									taggedAdr.latitude = latitude.toString();
-									taggedAdr.longitude = longitude.toString();
-									taggedAdr.street = f_street;
-							
 								//SAVE WORK
 								}else if (match.equals("<user_work>")){
 									user.getUserDataAccess().setOrUpdateSpecialAddress(user, Address.USER_WORK_TAG, null, JSON.make(
-											LOCATION.LAT, latitude,
-											LOCATION.LNG, longitude,
-											LOCATION.STREET, f_street
+										LOCATION.LAT, geoRes.latitude,
+										LOCATION.LNG, geoRes.longitude,
+										LOCATION.STREET, geoRes.street
 									));
-									taggedAdr.latitude = latitude.toString();
-									taggedAdr.longitude = longitude.toString();
-									taggedAdr.street = f_street;
 								}
-								Debugger.println("GEO TOOLS - SAVED COORDINATES: " + f_country + ", " + f_city + ", " + f_street + " - Lat.: " + latitude + ", Lng.: " + longitude, 3);		//debug
+								Debugger.println("GEO TOOLS - SAVED COORDINATES: " + geoRes.country + ", " + geoRes.city + ", " + geoRes.street + " - Lat.: " + geoRes.latitude + ", Lng.: " + geoRes.longitude, 3);		//debug
 							}
+						}else{
+							//Don't forget to update data at least
+							taggedAdr.buildJSON();		//see note above - TODO: upgrade
 						}
 					}
 				}

@@ -9,6 +9,11 @@ It generates a rather robotic (male-ish) voice but fits very well to SEPIA :-). 
   
 See the [espeak-ng readme](espeak-ng/README.md) for more info. If you install TTS via the SEPIA setup on Linux it will be available automatically.
 
+### Espeak-NG MBROLA Extension
+
+MBROLA voices are available for many languages and can sound considerably better than classic espeak while still being very fast and resource friendly.  
+Read more about it and about the LICENSE conditions in the [espeak-ng-mbrola readme](espeak-ng-mbrola/README.md).
+
 ## Pico TTS
 
 Pico is a voice engine by SVOX that was initially developed as free version and used in Android on-device TTS. 
@@ -24,6 +29,11 @@ Quality of the voices can vary from 'quite high' to 'rather basic' so be sure to
   
 See the [mary-tts readme](marytts/INSTALL.md) for more info.  
 NOTE: This extension requires at least 2GB of memory when running in parallel to the SEPIA server, but you can run the server on a different machine as well (see SEPIA settings 'marytts_server').
+
+## Larynx
+
+[Larynx](https://github.com/rhasspy/larynx) is an open-source server for (experimental) high-quality, next-gen voices that is compatible with MaryTTS API and SEPIA since Larynx version 1.0.3..  
+It is pretty resource hungry but you can try and experiment with the low and medium quality settings on Raspberry Pi 4. It is recommended to use the 64bit version (aarch64 on RPi) for better performance.
 
 ## Acapela
 

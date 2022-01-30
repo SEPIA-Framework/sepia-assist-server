@@ -522,7 +522,7 @@ public class ServiceBuilder {
 	public boolean sendRemoteAction(String actionType, String action, 
 			String targetDeviceId, String targetChannelId, String skipDeviceId){
 		String receiver = nluResult.input.user.getUserID();
-		return Clients.sendAssistantRemoteAction(receiver, actionType, action, targetDeviceId, targetChannelId, skipDeviceId);
+		return Clients.sendAssistantRemoteAction(receiver, actionType, action, targetDeviceId, targetChannelId, skipDeviceId, null);
 	}
 	
 	/**

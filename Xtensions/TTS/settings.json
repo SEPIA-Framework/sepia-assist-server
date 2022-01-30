@@ -1,0 +1,395 @@
+{
+	"voices": {
+		"deDE_espeak_m": {
+			"type": "espeak",
+			"name": "de-DE espeak m",
+			"languageCode": "de",
+			"genderCode": "male",
+			"moods": [{
+				"moodIndex": 0,
+				"systemName": "gmw/de",
+				"speed": 160,
+				"pitch": 50,
+				"volume": 100
+			},{
+				"moodIndex": 1,
+				"systemName": "gmw/de",
+				"speed": 160,
+				"pitch": 60,
+				"volume": 100
+			},{
+				"moodIndex": 2,
+				"systemName": "gmw/de",
+				"speed": 160,
+				"pitch": 30,
+				"volume": 100
+			}]
+		},
+		"enGB_espeak_m": {
+			"type": "espeak",
+			"name": "en-GB espeak m",
+			"languageCode": "en",
+			"genderCode": "male",
+			"moods": [{
+				"moodIndex": 0,
+				"systemName": "gmw/en",
+				"speed": 160,
+				"pitch": 50,
+				"volume": 100
+			},{
+				"moodIndex": 1,
+				"systemName": "gmw/en",
+				"speed": 160,
+				"pitch": 60,
+				"volume": 100
+			},{
+				"moodIndex": 2,
+				"systemName": "gmw/en",
+				"speed": 160,
+				"pitch": 30,
+				"volume": 100
+			}]
+		},
+		"esES_espeak_m": {
+			"type": "espeak",
+			"name": "es-ES espeak m",
+			"languageCode": "es",
+			"genderCode": "male",
+			"moods": [{
+				"moodIndex": 0,
+				"systemName": "roa/es",
+				"speed": 160,
+				"pitch": 50,
+				"volume": 100
+			}]
+		},
+		"frFR_espeak_m": {
+			"type": "espeak",
+			"name": "fr-FR espeak m",
+			"languageCode": "fr",
+			"genderCode": "male",
+			"moods": [{
+				"moodIndex": 0,
+				"systemName": "roa/fr",
+				"speed": 160,
+				"pitch": 50,
+				"volume": 100
+			}]
+		},
+		"trTR_espeak_m": {
+			"type": "espeak",
+			"name": "tr-TR espeak m",
+			"languageCode": "tr",
+			"genderCode": "male",
+			"moods": [{
+				"moodIndex": 0,
+				"systemName": "trk/tr",
+				"speed": 160,
+				"pitch": 50,
+				"volume": 100
+			}]
+		},
+		"deDE_espeak_mbrola_m1": {
+			"type": "espeak_mbrola",
+			"name": "de-DE es-mbrola m1",
+			"languageCode": "de",
+			"genderCode": "male",
+			"moods": [{
+				"moodIndex": 0,
+				"systemName": "mb/mb-de4",
+				"speed": 185,
+				"pitch": 50,
+				"volume": 100
+			}]
+		},
+		"deDE_espeak_mbrola_f1": {
+			"type": "espeak_mbrola",
+			"name": "de-DE es-mbrola f1",
+			"languageCode": "de",
+			"genderCode": "female",
+			"moods": [{
+				"moodIndex": 0,
+				"systemName": "mb/mb-de5",
+				"speed": 180,
+				"pitch": 50,
+				"volume": 100
+			}]
+		},
+		"deDE_espeak_mbrola_m2": {
+			"type": "espeak_mbrola",
+			"name": "de-DE es-mbrola m2",
+			"languageCode": "de",
+			"genderCode": "male",
+			"moods": [{
+				"moodIndex": 0,
+				"systemName": "mb/mb-de6",
+				"speed": 185,
+				"pitch": 50,
+				"volume": 100
+			}]
+		},
+		"deDE_espeak_mbrola_f2": {
+			"type": "espeak_mbrola",
+			"name": "de-DE es-mbrola f2",
+			"languageCode": "de",
+			"genderCode": "female",
+			"moods": [{
+				"moodIndex": 0,
+				"systemName": "mb/mb-de7",
+				"speed": 180,
+				"pitch": 50,
+				"volume": 100
+			}]
+		},
+		"enGB_espeak_mbrola_m1": {
+			"type": "espeak_mbrola",
+			"name": "en-GB es-mbrola m1",
+			"languageCode": "en",
+			"genderCode": "male",
+			"moods": [{
+				"moodIndex": 0,
+				"systemName": "mb/mb-en1",
+				"speed": 160,
+				"pitch": 50,
+				"volume": 100
+			}]
+		},
+		"deDE_txt2pho_mbrola_f1": {
+			"type": "txt2pho_mbrola",
+			"name": "de-DE txt2pho-mbrola f1",
+			"languageCode": "de",
+			"genderCode": "female",
+			"moods": [{
+				"moodIndex": 0,
+				"systemName": "de3/de3"
+			}]
+		},
+		"deDE_txt2pho_mbrola_m1": {
+			"type": "txt2pho_mbrola",
+			"name": "de-DE txt2pho-mbrola m1",
+			"languageCode": "de",
+			"genderCode": "male",
+			"moods": [{
+				"moodIndex": 0,
+				"systemName": "de2/de2"
+			}]
+		},
+		"deDE_txt2pho_mbrola_d1": {
+			"type": "txt2pho_mbrola",
+			"name": "de-DE txt2pho-mbrola d1",
+			"languageCode": "de",
+			"genderCode": "diverse",
+			"moods": [{
+				"moodIndex": 0,
+				"systemName": "de3/de3",
+				"data": {
+					"genderOverride": "m"
+				}
+			}]
+		},
+		"deDE_pico_f1": {
+			"type": "pico",
+			"name": "de-DE pico f",
+			"languageCode": "de",
+			"genderCode": "female",
+			"moods": [{
+				"moodIndex": 0,
+				"data": {
+					"l": "de-DE"
+				}
+			}]
+		},
+		"enGB_pico_f1": {
+			"type": "pico",
+			"name": "en-GB pico f",
+			"languageCode": "en",
+			"genderCode": "female",
+			"moods": [{
+				"moodIndex": 0,
+				"data": {
+					"l": "en-GB"
+				}
+			}]
+		},
+		"enUS_pico_f1": {
+			"type": "pico",
+			"name": "en-US pico f",
+			"languageCode": "en",
+			"genderCode": "female",
+			"moods": [{
+				"moodIndex": 0,
+				"data": {
+					"l": "en-US"
+				}
+			}]
+		},
+		"esES_pico_f1": {
+			"type": "pico",
+			"name": "es-ES pico f",
+			"languageCode": "es",
+			"genderCode": "female",
+			"moods": [{
+				"moodIndex": 0,
+				"data": {
+					"l": "es-ES"
+				}
+			}]
+		},
+		"frFR_pico_f1": {
+			"type": "pico",
+			"name": "fr-FR pico f",
+			"languageCode": "fr",
+			"genderCode": "female",
+			"moods": [{
+				"moodIndex": 0,
+				"data": {
+					"l": "fr-FR"
+				}
+			}]
+		},
+		"itIT_pico_f1": {
+			"type": "pico",
+			"name": "it-IT pico f",
+			"languageCode": "it",
+			"genderCode": "female",
+			"moods": [{
+				"moodIndex": 0,
+				"data": {
+					"l": "it-IT"
+				}
+			}]
+		},
+		"deDE_marytts_m1": {
+			"type": "marytts",
+			"name": "de-DE marytts m",
+			"languageCode": "de",
+			"genderCode": "male",
+			"moods": [{
+				"moodIndex": 0,
+				"systemName": "bits3-hsmm",
+				"data": {
+					"LOCALE": "de_DE",
+					"effect_Volume_selected": "on",
+					"effect_Volume_parameters": "amount:1.2;"
+				}
+			}]
+		},
+		"deDE_marytts_f1": {
+			"type": "marytts",
+			"name": "de-DE marytts f",
+			"languageCode": "de",
+			"genderCode": "female",
+			"moods": [{
+				"moodIndex": 0,
+				"systemName": "bits1-hsmm",
+				"data": {
+					"LOCALE": "de_DE",
+					"effect_Volume_selected": "on",
+					"effect_Volume_parameters": "amount:1.4;",
+					"effect_FIRFilter_selected": "on",
+					"effect_FIRFilter_parameters": "type:4;fc1:240.0;fc2:1000.0;tbw:800.0"
+				}
+			}]
+		},
+		"deDE_marytts_s1": {
+			"type": "marytts",
+			"name": "de-DE marytts r",
+			"languageCode": "de",
+			"genderCode": "robot",
+			"moods": [{
+				"moodIndex": 0,
+				"systemName": "bits1-hsmm",
+				"data": {
+					"LOCALE": "de_DE",
+					"effect_Volume_selected": "on",
+					"effect_Volume_parameters": "amount:1.7;",
+					"effect_FIRFilter_selected": "on",
+					"effect_FIRFilter_parameters": "type:4;fc1:240.0;fc2:1000.0;tbw:1600.0",
+					"effect_Robot_selected": "on",
+					"effect_Robot_parameters": "amount:100.0;"
+				}
+			}]
+		},
+		"enGB_marytts_m1": {
+			"type": "marytts",
+			"name": "en-GB marytts m",
+			"languageCode": "en",
+			"genderCode": "male",
+			"moods": [{
+				"moodIndex": 0,
+				"systemName": "dfki-spike-hsmm",
+				"data": {
+					"LOCALE": "en_GB",
+					"effect_F0Scale_selected": "on",
+					"effect_F0Scale_parameters": "f0Scale:0.66;"
+				}
+			}]
+		},
+		"enGB_marytts_f1": {
+			"type": "marytts",
+			"name": "en-GB marytts f",
+			"languageCode": "en",
+			"genderCode": "female",
+			"moods": [{
+				"moodIndex": 0,
+				"systemName": "dfki-prudence-hsmm",
+				"data": {
+					"LOCALE": "en_GB",
+					"effect_Volume_selected": "on",
+					"effect_Volume_parameters": "amount:1.2;",
+					"effect_F0Add_selected": "on",
+					"effect_F0Add_parameters": "f0Add:-50.0;",
+					"effect_F0Scale_selected": "on",
+					"effect_F0Scale_parameters": "f0Scale:0.33;"
+				}
+			}]
+		},
+		"enGB_marytts_s1": {
+			"type": "marytts",
+			"name": "en-GB marytts r",
+			"languageCode": "en",
+			"genderCode": "robot",
+			"moods": [{
+				"moodIndex": 0,
+				"systemName": "dfki-prudence-hsmm",
+				"data": {
+					"LOCALE": "en_GB",
+					"effect_Volume_selected": "on",
+					"effect_Volume_parameters": "amount:1.8;",
+					"effect_Robot_selected": "on",
+					"effect_Robot_parameters": "amount:100.0;"
+				}
+			}]
+		},
+		"enUS_marytts_m1": {
+			"type": "marytts",
+			"name": "en-US marytts m",
+			"languageCode": "en",
+			"genderCode": "male",
+			"moods": [{
+				"moodIndex": 0,
+				"systemName": "cmu-bdl-hsmm",
+				"data": {
+					"LOCALE": "en_US",
+					"effect_F0Add_selected": "on",
+					"effect_F0Add_parameters": "f0Add:-15.0;",
+					"effect_F0Scale_selected": "on",
+					"effect_F0Scale_parameters": "f0Scale:0.66;"
+				}
+			}]
+		},
+		"enUS_marytts_f1": {
+			"type": "marytts",
+			"name": "en-US marytts f",
+			"languageCode": "en",
+			"genderCode": "female",
+			"moods": [{
+				"moodIndex": 0,
+				"systemName": "cmu-slt-hsmm",
+				"data": {
+					"LOCALE": "en_US"
+				}
+			}]
+		}
+	}
+}

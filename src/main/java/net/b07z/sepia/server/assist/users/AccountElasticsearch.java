@@ -167,8 +167,9 @@ public class AccountElasticsearch implements AccountInterface{
 		}*/
 		//Note: we don't actually delete objects, we just set the field value to empty string
 		JSONObject dataAsJson = new JSONObject();
-		for (String k : keys)
-		JSON.putWithDotPath(dataAsJson, k, "");
+		for (String k : keys){
+			JSON.putWithDotPath(dataAsJson, k, "");		//NOTE: this cannot delete objects 
+		}
 		return setInfos(user, api, dataAsJson);
 	}
 	

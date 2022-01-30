@@ -581,20 +581,8 @@ public class AuthenticationElasticsearch implements AuthenticationInterface {
 		//use the DynamoDB access to read ---BASICS--- (you can add these basics to USER.checked to avoid double-loading!)
 		userId = ID.clean(userId);
 		
-		//TODO: its a bit annoying to add more stuff here ...
-		//when you add stuff here add it further down AND to the constructor in USER.java as well  (variable 'checked')!
-		/*
-			ACCOUNT.PASSWORD, ACCOUNT.TOKEN_KEY, ACCOUNT.TOKEN_KEY_TS, ACCOUNT.TOKEN_ACCESS_LVL, ACCOUNT.TOKEN_ACCESS_LVL_TS
-		*/
-		String[] basics = new String[]{
-				//Essentials
-				ACCOUNT.GUUID, ACCOUNT.PASSWORD, ACCOUNT.PWD_SALT, ACCOUNT.PWD_ITERATIONS, ACCOUNT.TOKENS, 
-				ACCOUNT.EMAIL, ACCOUNT.PHONE, ACCOUNT.ROLES,
-				//Commons
-				ACCOUNT.USER_NAME, ACCOUNT.USER_PREFERRED_LANGUAGE,
-				//Rare
-				ACCOUNT.USER_BIRTH,	ACCOUNT.BOT_CHARACTER, ACCOUNT.USER_PREFERRED_UNIT_TEMP
-			};
+		//get basic fields
+		String[] basics = AuthenticationCommons.getBasicReadFields();
 		JSONObject item = readUserIndex(userId, idType, basics);
 		//System.out.println("Auth. req: " + userId + ", " + idType + ", " + password); 		//debug
 		//System.out.println("Auth. res: " + item.toJSONString()); 		//debug
@@ -699,37 +687,10 @@ public class AuthenticationElasticsearch implements AuthenticationInterface {
 					//--------- now get basic info (abstraction layer for account data) ----------
 					
 					basicInfo = new HashMap<String, Object>();
-					
-					//GUUID, EMAIL and PHONE
-					basicInfo.put(Authenticator.GUUID, userID);
-					String email = JSON.getString(item, ACCOUNT.EMAIL);
-					String phone = JSON.getString(item, ACCOUNT.PHONE);
-					if (email != null && !email.equals("-")){
-						basicInfo.put(Authenticator.EMAIL, email);
-					}
-					if (phone != null && !phone.equals("-")){
-						basicInfo.put(Authenticator.PHONE, phone);
-					}
-					
-					//NAME
-					JSONObject foundName = JSON.getJObject(item, ACCOUNT.USER_NAME);
-					if (foundName != null){
-						basicInfo.put(Authenticator.USER_NAME, foundName);
-					}
-					//ROLES
-					JSONArray foundRoles = JSON.getJArray(item, new String[]{ ACCOUNT.ROLES });
-					if (foundRoles != null && !foundRoles.isEmpty()){
-						basicInfo.put(Authenticator.USER_ROLES, foundRoles);
-					}
-					//INFOS
-					JSONObject foundInfos = JSON.getJObject(item, ACCOUNT.INFOS);
-					if (foundInfos != null){
-						basicInfo.put(Authenticator.USER_BIRTH, foundInfos.get("birth"));
-						basicInfo.put(Authenticator.USER_LANGUAGE, foundInfos.get("lang_code"));
-						basicInfo.put(Authenticator.BOT_CHARACTER, foundInfos.get("bot_char"));
-						basicInfo.put(Authenticator.USER_PREFERRED_UNIT_TEMP, foundInfos.get("unit_pref_temp"));
-					}
-					
+					AuthenticationCommons.mapBasicInfo(basicInfo, userID, item, (json, key) -> {
+						return json.get(key);
+					}); 
+										
 					//-----------------------------------------
 					
 					return true;

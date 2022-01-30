@@ -11,13 +11,27 @@ import net.b07z.sepia.server.core.tools.Is;
  */
 public class TtsTools {
 	
+	/**
+	 * TTS engines available.
+	 */
 	public static enum EngineType {
 		undefined,
 		espeak,
-		flite,
+		espeak_mbrola,
+		txt2pho_mbrola,
 		pico,
 		marytts,
+		flite,
 		acapela
+	}
+	/**
+	 * TTS voice gender types.
+	 */
+	public static enum GenderCode {
+		male,
+		female,
+		diverse,
+		robot
 	}
 
 	/**
@@ -78,37 +92,59 @@ public class TtsTools {
 		
 		//specific
 		if (language.equals(LANGUAGES.DE)){
+			//time and date
+			input = input.replaceAll("(?i)\\b(?<hour>\\d{1,2}):(?<min>\\d\\d) Uhr\\b", "${hour} Uhr ${min}");
 			//units
 			input = input.replaceAll("(?i)(°C)\\b", " Grad Celsius");
 			input = input.replaceAll("(?i)(°F)\\b", " Grad Fahrenheit");
-			input = input.replaceAll("%", " Prozent ");			//Note: this prevents variable expansion in Windows as well
+			input = input.replaceAll("%", " Prozent ");			//Note: does this prevent variable expansion in Windows as well?
 			//input = input.replaceAll("(?:^|\\s)\\$(\\d+)", " $1 Dollar ");
 			input = input.replaceAll("(?:^|\\s)\\$(\\d+(\\.|,)\\d+|\\d+)(\\b)", " $1 Dollar ");
 			input = input.replaceAll("(?:^|\\s)€(\\d+(\\.|,)\\d+|\\d+)(\\b)", " $1 Euro ");
 			input = input.replaceAll("€(\\d+(\\.|,)\\d+|\\d+)", "$1 Euro");
-			input = input.replaceAll("\\$", " Dollar ");		//Note: this  prevents variable expansion in Linux as well
+			input = input.replaceAll("\\$", " Dollar ");		//Note: does this prevent variable expansion in Linux as well?
 			input = input.replaceAll("€", " Euro ");
 			
 			//numbers
-			input = input.replaceAll("(\\d)\\.(\\d)", "$1,$2");
+			input = input.replaceAll("(^|\\s)(\\d+)\\.(\\d+)(\\s|\\.$|\\.\\s)", "$1$2,$3$4");
+			input = input.replaceAll("(^|\\s)(1/2)\\b", "$1ein halb");
+			input = input.replaceAll("(^|\\s)(1/3)\\b", "$1ein drittel");
+			input = input.replaceAll("(^|\\s)(1/4)\\b", "$1ein viertel");
+			input = input.replaceAll("(^|\\s)(2/3)\\b", "$1zwei drittel");
+			input = input.replaceAll("(^|\\s)(3/4)\\b", "$1drei viertel");
 			
-		}else{
+		}else if (language.equals(LANGUAGES.EN)){
+			//time and date
+			input = input.replaceAll("(?i)\\b(?<hour>\\d{1,2})(:|.)(?<min>\\d\\d)( |)(?<indi>o.clock|am|pm|a\\.m\\.|p\\.m\\.)(?<end>\\s|\\.|$)", "${hour} ${min} ${indi}${end}");
 			//units
 			input = input.replaceAll("(?i)(°C)\\b", " degrees Celsius");
 			input = input.replaceAll("(?i)(°F)\\b", " degrees Fahrenheit");
-			input = input.replaceAll("%", " percent ");			//Note: this prevents variable expansion in Windows as well
+			input = input.replaceAll("%", " percent ");			//Note: does this prevent variable expansion in Windows as well?
 			input = input.replaceAll("(?:^|\\s)\\$(\\d+(\\.|,)\\d+|\\d+)(\\b)", " $1 dollar ");
 			input = input.replaceAll("(?:^|\\s)€(\\d+(\\.|,)\\d+|\\d+)(\\b)", " $1 euro ");
-			input = input.replaceAll("\\$", " dollar ");		//Note: this  prevents variable expansion in Linux as well
+			input = input.replaceAll("\\$", " dollar ");		//Note: does this prevent variable expansion in Linux as well?
 			input = input.replaceAll("€", " euro ");
 			
-			//time
-			input = input.replaceAll("\\b(\\d\\d|\\d)\\.(\\d\\d|\\d)\\.(\\d\\d\\d\\d|\\d\\d)\\b", "$2/$1/$3");	//reorder date - prevents crash for German dates in MaryTTS!
+			//numbers
+			input = input.replaceAll("(^|\\s)(\\d+),(\\d+)(\\s|\\.$|\\.\\s)", "$1$2.$3$4");
+			input = input.replaceAll("(^|\\s)(1/2)\\b", "$1one half");
+			input = input.replaceAll("(^|\\s)(1/3)\\b", "$1one third");
+			input = input.replaceAll("(^|\\s)(1/4)\\b", "$1one quater");
+			input = input.replaceAll("(^|\\s)(2/3)\\b", "$1two thirds");
+			input = input.replaceAll("(^|\\s)(3/4)\\b", "$1three quaters");
 			
 			//other
 			if (Is.typeEqual(engine, EngineType.marytts)){
+				//time
+				input = input.replaceAll("\\b(\\d\\d|\\d)\\.(\\d\\d|\\d)\\.(\\d\\d\\d\\d|\\d\\d)\\b", "$2/$1/$3");	//reorder date - prevents crash for German dates in MaryTTS!
+				//specifics
 				input = input.replaceAll("\\b(?i)(I('|´|`)m)\\b", "I am");	//fix I'm
 			}
+		
+		}else{
+			//"safety" stuff
+			input = input.replaceAll("\\$", " \\$ ");		//Note: does this prevent variable expansion in Windows as well?
+			input = input.replaceAll("%", " % ");		//Note: does this prevent variable expansion in Linux as well?
 		}
 		
 		input = input.replaceAll("\\s+", " ").replaceAll(" \\?$", "?").replaceAll(" \\.$", ".").trim();

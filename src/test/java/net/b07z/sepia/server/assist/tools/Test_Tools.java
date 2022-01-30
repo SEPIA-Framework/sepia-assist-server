@@ -51,6 +51,9 @@ public class Test_Tools {
 		test = "suche restaurants in der naehe von Berlin";
 		System.out.println("test: " + test);
 		System.out.println(Place.getPOI(test, "de").toJSONString());
+		test = "suche eine doener bude in Essen";
+		System.out.println("test: " + test);
+		System.out.println(Place.getPOI(test, "de").toJSONString());
 		test = "suche krankenhaeuser in der naehe";
 		System.out.println("test: " + test);
 		System.out.println(Place.getPOI(test, "de").toJSONString());

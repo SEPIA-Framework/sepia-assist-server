@@ -14,6 +14,7 @@ import net.b07z.sepia.server.assist.parameters.FashionShopping;
 import net.b07z.sepia.server.assist.parameters.FoodClass;
 import net.b07z.sepia.server.assist.parameters.FoodItem;
 import net.b07z.sepia.server.assist.parameters.Language;
+import net.b07z.sepia.server.assist.parameters.Place;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
@@ -179,7 +180,7 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 			possibleScore.add(1);	index++;
 			
 			//score a bit extra if we start with certain words
-			if (NluTools.stringContains(this_text, "^((search |)(the |)(wikipedia|knowledge base))")){
+			if (NluTools.stringContains(this_text, "^((search |)(the |in |at |)(wikipedia|knowledge base))")){
 				possibleScore.set(index, possibleScore.get(index)+1);
 			}
 			
@@ -188,7 +189,8 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 			if (NluTools.stringContains(this_text, "how (high|large) (is|are|was|were)|how old (is|are|was|were)|how many .* (are|has|were|had|live|lived) ")){
 				kb_search = this_text.replaceFirst(".*\\b(how (high|large)|how old|how many)\\b", "$1").trim();
 			}else{
-				kb_search=this_text.replaceFirst(".*?\\b(search for|search|who|what|where|when|information on|about|do you know)\\s", "").trim();
+				kb_search=this_text.replaceFirst(".*?\\b((wikipedia|knowledge base) for)\\s", "").trim();
+				kb_search=kb_search.replaceFirst(".*?\\b(search for|search|who|what|where|when|information on|about|do you know)\\s", "").trim();
 				kb_search=kb_search.replaceFirst("\\b(^the meaning of|^who|^where|^what|^when)\\s", "").trim();
 				kb_search=kb_search.replaceFirst("\\b(^is|^was|^were|^are|^about|^on)\\s", "").trim();
 				kb_search=kb_search.replaceFirst("\\b(^a|^an|^the|^wiki|^wikipedia)\\s", "").trim();
@@ -218,12 +220,12 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 		
 		//web search
 		//TODO: optimize exceptions
-		if (NluTools.stringContains(text, "websearch|web search|search the web|"
-						+ "^google|^bing|^yahoo|^duck duck|^duck duck go|^youtube|"
+		if (NluTools.stringContains(text, "websearch|web search|search the web|search online|"
+						+ "^google|^bing|^yahoo|^duck duck|^duck duck go|^ecosia|^youtube|"
 						+ "^(picture(s|)|recipe(s|)|video(s|)|movie(s|)|film(s|)|share(s|)|stock(s|)|book(s|))|"
 						+ "what is the (stock|share) (value|price)|"
 						+ "(search|find|show|look|searching|looking)( | .* )((on |)the (web|internet))|"
-						+ "(search|find|show|look|searching|looking)( | .* )(with|on|via|per|over|by) (google|bing|duck duck go|duck duck|yahoo|youtube)|"
+						+ "(search|find|show|look|searching|looking)( | .* )(with|on|via|per|over|by) (google|bing|duck duck go|duck duck|yahoo|ecosia|youtube)|"
 						+ "(search|find|show|look|searching|looking)( | .* )(picture(s|)|recipe(s|)|video(s|)|youtube|book(s|)|share(s|)|stock(s|))")
 					//|| NLU_Tools.stringContains(text, "search|find|show|look for|searching for|looking for") 
 					//|| (NLU_Tools.stringContains(text, "search|find|show") 
@@ -238,7 +240,7 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 			possibleScore.set(index, possibleScore.get(index)+1);
 			
 			//put some weight on the search engines and keywords for web-search:
-			if (NluTools.stringContains(text, "websearch|web|internet|google|bing|yahoo|duck duck")){
+			if (NluTools.stringContains(text, "websearch|web|online|internet|google|bing|yahoo|duck duck|ecosia")){
 				possibleScore.set(index, possibleScore.get(index)+2);
 			}
 			
@@ -701,8 +703,8 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 		//locations
 		if (NluTools.stringContains(text, "where (is|lies|are|am) .*|where can (i|one) .*| where we are| where i am|where .* (is|are|live|lives|lies|lie|lay)|"
 				+ "(is there|are there|can (i|one) get) .*\\b(close|near|around|here|in)|"
-				+ "(search|show|find|look(up| for)|looking for) .*(\\b)("+ RegexParameterSearch.get_POI_list(language) +")|"
-				+ "(show|search|find|look(up| for|)) .*(\\b)on (the |a |)(map|maps)|"
+				+ "(search|show|find|look(up| for)|looking for) .*(\\b)("+ Place.getPoiRegExpList(language) +")|"
+				+ "(show|search|find|look(up| for|)) .*(\\b)on (\\w+ |)(map(s|))|"
 				//+ "(show|search|find|look for) .*(\\b)(close|near|around)( to| by|)( me|)$|"	//TODO: broken!??
 				//+ "(show|search|find|look for) (on |)((the|a) map|maps) .*|"
 				+ "(address|location .*)")

@@ -83,6 +83,18 @@ public class TestHub implements SmartHomeHub {
 					"namedBySepia", true
 			)
 	);
+	private static SmartHomeDevice tv = new SmartHomeDevice(
+			"TV (1)", 
+			SmartDevice.Types.tv.name(), 
+			Room.Types.livingroom.name(), 
+			SmartHomeDevice.State.off.name(), SmartHomeDevice.StateType.text_raw.name(), "", 
+			"link", JSON.make(
+					"id", "TV_Test_A",
+					"origin", NAME,
+					"typeGuessed", false,
+					"namedBySepia", true
+			)
+	);
 	private static SmartHomeDevice genericDevice = new SmartHomeDevice(
 			"Device 1", 
 			SmartDevice.Types.device.name(), 
@@ -96,7 +108,7 @@ public class TestHub implements SmartHomeHub {
 			)
 	);
 	private static List<SmartHomeDevice> devicesList = Arrays.asList(
-			light, light2, heater, rollerShutter, genericDevice
+			light, light2, heater, rollerShutter, tv, genericDevice
 	);
 	
 	//--------------------------
@@ -219,13 +231,18 @@ public class TestHub implements SmartHomeHub {
 	@Override
 	public List<SmartHomeDevice> getFilteredDevicesList(Map<String, Object> filters){
 		//filters
-		String deviceType = (String) filters.get("type");
-		String roomType = (String) filters.get("room");
-		String roomIndex = Converters.obj2StringOrDefault(filters.get("roomIndex"), null);
-		Object limitObj = filters.get("limit");
+		String deviceType = null;
+		String roomType = null;
+		String roomIndex = null;
 		int limit = -1;
-		if (limitObj != null){
-			limit = (int) limitObj;
+		if (filters != null){
+			deviceType = (String) filters.get("type");
+			roomType = (String) filters.get("room");
+			roomIndex = Converters.obj2StringOrDefault(filters.get("roomIndex"), null);
+			Object limitObj = filters.get("limit");
+			if (limitObj != null){
+				limit = (int) limitObj;
+			}
 		}
 		//get all devices with right type and optionally right room
 		List<SmartHomeDevice> matchingDevices = SmartHomeDevice.getMatchingDevices(getDevices(), deviceType, roomType, roomIndex, limit);

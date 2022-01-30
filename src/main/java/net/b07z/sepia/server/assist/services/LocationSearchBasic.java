@@ -55,6 +55,9 @@ public class LocationSearchBasic implements ServiceInterface{
 	//info
 	public ServiceInfo getInfo(String language){
 		return new ServiceInfo(Type.link, Content.redirect, true);
+		//TODO: This service is ancient! It just builds URLs from simple "search" and raw POI.
+		//		To do things like "where is the next hospital?" better use directions service:
+		//		-> "Show me the way to the next hospital"
 	}
 
 	//result
@@ -63,8 +66,8 @@ public class LocationSearchBasic implements ServiceInterface{
 		ServiceBuilder api = new ServiceBuilder(nluResult);
 		
 		//get parameters
-		String place = nluResult.getParameter(PARAMETERS.SEARCH); 		//TODO: change to PLACE?
-		String poi = nluResult.getParameter(PARAMETERS.POI);
+		String place = nluResult.getParameter(PARAMETERS.SEARCH); 	//TODO: change to PLACE? ...
+		String poi = nluResult.getParameter(PARAMETERS.POI);	//TODO: ... this is custom and not even using APIs 
 		String search;
 		
 		Debugger.println("cmd: location, place: " + place + ", poi: " + poi, 2);		//debug

@@ -64,6 +64,15 @@ public class NluKeywordAnalyzer implements NluInterface {
 		//check the trigger
 		if (NluTools.stringContains(text, regEx)){
 			
+			//exclude condition?
+			String regExExclude = serviceInfo.getCustomTriggerExcludeRegX(input.language);
+			if (regExExclude != null){
+				if (NluTools.stringContains(text, regExExclude)){
+					//revert match
+					return index;
+				}
+			}
+			
 			if (Is.nullOrEmpty(serviceInfo.intendedCommand)){
 				throw new RuntimeException("Service is missing command name!"); 	//make sure custom service is properly set up
 			}

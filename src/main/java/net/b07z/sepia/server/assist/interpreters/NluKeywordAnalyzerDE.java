@@ -14,6 +14,7 @@ import net.b07z.sepia.server.assist.parameters.FashionShopping;
 import net.b07z.sepia.server.assist.parameters.FoodClass;
 import net.b07z.sepia.server.assist.parameters.FoodItem;
 import net.b07z.sepia.server.assist.parameters.Language;
+import net.b07z.sepia.server.assist.parameters.Place;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.core.assistant.CMD;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
@@ -185,7 +186,7 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 			possibleScore.add(1);	index++;
 			
 			//score a bit extra if we start with certain words
-			if (NluTools.stringContains(this_text, "^((durch|)suche |)(auf |in |)(der |die |)(wikipedia|wissensdatenbank)")){
+			if (NluTools.stringContains(this_text, "^((durch|)suche |)(auf |in |bei |)(der |die |)(wikipedia|wissensdatenbank)")){
 				possibleScore.set(index, possibleScore.get(index)+1);
 			}
 			
@@ -194,7 +195,8 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 			if (NluTools.stringContains(this_text, "wie hoch (ist|sind|war|waren)|wie alt (ist|sind|war|waren)|(wieviele|wie viele) .* (hat|hatte|hatten|ist|sind|war|waren|leben|lebten)")){
 				kb_search = this_text.replaceFirst(".*\\b(wie hoch|wie alt|wieviele|wie viele)\\b", "$1").trim();
 			}else{
-				kb_search=this_text.replaceFirst(".*?\\b(suche nach|suchen nach|suche|was bedeutet|wofuer steht|wer|was|wo|wann|informationen ueber|ueber|kennst du)\\s", "").trim();
+				kb_search=this_text.replaceFirst(".*?\\b((wikipedia|wissensdatenbank) nach)\\s", "").trim();
+				kb_search=kb_search.replaceFirst(".*?\\b(suche(n|) nach|suche|was bedeutet|wofuer steht|wer|was|wo|wann|informationen ueber|ueber|kennst du)\\s", "").trim();
 				kb_search=kb_search.replaceFirst("\\b(^wer|^wo|^was|^wann)\\s", "").trim();
 				kb_search=kb_search.replaceFirst("\\b(^ist|^war|^waren|^sind|^ueber)\\s", "").trim();
 				kb_search=kb_search.replaceFirst("\\b(^ein|^einer|^einen|^eine|^der|^die|^das|^wiki|^wikipedia)\\s", "").trim();
@@ -223,13 +225,13 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 		}
 		
 		//web search
-		if (NluTools.stringContains(text, "(websuche|websearch|web suche|"
-						+ "(durchsuche|suche|schau|finde|zeig)( mir|)( mal| bitte|)( bitte| mal|)( im| das) (web|internet))|"
-						+ "^google|^bing|^yahoo|^duck duck|^duck duck go|^youtube|"
+		if (NluTools.stringContains(text, "suche im web|suche online|" 
+						+ "(websuche|websearch|web suche|(durchsuche|suche|schau|finde|zeig)( mir|)( mal| bitte|)( bitte| mal|)( im| das) (web|internet))|"
+						+ "^google|^bing|^yahoo|^duck duck|^duck duck go|^ecosia|^youtube|"
 						+ "^(bild(ern|er|)|rezept(en|e|)|video(s|)|movie(s|)|film(en|e|)|\\w*(-|)aktie(n|)|aktien(wert|kurs)|buecher(n|)|buch)|"
 						+ "(wie|wo) (ist|steht|stehen) (der|die) (aktienkurs|aktienwert|aktie(n|)|kurs|wert) (von|vom|der)|(wie|wo) (steht|stehen) .*aktie(n|)|"
 						+ "(durchsuche|suche|schau|finde|zeig)( | .* )(im (web|internet))|"
-						+ "(durchsuche|suche|schau|finde|zeig)( | .* )(mit|per|via|auf|ueber|mittels|bei) (google|bing|duck duck go|duck duck|yahoo|youtube)|"
+						+ "(durchsuche|suche|schau|finde|zeig)( | .* )(mit|per|via|auf|ueber|mittels|bei) (google|bing|duck duck go|duck duck|yahoo|ecosia|youtube)|"
 						+ "(durchsuche|suche|schau|finde|zeig)( | .* )(bilder(n|)|rezepte(n|)|video(s|)|youtube|movies|filme(n|)|buecher(n|)|(-|)aktie(n|)|aktien(wert|kurs))")
 					//|| NLU_Tools.stringContains(text, "suche(n|)|finde(n|)|zeig(en|)")
 					//|| (NLU_Tools.stringContains(text, "suche(n|)|finde(n|)|zeig(en|)") 
@@ -244,7 +246,7 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 			possibleScore.set(index, possibleScore.get(index)+1);
 			
 			//put some weight on the search engines and keywords for web-search:
-			if (NluTools.stringContains(text, "websearch|websuche|web|internet|google|bing|yahoo|duck duck")){
+			if (NluTools.stringContains(text, "websearch|websuche|web|online|internet|google|bing|yahoo|duck duck")){
 				possibleScore.set(index, possibleScore.get(index)+2);
 			}
 
@@ -763,8 +765,8 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 		if (NluTools.stringContains(text, "wo (ist|sind|bin|gibt es|liegt|liegen|befindet|befinden)| wo wir (hier |)sind| wo ich (hier |)bin|"
 				+ "wo .* (ist|sind|liegt|liegen|befinden|befindet|wohn(t|en|e))|"
 				+ "(gibt es(?! neues)|kriege ich|finde ich|kann man)\\b.*\\b(hier|in)|"
-				+ "(suche|zeig|finde) .*(\\b)("+ RegexParameterSearch.get_POI_list(language) +")|"
-				+ "(suche|zeig|finde|wo) .*(\\b)auf (der |einer |)(karte|map|maps)|"
+				+ "(suche|zeig|finde) .*(\\b)("+ Place.getPoiRegExpList(language) +")|"
+				+ "(suche|zeig|finde|wo) .*(\\b)auf (\\w+ |)(karte(n|)|map(s|))|"
 				//+ "(suche|zeig|finde) .*(\\b)in der naehe$|"			//TODO: broken!??
 				+ "adresse .*") 
 					&& !possibleCMDs.contains(CMD.HOTELS)){

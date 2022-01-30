@@ -5,9 +5,13 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import net.b07z.sepia.server.assist.assistant.ActionBuilder;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.data.Card;
 import net.b07z.sepia.server.assist.data.Parameter;
+import net.b07z.sepia.server.assist.geo.DirectionsApiInterface;
+import net.b07z.sepia.server.assist.geo.DirectionsApiResult;
+import net.b07z.sepia.server.assist.geo.GeoFactory;
 import net.b07z.sepia.server.assist.data.Card.ElementType;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
@@ -19,7 +23,6 @@ import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.core.assistant.ACTIONS;
 import net.b07z.sepia.server.core.assistant.CLIENTS;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
-import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
@@ -52,7 +55,6 @@ public class DirectionsGoogleMaps implements ServiceInterface{
 		}
 		return travelTypeFlag.get(in);
 	}
-	private static final String defaultDurationTravelType = "driving"; 		//to make sure that a duration request is well defined when no type is submitted
 	
 	//get text for "start navigation" button
 	public static HashMap<String, String> buttonTexts_de = new HashMap<>();
@@ -263,14 +265,6 @@ public class DirectionsGoogleMaps implements ServiceInterface{
 		//ALTERNATIVES?
 		if (hasOptions && showAlternatives){
 			//build alternatives list
-			//String data = buildEndAlternativesHTML(optionsArray, api.language, start, wp, googleTravelType, googleViews);
-			//add action
-			/*
-			api.actionInfo_add_action(ACTIONS.SHOW_HTML_RESULT);
-			api.actionInfo_put_info("data", data);
-			api.hasAction = true;
-			*/
-			
 			ArrayList<Card> alternativeLinkCards = buildEndAlternativeCards(optionsArray, api.language, start, wp, googleTravelType, googleViews);
 			
 			//build cards
@@ -319,67 +313,39 @@ public class DirectionsGoogleMaps implements ServiceInterface{
 		//DO API CALL?
 		String distance = "";
 		String duration = "";
+		boolean triedApiCall = false;
+		boolean missingApiSupport = false;
 		if (travelRequestInfo.equals(REQUEST_INFO_DISTANCE) || travelRequestInfo.equals(REQUEST_INFO_DURATION)){
-			tic = System.currentTimeMillis();
-			String googleDirectionsURL;
-			try {
-				googleTravelType = travelType;
-				if (!googleTravelType.matches("(transit|bicycling|driving|walking)")){
-					googleTravelType = defaultDurationTravelType;	//use only supported for google and fix it for no input here
-					//overwrite the travelMode response
-					api.resultInfoPut("travelType", TravelType.getLocal("<" + googleTravelType + ">", api.language));
+			//get API interface
+			triedApiCall = true;
+			DirectionsApiInterface directionsApi = GeoFactory.createDirectionsApi();
+			if (directionsApi == null || !directionsApi.isSupported()){
+				//API missing support
+				missingApiSupport = true;
+			}else{
+				String[] wpLatLong = new String[]{"", ""};
+				if (Is.notNullOrEmpty(wp)){
+					wpLatLong = wp.split(",");
 				}
-				
-				if (wp.isEmpty()){
-					googleDirectionsURL = "https://maps.googleapis.com/maps/api/directions/json" +
-							"?origin=" + URLEncoder.encode(start, "UTF-8") +
-							"&destination=" + URLEncoder.encode(end, "UTF-8") +
-							//"&waypoints=" + URLEncoder.encode(wp, "UTF-8") +
-							"&departure_time=" + System.currentTimeMillis()/1000 +
-							"&mode=" + googleTravelType +
-							"&region=" + api.language +
-							"&language=" + api.language;
+				DirectionsApiResult directionsRes = directionsApi.getDurationAndDistance(
+					JSON.getString(startJSON, InterviewData.LOCATION_LAT), JSON.getString(startJSON, InterviewData.LOCATION_LNG),
+					JSON.getString(endJSON, InterviewData.LOCATION_LAT), JSON.getString(endJSON, InterviewData.LOCATION_LNG), 
+					wpLatLong[0], wpLatLong[1],	googleTravelType, api.language
+				);
+				if (directionsRes == null){
+					Debugger.println("Directions - could not get API answer for: " + start + ", " + end + ", " + wp, 1);
 				}else{
-					googleDirectionsURL = "https://maps.googleapis.com/maps/api/directions/json"+
-							"?origin=" + URLEncoder.encode(start, "UTF-8") +
-							"&destination=" + URLEncoder.encode(end, "UTF-8") +
-							"&waypoints=via:" + URLEncoder.encode(wp, "UTF-8") +
-							"&departure_time=" + System.currentTimeMillis()/1000 +
-							"&mode=" + googleTravelType +
-							"&region=" + api.language +
-							"&language=" + api.language;
-				}
-				//System.out.println("HTTP GET URL: " + googleDirectionsURL); 						//debug
-				
-				//Add API key?
-				if (Is.notNullOrEmpty(Config.google_maps_key) && !Config.google_maps_key.equals("test")){
-					googleDirectionsURL += "&key=" + Config.google_maps_key;
-				}
-				
-				//Connect
-				JSONObject response = Connectors.httpGET(googleDirectionsURL.trim());
-				Statistics.addExternalApiHit("Directions GoogleMaps API");
-				Statistics.addExternalApiTime("Directions GoogleMaps API", tic);
-				//System.out.println("HTTP GET Response: " + response); 						//debug
-				
-				if (Connectors.httpSuccess(response)){
-					try{
-						JSONArray routes = (JSONArray) response.get("routes");
-						JSONArray legs = (JSONArray) ((JSONObject) routes.get(0)).get("legs");
-						JSONObject durationJSON = (JSONObject) ((JSONObject) legs.get(0)).get("duration");
-						JSONObject distanceJSON = (JSONObject) ((JSONObject) legs.get(0)).get("distance");
-						duration = JSON.getString(durationJSON, "text");
-						distance = JSON.getString(distanceJSON, "text");
-					}catch (Exception e){
-						Debugger.println("Directions - could not get API answer for: " + start + ", " + end + ", " + wp + " - Error: " + e.getMessage(), 1);
-						duration = "";
-						distance = "";
+					//update travel type (in case it changed)
+					googleTravelType = directionsRes.travelMode;
+					api.resultInfoPut("travelType", TravelType.getLocal("<" + googleTravelType + ">", api.language));
+					//get info
+					if (directionsRes.durationText != null){
+						duration = directionsRes.durationText;
+					}
+					if (directionsRes.distanceText != null){
+						distance = directionsRes.distanceText;
 					}
 				}
-				
-			//API Error
-			} catch (Exception e) {
-				Debugger.println("Directions - could not get API answer for: " + start + ", " + end + ", " + wp + " - Error: " + e.getMessage(), 1);
 			}
 		}
 		api.resultInfoPut("duration", duration);
@@ -401,6 +367,10 @@ public class DirectionsGoogleMaps implements ServiceInterface{
 		if (!isInfoAnswer && !hasOptions){
 			api.addAction(ACTIONS.OPEN_IN_APP_BROWSER);
 			api.putActionInfo("url", (appleMapsURL.isEmpty())? googleMapsURL : appleMapsURL);
+		}
+		//add API support info button?
+		if (triedApiCall && missingApiSupport){
+			ActionBuilder.addApiKeyInfoButton(api);
 		}
 		
 		/*
@@ -513,37 +483,6 @@ public class DirectionsGoogleMaps implements ServiceInterface{
 		return appleMapsURL;
 	}
 	
-	public static String buildEndAlternativesHTML(JSONArray options, String language, String start, String wp, String googleTravelType, String googleViews){
-		String htmlData = "";
-		for (Object o : options){
-			JSONObject locJSON = (JSONObject) o;
-			String loc = locJSON.get(InterviewData.LOCATION_LAT) + "," + locJSON.get(InterviewData.LOCATION_LNG);
-			String locCity = JSON.getStringOrDefault(locJSON, InterviewData.LOCATION_CITY, "");
-			String locStreet = JSON.getStringOrDefault(locJSON, InterviewData.LOCATION_STREET, "");
-			String locAddr = JSON.getStringOrDefault(locJSON, InterviewData.LOCATION_ADDRESS_TEXT, "");
-			String locName = JSON.getStringOrDefault(locJSON, InterviewData.LOCATION_NAME, "");
-			String locImage = JSON.getStringOrDefault(locJSON, InterviewData.LOCATION_IMAGE, Config.urlWebImages + "cards/location_img_default.png");
-			String mapUrl = "";
-			try{
-				mapUrl = makeGoogleMapsURL(start, loc, wp, googleTravelType, googleViews);
-			}catch(Exception e){
-				mapUrl = "";
-			}
-			String data = "<div class='card-box'><div class='inner-container'>";
-				data += "<div class='img-container'>";
-					data += "<img src='" + locImage + "'>";
-				data += "</div>";
-				data += "<div class='text-container'>";
-					data += locName.isEmpty()? "" : (locName + "<br>");
-					if (locCity.isEmpty() && locStreet.isEmpty())	data += (locAddr.isEmpty()? "" : locAddr);
-					else data += ((locStreet.isEmpty())? "" : (locStreet + ", ")) + locCity;
-				data += "</div>";
-				data += "<a class='button-overlay' href='" + mapUrl + "' target='_blank'></a>";
-			data += "</div></div>";
-			htmlData += data;
-		}
-		return htmlData;
-	}
 	/**
 	 * Build cards array from location options.
 	 * @param options

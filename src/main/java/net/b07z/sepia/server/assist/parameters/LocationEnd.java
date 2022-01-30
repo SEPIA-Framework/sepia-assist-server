@@ -1,16 +1,13 @@
 package net.b07z.sepia.server.assist.parameters;
 
-import java.util.HashMap;
 import java.util.regex.Pattern;
 
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
-import net.b07z.sepia.server.assist.interpreters.RegexParameterSearch;
-import net.b07z.sepia.server.assist.interpreters.Normalizer;
-import net.b07z.sepia.server.assist.server.Config;
+import net.b07z.sepia.server.assist.parameters.Place.LocationBuildResult;
+import net.b07z.sepia.server.assist.parameters.Place.LocationExtractResult;
 import net.b07z.sepia.server.assist.users.User;
-import net.b07z.sepia.server.core.assistant.PARAMETERS;
 
 public class LocationEnd implements ParameterHandler{
 
@@ -37,30 +34,11 @@ public class LocationEnd implements ParameterHandler{
 	
 	@Override
 	public String extract(String input) {
-		String place;
-		HashMap<String, String> locations = null;
-	
-		//check storage first
-		ParameterResult pr = nlu_input.getStoredParameterResult(PARAMETERS.PLACE);		//locations always use PLACE for the general HashMap
-		if (pr != null){
-			locations = pr.getExtractedMap();
-		}
-		if (locations == null){
-			//search all locations
-			locations = RegexParameterSearch.get_locations(input, language);
-			
-			//store it
-			pr = new ParameterResult(PARAMETERS.PLACE, locations, "");
-			nlu_input.addToParameterResultStorage(pr);		
-		}
-		place = locations.get("location_end").trim();
-		found = place;
-		
-		//reconstruct original phrase to get proper item names
-		Normalizer normalizer = Config.inputNormalizers.get(language);
-		place = normalizer.reconstructPhrase(nlu_input.textRaw, place);
+		LocationExtractResult result = Place.extractLocation("location_end", input, this.nlu_input, this.user);
+		String returnValue = result.returnValue;
+		this.found = result.found;
 
-		return place;
+		return returnValue;
 	}
 	
 	@Override
@@ -98,14 +76,14 @@ public class LocationEnd implements ParameterHandler{
 
 	@Override
 	public String build(String input) {
-		Object[] result = LocationStart.buildLocation(input, nlu_input, user);
-		buildSuccess = (boolean) result[0];
-		return (String) result[1];
+		LocationBuildResult result = Place.buildLocation(input, nlu_input, user);
+		buildSuccess = result.buildSuccess;
+		return ((result.errorData == null)? result.locationJSON.toJSONString() : result.errorData);
 	}
 	
 	@Override
 	public boolean validate(String input) {
-		return LocationStart.validateLocation(input);
+		return Place.validateLocation(input);
 	}
 	
 	@Override

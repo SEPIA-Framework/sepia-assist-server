@@ -3,8 +3,6 @@ package net.b07z.sepia.server.assist.users;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.json.simple.JSONArray;
@@ -617,18 +615,8 @@ public class AuthenticationDynamoDB implements AuthenticationInterface {
 		//use the DynamoDB access to read ---BASICS--- (you can add these basics to USER.checked to avoid double-loading!)
 		username = ID.clean(username);
 		
-		//TODO: its a bit annoying to add more stuff here ...
-		//when you add stuff here add it further down AND to the constructor in USER.java as well  (variable 'checked')!
-		/*
-			ACCOUNT.PASSWORD, ACCOUNT.TOKEN_KEY, ACCOUNT.TOKEN_KEY_TS, ACCOUNT.TOKEN_ACCESS_LVL, ACCOUNT.TOKEN_ACCESS_LVL_TS
-		*/
-		String[] basics = new String[]{
-				ACCOUNT.GUUID, ACCOUNT.PASSWORD, ACCOUNT.PWD_SALT, ACCOUNT.PWD_ITERATIONS, ACCOUNT.TOKENS, 
-				ACCOUNT.EMAIL, ACCOUNT.PHONE, ACCOUNT.ROLES,
-				ACCOUNT.USER_NAME, ACCOUNT.USER_PREFERRED_LANGUAGE, ACCOUNT.USER_BIRTH,
-				ACCOUNT.BOT_CHARACTER,
-				ACCOUNT.USER_PREFERRED_UNIT_TEMP
-			};
+		//get basics
+		String[] basics = AuthenticationCommons.getBasicReadFields();
 		JSONObject result = read_basics(username, idType, basics);
 		//System.out.println("Auth. req: " + username + ", " + idType + ", " + password); 		//debug
 		//System.out.println("Auth. res: " + result.toJSONString()); 		//debug
@@ -744,42 +732,12 @@ public class AuthenticationDynamoDB implements AuthenticationInterface {
 					}
 					
 					//---------now get basic info too----------
+					
 					basicInfo = new HashMap<String, Object>();
-					
-					//GUUID, EMAIL and PHONE
-					basicInfo.put(Authenticator.GUUID, userID);
-					String email = (String) DynamoDB.typeConversion((JSONObject) item.get(ACCOUNT.EMAIL));
-					String phone = (String) DynamoDB.typeConversion((JSONObject) item.get(ACCOUNT.PHONE));
-					if (email != null && !email.equals("-")){
-						basicInfo.put(Authenticator.EMAIL, email);
-					}
-					if (phone != null && !phone.equals("-")){
-						basicInfo.put(Authenticator.PHONE, phone);
-					}
-					
-					//NAME
-					Object found = DynamoDB.typeConversion((JSONObject) item.get(ACCOUNT.USER_NAME));
-					if (found != null){
-						basicInfo.put(Authenticator.USER_NAME, Converters.object2HashMapStrObj(found)); 		//this should work ^^
-					}
-					//ROLES
-					Object found_roles = DynamoDB.typeConversion((JSONObject) item.get(ACCOUNT.ROLES));
-					if (found_roles != null){
-						List<String> all_roles = Converters.object2ArrayListStr(found_roles);
-						basicInfo.put(Authenticator.USER_ROLES, all_roles);
-					}
-					//INFOS
-					Object found_infos = DynamoDB.typeConversion((JSONObject) item.get(ACCOUNT.INFOS));
-					if (found_infos != null){
-						Map<String, Object> infos = Converters.object2HashMapStrObj(found_infos);
-						if (infos != null){
-							basicInfo.put(Authenticator.USER_BIRTH, infos.get("birth"));
-							basicInfo.put(Authenticator.USER_LANGUAGE, infos.get("lang_code"));
-							basicInfo.put(Authenticator.BOT_CHARACTER, infos.get("bot_char"));
-							basicInfo.put(Authenticator.USER_PREFERRED_UNIT_TEMP, infos.get("unit_pref_temp"));
-						}
-					}
-					
+					AuthenticationCommons.mapBasicInfo(basicInfo, userID, item, (json, key) -> {
+						return DynamoDB.typeConversion((JSONObject) json.get(key));
+					});
+										
 					//-----------------------------------------
 					
 					return true;

@@ -111,17 +111,18 @@ public class SmartHomeDevice {
 	 * If state is unknown returns original string.
 	 * @param state - generalized state 
 	 * @param language - ISO language code
+	 * @param stateType - type of state as given by {@link StateType}, usually defined by device, e.g. 'number_plain'
 	 */
-	public static String getStateLocal(String state, String language){
+	public static String getStateLocal(String state, String language, String stateType){
 		String localName = "";
-		state = state.toLowerCase();
 		if (language.equals(LANGUAGES.DE)){
-			localName = states_de.get(state);
+			localName = states_de.get(state.toLowerCase());
 		}else if (language.equals(LANGUAGES.EN)){
-			localName = states_en.get(state);
+			localName = states_en.get(state.toLowerCase());
 		}
 		if (localName == null){
-			if (!state.matches("\\d+")){
+			boolean skipWarning = state.matches("\\d+") || (stateType != null && Is.typeEqual(stateType, StateType.text_raw));
+			if (!skipWarning){
 				Debugger.println(SmartHomeDevice.class.getSimpleName() + 
 					" - getStateLocal() has no '" + language + "' version for '" + state + "'", 3);
 			}
@@ -129,6 +130,13 @@ public class SmartHomeDevice {
 		}else{
 			return localName;
 		}
+	}
+	/**
+	 * Translate state value. If state is unknown returns original string.<br>
+	 * Calls {@link #getStateLocal(String, String, String)} with type = null;
+	 */
+	public static String getStateLocal(String state, String language){
+		return getStateLocal(state, language, null);
 	}
 	
 	//------- main -------
@@ -677,7 +685,7 @@ public class SmartHomeDevice {
 			//TODO: need to properly convert state to newInputState?
 		}
 		//devices with state value type temp. only accept plain number or temp. number
-		if (deviceStateType.startsWith(StateType.number_temperature.name())){	
+		if (deviceStateType.startsWith(StateType.number_temperature.name())){
 			//NOTE: this has to be either C or F (unknown unit not allowed as device state type)
 			if (newInputStateType.startsWith(StateType.number_temperature.name())){
 				//check if temp. unit is given. If not try to get it from client
@@ -737,6 +745,11 @@ public class SmartHomeDevice {
 					String cmd = Converters.obj2StringOrDefault(setCmds.get("disable"), null);
 					if (Is.notNullOrEmpty(cmd)){
 						return cmd;
+					}
+				}else if (Is.typeEqual(stateType, StateType.text_raw)){
+					String cmd = Converters.obj2StringOrDefault(setCmds.get("raw"), null);
+					if (Is.notNullOrEmpty(cmd)){
+						return cmd.replaceAll("<val>|<value>", state);
 					}
 				}
 			}
