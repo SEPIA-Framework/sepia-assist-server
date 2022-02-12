@@ -132,10 +132,10 @@ public class ResponseHandler implements NluInterface{
 	//-------HELPER METHODS--------
 	
 	/**
-	 * Convert response into a proper parameter (remove unfinished and optional parameters then extract or tweak). 
+	 * Convert response into a proper parameter and tweak (includes extraction of optional parameters). 
 	 * @param nluResult
 	 * @param response - given response (e.g. normalized user-input)
-	 * @param parameter - name of parameter
+	 * @param parameter - name of the parameter that was asked for
 	 * @param language
 	 * @param command
 	 * @param input
@@ -144,7 +144,7 @@ public class ResponseHandler implements NluInterface{
 	public static NluResult tweakResult(NluResult nluResult, String response, String parameter, String language, String command, NluInput input){
 		String tweaked = response;		//by default it is the pure response
 		
-		//get all non-final, optional parameters and remove them
+		//get all non-final, optional parameters as well
 		List<ServiceInterface> services = ConfigServices.getCustomOrSystemServices(input, input.user, command);
 		ServiceInfo info = services.get(0).getInfoFreshOrCache(nluResult.input, services.get(0).getClass().getCanonicalName());
 		for (Parameter p : info.optionalParameters){
@@ -152,6 +152,8 @@ public class ResponseHandler implements NluInterface{
 			if (nluResult.isParameterFinal(p.getName())){
 				continue;
 			}
+			//TODO: is 'parameter' extracted twice if its optional as well?
+			
 			//else try to find it
 			ParameterHandler handler = p.getHandler();
 			handler.setup(input);
@@ -167,18 +169,9 @@ public class ResponseHandler implements NluInterface{
 				//System.out.println("ResponseHandler - tweakResult - p: " + p.getName() + ", value: " + value); 					//debug
 				//nluResult.remove_final(p.getName());
 				nluResult.setParameter(p.getName(), value);
-				//TODO: use the remove method?
 				
-				//TODO: this should not be here ... find a more consistent, logical location ...
-				if (command.equals(CMD.FASHION)){
-					if (p.getName().equals(PARAMETERS.COLOR)){
-						tweaked = handler.remove(tweaked, handler.getFound());
-					}else if (p.getName().equals(PARAMETERS.FASHION_SIZE)){
-						tweaked = handler.remove(tweaked, handler.getFound());
-					}else if (p.getName().equals(PARAMETERS.GENDER)){
-						tweaked = handler.remove(tweaked, handler.getFound());
-					}
-				}
+				//TODO: use the remove method to optimize asked-for parameter?
+
 			}else{
 				//TODO: guess or not? I think no guessing in answer is better
 			}
