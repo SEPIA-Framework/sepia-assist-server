@@ -41,6 +41,9 @@ public interface SmartHomeHub {
 	 */
 	public static SmartHomeHub getHubFromSeverConfig(){
 		SmartHomeHub shh = getHub(Config.smarthome_hub_name, Config.smarthome_hub_host);
+		if (shh == null){
+			return null;
+		}
 		if (Is.notNullOrEmpty(Config.smarthome_hub_auth_data)){
 			shh.setAuthenticationInfo(Config.smarthome_hub_auth_type, Config.smarthome_hub_auth_data);
 		}

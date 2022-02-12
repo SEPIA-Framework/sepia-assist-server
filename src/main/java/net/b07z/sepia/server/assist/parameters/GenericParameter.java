@@ -7,13 +7,13 @@ import net.b07z.sepia.server.core.tools.JSON;
 
 /**
  * The generic parameter simply returns the input. Should be used for parameters that have no handler yet
- * or for those that can only be called by direct-commands (where you parse the data yourself).<br>
- * Note: Generic parameters do not increase matching score in NLU process.
+ * or for those that can only be called by direct-commands (where you parse the data yourself).<br> 
+ * Note: Generic parameters do NOT increase matching score during NLU process.
  * 
  * @author Florian Quirin
  *
  */
-public class GenericParameter extends CustomParameter implements ParameterHandler{
+public class GenericParameter extends CustomParameter implements ParameterHandler {
 
 	@Override
 	public boolean isGeneric(){

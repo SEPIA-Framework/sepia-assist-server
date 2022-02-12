@@ -61,7 +61,7 @@ import net.b07z.sepia.server.core.tools.Is;
  */
 public class Config {
 	public static final String SERVERNAME = "SEPIA-Assist-API"; 		//public server name
-	public static final String apiVersion = "v2.6.0";					//API version
+	public static final String apiVersion = "v2.6.1";					//API version
 	public static String privacyPolicyLink = "";						//Link to privacy policy
 	
 	//helper for dynamic class creation (e.g. from strings in config-file) - TODO: reduce dependencies further 

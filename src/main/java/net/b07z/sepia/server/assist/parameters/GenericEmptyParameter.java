@@ -3,17 +3,20 @@ package net.b07z.sepia.server.assist.parameters;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.interviews.InterviewData;
+import net.b07z.sepia.server.assist.services.ServiceBuilder;
 import net.b07z.sepia.server.core.tools.JSON;
 
 /**
- * The generic-empty parameter simply returns an empty string as VALUE or a user defined string via direct command. 
- * Should be used for parameters that have no handler yet, are optional and should only contain data if explicitly set via direct commands.<br>
- * Note: Generic parameters do not increase matching score in NLU process.
+ * The generic-empty parameter simply returns an empty string as extracted VALUE or a user defined string via direct command. 
+ * Should be used for parameters that have no handler yet, are optional and should only contain data if explicitly set via
+ * direct commands or questions (via response handler).<br>
+ * Note 1: Works well with {@link ServiceBuilder#setIncompleteAndAsk} if you add it as optional parameter.<br>
+ * Note 2: Generic parameters do not increase matching score during NLU process.
  * 
  * @author Florian Quirin
  *
  */
-public class GenericEmptyParameter extends CustomParameter implements ParameterHandler{
+public class GenericEmptyParameter extends CustomParameter implements ParameterHandler {
 
 	@Override
 	public boolean isGeneric(){
