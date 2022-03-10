@@ -96,7 +96,7 @@ public class TestHub implements SmartHomeHub {
 			)
 	);
 	private static SmartHomeDevice genericDevice = new SmartHomeDevice(
-			"Device 1", 
+			"A (1)", 
 			SmartDevice.Types.device.name(), 
 			Room.Types.garage.name(), 
 			SmartHomeDevice.State.off.name(), SmartHomeDevice.StateType.text_binary.name(), "", 
