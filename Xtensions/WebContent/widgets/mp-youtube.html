@@ -92,7 +92,7 @@
 		}
 		function postProperties(props){
 			postMsg({
-				properties: props	//properties like "size" to adjust UI
+				properties: props	//properties like "size" to adjust UI (or 'volume' and 'rememberVolume')
 			});
 		}
 		function postSettings(data){
@@ -199,7 +199,7 @@
 				case "volumeDown":
 				case "volumeSet":
 					//TODO: ignored for now
-					console.error("YouTube Media-Player cmd '" + ev.controls + "' not yet supported", ev.data);
+					console.error("YouTube Media-Player cmd '" + ev.controls + "' not yet supported", ev.data, ev.remember);
 					break;
 				default:
 					//Error: UnknownEvent
