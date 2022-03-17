@@ -8,7 +8,7 @@ import net.b07z.sepia.server.core.tools.ClassBuilder;
 
 public class Test_Email {
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		
 		//Load settings
 		Start.loadSettings(args);

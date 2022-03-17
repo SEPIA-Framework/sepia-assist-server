@@ -263,7 +263,7 @@ public class Test_AuthAndAccount {
 	//---------------------------------------------------------------
 	
 	//init - setup DB with config, load class for interface ...
-	public static void setup(){
+	public static void setup() throws Exception{
 		//deactivate white-list emails
 		Config.restrictRegistration = false;
 		

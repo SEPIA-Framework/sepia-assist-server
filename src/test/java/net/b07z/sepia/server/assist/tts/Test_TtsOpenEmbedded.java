@@ -7,7 +7,7 @@ import net.b07z.sepia.server.assist.tts.TtsTools.EngineType;
 
 public class Test_TtsOpenEmbedded {
 
-	public static void main(String[] args){
+	public static void main(String[] args) throws Exception{
 		
 		Start.loadConfigFile("test");
 		Config.setupTts();

@@ -73,8 +73,9 @@ public class Start {
 	/**
 	 * Load configuration file.
 	 * @param serverType - live, test, custom
+	 * @throws Exception  
 	 */
-	public static void loadConfigFile(String serverType){
+	public static void loadConfigFile(String serverType) throws Exception {
 		if (serverType.equals(TEST_SERVER)){
 			Config.configFile = "Xtensions/assist.test.properties";
 		}else if (serverType.equals(CUSTOM_SERVER)){
@@ -90,8 +91,9 @@ public class Start {
 	/**
 	 * Check arguments and load settings correspondingly.
 	 * @param args - parameters submitted to main method
+	 * @throws Exception  
 	 */
-	public static void loadSettings(String[] args){
+	public static void loadSettings(String[] args) throws Exception {
 		//check arguments
 		serverType = TEST_SERVER;
 		for (String arg : args){
@@ -365,13 +367,19 @@ public class Start {
 	
 	/**
 	 * MAIN METHOD TO START SERVER
+	 * @throws Exception 
 	 */
 	public static void main(String[] args) {
 		//activation timestamp
 		lastStartUNIX = System.currentTimeMillis();
 		
 		//load settings
-		loadSettings(args);
+		try{
+			loadSettings(args);
+		}catch (Exception e1){
+			e1.printStackTrace();
+			System.exit(1);
+		}
 		
 		//test database(s)
 		try{

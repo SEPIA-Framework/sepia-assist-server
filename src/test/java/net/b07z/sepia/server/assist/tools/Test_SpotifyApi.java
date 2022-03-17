@@ -8,7 +8,7 @@ import net.b07z.sepia.server.core.tools.Debugger;
 
 public class Test_SpotifyApi {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		
 		//load custom config
 		Start.loadSettings(new String[]{"--test"});

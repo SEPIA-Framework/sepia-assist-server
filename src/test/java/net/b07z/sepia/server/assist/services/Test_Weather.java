@@ -22,7 +22,7 @@ public class Test_Weather {
 
 	private static List<String> errors;
 	
-	public static void main(String[] args){
+	public static void main(String[] args) throws Exception{
 		errors = new ArrayList<>();
 		
 		//load test config (for openHAB server URL mainly)

@@ -653,8 +653,9 @@ public class Setup {
 	
 	/**
 	 * Load config-file by type and setup all the endpoint URLs etc.
+	 * @throws Exception 
 	 */
-	private static void loadConfigFile(ServerType st){
+	private static void loadConfigFile(ServerType st) throws Exception{
 		Start.loadConfigFile(st.name());
 		//setup database(s)
 		Config.setupDatabases(false);

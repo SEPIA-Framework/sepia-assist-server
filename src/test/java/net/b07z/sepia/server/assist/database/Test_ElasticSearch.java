@@ -31,7 +31,7 @@ public class Test_ElasticSearch {
 
 	static Elasticsearch db;
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		
 		//init
 		Start.loadSettings(new String[]{"--test"});
