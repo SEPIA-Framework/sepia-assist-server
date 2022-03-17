@@ -3,6 +3,8 @@ package net.b07z.sepia.server.assist.endpoints;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -109,14 +111,32 @@ public class ConfigServer {
 			String getConfig = params.getString("getConfig");
 			if (changedConfig || (getConfig != null)){
 				boolean showAll = (getConfig != null && getConfig.equals("all"));
-				String key = (getConfig != null)? getConfig : (lastSetKey != null)? lastSetKey : ""; 
+				String singleKey = (getConfig != null && !showAll)? getConfig : (lastSetKey != null)? lastSetKey : ""; 
 				try{
-					List<String> configFile = FilesAndStreams.readFileAsList(Config.configFile);
-					List<String> configFileClean = new ArrayList<>();
-					for (String l : configFile){
-						//some filters and hide passwords/keys
-						if (!l.startsWith("#") && (showAll || l.startsWith(key))){
-							configFileClean.add(l.replaceFirst("(.*?)(_pwd|_secret|_auth_data|_key)(.*?=)(.+)", "$1$2$3[HIDDEN]"));
+					List<String> configFileClean;
+					//use actual active settings
+					Map<String, String> loadedConfig = Config.getLoadedSettings();
+					if (loadedConfig != null){
+						configFileClean = new ArrayList<>();
+						for (Map.Entry<String, String> es : loadedConfig.entrySet()){
+							String k = es.getKey();
+							String v = es.getValue();
+							//some filters and hide passwords/keys
+							if (showAll || k.equals(singleKey)){
+								if (v == null || v.trim().isEmpty()) v = "";
+								else if (k.matches(".*(_pwd|_secret|_auth_data|_key)")) v = "[HIDDEN]";
+								configFileClean.add(k + "=" + v);
+							}
+						}
+					//fallback to file (this probably never happens)
+					}else{
+						List<String> configFile = FilesAndStreams.readFileAsList(Config.configFile);
+						configFileClean = new ArrayList<>();
+						for (String l : configFile){
+							//some filters and hide passwords/keys
+							if (!l.startsWith("#") && (showAll || l.startsWith(singleKey))){
+								configFileClean.add(l.replaceFirst("(.*?)(_pwd|_secret|_auth_data|_key)(.*?=)(.+)", "$1$2$3[HIDDEN]"));
+							}
 						}
 					}
 					JSONObject msg = JSON.make(
