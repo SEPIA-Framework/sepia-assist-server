@@ -16,6 +16,7 @@ import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.data.Card;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.data.Card.ElementType;
+import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
@@ -335,7 +336,7 @@ public class WeatherMeteoNorway implements ServiceInterface {
 		Debugger.println("cmd: weather, place: " + place + ", days in future: " + days, 2);		//debug
 		
 		//Default user temperature unit - C or F
-		String userPrefTempUnit = (String) nluResult.input.getCustomDataObject("prefTempUnit");
+		String userPrefTempUnit = (String) nluResult.input.getCustomDataObject(NluInput.DATA_PREFERRED_TEMPERATURE_UNIT);
 		if (userPrefTempUnit == null) userPrefTempUnit = "C";
 		
 		//GET DATA

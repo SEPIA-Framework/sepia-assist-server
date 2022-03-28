@@ -5,6 +5,7 @@ import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.data.Card;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.data.Card.ElementType;
+import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interviews.ConvertResult;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
@@ -133,6 +134,7 @@ public class NewsRssFeeds implements ServiceInterface{
 	public static final Map<String, String> feedNames = new HashMap<>();
 	public static final JSONObject outletProperties;
 	public static final Map<String, Map<String, List<String>>> outletGroupsByLanguage = new HashMap<>();
+	public static final Map<String, Map<String, List<String>>> outletGroupsByRegion = new HashMap<>();
 	
 	//Load properties file (Outlets, groups by language etc.)
 	static{
@@ -156,6 +158,7 @@ public class NewsRssFeeds implements ServiceInterface{
 			for (Object jo : outletGroupsLanguageArray){
 				JSONObject languageGroup = (JSONObject) jo;
 				String language = JSON.getString(languageGroup, "language");
+				String region = JSON.getString(languageGroup, "region");
 				JSONArray languageData = JSON.getJArray(languageGroup, "data");
 				
 				//Add GROUP for this language each section - we basically only convert the JSONArray to a map
@@ -171,6 +174,9 @@ public class NewsRssFeeds implements ServiceInterface{
 					throw new RuntimeException("Outlet section groups are empty for language: " + language);
 				}
 				outletGroupsByLanguage.put(language, sections);
+				if (region != null){
+					outletGroupsByRegion.put(region, sections);
+				}
 			}
 			
 		}catch (Exception e){
@@ -202,7 +208,9 @@ public class NewsRssFeeds implements ServiceInterface{
 		Parameter p3 = new Parameter(PARAMETERS.NEWS_SEARCH, "");			//a search phrase like "earthquake in Timbuktu"
 		Parameter p4 = new Parameter(PARAMETERS.SPORTS_TEAM, "");			//different sport teams
 		Parameter p5 = new Parameter(PARAMETERS.SPORTS_LEAGUE, "");			//different sport leagues
-		info.addParameter(p1).addParameter(p2).addParameter(p3).addParameter(p4).addParameter(p5);
+		Parameter p6 = new Parameter(PARAMETERS.LANGUAGE, "");			//manually choose language
+		info.addParameter(p1).addParameter(p2).addParameter(p3).addParameter(p4).addParameter(p5).addParameter(p6);
+		//TODO: move regular expressions here from keyword analyzer so that this is actually used ...
 		
 		//Answers (these are the default answers, you can add a custom answer at any point in the module with api.setCustomAnswer(..)):
 		info.addSuccessAnswer("news_1a")
@@ -263,6 +271,29 @@ public class NewsRssFeeds implements ServiceInterface{
 		//SEARCH
 		Parameter nSearch = nluResult.getOptionalParameter(PARAMETERS.NEWS_SEARCH, "");
 		String search = nSearch.getDataFieldOrDefault(InterviewData.INPUT).toString();
+		
+		//LANGUAGE and user's default news REGION
+		String newsPrefBaseLang = null;
+		String newsPrefRegion = null;
+		//from input
+		Parameter langParam = nluResult.getOptionalParameter(PARAMETERS.LANGUAGE, "");
+		String newsLanguageCode = langParam.getDataFieldOrDefault(InterviewData.VALUE).toString();	//4 characters bcp47 code (e.g.: de-DE, en-US)
+		//from settings
+		String defaultNewsRegion = (String) nluResult.input.getCustomDataObject(NluInput.DATA_DEFAULT_NEWS_REGION);
+		if (Is.nullOrEmpty(defaultNewsRegion)){
+			defaultNewsRegion = (String) nluResult.input.getCustomDataObject(NluInput.DATA_APP_REGION_CODE);
+		}
+		//put it all together
+		if (Is.notNullOrEmpty(newsLanguageCode)){
+			newsPrefRegion = newsLanguageCode;
+			newsPrefBaseLang = newsLanguageCode.split("-")[0];
+		}else if (Is.notNullOrEmpty(defaultNewsRegion)){
+			newsPrefRegion = defaultNewsRegion;
+			newsPrefBaseLang = defaultNewsRegion.split("-")[0];
+		}else{
+			newsPrefRegion = null;
+			newsPrefBaseLang = api.language;
+		}
 				
 		//add result info - build a nice "topic" for the success answer - might fail for certain languages, but we can always make it more simple ^^
 		String topic = "";
@@ -275,7 +306,7 @@ public class NewsRssFeeds implements ServiceInterface{
 		}
 		api.resultInfoPut("topic", topic);
 		
-		Debugger.println("cmd: news, section: " + section + ", type: " + type + ", search: " + search, 2);		//debug
+		Debugger.println("cmd: news, section: " + section + ", type: " + type + ", search: " + search + ", language: " + newsLanguageCode, 2);		//debug
 		
 		//---------- Read RSS feeds and build card -----------
 		long tic = System.currentTimeMillis();
@@ -289,11 +320,21 @@ public class NewsRssFeeds implements ServiceInterface{
 		}
 		
 		//articles
-		Map<String, List<String>> sectionGroupsForLanguage = outletGroupsByLanguage.get(api.language);
-		if (Is.nullOrEmptyMap(sectionGroupsForLanguage)){
-			sectionGroupsForLanguage = outletGroupsByLanguage.get(LANGUAGES.EN);
+		Map<String, List<String>> sectionGroupsForRegionOrLanguage = null;
+		if (newsPrefRegion != null){
+			//try region
+			sectionGroupsForRegionOrLanguage = outletGroupsByRegion.get(newsPrefRegion);
 		}
-		List<String> feeds = sectionGroupsForLanguage.get(section);
+		if (Is.nullOrEmptyMap(sectionGroupsForRegionOrLanguage)){
+			//try language
+			sectionGroupsForRegionOrLanguage = outletGroupsByLanguage.get(newsPrefBaseLang);
+		}
+		if (Is.nullOrEmptyMap(sectionGroupsForRegionOrLanguage)){
+			//fallback
+			sectionGroupsForRegionOrLanguage = outletGroupsByLanguage.get(LANGUAGES.EN);
+		}
+		//TODO: should we fail instead and notify user that language-region-section doesn't exist yet but can be added?
+		List<String> feeds = sectionGroupsForRegionOrLanguage.get(section);
 		//TODO: check feeds == null
 		List<String> top3Titles = new ArrayList<>();
 		
