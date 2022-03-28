@@ -50,7 +50,7 @@ public class Language implements ParameterHandler{
 				+ "japanisch|"
 				+ "koreanisch|"
 				+ "mongolisch"
-			+ ")(e|es|en|)";
+			+ ")(e|es|er|en|)";
 	public static final String languageClasses_en =	"("
 				+ "austrian|"
 				+ "swiss|" 		//TODO: could be French swiss etc. ... the order here might matter
