@@ -77,8 +77,8 @@ public class Config {
 	public static String dbSetupFolder = xtensionsFolder + "Database/";		//folder for database stuff
 	public static String webServerFolder = xtensionsFolder + "WebContent";	//folder for web-server (NOTE: it's given without '/' at the end)
 	public static String ttsEngines = xtensionsFolder + "TTS/";				//folder for TTS engines if not given by system
-	public static String ttsWebServerUrl = "/tts/";							//URL for TTS when accessing web-server root
-	public static String ttsWebServerPath = webServerFolder + ttsWebServerUrl;		//folder for TTS generated on server
+	public static String ttsWebServerUrl = "/tts-stream/";					//URL for TTS when accessing web-server root. Can be "/tts/" for static or "/tts-stream/" for chunked stream)
+	public static String ttsWebServerPath = webServerFolder + "/tts/";		//folder for TTS generated on server
 	public static boolean ttsModuleEnabled = true;									//is TTS module available (can be set to false by module setup)
 	public static boolean hostFiles = true;									//use web-server?
 	public static boolean allowFileIndex = true;							//allow web-server index
@@ -535,6 +535,7 @@ public class Config {
 			}
 			ttsModule = pr.getStringPropertyOrDefault("module_tts", TtsOpenEmbedded.class.getCanonicalName());
 			ttsName = pr.getStringPropertyOrDefault("tts_engine_name", "Open Embedded");
+			ttsWebServerUrl = pr.getStringPropertyOrDefault("tts_endpoint", ttsWebServerUrl);
 			ttsModuleEnabled = pr.getBooleanOrDefault("tts_enabled", ttsModuleEnabled);
 			enableSDK = pr.getBooleanOrDefault("enable_sdk", enableSDK);
 			//useSandboxPolicy = Boolean.valueOf(settings.getProperty("use_sandbox_security_policy", "true"));		//NOTE: this will only be accessible via commandline argument
