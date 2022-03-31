@@ -1,5 +1,8 @@
 package net.b07z.sepia.server.assist.endpoints;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Collection;
 import org.json.simple.JSONObject;
 
@@ -22,6 +25,7 @@ import net.b07z.sepia.server.core.server.RequestGetOrFormParameters;
 import net.b07z.sepia.server.core.server.RequestParameters;
 import net.b07z.sepia.server.core.server.SparkJavaFw;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
+import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 import net.b07z.sepia.server.core.tools.SoundPlayer;
@@ -36,7 +40,8 @@ import spark.Response;
  */
 public class TtsEndpoint {
 
-	/**---TEXT-TO-SPEECH---<br>
+	/**
+	 * ---TEXT-TO-SPEECH---<br>
 	 * End-point that converts text to a sound-file and typically returns the link to stream the file.  
 	 */
 	public static String ttsAPI(Request request, Response response){
@@ -140,8 +145,45 @@ public class TtsEndpoint {
 			return SparkJavaFw.returnResult(request, response, answer, 200);
 		}
 	}
+	
+	/**
+	 * TTS STEAM<br>
+	 * End-point that streams a file as bytes from a byte-range request. 
+	 */
+	public static String ttsStream(Request request, Response response){
+		String fileName = request.params(":file");
+		if (Is.nullOrEmpty(fileName)){
+			return SparkJavaFw.returnPathNotFound(request, response);
+		}
+		File file = new File(Config.ttsWebServerPath + fileName);
+		if (!file.exists()){
+			return SparkJavaFw.returnPathNotFound(request, response);
+		}
+		//supported files: wav, mp3, ogg
+		String mimeType = null;
+		if (fileName.endsWith(".wav")){
+			mimeType = "audio/wav";		//add "..,audio/x-wav" ?
+		}else if (fileName.endsWith(".mp3")){
+			mimeType = "audio/mpeg";
+		}else if (fileName.endsWith(".ogg")){
+			mimeType = "audio/ogg";
+		}else{
+			return SparkJavaFw.returnNotAcceptable(request, response);
+		}
+		try{
+			int maxChunkSize = 204800;	//200kb (if no range is requested)
+			SparkJavaFw.streamFile(request, response, file, mimeType, maxChunkSize);
+		}catch (FileNotFoundException err){
+			return SparkJavaFw.returnPathNotFound(request, response);
+		}catch (IOException err){
+			Debugger.printStackTrace(err, 3);
+			return SparkJavaFw.returnInternalError(request, response);
+		}
+		return "OK";
+	}
 
-	/**TTS INFO<br>
+	/**
+	 * TTS INFO<br>
 	 * End-point that returns some info about the TTS engine in use.
 	 */
 	public static String ttsInfo(Request request, Response response){

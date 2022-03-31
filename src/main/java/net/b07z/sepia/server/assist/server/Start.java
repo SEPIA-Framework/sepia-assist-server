@@ -333,6 +333,7 @@ public class Start {
 		
 		//TTS
 		post("/tts", (request, response) -> 				TtsEndpoint.ttsAPI(request, response));
+		get("/tts-stream/:file", (request, response) ->		TtsEndpoint.ttsStream(request, response));
 		post("/tts-info", (request, response) -> 			TtsEndpoint.ttsInfo(request, response));
 		
 		//SDK
