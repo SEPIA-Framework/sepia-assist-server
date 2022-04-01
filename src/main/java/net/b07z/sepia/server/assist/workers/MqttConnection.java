@@ -8,6 +8,7 @@ import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.Statistics;
+import net.b07z.sepia.server.assist.smarthome.SmartHomeHub.AuthType;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.ThreadManager;
@@ -289,17 +290,17 @@ public class MqttConnection implements DuplexConnectionInterface {
 			String userName = null;
 			String password = null;
 			if (Is.notNullOrEmpty(authType) && Is.notNullOrEmpty(authData)){
-				//currently we only support one auth type: 'plain' - format: username:password
+				//currently we only support one auth type: 'Plain' - format: username:password
 				try {
-					if (authType.equalsIgnoreCase("Plain")){
+					if (authType.equalsIgnoreCase(AuthType.Plain.name()) || authType.equalsIgnoreCase(AuthType.Custom.name())){
 						String[] up = authData.split(":", 2);
 						userName = up[0];
 						password = up[1];
 					}else{
-						throw new RuntimeException("Invalid auth. type. Try 'plain'.");
+						throw new RuntimeException("Invalid auth. type. Try 'Custom' or 'Plain'.");
 					}
 				}catch (Exception e) {
-					Debugger.println("'createMqttConnection' FAILED to add auth. data - try type 'plain' and data 'username:password'", 1);
+					Debugger.println("'createMqttConnection' FAILED to add auth. data - try type 'Custom' or 'Plain' and data 'username:password'", 1);
 					Debugger.printStackTrace(e, 3);
 					userName = null;
 					password = null;

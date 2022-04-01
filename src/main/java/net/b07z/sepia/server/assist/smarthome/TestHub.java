@@ -33,6 +33,10 @@ public class TestHub implements SmartHomeHub {
 	private JSONObject info;
 	private String hubId;
 	
+	//fake auth.
+	private String authType;
+	private String authData;
+	
 	//------ test devices ------
 	
 	private static SmartHomeDevice light = new SmartHomeDevice(
@@ -119,8 +123,8 @@ public class TestHub implements SmartHomeHub {
 			"id", this.hubId,
 			"type", NAME,
 			"host", "SEPIA",
-			"authType", "",
-			"authData", "",
+			"authType", this.authType,
+			"authData", this.authData,
 			"info", this.info
 		);
 	}
@@ -152,6 +156,8 @@ public class TestHub implements SmartHomeHub {
 	@Override
 	public void setAuthenticationInfo(String authType, String authData){
 		//Not required
+		this.authType = authType;
+		this.authData = authData;
 	}
 	
 	@Override

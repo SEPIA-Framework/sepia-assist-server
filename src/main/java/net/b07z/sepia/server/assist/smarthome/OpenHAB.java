@@ -67,17 +67,17 @@ public class OpenHAB implements SmartHomeHub {
 			return Connectors.httpGET(url, null, null, CONNECT_TIMEOUT);
 		}
 	}
-	private JSONObject httpPOST(String url, String queryJson, Map<String, String> headers){
+	private JSONObject httpPOST(String url, String state, Map<String, String> headers){
 		if (Is.notNullOrEmpty(this.authData)){
 			headers = addAuthHeader(headers);
 		}
-		return Connectors.httpPOST(url, queryJson, headers, CONNECT_TIMEOUT);
+		return Connectors.httpPOST(url, state, headers, CONNECT_TIMEOUT);
 	}
-	private JSONObject httpPUT(String url, String queryJson, Map<String, String> headers){
+	private JSONObject httpPUT(String url, String tagData, Map<String, String> headers){
 		if (Is.notNullOrEmpty(this.authData)){
 			headers = addAuthHeader(headers);
 		}
-		return Connectors.httpPUT(url, queryJson, headers);
+		return Connectors.httpPUT(url, tagData, headers);
 	}
 	private JSONObject httpDELETE(String url){
 		if (Is.notNullOrEmpty(this.authData)){
@@ -129,6 +129,19 @@ public class OpenHAB implements SmartHomeHub {
 	public void setAuthenticationInfo(String authType, String authData){
 		this.authType = authType;
 		this.authData = authData;
+		if (Is.notNullOrEmpty(this.authType) && Is.notNullOrEmpty(this.authData)){
+			if (authType.equalsIgnoreCase(AuthType.Basic.name())){
+				//OK
+				this.authType = AuthType.Basic.name();
+			
+			}else if (authType.equalsIgnoreCase(AuthType.Bearer.name())){
+				//OK
+				this.authType = AuthType.Bearer.name();
+				
+			}else{
+				throw new RuntimeException("Invalid auth. type. Try 'Basic' or 'Bearer'.");
+			}
+		}
 	}
 	
 	@Override
