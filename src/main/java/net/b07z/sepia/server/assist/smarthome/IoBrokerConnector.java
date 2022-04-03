@@ -121,7 +121,7 @@ public class IoBrokerConnector implements SmartHomeHub {
 				this.authType = AuthType.Basic.name();
 			}else if (authType.equalsIgnoreCase(AuthType.Plain.name()) || authType.equalsIgnoreCase(AuthType.Custom.name())){
 				//handle
-				this.authType = AuthType.Custom.name();
+				this.authType = AuthType.Plain.name();
 				try {
 					String[] up = authData.split(":", 2);
 					this.userName = up[0];
