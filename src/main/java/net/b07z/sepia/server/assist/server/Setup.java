@@ -104,7 +104,7 @@ public class Setup {
 				this.answers = true;
 			}else if (taskArg.equals("commands")){
 				this.commands = true;
-			}else if (taskArg.toLowerCase().equals("duckdns")){
+			}else if (taskArg.equalsIgnoreCase("duckdns")){
 				this.duckDns = true;
 			}
 		}
@@ -116,12 +116,12 @@ public class Setup {
 		String tasksToString(){
 			String tasks = "";
 			if (this.all || this.database) tasks += "database, ";
-			if (!this.dbIndex.isEmpty()) tasks += "dbIndex=" + this.dbIndex + ", ";
+			if (!this.dbIndex.isEmpty()) tasks += "index=" + this.dbIndex + ", ";
 			if (this.all || this.cluster) tasks += "cluster, ";
 			if (this.all || this.accounts) tasks += "accounts, ";
 			if (this.all || this.answers) tasks += "answers, ";
 			if (this.all || this.commands) tasks += "commands, ";
-			if (this.duckDns) tasks += "duckDns, ";
+			if (this.duckDns) tasks += "duckdns, ";
 			return tasks.replaceAll(", $", "").trim();
 		}
 	}
@@ -143,6 +143,7 @@ public class Setup {
 		
 		//automatic?
 		boolean automaticSetup = false;
+		boolean dryRun = false;
 		
 		//components to setup
 		SetupTasks tasks = new SetupTasks();
@@ -162,6 +163,9 @@ public class Setup {
 			}else if (arg.equals("--unattended") || arg.equals("--automatic")){
 				//Auto-Setup
 				automaticSetup = true;
+			}else if (arg.equalsIgnoreCase("--dryRun")){
+				//Dry run!
+				dryRun = true;
 			}else{
 				//tasks arg?
 				tasks.setTasks(arg);
@@ -215,7 +219,11 @@ public class Setup {
 		if (tasks.all || tasks.database){
 			//prepare Elasticsearch
 			System.out.println("\nPreparing Elasticsearch: ");
-			writeElasticsearchMapping(tasks.dbIndex); 	//writes all indices if dbIndex is empty or null
+			if (dryRun){
+				System.out.println("DRY RUN - Elasticsearch index=" + tasks.dbIndex);
+			}else{
+				writeElasticsearchMapping(tasks.dbIndex); 	//writes all indices if dbIndex is empty or null
+			}
 			if (automaticSetup){
 				writeAutoSetupLog("Database - Elasticsearch: mappings (re)written");
 			}
@@ -223,7 +231,11 @@ public class Setup {
 			//prepare DynamoDB (optional)
 			if (Config.authAndAccountDB.equals("dynamo_db")){
 				System.out.println("\nPreparing DynamoDB: ");
-				writeDynamoDbIndices();				//note: dbIndex not supported yet for DynamoDB
+				if (dryRun){
+					System.out.println("DRY RUN - DynamoDB");
+				}else{
+					writeDynamoDbIndices();				//note: dbIndex not supported yet for DynamoDB
+				}
 				if (automaticSetup){
 					writeAutoSetupLog("Database - DynamoDB: indices (re)written");
 				}
@@ -233,7 +245,11 @@ public class Setup {
 		//cluster
 		if (tasks.all || tasks.cluster){
 			System.out.println("\nSetting up cluster: ");
-			generateAndStoreClusterKey(scf);
+			if (dryRun){
+				System.out.println("DRY RUN - Cluster scf: " + scf.getAllServers().toString());
+			}else{
+				generateAndStoreClusterKey(scf);
+			}
 			if (automaticSetup){
 				writeAutoSetupLog("Cluster - Generated and stored cluster key");
 			}
@@ -299,7 +315,11 @@ public class Setup {
 				try{
 					String password = adminData.getPasswordOrRandom();
 					String email = adminData.getEmailOrDefault("admin");
-					writeSuperUser(scf, email, password);
+					if (dryRun){
+						System.out.println("DRY RUN - Admin account: " + email + ", " + password);
+					}else{
+						writeSuperUser(scf, email, password);
+					}
 					created++;
 					if (automaticSetup){
 						writeAutoSetupLog("Accounts - Created/updated admin account - email: " + email + ", passw.: " + password);
@@ -314,7 +334,11 @@ public class Setup {
 				try{
 					String password = assistantData.getPasswordOrRandom();
 					String email = assistantData.getEmailOrDefault("assistant");
-					writeAssistantUser(scf, email, password);
+					if (dryRun){
+						System.out.println("DRY RUN - Assistant account: " + email + ", " + password);
+					}else{
+						writeAssistantUser(scf, email, password);
+					}
 					created++;
 					if (automaticSetup){
 						writeAutoSetupLog("Accounts - Created/updated assistant account - email: " + email + ", passw.: " + password);
@@ -338,7 +362,12 @@ public class Setup {
 								nickname = key;
 							}
 							List<String> roles = sud.getRolesOrDefault();
-							writeBasicUser(email, password, nickname, roles);
+							if (dryRun){
+								System.out.println("DRY RUN - User account: " + email 
+									+ ", " + password + ", " + nickname + ", " + roles);
+							}else{
+								writeBasicUser(email, password, nickname, roles);
+							}
 							created++;
 							if (automaticSetup){
 								writeAutoSetupLog("Accounts - Created/updated user account - email: " + email + ", passw.: " + password);
@@ -361,7 +390,11 @@ public class Setup {
 		//answers
 		if (tasks.all || tasks.answers){
 			System.out.println("\nImporting answers from resource files to Elasticsearch: ");
-			importAnswers();
+			if (dryRun){
+				System.out.println("DRY RUN - Import answers");
+			}else{
+				importAnswers();
+			}
 			if (automaticSetup){
 				writeAutoSetupLog("Answers - Import task finished.");
 			}
@@ -371,7 +404,11 @@ public class Setup {
 		if (tasks.all || tasks.commands){
 			//TODO: implement command import
 			System.out.println("\nImporting sentences/commands from resource files to Elasticsearch: ");
-			importSentences();
+			if (dryRun){
+				System.out.println("DRY RUN - Import sentences/commands");
+			}else{
+				importSentences();
+			}
 			if (automaticSetup){
 				writeAutoSetupLog("Commands - Task finished.");
 			}
@@ -409,7 +446,11 @@ public class Setup {
 				System.exit(1);
 			}
 			//write duck-dns config and add DuckDNS-worker to assist-server
-			writeDuckDnsSettings(duckDnsDomain, duckDnsToken, scf);
+			if (dryRun){
+				System.out.println("DRY RUN - DuckDNS settings: " + duckDnsDomain + ", " + duckDnsToken);
+			}else{
+				writeDuckDnsSettings(duckDnsDomain, duckDnsToken, scf);
+			}
 			System.out.println("\nSetup of DuckDNS worker complete.");
 			System.out.println("Domain: " + duckDnsDomain);
 			//System.out.println("Token: " + duckDnsToken);
