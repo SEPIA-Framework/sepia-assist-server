@@ -3,7 +3,10 @@ package net.b07z.sepia.server.assist.server;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.data.Name;
@@ -19,6 +22,7 @@ import net.b07z.sepia.server.core.database.AnswerImporter;
 import net.b07z.sepia.server.core.database.DatabaseInterface;
 import net.b07z.sepia.server.core.server.ConfigDefaults;
 import net.b07z.sepia.server.core.tools.Connectors;
+import net.b07z.sepia.server.core.tools.DateTime;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.FilesAndStreams;
 import net.b07z.sepia.server.core.tools.InputPrompt;
@@ -41,13 +45,16 @@ public class Setup {
 	private static String pathToTeachConfig = "../sepia-teach-server/" + Config.xtensionsFolder;
 	private static String pathToWebSocketConfig = "../sepia-websocket-server-java/" + Config.xtensionsFolder;
 	private static String pathToLetsEncryptScripts = "../letsencrypt/";
+	private static String pathToAutoSetupFolder = "../automatic-setup/";
+	private static String pathToAutoSetupFile = pathToAutoSetupFolder + "config.yaml";
+	private static String autoSetupResultLog = "results.log";
 	
-	private enum ServerType{
+	private enum ServerType {
 		custom,
 		live,
 		test
 	}
-	private static class CreateUserResult{
+	private static class CreateUserResult {
 		String guuid;
 		String pwdClientHash;
 		public String email;
@@ -63,7 +70,7 @@ public class Setup {
 			this.email = email;
 		}
 	}
-	private static class ServerConfigFiles{
+	private static class ServerConfigFiles {
 		String assist;
 		String teach;
 		String webSocket;
@@ -74,14 +81,7 @@ public class Setup {
 			return Arrays.asList(assist, teach, webSocket);
 		}
 	}
-	
-	/**
-	 * CAREFUL! THIS WILL OVERWRITE THE DATABASE!
-	 * @throws Exception 
-	 */
-	public static void main(String[] args) throws Exception {
-		
-		//components to setup
+	private static class SetupTasks {
 		boolean all = true;			//if this is true we do everything (except duckdns setup) and ignore below booleans
 		boolean database = false;
 		String dbIndex = "";		//write all (empty) or a specific index of the database (e.g. answers, users, chat, ...)?
@@ -89,7 +89,63 @@ public class Setup {
 		boolean accounts = false;
 		boolean answers = false;
 		boolean commands = false;
-		boolean duckDns = false;
+		boolean duckDns = false;	//NOTE: not part of "all"
+		
+		void setTasks(String taskArg){
+			if (taskArg.equals("database")){
+				this.database = true;
+			}else if (this.database && taskArg.startsWith("index=")){
+				this.dbIndex = taskArg.replaceFirst(".*?=", "").trim();
+			}else if (taskArg.equals("cluster")){
+				this.cluster = true;
+			}else if (taskArg.equals("accounts")){
+				this.accounts = true;
+			}else if (taskArg.equals("answers")){
+				this.answers = true;
+			}else if (taskArg.equals("commands")){
+				this.commands = true;
+			}else if (taskArg.toLowerCase().equals("duckdns")){
+				this.duckDns = true;
+			}
+		}
+		void checkAll(){
+			if (this.database || this.cluster || this.accounts || this.answers || this.commands || this.duckDns){
+				this.all = false;
+			}
+		}
+		String tasksToString(){
+			String tasks = "";
+			if (this.all || this.database) tasks += "database, ";
+			if (!this.dbIndex.isEmpty()) tasks += "dbIndex=" + this.dbIndex + ", ";
+			if (this.all || this.cluster) tasks += "cluster, ";
+			if (this.all || this.accounts) tasks += "accounts, ";
+			if (this.all || this.answers) tasks += "answers, ";
+			if (this.all || this.commands) tasks += "commands, ";
+			if (this.duckDns) tasks += "duckDns, ";
+			return tasks.replaceAll(", $", "").trim();
+		}
+	}
+	
+	private static void writeAutoSetupLog(String msg) throws IOException {
+		writeAutoSetupMessage("LOG", msg);
+	}
+	private static void writeAutoSetupMessage(String logType, String msg) throws IOException {
+		//logType: ERROR, LOG, INFO, DEBUG
+		msg = DateTime.getLogDate() + " " + logType + " - " + msg;
+		FilesAndStreams.appendLineToFile(pathToAutoSetupFolder, autoSetupResultLog, msg);
+	}
+	
+	/**
+	 * CAREFUL! THIS WILL OVERWRITE THE DATABASE!
+	 * @throws Exception 
+	 */
+	public static void main(String[] args) throws Exception {
+		
+		//automatic?
+		boolean automaticSetup = false;
+		
+		//components to setup
+		SetupTasks tasks = new SetupTasks();
 		
 		//setup arguments
 		ServerType st = ServerType.test;
@@ -103,147 +159,263 @@ public class Setup {
 			}else if (arg.equals("--my") || arg.equals("--custom")){
 				//Custom system
 				st = ServerType.custom;
-			}else if (arg.equals("database")){
-				all = false;				database = true;
-			}else if (database && arg.startsWith("index=")){
-				dbIndex = arg.replaceFirst(".*?=", "").trim();
-			}else if (arg.equals("cluster")){
-				all = false;				cluster = true;
-			}else if (arg.equals("accounts")){
-				all = false;				accounts = true;
-			}else if (arg.equals("answers")){
-				all = false;				answers = true;
-			}else if (arg.equals("commands")){
-				all = false;				commands = true;
-			}else if (arg.toLowerCase().equals("duckdns")){
-				all = false;				duckDns = true;
+			}else if (arg.equals("--unattended") || arg.equals("--automatic")){
+				//Auto-Setup
+				automaticSetup = true;
+			}else{
+				//tasks arg?
+				tasks.setTasks(arg);
 			}
 		}
 		System.out.println("Setup for '" + st.name() + "' server (" + Config.configFile + ")");
-		loadConfigFile(st);
+		System.out.println("Is unattended (--unattended): " + automaticSetup);
+		if (automaticSetup){
+			writeAutoSetupLog("Running auto-setup script for server type: " + st.name());
+		}
 		
+		loadConfigFile(st);
 		ServerConfigFiles scf = getConfigFiles(st);
 		
+		//prep. users
+		Map<String, SetupUserData> userData = null;
+		SetupUserData adminData = null;
+		SetupUserData assistantData = null;
+		//prep. DNS data
+		Map<String, String> dnsData = null;
+		
+		//check automatic setup file
+		System.out.println("\nReading file for unattended/automatic setup: " + pathToAutoSetupFile);
+		try{
+			SetupYamlConfig setupYaml = FilesAndStreams.readYamlFile(pathToAutoSetupFile, SetupYamlConfig.class);
+			if (setupYaml.getTasks() != null){
+				for (String t : setupYaml.getTasks()){
+					tasks.setTasks(t);
+				}
+			}
+			userData = setupYaml.getUsers();
+			if (userData != null){
+				adminData = userData.get("admin");
+				userData.remove("admin");
+				assistantData = userData.get("assistant");
+				userData.remove("assistant");
+			}
+			dnsData = setupYaml.getDns();
+		}catch(Exception e){
+			System.out.println("ERROR reading YAML file! Msg.: " + e.getMessage());
+			throw e;
+		}
+		
+		//update tasks
+		tasks.checkAll();
+		if (automaticSetup){
+			writeAutoSetupLog("Tasks: " + tasks.tasksToString());
+		}
+		
 		//database
-		if (all || database){
+		if (tasks.all || tasks.database){
 			//prepare Elasticsearch
 			System.out.println("\nPreparing Elasticsearch: ");
-			writeElasticsearchMapping(dbIndex); 	//writes all indices if dbIndex is empty or null
+			writeElasticsearchMapping(tasks.dbIndex); 	//writes all indices if dbIndex is empty or null
+			if (automaticSetup){
+				writeAutoSetupLog("Database - Elasticsearch: mappings (re)written");
+			}
 			
 			//prepare DynamoDB (optional)
 			if (Config.authAndAccountDB.equals("dynamo_db")){
 				System.out.println("\nPreparing DynamoDB: ");
 				writeDynamoDbIndices();				//note: dbIndex not supported yet for DynamoDB
+				if (automaticSetup){
+					writeAutoSetupLog("Database - DynamoDB: indices (re)written");
+				}
 			}
 		}
 		
 		//cluster
-		if (all || cluster){
+		if (tasks.all || tasks.cluster){
 			System.out.println("\nSetting up cluster: ");
 			generateAndStoreClusterKey(scf);
+			if (automaticSetup){
+				writeAutoSetupLog("Cluster - Generated and stored cluster key");
+			}
 		}
 		
 		//accounts
-		if (all || accounts){
+		if (tasks.all || tasks.accounts){
 			System.out.println("\nSetting up accounts: ");
-		
-			//Default settings for test-mode
-			String adminEmail = "admin@sepia.localhost";
-			String adminPwd = "test12345";
-			String assistantEmail = "assistant@sepia.localhost";
-			String assistantPwd = "test12345";
-			String testUserEmail = "test@sepia.localhost";
-			String testUserPwd = "test12345";
-			String testUserNick = "Testy";
 			
-			//Ask for individual settings?
-			if (!st.equals(ServerType.test)){
-				//Get emails from config (gives the user a chance to change it)
-				adminEmail = Config.superuserEmail;
-				assistantEmail = Config.assistantEmail;
+			//manual setup?
+			if (!automaticSetup){
+				//TEST ACCOUNTS
+				if (st.equals(ServerType.test)){
+					//admin
+					adminData = new SetupUserData();
+					adminData.setEmail(Config.superuserEmail);		//"admin@sepia.localhost";
+					adminData.setPassword("test12345");
+					//assistant
+					assistantData = new SetupUserData();
+					assistantData.setEmail(Config.assistantEmail);	//"assistant@sepia.localhost";
+					assistantData.setPassword("test12345");
+					//test user
+					SetupUserData testUser1 = new SetupUserData();
+					testUser1.setNickname("Testy");
+					testUser1.setEmail("test@sepia.localhost");
+					testUser1.setPassword("test12345");
+					userData = new HashMap<>();
+					userData.put("user1", testUser1);
 				
-				//Ask for passwords
-				adminPwd = "";
-				assistantPwd = "";
-				System.out.println("\nPlease define safe passwords for SEPIA admin and assistant (and remember them well!).");
-				System.out.println("Use AT LEAST 8 characters and combine lower/upper case letters with numbers and special characters:");
-				while (adminPwd.length() < 8){
-					adminPwd = InputPrompt.askString("Admin password: ", false);
-					if (adminPwd.length() < 8){
-						System.out.println("Password is too short! Try again. (CRTL+C to abort)");
+				//USER INPUT
+				}else{
+					//core accounts
+					adminData = new SetupUserData();
+					adminData.setEmail(Config.superuserEmail);		//"admin@sepia.localhost";
+					assistantData = new SetupUserData();
+					assistantData.setEmail(Config.assistantEmail);	//"assistant@sepia.localhost";
+					//ask for passwords:
+					System.out.println("\nPlease define safe passwords for SEPIA admin and assistant (and remember them well!).");
+					System.out.println("Use AT LEAST 8 characters and combine lower/upper case letters with numbers and special characters:");
+					String adminPwd = "";
+					String assistantPwd = "";
+					while (adminPwd.length() < 8){
+						adminPwd = InputPrompt.askString("Admin password: ", false);
+						if (adminPwd.length() < 8){
+							System.out.println("Password is too short! Try again. (CRTL+C to abort)");
+						}
 					}
-				}
-				while (assistantPwd.length() < 8){
-					assistantPwd = InputPrompt.askString("Assistant password: ", false);
-					if (assistantPwd.length() < 8){
-						System.out.println("Password is too short! Try again. (CRTL+C to abort)");
+					while (assistantPwd.length() < 8){
+						assistantPwd = InputPrompt.askString("Assistant password: ", false);
+						if (assistantPwd.length() < 8){
+							System.out.println("Password is too short! Try again. (CRTL+C to abort)");
+						}
 					}
+					adminData.setPassword(adminPwd);
+					assistantData.setPassword(assistantPwd);
 				}
 			}
+			int created = 0;
+			
 			//create admin and assistant user
-			System.out.println("\nCreating admin... ");
-			try{
-				writeSuperUser(scf, adminEmail, adminPwd);
-			}catch(Exception e){
-				System.out.println("ERROR in admin data! Msg.: " + e.getMessage());
-				throw e;
-			}
-			System.out.println("\nCreating assistant user... ");
-			try{
-				writeAssistantUser(scf, assistantEmail, assistantPwd);
-			}catch(Exception e){
-				System.out.println("ERROR in assistant data! Msg.: " + e.getMessage());
-				throw e;
-			}
-			if (st.equals(ServerType.test)){
-				System.out.println("\nCreating basic test user... ");
+			if (adminData != null){
+				System.out.println("\nCreating admin... ");
 				try{
-					writeBasicUser(testUserEmail, testUserPwd, testUserNick);
+					String password = adminData.getPasswordOrRandom();
+					String email = adminData.getEmailOrDefault("admin");
+					writeSuperUser(scf, email, password);
+					created++;
+					if (automaticSetup){
+						writeAutoSetupLog("Accounts - Created/updated admin account - email: " + email + ", passw.: " + password);
+					}
 				}catch(Exception e){
-					System.out.println("ERROR in test user data! Msg.: " + e.getMessage());
+					System.out.println("ERROR in admin data! Msg.: " + e.getMessage());
 					throw e;
 				}
+			}
+			if (assistantData != null){
+				System.out.println("\nCreating assistant... ");
+				try{
+					String password = assistantData.getPasswordOrRandom();
+					String email = assistantData.getEmailOrDefault("assistant");
+					writeAssistantUser(scf, email, password);
+					created++;
+					if (automaticSetup){
+						writeAutoSetupLog("Accounts - Created/updated assistant account - email: " + email + ", passw.: " + password);
+					}
+				}catch(Exception e){
+					System.out.println("ERROR in assistant data! Msg.: " + e.getMessage());
+					throw e;
+				}
+			}
+			if (userData != null){
+				//create additional users
+				if (st.equals(ServerType.test)){
+					System.out.println("\nCreating users... ");
+					for (String key : userData.keySet()){
+						try{
+							SetupUserData sud = userData.get(key);
+							String password = sud.getPasswordOrRandom();
+							String email = sud.getEmailOrDefault(key);
+							String nickname = sud.getNickname();
+							if (Is.nullOrEmpty(nickname)){
+								nickname = key;
+							}
+							List<String> roles = sud.getRolesOrDefault();
+							writeBasicUser(email, password, nickname, roles);
+							created++;
+							if (automaticSetup){
+								writeAutoSetupLog("Accounts - Created/updated user account - email: " + email + ", passw.: " + password);
+							}
+						}catch(Exception e){
+							System.out.println("ERROR in user data! Msg.: " + e.getMessage());
+							throw e;
+						}
+					}
+				}
+			}
+			if (created > 0 && automaticSetup){
+				File logFile = new File(pathToAutoSetupFolder + autoSetupResultLog);
+				System.out.println("\nIMPORTANT: " + created + " users have been created/updated and PASSWORDS");
+				System.out.println("have been WRITTEN to: " + logFile.getAbsolutePath());
+				System.out.println("Please REMOVE it when you're done to KEEP ALL PASSWORDS SAFE!\n");
 			}
 		}
 		
 		//answers
-		if (all || answers){
+		if (tasks.all || tasks.answers){
 			System.out.println("\nImporting answers from resource files to Elasticsearch: ");
 			importAnswers();
+			if (automaticSetup){
+				writeAutoSetupLog("Answers - Import task finished.");
+			}
 		}
 		
 		//commands
-		if (all || commands){
+		if (tasks.all || tasks.commands){
 			//TODO: implement command import
+			System.out.println("\nImporting sentences/commands from resource files to Elasticsearch: ");
 			importSentences();
+			if (automaticSetup){
+				writeAutoSetupLog("Commands - Task finished.");
+			}
 		}
 		
 		//DuckDNS
-		if (duckDns){
+		if (tasks.duckDns){
 			System.out.println("\nSetting up DuckDNS: ");
+			
+			String duckDnsDomain = "";
+			String duckDnsToken = "";
 				
 			//Ask for passwords
-			String duckDnsToken = "";
-			String duckDnsDomain = "";
-			System.out.println("\nPlease enter your DuckDNS domain (defined at https://www.duckdns.org):");
-			while (duckDnsDomain.length() < 3){
-				duckDnsDomain = InputPrompt.askString("DuckDNS Domain: ", false);
-				duckDnsDomain = duckDnsDomain.replaceFirst(".*http(s|)://", "").trim();
-				if (duckDnsDomain.length() < 3){
-					System.out.println("This domain name seems to be invalid, please try again. (CRTL+C to abort)");
+			if (!automaticSetup){
+				System.out.println("\nPlease enter your DuckDNS domain (defined at https://www.duckdns.org):");
+				while (duckDnsDomain.length() < 3){
+					duckDnsDomain = InputPrompt.askString("DuckDNS Domain: ", false);
+					duckDnsDomain = duckDnsDomain.replaceFirst(".*http(s|)://", "").trim();
+					if (duckDnsDomain.length() < 3){
+						System.out.println("This domain name seems to be invalid, please try again. (CRTL+C to abort)");
+					}
 				}
+				while (duckDnsToken.length() < 16){
+					duckDnsToken = InputPrompt.askString("DuckDNS Token: ", false);
+					if (duckDnsToken.length() < 16){
+						System.out.println("This token seems to be invalid, please try again. (CRTL+C to abort)");
+					}
+				}
+			}else if (dnsData != null){
+				duckDnsDomain = dnsData.get("domain");
+				duckDnsToken = dnsData.get("token");
 			}
-			while (duckDnsToken.length() < 16){
-				duckDnsToken = InputPrompt.askString("DuckDNS Token: ", false);
-				if (duckDnsToken.length() < 16){
-					System.out.println("This token seems to be invalid, please try again. (CRTL+C to abort)");
-				}
+			if (Is.nullOrEmpty(duckDnsDomain) || Is.nullOrEmpty(duckDnsToken)){
+				System.out.println("ERROR in DuckDNS data! Missing or invalid 'dns.domain' or 'dns.token'");
+				System.exit(1);
 			}
 			//write duck-dns config and add DuckDNS-worker to assist-server
 			writeDuckDnsSettings(duckDnsDomain, duckDnsToken, scf);
 			System.out.println("\nSetup of DuckDNS worker complete.");
 			System.out.println("Domain: " + duckDnsDomain);
 			//System.out.println("Token: " + duckDnsToken);
+			if (automaticSetup){
+				writeAutoSetupLog("DuckDns - Worker setup complete - Domain: " + duckDnsDomain);
+			}
 		}
 		
 		/*
@@ -537,7 +709,7 @@ public class Setup {
 		}
 	}
 	//Create basic user.
-	private static CreateUserResult writeBasicUser(String email, String pwd, String nickName) throws Exception{
+	private static CreateUserResult writeBasicUser(String email, String pwd, String nickName, List<String> roles) throws Exception{
 		boolean orgSetting = Config.restrictRegistration;
 		Config.restrictRegistration = false; 	//deactivate temporary
 		
@@ -557,12 +729,15 @@ public class Setup {
 			CreateUserResult cr = new CreateUserResult(DB.createUserDirectly(email, pwd));
 			Config.restrictRegistration = orgSetting; 	//reset
 			//add user roles
-			JSONObject data = JSON.make(ACCOUNT.ROLES, JSON.makeArray(
-					Role.user.name()
-			));
-			JSON.put(data, ACCOUNT.USER_NAME, JSON.make(
+			if (Is.nullOrEmpty(roles)){
+				roles = Arrays.asList(Role.user.name());
+			}
+			JSONObject data = JSON.make(
+				ACCOUNT.ROLES, roles,
+				ACCOUNT.USER_NAME, JSON.make(
 					Name.NICK, nickName
-			));
+				)
+			);
 			if (!DB.writeAccountDataDirectly(cr.guuid, data)){ 
 				Debugger.println("Writing account data failed! Probably a database error or you need to delete the user first.", 1);
 			}
@@ -585,6 +760,7 @@ public class Setup {
 	 */
 	private static void importSentences(){
 		//TODO: right now we still read them simply from file combined with the ones the user "teaches" in the app.
+		System.out.println("Import not supported yet - Currently only loaded at server start.");
 	}
 	
 	/**
