@@ -141,7 +141,7 @@ public class Setup {
 	 */
 	public static void main(String[] args) throws Exception {
 		
-		//automatic?
+		//automatic? dry-run?
 		boolean automaticSetup = false;
 		boolean dryRun = false;
 		
@@ -173,8 +173,10 @@ public class Setup {
 		}
 		System.out.println("Setup for '" + st.name() + "' server (" + Config.configFile + ")");
 		System.out.println("Is unattended (--unattended): " + automaticSetup);
+		System.out.println("Is dry-run (--dryRun): " + dryRun);
+		System.out.println("");
 		if (automaticSetup){
-			writeAutoSetupLog("Running auto-setup script for server type: " + st.name());
+			writeAutoSetupLog("NEW AUTO-SETUP - Running script for server type: " + st.name());
 		}
 		
 		loadConfigFile(st);
@@ -184,6 +186,7 @@ public class Setup {
 		Map<String, SetupUserData> userData = null;
 		SetupUserData adminData = null;
 		SetupUserData assistantData = null;
+		int usersCreated = 0;
 		//prep. DNS data
 		Map<String, String> dnsData = null;
 		
@@ -307,7 +310,6 @@ public class Setup {
 					assistantData.setPassword(assistantPwd);
 				}
 			}
-			int created = 0;
 			
 			//create admin and assistant user
 			if (adminData != null){
@@ -320,7 +322,7 @@ public class Setup {
 					}else{
 						writeSuperUser(scf, email, password);
 					}
-					created++;
+					usersCreated++;
 					if (automaticSetup){
 						writeAutoSetupLog("Accounts - Created/updated admin account - email: " + email + ", passw.: " + password);
 					}
@@ -339,7 +341,7 @@ public class Setup {
 					}else{
 						writeAssistantUser(scf, email, password);
 					}
-					created++;
+					usersCreated++;
 					if (automaticSetup){
 						writeAutoSetupLog("Accounts - Created/updated assistant account - email: " + email + ", passw.: " + password);
 					}
@@ -350,40 +352,32 @@ public class Setup {
 			}
 			if (userData != null){
 				//create additional users
-				if (st.equals(ServerType.test)){
-					System.out.println("\nCreating users... ");
-					for (String key : userData.keySet()){
-						try{
-							SetupUserData sud = userData.get(key);
-							String password = sud.getPasswordOrRandom();
-							String email = sud.getEmailOrDefault(key);
-							String nickname = sud.getNickname();
-							if (Is.nullOrEmpty(nickname)){
-								nickname = key;
-							}
-							List<String> roles = sud.getRolesOrDefault();
-							if (dryRun){
-								System.out.println("DRY RUN - User account: " + email 
-									+ ", " + password + ", " + nickname + ", " + roles);
-							}else{
-								writeBasicUser(email, password, nickname, roles);
-							}
-							created++;
-							if (automaticSetup){
-								writeAutoSetupLog("Accounts - Created/updated user account - email: " + email + ", passw.: " + password);
-							}
-						}catch(Exception e){
-							System.out.println("ERROR in user data! Msg.: " + e.getMessage());
-							throw e;
+				System.out.println("\nCreating users... ");
+				for (String key : userData.keySet()){
+					try{
+						SetupUserData sud = userData.get(key);
+						String password = sud.getPasswordOrRandom();
+						String email = sud.getEmailOrDefault(key);
+						String nickname = sud.getNickname();
+						if (Is.nullOrEmpty(nickname)){
+							nickname = key;
 						}
+						List<String> roles = sud.getRolesOrDefault();
+						if (dryRun){
+							System.out.println("DRY RUN - User account: " + email 
+								+ ", " + password + ", " + nickname + ", " + roles);
+						}else{
+							writeBasicUser(email, password, nickname, roles);
+						}
+						usersCreated++;
+						if (automaticSetup){
+							writeAutoSetupLog("Accounts - Created/updated user account - email: " + email + ", passw.: " + password);
+						}
+					}catch(Exception e){
+						System.out.println("ERROR in user data! Msg.: " + e.getMessage());
+						throw e;
 					}
 				}
-			}
-			if (created > 0 && automaticSetup){
-				File logFile = new File(pathToAutoSetupFolder + autoSetupResultLog);
-				System.out.println("\nIMPORTANT: " + created + " users have been created/updated and PASSWORDS");
-				System.out.println("have been WRITTEN to: " + logFile.getAbsolutePath());
-				System.out.println("Please REMOVE it when you're done to KEEP ALL PASSWORDS SAFE!\n");
 			}
 		}
 		
@@ -471,6 +465,21 @@ public class Setup {
 		System.out.println("--- Reset command mappings for users ---");
 		resetUserCommandMappings(dynamoDbUsers);
 		*/
+		
+		//final comments
+		if (usersCreated > 0 && automaticSetup){
+			File logFile = new File(pathToAutoSetupFolder + autoSetupResultLog);
+			System.out.println("\nIMPORTANT: " + usersCreated + " users have been created/updated and PASSWORDS have been WRITTEN to:");
+			System.out.println(logFile.getCanonicalPath());
+			System.out.println("Please REMOVE the file when you're done to KEEP ALL PASSWORDS SAFE!");
+			writeAutoSetupLog("AUTO-SETUP FINISHED");
+		}else if (automaticSetup){
+			File logFile = new File(pathToAutoSetupFolder + autoSetupResultLog);
+			System.out.println("\nIMPORTANT: During setup sensitive data might have been WRITTEN to:");
+			System.out.println(logFile.getCanonicalPath());
+			System.out.println("Please REMOVE the file when you're done to KEEP the DATA SAFE!");
+			writeAutoSetupLog("AUTO-SETUP FINISHED");
+		}
 		
 		System.out.println("\nDONE");
 	}
