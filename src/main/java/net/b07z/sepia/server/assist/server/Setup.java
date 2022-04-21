@@ -191,25 +191,28 @@ public class Setup {
 		Map<String, String> dnsData = null;
 		
 		//check automatic setup file
-		System.out.println("\nReading file for unattended/automatic setup: " + pathToAutoSetupFile);
-		try{
-			SetupYamlConfig setupYaml = FilesAndStreams.readYamlFile(pathToAutoSetupFile, SetupYamlConfig.class);
-			if (setupYaml.getTasks() != null){
-				for (String t : setupYaml.getTasks()){
-					tasks.setTasks(t);
+		if (automaticSetup){
+			File yamlFile = new File(pathToAutoSetupFile);
+			System.out.println("\nReading file for unattended/automatic setup: " + yamlFile.getCanonicalPath());
+			try{
+				SetupYamlConfig setupYaml = FilesAndStreams.readYamlFile(pathToAutoSetupFile, SetupYamlConfig.class);
+				if (setupYaml.getTasks() != null){
+					for (String t : setupYaml.getTasks()){
+						tasks.setTasks(t);
+					}
 				}
+				userData = setupYaml.getUsers();
+				if (userData != null){
+					adminData = userData.get("admin");
+					userData.remove("admin");
+					assistantData = userData.get("assistant");
+					userData.remove("assistant");
+				}
+				dnsData = setupYaml.getDns();
+			}catch(Exception e){
+				System.out.println("ERROR reading YAML file! Msg.: " + e.getMessage());
+				throw e;
 			}
-			userData = setupYaml.getUsers();
-			if (userData != null){
-				adminData = userData.get("admin");
-				userData.remove("admin");
-				assistantData = userData.get("assistant");
-				userData.remove("assistant");
-			}
-			dnsData = setupYaml.getDns();
-		}catch(Exception e){
-			System.out.println("ERROR reading YAML file! Msg.: " + e.getMessage());
-			throw e;
 		}
 		
 		//update tasks
@@ -472,13 +475,13 @@ public class Setup {
 			System.out.println("\nIMPORTANT: " + usersCreated + " users have been created/updated and PASSWORDS have been WRITTEN to:");
 			System.out.println(logFile.getCanonicalPath());
 			System.out.println("Please REMOVE the file when you're done to KEEP ALL PASSWORDS SAFE!");
-			writeAutoSetupLog("AUTO-SETUP FINISHED");
+			writeAutoSetupLog("AUTO-SETUP FINISHED\n\n");
 		}else if (automaticSetup){
 			File logFile = new File(pathToAutoSetupFolder + autoSetupResultLog);
 			System.out.println("\nIMPORTANT: During setup sensitive data might have been WRITTEN to:");
 			System.out.println(logFile.getCanonicalPath());
 			System.out.println("Please REMOVE the file when you're done to KEEP the DATA SAFE!");
-			writeAutoSetupLog("AUTO-SETUP FINISHED");
+			writeAutoSetupLog("AUTO-SETUP FINISHED\n\n");
 		}
 		
 		System.out.println("\nDONE");

@@ -10,7 +10,8 @@ tasks:
   - commands
 #
 # Setup users
-# 'admin' and 'assistant' are required (add only password, email is in server properties file)
+# requires task: accounts
+# 'admin' and 'assistant' are mandatory (add only password, email is read from server properties file)
 # 'user1, user2, ...' are optional
 #
 users:
