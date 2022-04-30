@@ -80,10 +80,6 @@ public class TtsTools {
 	public static String optimizePronunciation(String input, String language, String engine){
 		//common
 		input = input.replaceAll("(?i)\\b(SEPIA)\\b", "Sepia").trim();
-		if (!input.matches(".*(!|\\?|\\.)$")){
-			//make sure it ends with something
-			input = input + ".";
-		}
 		input = input.replaceAll("\\[|\\]", " ").trim();
 		
 		//emojis
@@ -143,8 +139,14 @@ public class TtsTools {
 		
 		}else{
 			//"safety" stuff
-			input = input.replaceAll("\\$", " \\$ ");		//Note: does this prevent variable expansion in Windows as well?
+			input = input.replaceAll("\\$", " \\$ ");	//Note: does this prevent variable expansion in Windows as well?
 			input = input.replaceAll("%", " % ");		//Note: does this prevent variable expansion in Linux as well?
+		}
+		
+		//make sure text ends with something (useful for some TTS systems)
+		if (!input.matches(".*(!|\\?|\\.)$") && !engine.equals(EngineType.txt2pho_mbrola.name())){
+			input = input + ".";
+			//NOTE: we skip this for 'txt2pho_mbrola' because e.g.: 10 Uhr 52. -> zehn Uhr zweiundfünfzigste
 		}
 		
 		input = input.replaceAll("\\s+", " ").replaceAll(" \\?$", "?").replaceAll(" \\.$", ".").trim();

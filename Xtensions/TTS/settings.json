@@ -110,7 +110,7 @@
 			"moods": [{
 				"moodIndex": 0,
 				"systemName": "mb/mb-de5",
-				"speed": 180,
+				"speed": 175,
 				"pitch": 50,
 				"volume": 100
 			}]
