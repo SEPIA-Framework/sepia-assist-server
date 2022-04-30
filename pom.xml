@@ -161,6 +161,7 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>3.0.1</version>
 				<configuration>
+					<excludePackageNames>com.willowtreeapps.fuzzywuzzy.*:net.b07z.sepia.server.assist.tools.FuzzySearch</excludePackageNames>
 					<doclint>none</doclint> <!-- TODO: fix errors found by linter -->
 					<finalName>sepia-assist-v${project.version}</finalName>
 					<!-- set this to 'false' for Kotlin -->
