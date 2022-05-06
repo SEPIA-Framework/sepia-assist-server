@@ -129,6 +129,9 @@ public class Setup {
 	private static void writeAutoSetupLog(String msg) throws IOException {
 		writeAutoSetupMessage("LOG", msg);
 	}
+	private static void writeAutoSetupError(String msg) throws IOException {
+		writeAutoSetupMessage("ERROR", msg);
+	}
 	private static void writeAutoSetupMessage(String logType, String msg) throws IOException {
 		//logType: ERROR, LOG, INFO, DEBUG
 		msg = DateTime.getLogDate() + " " + logType + " - " + msg;
@@ -194,6 +197,7 @@ public class Setup {
 		if (automaticSetup){
 			File yamlFile = new File(pathToAutoSetupFile);
 			System.out.println("\nReading file for unattended/automatic setup: " + yamlFile.getCanonicalPath());
+			writeAutoSetupLog("Reading file: " + yamlFile.getCanonicalPath());
 			try{
 				SetupYamlConfig setupYaml = FilesAndStreams.readYamlFile(pathToAutoSetupFile, SetupYamlConfig.class);
 				if (setupYaml.getTasks() != null){
@@ -211,6 +215,7 @@ public class Setup {
 				dnsData = setupYaml.getDns();
 			}catch(Exception e){
 				System.out.println("ERROR reading YAML file! Msg.: " + e.getMessage());
+				writeAutoSetupError("ERROR reading YAML file!");
 				throw e;
 			}
 		}
@@ -218,13 +223,16 @@ public class Setup {
 		//update tasks
 		tasks.checkAll();
 		if (automaticSetup){
-			writeAutoSetupLog("Tasks: " + tasks.tasksToString());
+			writeAutoSetupLog("Tasks planned: " + tasks.tasksToString());
 		}
 		
 		//database
 		if (tasks.all || tasks.database){
 			//prepare Elasticsearch
 			System.out.println("\nPreparing Elasticsearch: ");
+			if (automaticSetup){
+				writeAutoSetupLog("Task: Elasticsearch setup");
+			}
 			if (dryRun){
 				System.out.println("DRY RUN - Elasticsearch index=" + tasks.dbIndex);
 			}else{
@@ -237,6 +245,9 @@ public class Setup {
 			//prepare DynamoDB (optional)
 			if (Config.authAndAccountDB.equals("dynamo_db")){
 				System.out.println("\nPreparing DynamoDB: ");
+				if (automaticSetup){
+					writeAutoSetupLog("Preparing DynmaoDB");
+				}
 				if (dryRun){
 					System.out.println("DRY RUN - DynamoDB");
 				}else{
@@ -251,6 +262,9 @@ public class Setup {
 		//cluster
 		if (tasks.all || tasks.cluster){
 			System.out.println("\nSetting up cluster: ");
+			if (automaticSetup){
+				writeAutoSetupLog("Task: Cluster setup");
+			}
 			if (dryRun){
 				System.out.println("DRY RUN - Cluster scf: " + scf.getAllServers().toString());
 			}else{
@@ -264,6 +278,9 @@ public class Setup {
 		//accounts
 		if (tasks.all || tasks.accounts){
 			System.out.println("\nSetting up accounts: ");
+			if (automaticSetup){
+				writeAutoSetupLog("Task: Accounts setup");
+			}
 			
 			//manual setup?
 			if (!automaticSetup){
@@ -317,6 +334,9 @@ public class Setup {
 			//create admin and assistant user
 			if (adminData != null){
 				System.out.println("\nCreating admin... ");
+				if (automaticSetup){
+					writeAutoSetupLog("Creating account: Admin");
+				}
 				try{
 					String password = adminData.getPasswordOrRandom();
 					String email = adminData.getEmailOrDefault("admin");
@@ -331,11 +351,17 @@ public class Setup {
 					}
 				}catch(Exception e){
 					System.out.println("ERROR in admin data! Msg.: " + e.getMessage());
+					if (automaticSetup){
+						writeAutoSetupError("Failed - Error: " + e.getMessage());
+					}
 					throw e;
 				}
 			}
 			if (assistantData != null){
 				System.out.println("\nCreating assistant... ");
+				if (automaticSetup){
+					writeAutoSetupLog("Creating account: Assistant");
+				}
 				try{
 					String password = assistantData.getPasswordOrRandom();
 					String email = assistantData.getEmailOrDefault("assistant");
@@ -350,6 +376,9 @@ public class Setup {
 					}
 				}catch(Exception e){
 					System.out.println("ERROR in assistant data! Msg.: " + e.getMessage());
+					if (automaticSetup){
+						writeAutoSetupError("Failed - Error: " + e.getMessage());
+					}
 					throw e;
 				}
 			}
@@ -357,6 +386,9 @@ public class Setup {
 				//create additional users
 				System.out.println("\nCreating users... ");
 				for (String key : userData.keySet()){
+					if (automaticSetup){
+						writeAutoSetupLog("Creating account: " + key);
+					}
 					try{
 						SetupUserData sud = userData.get(key);
 						String password = sud.getPasswordOrRandom();
@@ -378,6 +410,9 @@ public class Setup {
 						}
 					}catch(Exception e){
 						System.out.println("ERROR in user data! Msg.: " + e.getMessage());
+						if (automaticSetup){
+							writeAutoSetupError("Failed - Error: " + e.getMessage());
+						}
 						throw e;
 					}
 				}
@@ -387,6 +422,9 @@ public class Setup {
 		//answers
 		if (tasks.all || tasks.answers){
 			System.out.println("\nImporting answers from resource files to Elasticsearch: ");
+			if (automaticSetup){
+				writeAutoSetupLog("Task: Import answers");
+			}
 			if (dryRun){
 				System.out.println("DRY RUN - Import answers");
 			}else{
@@ -401,6 +439,9 @@ public class Setup {
 		if (tasks.all || tasks.commands){
 			//TODO: implement command import
 			System.out.println("\nImporting sentences/commands from resource files to Elasticsearch: ");
+			if (automaticSetup){
+				writeAutoSetupLog("Task: Import commands");
+			}
 			if (dryRun){
 				System.out.println("DRY RUN - Import sentences/commands");
 			}else{
@@ -414,6 +455,9 @@ public class Setup {
 		//DuckDNS
 		if (tasks.duckDns){
 			System.out.println("\nSetting up DuckDNS: ");
+			if (automaticSetup){
+				writeAutoSetupLog("Task: DuckDNS setup");
+			}
 			
 			String duckDnsDomain = "";
 			String duckDnsToken = "";
@@ -440,6 +484,9 @@ public class Setup {
 			}
 			if (Is.nullOrEmpty(duckDnsDomain) || Is.nullOrEmpty(duckDnsToken)){
 				System.out.println("ERROR in DuckDNS data! Missing or invalid 'dns.domain' or 'dns.token'");
+				if (automaticSetup){
+					writeAutoSetupError("Missing or invalid 'dns.domain' or 'dns.token'");
+				}
 				System.exit(1);
 			}
 			//write duck-dns config and add DuckDNS-worker to assist-server

@@ -99,10 +99,15 @@ public class Start {
 		for (String arg : args){
 			if (arg.equals("setup")){
 				//Start setup
-				try {	Setup.main(args);	} catch (Exception e) {}
-				System.exit(0);
-				return;
-			
+				try {
+					Setup.main(args);
+					System.exit(0);
+					return;
+				}catch (Exception e){
+					System.err.println("Setup ERROR: " + e.toString());
+					System.exit(1);
+					return;
+				}
 			}else if (arg.equals("--test")){
 				//Test system
 				serverType = TEST_SERVER;
