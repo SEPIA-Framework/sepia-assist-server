@@ -59,7 +59,12 @@ public class StartCustomTemplate extends Start {
 	public static void main(String[] args) {
 
 		//load settings
-		loadSettings(args);
+		try{
+			loadSettings(args);
+		}catch (Exception e){
+			e.printStackTrace();
+			System.exit(1);
+		}
 		
 		//load statics and workers and setup modules (loading stuff to memory etc.)
 		setupModules();

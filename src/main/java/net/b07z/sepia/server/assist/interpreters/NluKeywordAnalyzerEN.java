@@ -102,10 +102,15 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 			//String this_text = text;
 			possibleCMDs.add(CMD.NEWS);
 			possibleScore.add(1);	index++;
+			//double score for news
+			if (NluTools.stringContains(text, "news")){
+				possibleScore.set(index, possibleScore.get(index) + 1);
+			}
 			
 			Map<String, String> pv = new HashMap<String, String>(); 		//TODO: pass this down to avoid additional checking
 			AbstractParameterSearch aps = new AbstractParameterSearch()
-					.setParameters(PARAMETERS.NEWS_SECTION, PARAMETERS.NEWS_TYPE, PARAMETERS.SPORTS_TEAM, PARAMETERS.SPORTS_LEAGUE)
+					.setParameters(PARAMETERS.NEWS_SECTION, PARAMETERS.NEWS_TYPE, 
+							PARAMETERS.SPORTS_TEAM, PARAMETERS.SPORTS_LEAGUE, PARAMETERS.LANGUAGE)
 					.setup(input, pv);
 			aps.getParameters();
 			possibleScore.set(index, possibleScore.get(index) + aps.getScore());
@@ -524,6 +529,10 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 			String this_text = text;
 			possibleCMDs.add(CMD.DICT_TRANSLATE);
 			possibleScore.add(1);	index++;
+			//double score for translate and dictionary
+			if (NluTools.stringContains(text, "translate|translation|dictionary")){
+				possibleScore.set(index, possibleScore.get(index) + 1);
+			}
 			
 			//TODO: make real parameter out of that
 			

@@ -184,13 +184,13 @@
 					//TODO: ignored for now
 					break;
 				case "volumeUp":
-					playerSetVolume(playerGetVolume() + 1);
+					playerSetVolume(playerGetVolume() + 1, true);
 					break;
 				case "volumeDown":
-					playerSetVolume(playerGetVolume() - 1);
+					playerSetVolume(playerGetVolume() - 1, true);
 					break;
 				case "volumeSet":
-					if (ev.data != undefined) playerSetVolume(ev.data);
+					if (ev.data != undefined) playerSetVolume(ev.data, ev.remember);
 					break;
 				default:
 					//Error: UnknownEvent
@@ -201,10 +201,10 @@
 		function playerGetVolume(){
 			return Math.round(10.0 * player.volume);
 		}
-		function playerSetVolume(newVol){
+		function playerSetVolume(newVol, remember){
 			var setVol = newVol/10.0;
 			player.volume = Math.min(1, Math.max(0, setVol));
-			postProperties({volume: playerGetVolume()});
+			postProperties({volume: playerGetVolume(), rememberVolume: remember});
 		}
 		
 		function handleMediaRequest(ev){

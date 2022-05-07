@@ -18,7 +18,7 @@ import net.b07z.sepia.server.core.tools.JSON;
 
 public class Test_ListDataCRUD {
 
-	public static void main(String[] args){
+	public static void main(String[] args) throws Exception{
 		
 		//init
 		Start.loadSettings(new String[]{"--test"});

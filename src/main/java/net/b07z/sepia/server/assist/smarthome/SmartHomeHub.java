@@ -35,12 +35,23 @@ public interface SmartHomeHub {
 		JSON.make("value", TestHub.NAME, 			"name", "Test")
 	);
 	
+	//authorization types
+	public static enum AuthType {
+		Basic,
+		Bearer,
+		Plain,	//e.g.: custom URL parameters
+		Custom
+	}
+	
 	/**
 	 * Get HUB from server config (smarthome_hub_name, smarthome_hub_host).
 	 * @return HUB or null
 	 */
 	public static SmartHomeHub getHubFromSeverConfig(){
 		SmartHomeHub shh = getHub(Config.smarthome_hub_name, Config.smarthome_hub_host);
+		if (shh == null){
+			return null;
+		}
 		if (Is.notNullOrEmpty(Config.smarthome_hub_auth_data)){
 			shh.setAuthenticationInfo(Config.smarthome_hub_auth_type, Config.smarthome_hub_auth_data);
 		}

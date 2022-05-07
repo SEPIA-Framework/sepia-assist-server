@@ -66,7 +66,7 @@
 		{ "name": "Sport1", "url": "https://www.sport1.de/news.rss", "name_html": "<b><span style='color:#3D464C;'>sport</span><span style='color:#F6A800;'>1</span></b>" }
 	],
 	"groups":[
-		{ "language": "de", "data": [
+		{ "language": "de", "region": "de-DE", "data": [
 			{"section": "main", "group": ["Tagesschau", "SPIEGEL ONLINE", "Süddeutsche", "FAZ", "Bild", "golem.de", "Gruenderszene", "1E9 Magazin", "jetzt.de", "SPIEGEL Start"]},
 			{"section": "economy", "group": ["SPIEGEL ONLINE", "Süddeutsche", "FAZ", "Tagesschau", "Gruenderszene"]},
 			{"section": "politics", "group": ["SPIEGEL ONLINE", "Süddeutsche", "FAZ", "Bild", "Tagesschau"]},
@@ -83,7 +83,7 @@
 			{"section": "health", "group": ["SPIEGEL Gesundheit", "aerzteblatt.de"]},
 			{"section": "corona", "group": ["aerzteblatt.de", "Robert Koch Institute", "CDC", "SPIEGEL Gesundheit", "NY Times Well"]}
 		]},
-		{ "language": "en", "data": [
+		{ "language": "en", "region": "en-US", "data": [
 			{"section": "main", "group": ["NY Times World", "The Guardian World", "The Guardian UK", "Wired", "RollingStone", "SPIEGEL ONLINE", "FAZ", "Bild"]},
 			{"section": "economy", "group": ["NY Times Business", "The Guardian Economics", "FAZ", "Gruenderszene"]},
 			{"section": "politics", "group": ["NY Times World", "The Guardian World", "SPIEGEL ONLINE", "Süddeutsche", "Bild", "Tagesschau"]},

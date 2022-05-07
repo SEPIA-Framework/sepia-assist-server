@@ -68,6 +68,8 @@ public class NluInput {
 	public static final String DATA_DEVICE_LOCAL_SITE = "deviceLocalSite";
 	public static final String DATA_PREFERRED_TEMPERATURE_UNIT = "prefTempUnit";
 	public static final String DATA_PREFERRED_SEARCH_ENGINE = "prefSearchEngine";
+	public static final String DATA_APP_REGION_CODE = "appRegionCode";
+	public static final String DATA_DEFAULT_NEWS_REGION = "defaultNewsRegion";
 	
 	//Stuff to cache during all processes from NLU to service result:
 	

@@ -92,7 +92,7 @@
 		}
 		function postProperties(props){
 			postMsg({
-				properties: props	//properties like "size" to adjust UI
+				properties: props	//properties like "size" to adjust UI (or 'volume' and 'rememberVolume')
 			});
 		}
 		function postSettings(data){
@@ -165,6 +165,8 @@
 		
 		var autoplay = false;
 		var restoreSettings = {};
+
+		var playerVolume = 7.5;		//assumed default
 		
 		function handleSettingsRestore(ev){
 			//any widget specific data submitted by widget itself (either via 'postSettings' or during 'ready')
@@ -196,10 +198,13 @@
 					youTubePlayerControls("previous");
 					break;
 				case "volumeUp":
+					playerSetVolume(playerVolume + 1, ev.remember);
+					break;
 				case "volumeDown":
+					playerSetVolume(playerVolume - 1, ev.remember);
+					break;
 				case "volumeSet":
-					//TODO: ignored for now
-					console.error("YouTube Media-Player cmd '" + ev.controls + "' not yet supported", ev.data);
+					playerSetVolume(ev.data, ev.remember);
 					break;
 				default:
 					//Error: UnknownEvent
@@ -326,6 +331,7 @@
 			if ((e.origin == "https://www.youtube.com" || e.origin == "https://www.youtube-nocookie.com") 
 					&& e.data && typeof e.data == "string" && e.data.indexOf("{") == 0){
 				var data = JSON.parse(e.data);
+				//console.error("YouTube: player event:", data.event, data);		//DEBUG
 				if (data && data.id){
 					if (data.event == 'onReady'){
 						//console.error("YouTube: player ready");		//DEBUG
@@ -342,9 +348,14 @@
 						}
 						
 					}else if (data.event == 'infoDelivery' && data.info){
+						//console.error("YouTube: player info", data.info);	//DEBUG
+						if (data.info.volume != undefined){
+							reportVolume(data.info.volume, false);
+						}
+
 						if (data.info.playerState != undefined){
 							youTubePlayerState = data.info.playerState;
-							
+
 							if (data.info.playerState == 1){
 								//console.error("YouTube: player start", data.info);	//DEBUG
 								youTubePlayerWaitingForPlay = false;
@@ -382,7 +393,7 @@
 		}
 		var autoplayTimer = undefined;
 		
-		function youTubePlayerControls(cmd){
+		function youTubePlayerControls(cmd, args){
 			//reset some stuff first
 			//clearTimeout(youTubePlayConfirmTimer);
 			
@@ -399,10 +410,28 @@
 			}else if (cmd == "previous"){
 				playerFrame.contentWindow.postMessage(JSON.stringify({event:'command', func:'previousVideo'}), "*");
 				return 1;
+			}else if (cmd == "volume"){
+				playerFrame.contentWindow.postMessage(JSON.stringify({event:'command', func:'setVolume', args: args}), "*");
+				return 1;
 			}else{
 				return 0;
 			}
 			//frameEle.contentWindow.postMessage(JSON.stringify({event:'command', func:'stopVideo'}), "*"); //playVideo, paus.., stop.., next..,
+		}
+		function playerSetVolume(newVol, remember){
+			if (isFinite(newVol)){
+				//youtube uses 0-100
+				var setVol = newVol * 10.0;
+				setVol = Math.min(100.0, Math.max(0.0, setVol));
+				youTubePlayerControls("volume", [setVol]);
+				reportVolume(setVol, remember);		//NOTE: we just assume it works O_O
+			}
+		}
+		function reportVolume(eventVol, remember){
+			if (isFinite(eventVol)){
+				playerVolume = Math.round(eventVol/10.0);
+				postProperties({volume: playerVolume, rememberVolume: remember});
+			}
 		}
 				
 		//ready

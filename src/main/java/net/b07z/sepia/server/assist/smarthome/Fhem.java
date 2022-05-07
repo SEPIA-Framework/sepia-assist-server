@@ -137,6 +137,19 @@ public class Fhem implements SmartHomeHub {
 	public void setAuthenticationInfo(String authType, String authData){
 		this.authType = authType;
 		this.authData = authData;
+		if (Is.notNullOrEmpty(this.authType) && Is.notNullOrEmpty(this.authData)){
+			if (authType.equalsIgnoreCase(AuthType.Basic.name())){
+				//OK
+				this.authType = AuthType.Basic.name();
+			
+			}else if (authType.equalsIgnoreCase(AuthType.Bearer.name())){
+				//OK
+				this.authType = AuthType.Bearer.name();
+				
+			}else{
+				throw new RuntimeException("Invalid auth. type. Try 'Basic' or 'Bearer'.");
+			}
+		}
 	}
 	
 	@Override

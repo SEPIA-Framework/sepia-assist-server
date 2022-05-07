@@ -135,7 +135,7 @@ public class SmartDevice implements ParameterHandler{
 	public static final String rollerShutterRegEx_en = "((roller|window|sun)( |-|)|)(shutter(s|)|blind(s|)|louver(s|))|jalousie(s|)";
 	public static final String powerOutletRegEx_en = "((wall|power)( |-|)|)(socket(s|)|outlet(s|))";
 	public static final String sensorRegEx_en = "sensor(s|)";
-	public static final String genericDeviceRegEx_en = "device";
+	public static final String genericDeviceRegEx_en = "device(s|)";
 	
 	public static final String lightRegEx_de = "\\w*(licht(er|es|)|lampe(n|)|beleuchtung|leuchte(n|))|"
 											+ "helligkeit";
@@ -153,7 +153,7 @@ public class SmartDevice implements ParameterHandler{
 	public static final String rollerShutterRegEx_de = "(fenster|rol(l|))(l(a|ae)den)|jalousie(n|)|rollo(s|)|markise";
 	public static final String powerOutletRegEx_de = "(steck|strom)( |-|)dose(n|)|stromanschluss(es|)";
 	public static final String sensorRegEx_de = "sensor(en|s|)";
-	public static final String genericDeviceRegEx_de = "geraet";
+	public static final String genericDeviceRegEx_de = "geraet(e|)";
 	//----------------
 	
 	User user;

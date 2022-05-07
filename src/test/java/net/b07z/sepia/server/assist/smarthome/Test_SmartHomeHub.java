@@ -18,7 +18,7 @@ import net.b07z.sepia.server.core.tools.Debugger;
  */
 public class Test_SmartHomeHub {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		
 		//load test config (for openHAB server URL mainly)
 		Start.loadSettings(new String[]{"--test"});

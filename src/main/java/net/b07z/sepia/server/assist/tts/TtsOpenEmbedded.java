@@ -173,7 +173,7 @@ public class TtsOpenEmbedded implements TtsInterface {
 			supportedEngines.put(EngineType.txt2pho_mbrola, false);
 		}else{
 			//test support
-			if (new File(Config.ttsEngines + "txt2pho/txt2pho-speak.sh").exists()){
+			if (new File(Config.ttsEngines + "txt2pho/txt2pho").exists() && new File(Config.ttsEngines + "txt2pho/txt2pho-speak.sh").exists()){
 				RuntimeResult rtr = RuntimeInterface.runCommand(new String[]{"command -v mbrola"}, 5000, false);
 				int code = rtr.getStatusCode();
 				if (code == 0 && Is.notNullOrEmpty(rtr.getOutput())){

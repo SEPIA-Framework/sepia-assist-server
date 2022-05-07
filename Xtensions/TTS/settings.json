@@ -110,7 +110,7 @@
 			"moods": [{
 				"moodIndex": 0,
 				"systemName": "mb/mb-de5",
-				"speed": 180,
+				"speed": 175,
 				"pitch": 50,
 				"volume": 100
 			}]
@@ -268,7 +268,7 @@
 				"moodIndex": 0,
 				"systemName": "bits3-hsmm",
 				"data": {
-					"LOCALE": "de_DE",
+					"LOCALE": "de",
 					"effect_Volume_selected": "on",
 					"effect_Volume_parameters": "amount:1.2;"
 				}
@@ -283,7 +283,7 @@
 				"moodIndex": 0,
 				"systemName": "bits1-hsmm",
 				"data": {
-					"LOCALE": "de_DE",
+					"LOCALE": "de",
 					"effect_Volume_selected": "on",
 					"effect_Volume_parameters": "amount:1.4;",
 					"effect_FIRFilter_selected": "on",
@@ -300,7 +300,7 @@
 				"moodIndex": 0,
 				"systemName": "bits1-hsmm",
 				"data": {
-					"LOCALE": "de_DE",
+					"LOCALE": "de",
 					"effect_Volume_selected": "on",
 					"effect_Volume_parameters": "amount:1.7;",
 					"effect_FIRFilter_selected": "on",

@@ -176,10 +176,14 @@ public class SdkEndpoint {
 	          	Statistics.addOtherApiHit("upload-service");
 	          	Statistics.addOtherApiTime("upload-service", tic);
 	          	
-	          	return "SUCCESS: '" + classBaseName + "' has been uploaded for USER: " + userId
-	          		+ " - Class name: " + uploadRes.getCanonicalName() 
-	          		+ " - Old triggers removed: " + uploadRes.getCleanedTriggers()
-	          	;
+	          	return SparkJavaFw.returnResult(req, res, JSON.make(
+	          		"result", "success", 
+	          		"message", "'" + classBaseName + "' has been uploaded for user: " + userId,
+	          		"baseClassName", classBaseName,
+	          		"canonicalClassName", uploadRes.getCanonicalName(),
+	          		"userId", userId,
+	          		"removedOldTriggers", uploadRes.getCleanedTriggers()
+	          	).toJSONString(), 200);
 	        	
 	        }catch (Exception e){
 	        	Debugger.println("upload-service - Issue in code transfer, compilation or validation: " + e.getMessage(), 1);
@@ -223,7 +227,7 @@ public class SdkEndpoint {
 					+ "<li>Did I set the 'intendedCommand' variable inside my class with format: user_id.command?</li>"
 				+ "</ul>";
 				*/
-	      	return errorMsg;
+			return SparkJavaFw.returnResult(req, res, JSON.make("result", "fail", "error", errorMsg).toJSONString(), 400);
 		}
 	}
 	

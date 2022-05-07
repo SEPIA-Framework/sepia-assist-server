@@ -30,6 +30,13 @@ Quality of the voices can vary from 'quite high' to 'rather basic' so be sure to
 See the [mary-tts readme](marytts/INSTALL.md) for more info.  
 NOTE: This extension requires at least 2GB of memory when running in parallel to the SEPIA server, but you can run the server on a different machine as well (see SEPIA settings 'marytts_server').
 
+## Txt2pho
+
+[Txt2pho](https://github.com/GHPS/txt2pho) is an alternative to 'espeak-ng-mbrola' for German MBROLA voices ONLY that can give noticeable better quality with approx. same resource requirements (low), but you may encounter a few more artifacts.  
+License is AGPL-3.0.
+  
+See the [txt2pho readme](txt2pho/README.md) for more info.
+
 ## Larynx
 
 [Larynx](https://github.com/rhasspy/larynx) is an open-source server for (experimental) high-quality, next-gen voices that is compatible with MaryTTS API and SEPIA since Larynx version 1.0.3..  

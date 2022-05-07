@@ -11,7 +11,7 @@ import net.b07z.sepia.server.core.tools.JSON;
 
 public class Test_GeoCoders {
 
-	public static void main(String[] args){
+	public static void main(String[] args) throws Exception{
 		//load custom config
 		Start.loadSettings(new String[]{"--test"});
 		

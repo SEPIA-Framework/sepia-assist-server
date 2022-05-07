@@ -52,6 +52,7 @@ import net.b07z.sepia.server.core.tools.ClassBuilder;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.FilesAndStreams;
 import net.b07z.sepia.server.core.tools.Is;
+import net.b07z.sepia.server.core.tools.PropertiesReader;
 
 /**
  * Server configuration class.
@@ -61,7 +62,7 @@ import net.b07z.sepia.server.core.tools.Is;
  */
 public class Config {
 	public static final String SERVERNAME = "SEPIA-Assist-API"; 		//public server name
-	public static final String apiVersion = "v2.6.0";					//API version
+	public static final String apiVersion = "v2.6.2";					//API version
 	public static String privacyPolicyLink = "";						//Link to privacy policy
 	
 	//helper for dynamic class creation (e.g. from strings in config-file) - TODO: reduce dependencies further 
@@ -76,8 +77,8 @@ public class Config {
 	public static String dbSetupFolder = xtensionsFolder + "Database/";		//folder for database stuff
 	public static String webServerFolder = xtensionsFolder + "WebContent";	//folder for web-server (NOTE: it's given without '/' at the end)
 	public static String ttsEngines = xtensionsFolder + "TTS/";				//folder for TTS engines if not given by system
-	public static String ttsWebServerUrl = "/tts/";							//URL for TTS when accessing web-server root
-	public static String ttsWebServerPath = webServerFolder + ttsWebServerUrl;		//folder for TTS generated on server
+	public static String ttsWebServerUrl = "/tts-stream/";					//URL for TTS when accessing web-server root. Can be "/tts/" for static or "/tts-stream/" for chunked stream)
+	public static String ttsWebServerPath = webServerFolder + "/tts/";		//folder for TTS generated on server
 	public static boolean ttsModuleEnabled = true;									//is TTS module available (can be set to false by module setup)
 	public static boolean hostFiles = true;									//use web-server?
 	public static boolean allowFileIndex = true;							//allow web-server index
@@ -472,31 +473,41 @@ public class Config {
 	
 	//----------helpers----------
 	
+	private static Map<String, String> settingsLoaded;
+	private static String settingsFileLoaded;
+	/**
+	 * After settings are loaded the result will be stored here.
+	 */
+	public static Map<String, String> getLoadedSettings(){
+		return settingsLoaded;
+	}
+	
 	/**
 	 * Load server settings from properties file. 
+	 * @throws Exception  
 	 */
-	public static void loadSettings(String confFile){
+	public static void loadSettings(String confFile) throws Exception {
 		if (confFile == null || confFile.isEmpty())	confFile = configFile;
-		
 		try{
-			Properties settings = FilesAndStreams.loadSettings(confFile);
+			PropertiesReader pr = new PropertiesReader(confFile);
+			pr.loadFile();
 			//server
-			endpointUrl = settings.getProperty("server_endpoint_url");	
-			teachApiUrl = settings.getProperty("server_teach_api_url");
-			localName = settings.getProperty("server_local_name");
-			localSecret = settings.getProperty("server_local_secret");
-			serverPort = Integer.valueOf(settings.getProperty("server_port"));
-			clusterKey = settings.getProperty("cluster_key");
+			endpointUrl = pr.getStringProperty("server_endpoint_url");	
+			teachApiUrl = pr.getStringProperty("server_teach_api_url");
+			localName = pr.getStringProperty("server_local_name");
+			localSecret = pr.getStringProperty("server_local_secret");
+			serverPort = pr.getIntegerOrDefault("server_port", serverPort);
+			clusterKey = pr.getStringProperty("cluster_key");
 				clusterKeyLight = clusterKey.substring(0, 17);
 				cklHashIterations = ((int) clusterKeyLight.charAt(clusterKeyLight.length()-1)) + 5;
-			allowInternalCalls = Boolean.valueOf(settings.getProperty("allow_internal_calls"));
-			allowGlobalDevRequests = Boolean.valueOf(settings.getProperty("allow_global_dev_requests"));
-			enableCORS = Boolean.valueOf(settings.getProperty("enable_cors", Boolean.toString(enableCORS)));
-			enableFileCORS = Boolean.valueOf(settings.getProperty("enable_file_cors", Boolean.toString(enableFileCORS)));
+			allowInternalCalls = pr.getBooleanOrDefault("allow_internal_calls", allowInternalCalls);
+			allowGlobalDevRequests = pr.getBooleanOrDefault("allow_global_dev_requests", allowGlobalDevRequests);
+			enableCORS = pr.getBooleanOrDefault("enable_cors", enableCORS);
+			enableFileCORS = pr.getBooleanOrDefault("enable_file_cors", enableFileCORS);
 			//policies
-			privacyPolicyLink =  settings.getProperty("privacy_policy");
+			privacyPolicyLink = pr.getStringProperty("privacy_policy");
 			//modules
-			String authAndAccountModule = settings.getProperty("module_account");
+			String authAndAccountModule = pr.getStringProperty("module_account");
 			if (authAndAccountModule != null){
 				//Account and authentication should be used together with the same DB
 				authAndAccountDB = authAndAccountModule;
@@ -512,7 +523,7 @@ public class Config {
 					authenticationModule = AuthenticationElasticsearch.class.getCanonicalName();
 				}
 			}
-			String answerModuleValue = settings.getProperty("module_answers");
+			String answerModuleValue = pr.getStringProperty("module_answers");
 			if (answerModuleValue != null){
 				if (answerModuleValue.equals("file")){
 					answerModule = AnswerLoaderFile.class.getCanonicalName();
@@ -522,75 +533,76 @@ public class Config {
 					answerModule = answerModuleValue;
 				}
 			}
-			ttsModule = settings.getProperty("module_tts", TtsOpenEmbedded.class.getCanonicalName());
-			ttsName = settings.getProperty("tts_engine_name", "Open Embedded");
-			ttsModuleEnabled = Boolean.valueOf(settings.getProperty("tts_enabled", "true"));
-			enableSDK = Boolean.valueOf(settings.getProperty("enable_sdk"));
+			ttsModule = pr.getStringPropertyOrDefault("module_tts", TtsOpenEmbedded.class.getCanonicalName());
+			ttsName = pr.getStringPropertyOrDefault("tts_engine_name", "Open Embedded");
+			ttsWebServerUrl = pr.getStringPropertyOrDefault("tts_endpoint", ttsWebServerUrl);
+			ttsModuleEnabled = pr.getBooleanOrDefault("tts_enabled", ttsModuleEnabled);
+			enableSDK = pr.getBooleanOrDefault("enable_sdk", enableSDK);
 			//useSandboxPolicy = Boolean.valueOf(settings.getProperty("use_sandbox_security_policy", "true"));		//NOTE: this will only be accessible via commandline argument
-			useSentencesDB = Boolean.valueOf(settings.getProperty("enable_custom_commands"));
+			useSentencesDB = pr.getBooleanOrDefault("enable_custom_commands", useSentencesDB);
 			//databases
-			defaultRegion = settings.getProperty("db_default_region", "eu");
-			ConfigDynamoDB.region_custom = settings.getProperty("db_dynamo_region_custom", "");
-			ConfigDynamoDB.region_eu1 = settings.getProperty("db_dynamo_region_eu1", "eu-central-1");
-			ConfigDynamoDB.region_us1 = settings.getProperty("db_dynamo_region_us1", "us-east-1");
-			ConfigElasticSearch.endpoint_custom = settings.getProperty("db_elastic_endpoint_custom", "");
-			ConfigElasticSearch.endpoint_eu1 = settings.getProperty("db_elastic_endpoint_eu1");
-			ConfigElasticSearch.endpoint_us1 = settings.getProperty("db_elastic_endpoint_us1");
-			ConfigElasticSearch.auth_type = settings.getProperty("db_elastic_auth_type", null);
-			ConfigElasticSearch.auth_data = settings.getProperty("db_elastic_auth_data", null);
-			checkElasticsearchMappingsOnStart = Boolean.valueOf(settings.getProperty("check_elasticsearch_mappings_on_start", "true")); 	//TODO: not yet in properties file
+			defaultRegion = pr.getStringPropertyOrDefault("db_default_region", defaultRegion);
+			ConfigDynamoDB.region_custom = pr.getStringPropertyOrDefault("db_dynamo_region_custom", ConfigDynamoDB.region_custom);
+			ConfigDynamoDB.region_eu1 = pr.getStringPropertyOrDefault("db_dynamo_region_eu1", null);
+			ConfigDynamoDB.region_us1 = pr.getStringPropertyOrDefault("db_dynamo_region_us1", null);
+			ConfigElasticSearch.endpoint_custom = pr.getStringPropertyOrDefault("db_elastic_endpoint_custom", ConfigElasticSearch.endpoint_custom);
+			ConfigElasticSearch.endpoint_eu1 = pr.getStringPropertyOrDefault("db_elastic_endpoint_eu1", null);
+			ConfigElasticSearch.endpoint_us1 = pr.getStringPropertyOrDefault("db_elastic_endpoint_us1", null);
+			ConfigElasticSearch.auth_type = pr.getStringPropertyOrDefault("db_elastic_auth_type", null);
+			ConfigElasticSearch.auth_data = pr.getStringPropertyOrDefault("db_elastic_auth_data", null);
+			checkElasticsearchMappingsOnStart = pr.getBooleanOrDefault("check_elasticsearch_mappings_on_start", checkElasticsearchMappingsOnStart);
 			//chat
-			connectToWebSocket = Boolean.valueOf(settings.getProperty("connect_to_websocket"));
+			connectToWebSocket = pr.getBooleanOrDefault("connect_to_websocket", connectToWebSocket);
 			//NLU chain
-			String nluInterpretationChainArr = settings.getProperty("nlu_interpretation_chain", "");
+			String nluInterpretationChainArr = pr.getStringPropertyOrDefault("nlu_interpretation_chain", null);
 			if (nluInterpretationChainArr != null && !nluInterpretationChainArr.isEmpty()){
 				nluInterpretationStepsCustomChain = Arrays.asList(nluInterpretationChainArr.split(","));
 			}
 			//NLU performance profilers
-			parameterPerformanceMode = Integer.valueOf(settings.getProperty("parameter_performance_mode", "0"));
+			parameterPerformanceMode = pr.getIntegerOrDefault("parameter_performance_mode", parameterPerformanceMode);
 			//workers
-			String backgroundWorkersArr = settings.getProperty("background_workers", "");
+			String backgroundWorkersArr = pr.getStringPropertyOrDefault("background_workers", null);
 			if (backgroundWorkersArr != null && !backgroundWorkersArr.isEmpty()){
 				backgroundWorkers = Arrays.asList(backgroundWorkersArr.split(","));
 			}
 			//web content
-			urlCreateUser = settings.getProperty("url_createUser"); 	
-			urlChangePassword = settings.getProperty("url_changePassword"); 
-			urlWebImages = settings.getProperty("url_web_images"); 	
-			urlWebFiles = settings.getProperty("url_web_files"); 		
-			urlDashboard = settings.getProperty("url_dashboard");
-			hostFiles = Boolean.valueOf(settings.getProperty("host_files"));
-			allowFileIndex = Boolean.valueOf(settings.getProperty("allow_file_index", "true")); 	//TODO: not yet in properties file
-			String fileMimeTypesList = settings.getProperty("file_mime_types");
+			urlCreateUser = pr.getStringProperty("url_createUser"); 	
+			urlChangePassword = pr.getStringProperty("url_changePassword"); 
+			urlWebImages = pr.getStringProperty("url_web_images"); 	
+			urlWebFiles = pr.getStringProperty("url_web_files"); 		
+			urlDashboard = pr.getStringProperty("url_dashboard");
+			hostFiles = pr.getBooleanOrDefault("host_files", hostFiles);
+			allowFileIndex = pr.getBooleanOrDefault("allow_file_index", allowFileIndex);
+			String fileMimeTypesList = pr.getStringProperty("file_mime_types");
 			if (Is.notNullOrEmpty(fileMimeTypesList)){
 				fileMimeTypes = fileMimeTypesList;
 			}
 			//email account
-			emailHost = settings.getProperty("email_host");
-			emailAccount = settings.getProperty("email_account");
-			emailAccountKey = settings.getProperty("email_account_key");
-			emailBCC = settings.getProperty("email_bcc", "");
+			emailHost = pr.getStringProperty("email_host");
+			emailAccount = pr.getStringProperty("email_account");
+			emailAccountKey = pr.getStringProperty("email_account_key");
+			emailBCC = pr.getStringPropertyOrDefault("email_bcc", "");
 			//assistant
-			assistantName = settings.getProperty("assistant_name");
-			assistantId = settings.getProperty("assistant_id");
-			assistantEmail = settings.getProperty("assistant_email");
-			assistantPwd = settings.getProperty("assistant_pwd");
-			String assistDeviceId = settings.getProperty("assistant_device_id");
+			assistantName = pr.getStringProperty("assistant_name");
+			assistantId = pr.getStringProperty("assistant_id");
+			assistantEmail = pr.getStringProperty("assistant_email");
+			assistantPwd = pr.getStringProperty("assistant_pwd");
+			String assistDeviceId = pr.getStringProperty("assistant_device_id");
 			if (Is.notNullOrEmpty(assistDeviceId)){
 				assistantDeviceId = assistDeviceId;
 			}
-			String assistantAllowFollowUpsString = settings.getProperty("assistant_allow_follow_ups");
+			String assistantAllowFollowUpsString = pr.getStringProperty("assistant_allow_follow_ups");
 			if (assistantAllowFollowUpsString != null && !assistantAllowFollowUpsString.isEmpty()){
 				assistantAllowFollowUps = Boolean.valueOf(assistantAllowFollowUpsString);
 			}
 			//credentials
-			userIdPrefix = settings.getProperty("user_id_prefix");
-			guidOffset =  Long.valueOf(settings.getProperty("guid_offset"));
-			superuserId = settings.getProperty("universal_superuser_id");
-			superuserEmail = settings.getProperty("universal_superuser_email");
-			superuserPwd = settings.getProperty("universal_superuser_pwd");
+			userIdPrefix = pr.getStringProperty("user_id_prefix");
+			guidOffset = pr.getLongOrDefault("guid_offset", guidOffset);
+			superuserId = pr.getStringProperty("universal_superuser_id");
+			superuserEmail = pr.getStringProperty("universal_superuser_email");
+			superuserPwd = pr.getStringProperty("universal_superuser_pwd");
 			//protected accounts
-			String protectedAccountsStr = settings.getProperty("protected_accounts_list", "").trim().replaceAll("^\\[|\\]$", "").trim();
+			String protectedAccountsStr = pr.getStringPropertyOrDefault("protected_accounts_list", "").trim().replaceAll("^\\[|\\]$", "").trim();
 			if (!protectedAccountsStr.isEmpty()){
 				String[] protectedAccountsArray = protectedAccountsStr.split("\\s*,\\s*");
 				for (String kv : protectedAccountsArray){
@@ -599,48 +611,54 @@ public class Config {
 				}
 			}
 			//API defaults
-			default_geo_api = settings.getProperty("default_geo_api", GeoFactory.GOOGLE);
-			default_poi_api = settings.getProperty("default_poi_api", GeoFactory.GOOGLE);
-			default_directions_api = settings.getProperty("default_directions_api", GeoFactory.GOOGLE);
+			default_geo_api = pr.getStringPropertyOrDefault("default_geo_api", GeoFactory.GOOGLE);
+			default_poi_api = pr.getStringPropertyOrDefault("default_poi_api", GeoFactory.GOOGLE);
+			default_directions_api = pr.getStringPropertyOrDefault("default_directions_api", GeoFactory.GOOGLE);
 			//API keys
-			amazon_dynamoDB_access = settings.getProperty("amazon_dynamoDB_access");
-			amazon_dynamoDB_secret = settings.getProperty("amazon_dynamoDB_secret");
-			google_maps_key = settings.getProperty("google_maps_key");
-			graphhopper_key = settings.getProperty("graphhopper_key");
-			forecast_io_key = settings.getProperty("forecast_io_key");
-			spotify_client_id = settings.getProperty("spotify_client_id");
-			spotify_client_secret = settings.getProperty("spotify_client_secret");
-			youtube_api_key = settings.getProperty("youtube_api_key");
-			youtube_api_url = settings.getProperty("youtube_api_url", "https://youtube.googleapis.com/youtube/v3/search");
-			dirble_key = settings.getProperty("dirble_key");
-			acapela_vaas_app = settings.getProperty("acapela_vaas_app");
-			acapela_vaas_key = settings.getProperty("acapela_vaas_key");
-			affilinet_pubID = settings.getProperty("affilinet_pubID");
-			affilinet_key = settings.getProperty("affilinet_key");
-			deutscheBahnOpenApi_key = settings.getProperty("deutscheBahnOpenApi_key");
+			amazon_dynamoDB_access = pr.getStringProperty("amazon_dynamoDB_access");
+			amazon_dynamoDB_secret = pr.getStringProperty("amazon_dynamoDB_secret");
+			google_maps_key = pr.getStringProperty("google_maps_key");
+			graphhopper_key = pr.getStringProperty("graphhopper_key");
+			forecast_io_key = pr.getStringProperty("forecast_io_key");
+			spotify_client_id = pr.getStringProperty("spotify_client_id");
+			spotify_client_secret = pr.getStringProperty("spotify_client_secret");
+			youtube_api_key = pr.getStringProperty("youtube_api_key");
+			youtube_api_url = pr.getStringPropertyOrDefault("youtube_api_url", "https://youtube.googleapis.com/youtube/v3/search");
+			dirble_key = pr.getStringProperty("dirble_key");
+			acapela_vaas_app = pr.getStringProperty("acapela_vaas_app");
+			acapela_vaas_key = pr.getStringProperty("acapela_vaas_key");
+			affilinet_pubID = pr.getStringProperty("affilinet_pubID");
+			affilinet_key = pr.getStringProperty("affilinet_key");
+			deutscheBahnOpenApi_key = pr.getStringProperty("deutscheBahnOpenApi_key");
 			//API URLs
-			marytts_server = settings.getProperty("marytts_server", "http://127.0.0.1:59125").replaceAll("/$", "");
-			smarthome_hub_host = settings.getProperty("smarthome_hub_host");
-			smarthome_hub_name = settings.getProperty("smarthome_hub_name");
+			marytts_server = pr.getStringPropertyOrDefault("marytts_server", "http://127.0.0.1:59125").replaceAll("/$", "");
+			smarthome_hub_host = pr.getStringProperty("smarthome_hub_host");
+			smarthome_hub_name = pr.getStringProperty("smarthome_hub_name");
 			if (Is.nullOrEmpty(smarthome_hub_host)){
 				//try legacy settings
-				smarthome_hub_host = settings.getProperty("openhab_host");
+				smarthome_hub_host = pr.getStringProperty("openhab_host");
 				if (Is.notNullOrEmpty(smarthome_hub_host)){
 					smarthome_hub_name = OpenHAB.NAME;
 				}
 			}
-			smarthome_hub_auth_type = settings.getProperty("smarthome_hub_auth_type", null);
-			smarthome_hub_auth_data = settings.getProperty("smarthome_hub_auth_data", null);
+			smarthome_hub_auth_type = pr.getStringPropertyOrDefault("smarthome_hub_auth_type", null);
+			smarthome_hub_auth_data = pr.getStringPropertyOrDefault("smarthome_hub_auth_data", null);
+			
+			settingsLoaded = pr.getReadValuesMap();		//remember loaded settings
+			settingsFileLoaded = confFile;
 			
 			Debugger.println("loading settings from " + confFile + "... done." , 3);
 		}catch (Exception e){
+			Debugger.printStackTrace(e, 3);
 			Debugger.println("loading settings from " + confFile + "... failed!" , 1);
+			throw e; 
 		}
 	}
 	/**
 	 * Save server settings to file. Skip security relevant fields.
+	 * @throws Exception  
 	 */
-	public static void saveSettings(String confFile){
+	public static void saveSettings(String confFile) throws Exception {
 		if (confFile == null || confFile.isEmpty())	confFile = configFile;
 		
 		//save all personal parameters
@@ -706,7 +724,9 @@ public class Config {
 			FilesAndStreams.saveSettings(confFile, config);
 			Debugger.println("saving settings to " + confFile + "... done." , 3);
 		}catch (Exception e){
+			Debugger.printStackTrace(e, 3);
 			Debugger.println("saving settings to " + confFile + "... failed!" , 1);
+			throw e;
 		}
 	}
 	
@@ -723,6 +743,10 @@ public class Config {
 				("^" + keyToReplace + "=.*"),	
 				(oldLine) -> { return (keyToReplace + "=" + newValue); }
 		);
+		//update cache
+		if (settingsLoaded != null && confFile.equals(settingsFileLoaded)){
+			settingsLoaded.put(keyToReplace, newValue);
+		}
 	}
 
 }

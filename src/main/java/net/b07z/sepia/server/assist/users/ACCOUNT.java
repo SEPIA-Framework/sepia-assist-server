@@ -70,7 +70,7 @@ public class ACCOUNT {
 	public static final String BOT_CHARACTER = INFOS + ".bot_char";					//preset assistant character
 	
 	//infos - user app settings
-	public static final String APP_SETTINGS = INFOS + ".app_settings";		//user settings for different apps - NOTE: followed by ".deviceId"
+	public static final String APP_SETTINGS = INFOS + ".app_settings";		//user settings for different apps - NOTE: followed by ".deviceId" or ".commonSettings"
 	//infos - shared access permissions (other users/clients)
 	public static final String SHARED_ACCESS_PERMISSIONS = INFOS + ".shared_access";	//access permissions of other clients/users to certain functions 
 	

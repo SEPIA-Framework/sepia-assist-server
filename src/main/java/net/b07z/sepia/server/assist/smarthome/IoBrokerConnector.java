@@ -52,17 +52,21 @@ public class IoBrokerConnector implements SmartHomeHub {
 	}
 	private JSONObject httpGET(String url){
 		if (Is.notNullOrEmpty(this.authData)){
-			if (this.authType.equalsIgnoreCase("Basic")){
+			if (this.authType.equalsIgnoreCase(AuthType.Basic.name())){
+				//Basic auth. header
 				return Connectors.httpGET(url, null, addAuthHeader(null), CONNECT_TIMEOUT);
-			}else if (this.authType.equalsIgnoreCase("Plain") && userName != null && password != null){
+				
+			}else if ((this.authType.equalsIgnoreCase(AuthType.Plain.name()) || this.authType.equalsIgnoreCase(AuthType.Custom.name())) 
+					&& this.userName != null && this.password != null){
+				//URL parameters
 				if (url.contains("?")){
-					url += URLBuilder.getStringP20("", "&user=", userName, "&pass=", password); 
+					url += URLBuilder.getStringP20("", "&user=", this.userName, "&pass=", this.password); 
 				}else{
-					url += URLBuilder.getStringP20("", "?user=", userName, "&pass=", password);
+					url += URLBuilder.getStringP20("", "?user=", this.userName, "&pass=", this.password);
 				}
 				return Connectors.httpGET(url, null, null, CONNECT_TIMEOUT);
 			}else{
-				throw new RuntimeException("ioBrokerConnector saw invalid auth. type and data. Try type 'Plain' with data 'username:password'.");
+				throw new RuntimeException("ioBrokerConnector saw invalid auth. type and data. Try type 'Plain' or 'Custom' with data 'username:password'.");
 			}
 		}else{
 			return Connectors.httpGET(url, null, null, CONNECT_TIMEOUT);
@@ -112,22 +116,25 @@ public class IoBrokerConnector implements SmartHomeHub {
 		this.authType = authType;
 		this.authData = authData;
 		if (Is.notNullOrEmpty(this.authType) && Is.notNullOrEmpty(this.authData)){
-			if (authType.equalsIgnoreCase("Basic")){
+			if (authType.equalsIgnoreCase(AuthType.Basic.name())){
 				//OK
-			}else if (authType.equalsIgnoreCase("Plain")){
+				this.authType = AuthType.Basic.name();
+			}else if (authType.equalsIgnoreCase(AuthType.Plain.name()) || authType.equalsIgnoreCase(AuthType.Custom.name())){
+				//handle
+				this.authType = AuthType.Plain.name();
 				try {
 					String[] up = authData.split(":", 2);
-					userName = up[0];
-					password = up[1];
+					this.userName = up[0];
+					this.password = up[1];
 				}catch (Exception e) {
 					Debugger.println("IoBrokerConnector - 'setAuthenticationInfo' FAILED to add auth. data "
-							+ "- try type 'Plain' and data 'username:password' or 'Basic' with base64 encoding.", 1);
+							+ "- try type 'Custom' or 'Plain' and data 'username:password' or 'Basic' with base64 encoding.", 1);
 					Debugger.printStackTrace(e, 3);
-					userName = null;
-					password = null;
+					this.userName = null;
+					this.password = null;
 				}
 			}else{
-				throw new RuntimeException("Invalid auth. type. Try 'Plain' or 'Basic'.");
+				throw new RuntimeException("Invalid auth. type. Try 'Custom', 'Plain' or 'Basic'.");
 			}
 		}
 	}

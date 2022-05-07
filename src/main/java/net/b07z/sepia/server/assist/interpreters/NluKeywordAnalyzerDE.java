@@ -101,10 +101,15 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 			//String this_text = text;
 			possibleCMDs.add(CMD.NEWS);
 			possibleScore.add(1);	index++;
+			//double score for news/nachrichten
+			if (NluTools.stringContains(text, "news|nachrichten")){
+				possibleScore.set(index, possibleScore.get(index) + 1);
+			}
 
 			Map<String, String> pv = new HashMap<String, String>(); 		//TODO: pass this down to avoid additional checking
 			AbstractParameterSearch aps = new AbstractParameterSearch()
-					.setParameters(PARAMETERS.NEWS_SECTION, PARAMETERS.NEWS_TYPE, PARAMETERS.SPORTS_TEAM, PARAMETERS.SPORTS_LEAGUE)
+					.setParameters(PARAMETERS.NEWS_SECTION, PARAMETERS.NEWS_TYPE, 
+							PARAMETERS.SPORTS_TEAM, PARAMETERS.SPORTS_LEAGUE, PARAMETERS.LANGUAGE)
 					.setup(input, pv);
 			aps.getParameters();
 			possibleScore.set(index, possibleScore.get(index) + aps.getScore());
@@ -528,10 +533,14 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 		//dictionary
 		if (NluTools.stringContains(text, "woerterbuch|wort (suche(n|)|finde(n|))|uebersetzung|"
 							+ "uebersetzen|uebersetze|"
-							+ ".* (auf|ins|in) (deutsch|tuerkisch|englisch|franzoesisch|italienisch|spanisch)")){
+							+ ".* (auf|ins|in) (deutsch|tuerkisch|englisch|franzoesisch|italienisch|spanisch)(e|)")){
 			String this_text = text;
 			possibleCMDs.add(CMD.DICT_TRANSLATE);
 			possibleScore.add(1);	index++;
+			//double score for uebersetzen and woerterbuch
+			if (NluTools.stringContains(text, "uebersetzen|uebersetze|woerterbuch")){
+				possibleScore.set(index, possibleScore.get(index) + 1);
+			}
 			
 			//TODO: make real parameter out of this
 			
