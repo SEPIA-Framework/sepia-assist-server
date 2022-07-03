@@ -289,9 +289,16 @@ public class TtsOpenEmbedded implements TtsInterface {
 									voiceInfo[1].split("_")[0].toLowerCase(), voiceInfo[2], JSON.make("LOCALE", voiceInfo[1]));
 							TtsVoice v = new TtsVoice();
 							String name = voiceInfo[1].replace("_", "-") + " marytts " + voiceInfo[0];
+							//try to parse gender or fallback to 'undefined'
+							GenderCode gc;
+							try {
+								gc = GenderCode.valueOf(vt.getGenderCode());
+							}catch (Exception e){
+								gc = GenderCode.undefined;
+							}
 							v.setName(name);
 							v.setLanguageCode(vt.getLanguageCode());
-							v.setGenderCode(GenderCode.valueOf(vt.getGenderCode()));
+							v.setGenderCode(gc);
 							v.setType(EngineType.marytts);
 							v.setMoods(Arrays.asList(vt));
 							voices.put(name , v);
