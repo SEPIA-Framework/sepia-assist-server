@@ -38,7 +38,7 @@ public class GeoCoderGraphhopper implements GeoCoderInterface {
 			Statistics.addExternalApiHit("Graphhopper Geocoder");
 			Statistics.addExternalApiTime("Graphhopper Geocoder", tic);
 			JSONArray hits = (JSONArray) response.get("hits");
-			if (!hits.isEmpty()){
+			if (Is.notNullOrEmpty(hits)){
 				JSONObject firstHit = (JSONObject) hits.get(0);
 				return collectGraphhopperHit(firstHit);
 			}else{
