@@ -46,9 +46,11 @@ public class UserManagementEndpoint {
 		//check request origin
 		if (!Config.allowGlobalDevRequests){
 			if (!SparkJavaFw.requestFromPrivateNetwork(request)){
-				JSONObject result = new JSONObject();
-				JSON.add(result, "result", "fail");
-				JSON.add(result, "error", "Not allowed to access service from outside the private network!");
+				JSONObject result = JSON.make(
+					"result", "fail",
+					"error", "Not allowed to access service from outside the private network!",
+					"host", request.host()
+				);
 				return SparkJavaFw.returnResult(request, response, result.toJSONString(), 200);
 			}
 		}
