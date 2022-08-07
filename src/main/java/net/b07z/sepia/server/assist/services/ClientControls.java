@@ -8,14 +8,12 @@ import net.b07z.sepia.server.assist.answers.AnswerTools;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
+import net.b07z.sepia.server.assist.interviews.DialogTaskValues;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
+import net.b07z.sepia.server.assist.interviews.InterviewMetaData;
 import net.b07z.sepia.server.assist.parameters.Action;
 import net.b07z.sepia.server.assist.parameters.ClientFunction;
 import net.b07z.sepia.server.assist.parameters.MediaControls;
-import net.b07z.sepia.server.assist.services.ServiceBuilder;
-import net.b07z.sepia.server.assist.services.ServiceInfo;
-import net.b07z.sepia.server.assist.services.ServiceInterface;
-import net.b07z.sepia.server.assist.services.ServiceResult;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.core.assistant.ACTIONS;
@@ -236,7 +234,8 @@ public class ClientControls implements ServiceInterface{
 				actionName = ("volume;;" + num); 		//we take the shortcut here =)
 			}else if (num.isEmpty() && (mediaControls.equals(MediaControls.Type.volume_set.name()) || isActionEdit)){
 				//abort with generic question
-				api.setIncompleteAndAsk(PARAMETERS.NUMBER, "default_ask_parameter_0b");
+				api.setIncompleteAndAsk(PARAMETERS.NUMBER, "default_ask_parameter_0b",
+					new InterviewMetaData().setDialogTask(DialogTaskValues.NUMBERS));
 				ServiceResult result = api.buildResult();
 				return result;
 			}else if (isActionIncrease || mediaControls.equals(MediaControls.Type.volume_up.name())){

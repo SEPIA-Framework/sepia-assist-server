@@ -12,6 +12,7 @@ import net.b07z.sepia.server.assist.data.Card.ElementType;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interpreters.Normalizer;
 import net.b07z.sepia.server.assist.interviews.AskClient;
+import net.b07z.sepia.server.assist.interviews.InterviewMetaData;
 import net.b07z.sepia.server.assist.interviews.NoResult;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.ConfigServices;
@@ -118,7 +119,8 @@ public class LocationSearchBasic implements ServiceInterface{
 		
 		//check again
 		if (end.isEmpty() && poi.isEmpty()){
-			return AskClient.question("location_ask_0a", "search", nluResult);
+			InterviewMetaData metaData = null;	//NOTE: we could add dialogTask 'location' or 'navigation' here
+			return AskClient.question("location_ask_0a", "search", metaData, nluResult);
 		}else{
 			//check for individual locations
 			/*

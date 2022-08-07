@@ -15,7 +15,9 @@ import net.b07z.sepia.server.assist.events.ChangeEvent;
 import net.b07z.sepia.server.assist.events.EventsBroadcaster;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interpreters.NluTools;
+import net.b07z.sepia.server.assist.interviews.DialogTaskValues;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
+import net.b07z.sepia.server.assist.interviews.InterviewMetaData;
 import net.b07z.sepia.server.assist.parameters.Action;
 import net.b07z.sepia.server.assist.parameters.AlarmType;
 import net.b07z.sepia.server.assist.server.Config;
@@ -205,10 +207,11 @@ public class Alarms implements ServiceInterface{
 			//check some info
 			if (dateTime.isEmpty()){
 				//abort with question
+				InterviewMetaData metaInfo = new InterviewMetaData().setDialogTask(DialogTaskValues.TIME);
 				if (isTimer){
-					api.setIncompleteAndAsk(PARAMETERS.CLOCK, askTimerClock);
+					api.setIncompleteAndAsk(PARAMETERS.CLOCK, askTimerClock, metaInfo);
 				}else{
-					api.setIncompleteAndAsk(PARAMETERS.CLOCK, askAlarmClock);
+					api.setIncompleteAndAsk(PARAMETERS.CLOCK, askAlarmClock, metaInfo);
 				}
 				ServiceResult result = api.buildResult();
 				return result;
@@ -504,9 +507,11 @@ public class Alarms implements ServiceInterface{
 			if (confirmStatus == 0){
 				//ASK CONFIRM
 				if (isTimer){
-					api.confirmActionOrParameter("do_remove", areYouSureTimer);
+					api.confirmActionOrParameter("do_remove", areYouSureTimer,
+						new InterviewMetaData().setDialogTask(DialogTaskValues.YES_OR_NO));
 				}else{
-					api.confirmActionOrParameter("do_remove", areYouSureAlarm);
+					api.confirmActionOrParameter("do_remove", areYouSureAlarm,
+						new InterviewMetaData().setDialogTask(DialogTaskValues.YES_OR_NO));
 				}
 				ServiceResult result = api.buildResult();
 				return result;

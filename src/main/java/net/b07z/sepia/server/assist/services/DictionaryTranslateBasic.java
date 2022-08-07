@@ -8,6 +8,7 @@ import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.interviews.AskClient;
+import net.b07z.sepia.server.assist.interviews.InterviewMetaData;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.core.assistant.ACTIONS;
@@ -61,7 +62,8 @@ public class DictionaryTranslateBasic implements ServiceInterface{
 		
 		//check'em
 		if (search.isEmpty()){
-			return AskClient.question("dict_translate_ask_0a", "search", nluResult);
+			InterviewMetaData metaData = null;	//NOTE: we could add dialog_task 'translation' or something
+			return AskClient.question("dict_translate_ask_0a", "search", metaData, nluResult);
 		}
 				
 		String supportedLanguages = "(de|en|tr|es|fr)";		//add languages here when adding more target languages

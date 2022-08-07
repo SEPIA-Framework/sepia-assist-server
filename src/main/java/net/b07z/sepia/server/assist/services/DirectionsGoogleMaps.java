@@ -14,6 +14,7 @@ import net.b07z.sepia.server.assist.geo.DirectionsApiResult;
 import net.b07z.sepia.server.assist.geo.GeoFactory;
 import net.b07z.sepia.server.assist.data.Card.ElementType;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
+import net.b07z.sepia.server.assist.interviews.DialogTaskValues;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.parameters.TravelType;
 import net.b07z.sepia.server.assist.server.Config;
@@ -125,6 +126,7 @@ public class DirectionsGoogleMaps implements ServiceInterface{
 		//required
 		Parameter p1 = new Parameter(PARAMETERS.LOCATION_END)
 				.setRequired(true)
+				.setDialogTaskMetaData(DialogTaskValues.NAVIGATION)
 				.setQuestion("directions_ask_end_0a");
 		info.addParameter(p1);
 		//optional

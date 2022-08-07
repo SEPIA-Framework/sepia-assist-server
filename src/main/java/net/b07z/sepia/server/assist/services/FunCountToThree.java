@@ -3,6 +3,7 @@ package net.b07z.sepia.server.assist.services;
 import net.b07z.sepia.server.assist.answers.Answers;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interviews.AskClient;
+import net.b07z.sepia.server.assist.interviews.InterviewMetaData;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.core.assistant.PARAMETERS;
@@ -37,7 +38,8 @@ public class FunCountToThree implements ServiceInterface {
 			//keep counting ^^ - what is the next number?
 			if (memory.isEmpty()){
 				nluResult.setParameter(PARAMETERS.MEMORY, "1");
-				return AskClient.question("<direct>1", PARAMETERS.NUMBER, nluResult);
+				InterviewMetaData metaData = null;	//NOTE: we could add dialogTask 'numbers' or something here
+				return AskClient.question("<direct>1", PARAMETERS.NUMBER, metaData, nluResult);
 			
 			//search biggest number that has been said already and add something
 			}else{
@@ -68,14 +70,16 @@ public class FunCountToThree implements ServiceInterface {
 					String new_num = String.valueOf(res).replaceAll("[0]*$", "").replaceAll("\\.$", "");
 					//save new num in memory
 					nluResult.setParameter(PARAMETERS.MEMORY, memory + "||" + new_num);
-					return AskClient.question("<direct>" + new_num, PARAMETERS.NUMBER, nluResult);
+					InterviewMetaData metaData = null;
+					return AskClient.question("<direct>" + new_num, PARAMETERS.NUMBER, metaData, nluResult);
 				}
 			}
 			
 		}else if (number.isEmpty()){
 			//start with one
 			nluResult.setParameter(PARAMETERS.MEMORY, "1");
-			return AskClient.question("<direct>1", PARAMETERS.NUMBER, nluResult);
+			InterviewMetaData metaData = null;
+			return AskClient.question("<direct>1", PARAMETERS.NUMBER, metaData, nluResult);
 		}
 		
 		//valid number - use it:
@@ -116,7 +120,8 @@ public class FunCountToThree implements ServiceInterface {
 				String new_num = String.valueOf(res).replaceAll("[0]*$", "").replaceAll("\\.$", "").trim();
 				//save new num in memory
 				nluResult.setParameter(PARAMETERS.MEMORY, memory + "||" + new_num);
-				return AskClient.question("<direct>" + new_num, PARAMETERS.NUMBER, nluResult);
+				InterviewMetaData metaData = null;
+				return AskClient.question("<direct>" + new_num, PARAMETERS.NUMBER, metaData, nluResult);
 			}
 		}
 		

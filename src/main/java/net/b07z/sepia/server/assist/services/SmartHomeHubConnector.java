@@ -13,7 +13,9 @@ import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
+import net.b07z.sepia.server.assist.interviews.DialogTaskValues;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
+import net.b07z.sepia.server.assist.interviews.InterviewMetaData;
 import net.b07z.sepia.server.assist.parameters.Action;
 import net.b07z.sepia.server.assist.parameters.Room;
 import net.b07z.sepia.server.assist.parameters.SmartDevice;
@@ -109,11 +111,12 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		//required
 		Parameter p1 = new Parameter(PARAMETERS.SMART_DEVICE)
 				.setRequired(true)
+				.setDialogTaskMetaData(DialogTaskValues.SMART_HOME)
 				.setQuestion(askDevice);
 		info.addParameter(p1);
 		
 		//optional
-		Parameter p2 = new Parameter(PARAMETERS.ACTION, Action.Type.toggle); 	//toggle seems to be the most reasonable default action "lights" -> "light on"
+		Parameter p2 = new Parameter(PARAMETERS.ACTION, Action.Type.toggle);	//toggle seems to be the most reasonable default action "lights" -> "light on"
 		Parameter p3 = new Parameter(PARAMETERS.SMART_DEVICE_VALUE, "");
 		Parameter p4 = new Parameter(PARAMETERS.ROOM, "");
 		Parameter p5 = new Parameter(PARAMETERS.GENERAL_VALUE, "");		//used only when SMART_DEVICE_VALUE is missing (or unclear?)
@@ -355,7 +358,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		if (matchesN > 1 && roomType.isEmpty()){
 			//RETURN with question
 			service.resultInfoPut("device", deviceTypeLocal);
-			service.setIncompleteAndAsk(PARAMETERS.ROOM, askRoom);
+			service.setIncompleteAndAsk(PARAMETERS.ROOM, askRoom, new InterviewMetaData().setDialogTask(DialogTaskValues.SMART_HOME));
 			return service.buildResult();
 			
 		//run through all? get best result?
@@ -386,8 +389,9 @@ public class SmartHomeHubConnector implements ServiceInterface {
 				int confirmState = service.getConfirmationStatusOf("use_first_device");
 				if (confirmState == 0){
 					//ASK FIRST
+					InterviewMetaData metaInfo = null;	//TODO: use specific smart-home dialog_task?
 					service.resultInfoPut("device", matchingDevices.get(0).getName());
-					service.confirmActionOrParameter("use_first_device", askFirstOfMany);
+					service.confirmActionOrParameter("use_first_device", askFirstOfMany, metaInfo);
 					//teach UI button
 					service.addAction(ACTIONS.BUTTON_TEACH_UI);
 					service.putActionInfo("info", JSON.make(
@@ -561,8 +565,9 @@ public class SmartHomeHubConnector implements ServiceInterface {
 			boolean isGeneralValue = !targetSetGenValue.isEmpty();
 			
 			//check if we have a value or need to ask
-			if (newValue.isEmpty()){ 
-				service.setIncompleteAndAsk(PARAMETERS.SMART_DEVICE_VALUE, askStateValue);
+			if (newValue.isEmpty()){
+				InterviewMetaData metaInfo = null;	//TODO: use specific smart-home dialog_task?
+				service.setIncompleteAndAsk(PARAMETERS.SMART_DEVICE_VALUE, askStateValue, metaInfo);
 				return service.buildResult();
 			
 			//set
