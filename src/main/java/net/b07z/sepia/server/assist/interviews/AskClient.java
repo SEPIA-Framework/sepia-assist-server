@@ -11,13 +11,8 @@ import net.b07z.sepia.server.core.assistant.PARAMETERS;
 import net.b07z.sepia.server.core.tools.Converters;
 
 /**
- * In case a parameter is missing the server can ask the client for it.
- * Use this class to do that.
- * Note that this class does not implement the default "get" method but an extended "question"
- * method that requires a question-key (e.g.: directions_ask_end_0a) to load the appropriate
- * question from the database and a type of input that is asked for (search, start, end, type, etc...).
- * A direct question (not taken from the database) can be given by adding the tag &#60direct&#62 to the beginning
- * of the question key. 
+ * In case a parameter is missing the server can ask the client for input. This class holds the interfaces
+ * to build and send questions.
  * 
  * @author Florian Quirin
  *
@@ -26,14 +21,16 @@ public class AskClient {
 	
 	
 	/**
-	 * Create a result for a client question.
-	 * @param questionKey - key to find question in database.
-	 * @param missing_input - parameter type that is missing (search, start, end, etc... empty or default or text is standard)
+	 * Create a {@link ServiceResult} object that can be used as client question.
+	 * @param questionKey - key to load question from database (e.g.: directions_ask_end_0a). Use &#60direct&#62 tag for custom text.
+	 * @param missingInputParam - parameter type that is missing (search, start, end, etc... empty or default or text is standard)
+	 * @param metaData - some meta data useful for clients to adjust response handling like "dialog_task"
 	 * @param nluResult - result of the NLP
 	 * @param wildcards - parameters given to the question to fill out wildcards
 	 * @return
 	 */
-	public static ServiceResult question(String questionKey, String missingInputParam, NluResult nluResult, Object... wildcards){
+	public static ServiceResult question(String questionKey, String missingInputParam,
+			InterviewMetaData metaData, NluResult nluResult, Object... wildcards){
 		//initialize result
 		ServiceBuilder api = new ServiceBuilder(nluResult);
 		
@@ -41,7 +38,7 @@ public class AskClient {
 		//System.out.println("Dialog stage/Last CMD rep.: " + NLU_result.input.dialog_stage + "/" + NLU_result.input.last_cmd_N);
 		
 		//make this a question
-		api.makeThisAQuestion(missingInputParam); 
+		api.makeThisAQuestion(missingInputParam);
 		
 		//get answer/question to client
 		api.answer = Answers.getAnswerString(nluResult, questionKey, wildcards);
@@ -54,6 +51,9 @@ public class AskClient {
 		//anything else?
 		api.context = nluResult.context;			//the context remains the previous one
 		api.cmdSummary = nluResult.cmdSummary;		//cmd_summary is very important here because it's needed to fuse answer and initial command later
+		if (metaData != null){
+			api.setDialogTask(metaData.getDialogTask());
+		}
 		
 		//if there is a question offer abort button
 		api.addAction(ACTIONS.SHOW_ABORT_OPTION);
@@ -81,6 +81,19 @@ public class AskClient {
 
 		//return result_JSON.toJSONString();
 		return result;
+	}
+	/**
+	 * Create a {@link ServiceResult} object that can be used as client question.<br>
+	 * Consider using {@link #question(String, String, InterviewMetaData, NluResult, Object...)} instead with additional meta-data.
+	 * @param questionKey - key to load question from database (e.g.: directions_ask_end_0a). Use &#60direct&#62 tag for custom text.
+	 * @param missingInputParam - parameter type that is missing (search, start, end, etc... empty or default or text is standard)
+	 * @param nluResult - result of the NLP
+	 * @param wildcards - parameters given to the question to fill out wildcards
+	 * @return
+	 */
+	public static ServiceResult question(String questionKey, String missingInputParam,
+			NluResult nluResult, Object... wildcards){
+		return question(questionKey, missingInputParam,	null, nluResult, wildcards);
 	}
 	
 	/**

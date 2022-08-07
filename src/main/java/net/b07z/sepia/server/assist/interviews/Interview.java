@@ -105,12 +105,14 @@ public class Interview {
 	 * @param parameter - a parameter from the pool PARAMETER. ...
 	 * @param question - reference to a question in the database, e.g. "flights_ask_start_0a" or direct question with tag &lt;direct&gt;.
 	 * @param failMsg - reference to an answer that will be given on the 3rd try, e.g. "Sorry I didn't get it! Try again later." - Typical default: 'abort_0b'
+	 * @param metaData - additional info for clients to better handle responses like 'dialog_task' 
 	 * @param wildcards - (optional) parameters given to the question to fill out wildcards
 	 * @return API_Result to send back to client
 	 */
-	public ServiceResult ask(String parameter, String question, String failMsg, Object... wildcards){
+	public ServiceResult ask(String parameter, String question, String failMsg,
+			InterviewMetaData metaData, Object... wildcards){
 		if (nluResult.input.isRepeatedAnswerToParameter(parameter) < 2){
-			return AskClient.question(question, parameter, nluResult, wildcards);
+			return AskClient.question(question, parameter, metaData, nluResult, wildcards);
 		}else{
 			return NoResult.get(nluResult, failMsg);
 		}
@@ -119,20 +121,22 @@ public class Interview {
 	 * Shortcut to "ask(String parameter, String question, String failMsg, Object... wildcards)" with default "failMsg". 
 	 * Automatically chooses custom or default question. 
 	 * @param parameter - parameter to ask for
+	 * @param metaData - additional info for clients to better handle responses like 'dialog_task'
 	 * @param wildcards - (optional) parameters given to the question to fill out wildcards
 	 * @return
 	 */
 	public ServiceResult ask(Parameter parameter, Object... wildcards){
 		String questionFail = parameter.getQuestionFailAnswer();
 		String question = parameter.getQuestion();
+		InterviewMetaData metaData = parameter.getMetaData();
 		if (question.isEmpty()){
 			//TODO: add Reply.getQuestionLink() here?
 			Debugger.println("missing default question for '" + parameter.getName() + "'", 1);
 		}
 		if (!questionFail.isEmpty()){
-			return ask(parameter.getName(), question, questionFail, wildcards);
+			return ask(parameter.getName(), question, questionFail, metaData, wildcards);
 		}else{
-			return ask(parameter.getName(), question, "abort_0b", wildcards);
+			return ask(parameter.getName(), question, "abort_0b", metaData, wildcards);
 		}
 	}
 	

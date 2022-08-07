@@ -3,6 +3,7 @@ package net.b07z.sepia.server.assist.data;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.interviews.InterviewData;
+import net.b07z.sepia.server.assist.interviews.InterviewMetaData;
 import net.b07z.sepia.server.assist.parameters.GenericParameter;
 import net.b07z.sepia.server.assist.parameters.ParameterConfig;
 import net.b07z.sepia.server.assist.parameters.ParameterHandler;
@@ -43,7 +44,9 @@ public class Parameter {
 	private Object defaultValue = "";			//value that is used when the parameter is not given
 	private String question = "";				//link to a pool of questions (recommended) or direct question (not recommended) to ask for this parameter
 	private String questionFailAnswer = "";		//link to a pool of answers (recommended) or direct answer (not recommended) triggered when repeated answer fails
+	private InterviewMetaData metaData;			//optional meta data to tweak client-side response handling
 	//TODO: add "free", "individual" parameter and "select"
+	
 	
 	/**
 	 * Create parameter with name given in PARAMETERS.
@@ -324,5 +327,32 @@ public class Parameter {
 	 */
 	public String getQuestionFailAnswer(){
 		return questionFailAnswer;
+	}
+
+	/**
+	 * Optional meta data to tweak for example client-side response handling like 'dialog_task'.<br>
+	 * NOTE: If you set the whole object it will overwrite the existing meta-data object previously
+	 * created with {@link #setDialogTaskMetaData(String)} for example.
+	 */
+	public Parameter setMetaData(InterviewMetaData metaData){
+		this.metaData = metaData;
+		return this;
+	}
+	/**
+	 * Return meta data to optimize client-side response handling, e.g. dialog_task.
+	 */
+	public InterviewMetaData getMetaData(){
+		return this.metaData;
+	}
+	/**
+	 * Set 'dialog_task' meta-data. Creates new meta-data object if none exists yet. 
+	 * @param dialogTaskName - 'dialog_task' value that can be used client-side to optimize response (e.g. switch ASR model)
+	 */
+	public Parameter setDialogTaskMetaData(String dialogTaskName){
+		if (this.metaData == null){
+			this.metaData = new InterviewMetaData();
+		}
+		this.metaData.setDialogTask(dialogTaskName);
+		return this;
 	}
 }

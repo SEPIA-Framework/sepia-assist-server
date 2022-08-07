@@ -11,6 +11,7 @@ import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
+import net.b07z.sepia.server.assist.interviews.InterviewMetaData;
 import net.b07z.sepia.server.assist.messages.Clients;
 import net.b07z.sepia.server.assist.parameters.Confirm;
 import net.b07z.sepia.server.assist.parameters.Select;
@@ -69,6 +70,9 @@ public class ServiceBuilder {
 	public String responseType = RESPONSE_INFO;	//response type is used on client side to post info/answer/question
 	public String inputMiss = "";				//"what did I ask again?" - pass around the missing parameter, hopefully the client sends it back ^^ 
 	public int dialogStage = 0;					//dialog_stage as seen in NluInput (only set when modified inside ServiceBuilder) send to client and client should send back
+	
+	//typically added to "more":
+	public String dialogTask;		//dialog_task can be used to tweak client settings for better response handling, e.g. switch ASR model etc.
 	
 	//not (yet) in JSON result included:
 	private NluResult nluResult;						//keep a reference to the NluResult for building the ServiceResult
@@ -191,26 +195,46 @@ public class ServiceBuilder {
 	}
 	
 	/**
-	 * Set status "incomplete" and add the missing "parameter" with it's "question". Finish after this by building and returning the result.<br>
+	 * Set status "incomplete" and add the missing "parameter" with it's "question".
+	 * Optionally add meta-info then finish by building and returning the result.<br>
 	 * NOTE: The question can use answer wildcards ONLY IF resultInfo was set before!
 	 * @param parameter - PARAMETERS value
-	 * @param question - pool or direct question like "test_0a" or "&lt;direct&gt;what is this?"  
+	 * @param question - pool or direct question like "test_0a" or "&lt;direct&gt;what is this?"
+	 * @param metaData - data that can help the client to handle responses properly (e.g. switching ASR model etc.)
 	 */
-	public void setIncompleteAndAsk(String parameter, String question){
+	public void setIncompleteAndAsk(String parameter, String question, InterviewMetaData metaData){
 		setStatusIncomplete();
 		Parameter p = new Parameter(parameter);
 		p.setQuestion(question);
+		p.setMetaData(metaData);
 		setIncompleteParameter(p);
+	}
+	/**
+	 * Set status "incomplete" and add the missing "parameter" with it's "question" then finish by building and returning the result.<br>
+	 * NOTE: The question can use answer wildcards ONLY IF resultInfo was set before!
+	 * @param parameter - PARAMETERS value
+	 * @param question - pool or direct question like "test_0a" or "&lt;direct&gt;what is this?"
+	 */
+	public void setIncompleteAndAsk(String parameter, String question){
+		setIncompleteAndAsk(parameter, question, null);
 	}
 	
 	/**
 	 * Define the name of an action or parameter that you want to get confirmed by the user. The name can be anything and is only used to 
 	 * check the confirmation status later. In detail this method creates a new dynamic confirm-parameter, sets it to incomplete and asks the user for it with the 'question' given.
+	 * Optionally you can add {@link InterviewMetaData} to tweak for example client-side response handling.
 	 */
-	public void confirmActionOrParameter(String actionOrParameterName, String question){
+	public void confirmActionOrParameter(String actionOrParameterName, String question, InterviewMetaData metaData){
 		String dynamicConfirmParameter = Confirm.PREFIX + actionOrParameterName;
 		nluResult.addDynamicParameter(dynamicConfirmParameter);
-		setIncompleteAndAsk(dynamicConfirmParameter, question);
+		setIncompleteAndAsk(dynamicConfirmParameter, question, metaData);
+	}
+	/**
+	 * Define the name of an action or parameter that you want to get confirmed by the user. The name can be anything and is only used to 
+	 * check the confirmation status later. In detail this method creates a new dynamic confirm-parameter, sets it to incomplete and asks the user for it with the 'question' given.
+	 */
+	public void confirmActionOrParameter(String actionOrParameterName, String question){
+		confirmActionOrParameter(actionOrParameterName, question, null);
 	}
 	/**
 	 * Check status of confirmation action or parameter. Returns:<br>
@@ -240,12 +264,12 @@ public class ServiceBuilder {
 	 * In detail this method creates a new options parameter and matching dynamic select-parameter, sets it to incomplete and asks the user for it with the 'question' given.<br>
 	 * Format of selectOptions: {"1": "red", "2": "green", "3": "blue|yellow", "4": ...} - Allowed are words and regular expressions.
 	 */
-	public void askUserToSelectOption(String customSelectparameterName, JSONObject selectOptions, String question){
+	public void askUserToSelectOption(String customSelectparameterName, JSONObject selectOptions, String question, InterviewMetaData metaData){
 		String dynamicSelectParameter = Select.PREFIX + customSelectparameterName;
 		String dynamicSelectOptions = Select.OPTIONS_PREFIX + customSelectparameterName;
 		nluResult.addDynamicParameter(dynamicSelectParameter);
 		nluResult.setParameter(dynamicSelectOptions, selectOptions.toJSONString());
-		setIncompleteAndAsk(dynamicSelectParameter, question);
+		setIncompleteAndAsk(dynamicSelectParameter, question, metaData);
 	}
 	/**
 	 * Get result of custom select request to user or null. Format: {"value": "green", "selection": 2, "input": "..."}
@@ -441,7 +465,16 @@ public class ServiceBuilder {
 			dialogStage++;							//get dialogue stage and increase by 1 if this is a "new" question (not repeated)
 		}
 		//System.out.println("N=" + nlu_result.input.last_cmd_N + ", DS=" + dialog_stage); 	//debug
-	}	
+	}
+	
+	/**
+	 * Set a specific dialog task to give the client options to better handle responses like
+	 * switching the ASR model etc..
+	 * @param dialogTask - a short task name that describes a topic etc., e.g.: "music_search" or "navigation"
+	 */
+	public void setDialogTask(String dialogTask){
+		this.dialogTask = dialogTask;
+	}
 	
 	/**
 	 * Run a task in the background, optionally with a delay.
@@ -548,6 +581,9 @@ public class ServiceBuilder {
 		if (mood >= 0){
 			JSON.add(more, "mood", String.valueOf(mood));
 		}
+		if (Is.notNullOrEmpty(this.dialogTask)){
+			JSON.add(more, "dialog_task", this.dialogTask);
+		}
 		//add the user, it's handy for chat apps
 		JSON.add(more, "user", nluResult.input.user.getUserID());
 		
@@ -608,6 +644,7 @@ public class ServiceBuilder {
 			JSON.add(result.resultJson, "input_miss", inputMiss);
 			JSON.add(result.resultJson, "dialog_stage", dialogStage); 	//should track this always?
 		}
+		//
 		
 		return result;
 	}
