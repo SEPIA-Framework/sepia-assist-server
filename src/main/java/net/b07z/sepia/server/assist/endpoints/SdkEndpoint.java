@@ -3,6 +3,7 @@ package net.b07z.sepia.server.assist.endpoints;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -591,11 +592,17 @@ public class SdkEndpoint {
 	 * @throws IllegalAccessException
 	 * @throws ClassNotFoundException
 	 * @throws IOException 
+	 * @throws SecurityException 
+	 * @throws NoSuchMethodException 
+	 * @throws InvocationTargetException 
+	 * @throws IllegalArgumentException 
 	 */
-	private static ServiceUploadResult validateAndRegisterService(String className, User user) 
-			throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException {
+	private static ServiceUploadResult validateAndRegisterService(String className, User user) throws InstantiationException,
+			IllegalAccessException, ClassNotFoundException, IOException, IllegalArgumentException,
+			InvocationTargetException, NoSuchMethodException, SecurityException {
 		//validate service
-    	ServiceInterface service = (ServiceInterface) ConfigServices.addCustomServiceClassLoader(className).loadClass(className).newInstance();
+    	ServiceInterface service = (ServiceInterface) ConfigServices.addCustomServiceClassLoader(className)
+    			.loadClass(className).getDeclaredConstructor().newInstance();
     	
     	//remove all 'old' command triggers
     	ServiceInfo info = service.getInfo(user.language);

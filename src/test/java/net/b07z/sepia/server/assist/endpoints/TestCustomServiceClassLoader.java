@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 import org.junit.Test;
 
@@ -21,7 +22,9 @@ import net.b07z.sepia.server.core.tools.SandboxClassLoader;
 public class TestCustomServiceClassLoader {
 
 	@Test
-	public void test() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException {
+	public void test() throws ClassNotFoundException, IOException, InstantiationException,
+			IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException {
 		String userId = "test";
 		String myServiceClass = "BuildTest";
 		String className = ConfigServices.getCustomServicesPackage() + "." + userId + "." + myServiceClass;
@@ -43,7 +46,7 @@ public class TestCustomServiceClassLoader {
     	
     	ConfigServices.setupSandbox();
     	SandboxClassLoader sbcl = ConfigServices.addCustomServiceClassLoader(className);
-    	ServiceInterface service = (ServiceInterface) sbcl.loadClass(className).newInstance();
+    	ServiceInterface service = (ServiceInterface) sbcl.loadClass(className).getDeclaredConstructor().newInstance();
     	
     	ServiceInfo si = service.getInfo("en");
     	assertTrue(si.serviceType.equals(ServiceInfo.Type.program.toString()));
