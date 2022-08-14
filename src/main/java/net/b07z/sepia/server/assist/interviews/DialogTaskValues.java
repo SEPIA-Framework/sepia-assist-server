@@ -11,11 +11,14 @@ package net.b07z.sepia.server.assist.interviews;
 public class DialogTaskValues {
 
 	public static final String DEFAULT = "default";
+	public static final String ASSISTANT = "assistant";
 	public static final String YES_OR_NO = "yes_or_no";
-	public static final String CHAT = "chat";
+	public static final String CONVERSATION = "conversation";
 	public static final String CONTROL = "control";
 	public static final String TIME = "time";
+	public static final String SCHEDULE = "schedule";
 	public static final String NUMBERS = "numbers";
+	public static final String MATH = "math";
 	public static final String WEB_SEARCH = "web_search";
 	public static final String NEWS_SEARCH = "news_search";
 	public static final String MUSIC = "music";
