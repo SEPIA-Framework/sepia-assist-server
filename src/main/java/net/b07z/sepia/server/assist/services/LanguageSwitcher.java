@@ -7,10 +7,6 @@ import net.b07z.sepia.server.assist.answers.ServiceAnswers;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
-import net.b07z.sepia.server.assist.services.ServiceBuilder;
-import net.b07z.sepia.server.assist.services.ServiceInfo;
-import net.b07z.sepia.server.assist.services.ServiceInterface;
-import net.b07z.sepia.server.assist.services.ServiceResult;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.core.assistant.ACTIONS;
@@ -143,6 +139,7 @@ public class LanguageSwitcher implements ServiceInterface{
 		//Tell client to perform this platform action);
 		api.addAction(ACTIONS.SWITCH_LANGUAGE);
 		api.putActionInfo("language_code", targetLang);
+		//api.putActionInfo("skip_save", true);
 		
 		//Schedule a test sentence as follow-up result after 3s if possible
 		if (nluResult.input.isDuplexConnection()){
