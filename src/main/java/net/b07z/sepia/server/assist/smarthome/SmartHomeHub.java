@@ -31,6 +31,7 @@ public interface SmartHomeHub {
 		JSON.make("value", OpenHAB.NAME, 			"name", "openHAB"),
 		JSON.make("value", Fhem.NAME, 				"name", "FHEM"),
 		JSON.make("value", IoBrokerConnector.NAME, 	"name", "ioBroker Simple-api"),
+		JSON.make("value", HomeAssistant.NAME, 		"name", "Home Assistant"),
 		JSON.make("value", MqttPublisher.NAME,		"name", "MQTT Publisher"),
 		JSON.make("value", TestHub.NAME, 			"name", "Test")
 	);
@@ -75,6 +76,8 @@ public interface SmartHomeHub {
 			smartHomeHUB = new Fhem(hubHost);
 		}else if (hubName.equalsIgnoreCase(IoBrokerConnector.NAME)){
 			smartHomeHUB = new IoBrokerConnector(hubHost);
+		}else if (hubName.equalsIgnoreCase(HomeAssistant.NAME)){
+			smartHomeHUB = new HomeAssistant(hubHost);
 		}else if (hubName.equalsIgnoreCase(MqttPublisher.NAME)){
 			smartHomeHUB = new MqttPublisher(hubHost);
 		}else if (hubName.equalsIgnoreCase(InternalHub.NAME) || hubName.equalsIgnoreCase("sepia")){
@@ -142,7 +145,7 @@ public interface SmartHomeHub {
 	 * Set authentication info e.g. to do Basic-Authorization against a proxy via request header etc.. 
 	 * Different HUBs can have additional layers of security and this
 	 * is usually the first. It can be independent of the HUB itself.
-	 * @param authType - type of auth. e.g. 'Basic'
+	 * @param authType - type of auth. e.g. 'Basic' (see {@link AuthType})
 	 * @param authData - data for auth. type e.g. a base64 encoded user:password combination 
 	 */
 	public void setAuthenticationInfo(String authType, String authData);
