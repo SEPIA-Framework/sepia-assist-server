@@ -17,7 +17,6 @@ import net.b07z.sepia.server.assist.parameters.SmartDevice;
 import net.b07z.sepia.server.assist.server.Statistics;
 import net.b07z.sepia.server.assist.smarthome.SmartHomeDevice.StateType;
 import net.b07z.sepia.server.core.tools.Connectors;
-import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
@@ -297,24 +296,7 @@ public class Fhem implements SmartHomeHub {
 		if (devices == null){
 			return null;
 		}else{
-			//filters
-			String deviceType = null;
-			String roomType = null;
-			String roomIndex = null;
-			int limit = -1;
-			if (filters != null){
-				deviceType = Converters.obj2StringOrDefault(filters.get("type"), null);
-				roomType = Converters.obj2StringOrDefault(filters.get("room"), null);
-				roomIndex = Converters.obj2StringOrDefault(filters.get("roomIndex"), null);
-				Object limitObj = filters.get("limit");
-				limit = -1;
-				if (limitObj != null){
-					limit = (int) limitObj;
-				}
-			}
-			//get all devices with right type and optionally right room
-			List<SmartHomeDevice> matchingDevices = SmartHomeDevice.getMatchingDevices(devices, deviceType, roomType, roomIndex, limit);
-			return matchingDevices;
+			return SmartHomeDevice.getMatchingDevices(devices, filters);
 		}
 	}
 	
@@ -533,8 +515,6 @@ public class Fhem implements SmartHomeHub {
 	//build device from JSON response
 	private SmartHomeDevice buildDeviceFromResponse(JSONObject hubDevice){
 		//Build unified object for SEPIA
-		JSONObject internals = JSON.getJObject(hubDevice, "Internals");
-		JSONObject attributes = JSON.getJObject(hubDevice, "Attributes");
 		String name = null;
 		String type = null;
 		String room = null;
@@ -544,6 +524,14 @@ public class Fhem implements SmartHomeHub {
 		JSONObject setCmds = null;
 		boolean typeGuessed = false;
 		boolean namedBySepia = false;
+		
+		String fhemObjName = JSON.getStringOrDefault(hubDevice, "Name", null);	//NOTE: has to be unique!
+		if (Is.nullOrEmpty(fhemObjName)){
+			//we need the ID
+			return null;
+		}
+		JSONObject internals = JSON.getJObject(hubDevice, "Internals");
+		JSONObject attributes = JSON.getJObject(hubDevice, "Attributes");
 		if (attributes != null){
 			//try to find self-defined SEPIA tags first
 			name = JSON.getStringOrDefault(attributes, TAG_NAME, null);
@@ -559,11 +547,6 @@ public class Fhem implements SmartHomeHub {
 			if (setCmdsStr != null && setCmdsStr.trim().startsWith("{")){
 				setCmds = JSON.parseString(setCmdsStr);
 			}
-		}
-		String fhemObjName = JSON.getStringOrDefault(hubDevice, "Name", null);		//NOTE: has to be unique!
-		if (Is.nullOrEmpty(fhemObjName)){
-			//we need the ID
-			return null;
 		}
 		//smart-guess if missing sepia-specific settings
 		if (name == null && attributes != null){
@@ -631,9 +614,9 @@ public class Fhem implements SmartHomeHub {
 				"id", fhemObjName,
 				"origin", NAME,
 				"setOptions", JSON.getStringOrDefault(hubDevice, "PossibleSets", null), 		//FHEM specific
-				"typeGuessed", typeGuessed
+				"typeGuessed", typeGuessed,
+				"namedBySepia", namedBySepia
 		);
-		JSON.put(meta, "namedBySepia", namedBySepia);
 		//note: we need 'id' for commands although it is basically already in 'link'
 		SmartHomeDevice shd = new SmartHomeDevice(name, type, room, 
 				state, stateType, memoryState, 

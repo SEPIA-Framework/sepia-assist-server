@@ -17,7 +17,6 @@ import net.b07z.sepia.server.assist.parameters.SmartDevice;
 import net.b07z.sepia.server.assist.server.Statistics;
 import net.b07z.sepia.server.assist.smarthome.SmartHomeDevice.StateType;
 import net.b07z.sepia.server.core.tools.Connectors;
-import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
@@ -255,24 +254,7 @@ public class OpenHAB implements SmartHomeHub {
 		if (devices == null){
 			return null;
 		}else{
-			//filters
-			String deviceType = null;
-			String roomType = null;
-			String roomIndex = null;
-			int limit = -1;
-			if (filters != null){
-				deviceType = Converters.obj2StringOrDefault(filters.get("type"), null);
-				roomType = Converters.obj2StringOrDefault(filters.get("room"), null);
-				roomIndex = Converters.obj2StringOrDefault(filters.get("roomIndex"), null);
-				Object limitObj = filters.get("limit");
-				limit = -1;
-				if (limitObj != null){
-					limit = (int) limitObj;
-				}
-			}
-			//get all devices with right type and optionally right room
-			List<SmartHomeDevice> matchingDevices = SmartHomeDevice.getMatchingDevices(devices, deviceType, roomType, roomIndex, limit);
-			return matchingDevices;
+			return SmartHomeDevice.getMatchingDevices(devices, filters);
 		}
 	}
 	
@@ -443,7 +425,6 @@ public class OpenHAB implements SmartHomeHub {
 	 */
 	private static SmartHomeDevice buildDeviceFromResponse(JSONObject hubDevice){
 		//Build unified object for SEPIA
-		JSONArray tags = JSON.getJArray(hubDevice, "tags");
 		String name = null;
 		String type = null;
 		String room = null;
@@ -453,6 +434,13 @@ public class OpenHAB implements SmartHomeHub {
 		JSONObject setCmds = null;
 		boolean typeGuessed = false;
 		boolean namedBySepia = false;
+		
+		String originalName = JSON.getStringOrDefault(hubDevice, "name", null);	//NOTE: has to be unique
+		if (Is.nullOrEmpty(originalName)){
+			//we need the ID
+			return null;
+		}
+		JSONArray tags = JSON.getJArray(hubDevice, "tags");
 		if (tags != null){
 			//try to find self-defined SEPIA tags first
 			for (Object tagObj : tags){
@@ -479,11 +467,6 @@ public class OpenHAB implements SmartHomeHub {
 					}
 				}
 			}
-		}
-		String originalName = JSON.getStringOrDefault(hubDevice, "name", null);		//NOTE: has to be unique
-		if (Is.nullOrEmpty(originalName)){
-			//we need the ID
-			return null;
 		}
 		//smart-guess if missing sepia-specific settings
 		if (name == null){
@@ -517,11 +500,7 @@ public class OpenHAB implements SmartHomeHub {
 			room = "";
 		}
 		//create common object
-		Object stateObj = hubDevice.get("state");
-		String state = null;
-		if (stateObj != null){
-			state = stateObj.toString();
-		}
+		String state = JSON.getStringOrDefault(hubDevice, "state", null);
 		//try to deduce state type if not given
 		if (Is.nullOrEmpty(stateType) && state != null){
 			stateType = SmartHomeDevice.findStateType(state);
@@ -546,9 +525,9 @@ public class OpenHAB implements SmartHomeHub {
 		JSONObject meta = JSON.make(
 				"id", originalName,
 				"origin", NAME,
-				"typeGuessed", typeGuessed
+				"typeGuessed", typeGuessed,
+				"namedBySepia", namedBySepia
 		);
-		JSON.put(meta, "namedBySepia", namedBySepia);
 		//TODO: we could add some stuff to meta when we need other data from response.
 		SmartHomeDevice shd = new SmartHomeDevice(name, type, room, 
 				state, stateType, memoryState, 

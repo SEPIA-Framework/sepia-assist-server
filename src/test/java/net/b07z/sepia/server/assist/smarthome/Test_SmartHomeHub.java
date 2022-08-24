@@ -6,8 +6,6 @@ import java.util.Map;
 import net.b07z.sepia.server.assist.parameters.SmartDevice;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.Start;
-import net.b07z.sepia.server.assist.smarthome.SmartHomeDevice;
-import net.b07z.sepia.server.assist.smarthome.SmartHomeHub;
 import net.b07z.sepia.server.core.tools.Debugger;
 
 /**

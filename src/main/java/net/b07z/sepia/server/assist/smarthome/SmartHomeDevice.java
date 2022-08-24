@@ -517,6 +517,33 @@ public class SmartHomeDevice {
 		}
 		return matchingDevices;
 	}
+	/**
+	 * Get devices from the list that match a set of filters.
+	 * @param devices - map of devices taken e.g. from getDevices()
+	 * @param filters - map of filters like "type", "room", etc.
+	 * @return list of devices (can be empty)
+	 */
+	public static List<SmartHomeDevice> getMatchingDevices(Map<String, SmartHomeDevice> devices,
+			Map<String, Object> filters){
+		//filters
+		String deviceType = null;
+		String roomType = null;
+		String roomIndex = null;
+		int limit = -1;
+		if (filters != null){
+			deviceType = Converters.obj2StringOrDefault(filters.get("type"), null);
+			roomType = Converters.obj2StringOrDefault(filters.get("room"), null);
+			roomIndex = Converters.obj2StringOrDefault(filters.get("roomIndex"), null);
+			Object limitObj = filters.get("limit");
+			limit = -1;
+			if (limitObj != null){
+				limit = (int) limitObj;
+			}
+		}
+		//get all devices with right type and optionally right room
+		List<SmartHomeDevice> matchingDevices = getMatchingDevices(devices, deviceType, roomType, roomIndex, limit);
+		return matchingDevices;
+	}
 	
 	/**
 	 * Search for a given number in device name and return first match. If match is not found return given index or null.
