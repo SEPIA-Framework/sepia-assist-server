@@ -49,6 +49,10 @@ public class Setup {
 	private static String pathToAutoSetupFile = pathToAutoSetupFolder + "config.yaml";
 	private static String autoSetupResultLog = "results.log";
 	
+	//NOTE: currently disabled by default and only enabled on demand
+	public static boolean doImportSentences = false;
+	public static boolean doImportAnswers = false;
+	
 	private enum ServerType {
 		custom,
 		live,
@@ -102,8 +106,10 @@ public class Setup {
 				this.accounts = true;
 			}else if (taskArg.equals("answers")){
 				this.answers = true;
+				doImportAnswers = true;
 			}else if (taskArg.equals("commands")){
 				this.commands = true;
+				doImportSentences = true;
 			}else if (taskArg.equalsIgnoreCase("duckdns")){
 				this.duckDns = true;
 			}
@@ -695,20 +701,20 @@ public class Setup {
 			JSONObject newData = createNewPasswordObject(guuid, pwd);
 			String pwdClientHashed = Security.hashClientPassword(pwd);
 			if (DB.writeAccountDataDirectly(guuid, newData)){
-				Debugger.println("Stored new password in database for: " + email, 3);
+				Debugger.println("Users - Stored new password in database for: " + email, 3);
 				//store data in config file
 				if (!FilesAndStreams.replaceLineInFile(scf.assist, "^universal_superuser_pwd=.*", 
 								"universal_superuser_pwd=" + pwdClientHashed)
 					){
-					throw new RuntimeException("Failed to write new password to config-file: " + scf.assist);
+					throw new RuntimeException("Users - Failed to write new password to config-file: " + scf.assist);
 				}else{
-					Debugger.println("Stored new password in config: " + scf.assist, 3);
+					Debugger.println("Users - Stored new password in config: " + scf.assist, 3);
 				}
 				//refresh ID
 				Config.superuserId = guuid;
 				return new CreateUserResult(email, guuid, JSON.getString(newData, ACCOUNT.PASSWORD));
 			}else{
-				throw new RuntimeException("Failed to write new password to existing account: " + email);
+				throw new RuntimeException("Users - Failed to write new password to existing account: " + email);
 			}
 		}else{
 			//proceed with creation
@@ -734,12 +740,12 @@ public class Setup {
 						|| !FilesAndStreams.replaceLineInFile(scf.assist, "^universal_superuser_pwd=.*", 
 								"universal_superuser_pwd=" + cr.pwdClientHash)
 					){
-					throw new RuntimeException("Failed to write data to config-file: " + scf.assist);
+					throw new RuntimeException("Users - Failed to write data to config-file: " + scf.assist);
 				}else{
-					Debugger.println("Stored data in database and config: " + scf.assist, 3);
+					Debugger.println("Users - Stored data in database and config: " + scf.assist, 3);
 				}
 			}else{
-				Debugger.println("Writing account data failed! Probably a database error or you need to delete the user first.", 1);
+				Debugger.println("Users - Writing account data failed! Probably a database error or you need to delete the user first.", 1);
 			}
 			//refresh ID
 			Config.superuserId = cr.guuid;
@@ -759,21 +765,21 @@ public class Setup {
 			JSONObject newData = createNewPasswordObject(guuid, pwd);
 			String pwdClientHashed = Security.hashClientPassword(pwd);
 			if (DB.writeAccountDataDirectly(guuid, newData)){
-				Debugger.println("Stored new password in database for: " + email, 3);
+				Debugger.println("Users - Stored new password in database for: " + email, 3);
 				//store data in config file
 				if (!FilesAndStreams.replaceLineInFile(scf.assist, "^assistant_pwd=.*", 
 								"assistant_pwd=" + pwdClientHashed)
 					){
-					throw new RuntimeException("Failed to write new password to config-file: " + scf.assist);
+					throw new RuntimeException("Users - Failed to write new password to config-file: " + scf.assist);
 				}else{
-					Debugger.println("Stored new password in config: " + scf.assist, 3);
+					Debugger.println("Users - Stored new password in config: " + scf.assist, 3);
 				}
 				//refresh IDs
 				Config.assistantId = guuid;
 				ConfigDefaults.defaultAssistantUserId = guuid; 
 				return new CreateUserResult(email, guuid, JSON.getString(newData, ACCOUNT.PASSWORD));
 			}else{
-				throw new RuntimeException("Failed to write new password to existing account: " + email);
+				throw new RuntimeException("Users - Failed to write new password to existing account: " + email);
 			}
 		}else{
 			//proceed with creation
@@ -795,12 +801,12 @@ public class Setup {
 						|| !FilesAndStreams.replaceLineInFile(scf.assist, "^assistant_pwd=.*", 
 								"assistant_pwd=" + cr.pwdClientHash)
 					){
-					throw new RuntimeException("Failed to write data to config-file: " + scf.assist);
+					throw new RuntimeException("Users - Failed to write data to config-file: " + scf.assist);
 				}else{
-					Debugger.println("Stored data in database and config: " + scf.assist, 3);
+					Debugger.println("Users - Stored data in database and config: " + scf.assist, 3);
 				}
 			}else{
-				Debugger.println("Writing account data failed! Probably a database error or you need to delete the user first.", 1);
+				Debugger.println("Users - Writing account data failed! Probably a database error or you need to delete the user first.", 1);
 			}
 			//refresh IDs
 			Config.assistantId = cr.guuid;
@@ -819,10 +825,10 @@ public class Setup {
 			//only create new password then ...
 			JSONObject newData = createNewPasswordObject(guuid, pwd);
 			if (DB.writeAccountDataDirectly(guuid, newData)){
-				Debugger.println("Stored new password for: " + email, 3);
+				Debugger.println("Users - Stored new password for: " + email, 3);
 				return new CreateUserResult(email, guuid, JSON.getString(newData, ACCOUNT.PASSWORD));
 			}else{
-				throw new RuntimeException("Failed to write new password to existing account: " + email);
+				throw new RuntimeException("Users - Failed to write new password to existing account: " + email);
 			}
 		}else{
 			//proceed with creation
@@ -839,7 +845,7 @@ public class Setup {
 				)
 			);
 			if (!DB.writeAccountDataDirectly(cr.guuid, data)){ 
-				Debugger.println("Writing account data failed! Probably a database error or you need to delete the user first.", 1);
+				Debugger.println("Users - Writing account data failed! Probably a database error or you need to delete the user first.", 1);
 			}
 			return cr;
 		}
@@ -859,8 +865,12 @@ public class Setup {
 	 * Import sentences (commands) the assistant should understand (e.g. used in the sentence matcher).
 	 */
 	private static void importSentences(){
-		//TODO: right now we still read them simply from file combined with the ones the user "teaches" in the app.
-		System.out.println("Import not supported yet - Currently only loaded at server start.");
+		if (doImportSentences){
+			//TODO: right now we still read them simply from file combined with the ones the user "teaches" in the app.
+			Debugger.println("Commands - Import not supported yet, files loaded at server start instead.", 1);
+		}else{
+			Debugger.println("Commands - Import skipped, currently disabled for default setup.", 3);
+		}
 	}
 	
 	/**
@@ -868,10 +878,14 @@ public class Setup {
 	 * @throws IOException 
 	 */
 	private static void importAnswers() throws IOException{
-		//TODO: make sure you clean up before importing
-		DatabaseInterface db = new Elasticsearch();			//NOTE: hard-coded
-		AnswerImporter aim = new AnswerImporter(db);
-		aim.loadFolder(Config.answersPath, false); 		//NOTE: make sure this comes after creation of users 		
+		if (doImportAnswers){
+			//TODO: make sure you clean up before importing
+			DatabaseInterface db = new Elasticsearch();		//NOTE: hard-coded
+			AnswerImporter aim = new AnswerImporter(db);
+			aim.loadFolder(Config.answersPath, false); 		//NOTE: make sure this comes after creation of users 		
+		}else{
+			Debugger.println("Answers - Import skipped, currently disabled for default setup.", 3);
+		}
 	}
 	
 	/**
@@ -889,7 +903,7 @@ public class Setup {
 				"token=" + token
 		);
 		if (!duckDnsFileSuccess){
-			throw new RuntimeException("Failed to write DuckDNS settings to file! Please check settings and try again.");
+			throw new RuntimeException("DuckDNS - Failed to write settings to file! Please check settings and try again.");
 		}
 		//store data in DuckDNS file for Let's Encrypt
 		boolean duckDnsLetsEncryptFileSuccess = FilesAndStreams.replaceLineInFile(
@@ -902,7 +916,7 @@ public class Setup {
 				"TOKEN=" + token
 		);
 		if (!duckDnsLetsEncryptFileSuccess){
-			Debugger.println("Failed to write data to Let's Encrypt config (" + scf.duckdns + "). "
+			Debugger.println("DuckDNS - Failed to write data to Let's Encrypt config (" + scf.duckdns + "). "
 					+ "Please add DOMAIN and TOKEN manually!", 1);
 		}
 		//add worker to assistant config
@@ -919,7 +933,7 @@ public class Setup {
 				}
 		);
 		if (!assistFileSuccess){
-			Debugger.println("Failed to write data to assist config (" + scf.assist + "). "
+			Debugger.println("DuckDNS - Failed to write data to assist config (" + scf.assist + "). "
 					+ "Please add this worker manually: " + DuckDnsWorker.workerName, 1);
 		}
 		return true;
