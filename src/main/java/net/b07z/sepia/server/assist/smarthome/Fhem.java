@@ -241,7 +241,7 @@ public class Fhem implements SmartHomeHub {
 					JSONObject hubDevice = (JSONObject) o;
 					
 					//Build unified object for SEPIA
-					SmartHomeDevice shd = buildDeviceFromResponse(hubDevice);
+					SmartHomeDevice shd = buildDeviceFromResponse(hubDevice, this.host);
 					
 					//devices
 					if (shd != null){
@@ -350,8 +350,15 @@ public class Fhem implements SmartHomeHub {
 						throw new RuntimeException("Result was null or not unique! Result size: " + devicesArray.size());
 					}
 					JSONObject hubDevice = JSON.getJObject(devicesArray, 0);
-					//build shd from response
-					SmartHomeDevice shd = buildDeviceFromResponse(hubDevice);
+					SmartHomeDevice shd;
+					if (device.hasInterface()){
+						//use internal HUB config
+						shd = device;
+						addMoreFromResponse(shd, hubDevice, this.host);
+					}else{
+						//build device from result
+						shd = buildDeviceFromResponse(hubDevice, this.host);
+					}
 					return shd;
 					
 				}catch (Exception e){
@@ -372,7 +379,7 @@ public class Fhem implements SmartHomeHub {
 	public boolean setDeviceState(SmartHomeDevice device, String state, String stateType){
 		long tic = System.currentTimeMillis();
 		String fhemId = device.getId();
-		String setOptions = device.getMetaValueAsString("setOptions");
+		String setOptions = device.getMetaValueAsString("setOptions");		//TODO: this is missing in SEPIA HUB
 		if (Is.nullOrEmpty(setOptions)){
 			//this is required info ... but before we don't even try ...
 			setOptions = "";
@@ -513,7 +520,7 @@ public class Fhem implements SmartHomeHub {
 	}
 	
 	//build device from JSON response
-	private SmartHomeDevice buildDeviceFromResponse(JSONObject hubDevice){
+	private static SmartHomeDevice buildDeviceFromResponse(JSONObject hubDevice, String hostUrl){
 		//Build unified object for SEPIA
 		String name = null;
 		String type = null;
@@ -586,9 +593,49 @@ public class Fhem implements SmartHomeHub {
 			//TODO: try to map to SEPIA rooms
 		}
 		//create common object
+		JSONObject meta = JSON.make(
+			SmartHomeDevice.META_ID, fhemObjName,
+			SmartHomeDevice.META_ORIGIN, NAME,
+			SmartHomeDevice.META_TYPE_GUESSED, typeGuessed,
+			SmartHomeDevice.META_NAMED_BY_SEPIA, namedBySepia
+		);
+		//note: we need 'id' for commands although it is basically already in 'link'
+		SmartHomeDevice shd = new SmartHomeDevice(name, type, room, 
+				null, stateType, memoryState, null, meta);
+		//specify more
+		if (Is.notNullOrEmpty(roomIndex)){
+			shd.setRoomIndex(roomIndex);
+		}
+		if (Is.notNullOrEmpty(setCmds)){
+			shd.setCustomCommands(setCmds);
+		}
+		
+		//add rest
+		addMoreFromResponse(shd, hubDevice, hostUrl);
+		
+		return shd;
+	}
+	private static void addMoreFromResponse(SmartHomeDevice shd, JSONObject hubDevice, String hostUrl){
+		//add URL
+		String fhemObjName = JSON.getStringOrDefault(hubDevice, "Name", null);
+		Object linkObj = (fhemObjName != null)? (hostUrl + "?cmd." + fhemObjName) : null;
+		if (linkObj != null){
+			shd.setLink(linkObj.toString());
+		}
+		//add more meta - FHEM specific
+		shd.setMetaValue("setOptions", JSON.getStringOrDefault(hubDevice, "PossibleSets", null));
+		
+		//get state
+		String state = getCommonState(shd, hubDevice);
+		shd.setState(state);
+	}
+	private static String getCommonState(SmartHomeDevice shd, JSONObject hubDevice){
+		JSONObject internals = JSON.getJObject(hubDevice, "Internals");
 		//JSONObject stateObj = JSON.getJObject(hubDevice, new String[]{"Readings", "state"});
 		//String state = (stateObj != null)? JSON.getString(stateObj, "Value") : null;
-		String state = JSON.getStringOrDefault(internals, "STATE", null);
+		String state = (internals != null)? JSON.getStringOrDefault(internals, "STATE", null) : null;
+		String stateType = shd.getStateType();
+		String type = shd.getType();
 		//try to deduce state type if not given
 		if (Is.nullOrEmpty(stateType) && state != null){
 			stateType = SmartHomeDevice.findStateType(state);
@@ -609,25 +656,6 @@ public class Fhem implements SmartHomeHub {
 		}
 		//TODO: for temperature we need to check more info (temp. unit? percent? etc...)
 		//TODO: clean up state and set stateType according to values like 'dim50%'
-		Object linkObj = (fhemObjName != null)? (this.host + "?cmd." + fhemObjName) : null;
-		JSONObject meta = JSON.make(
-				"id", fhemObjName,
-				"origin", NAME,
-				"setOptions", JSON.getStringOrDefault(hubDevice, "PossibleSets", null), 		//FHEM specific
-				"typeGuessed", typeGuessed,
-				"namedBySepia", namedBySepia
-		);
-		//note: we need 'id' for commands although it is basically already in 'link'
-		SmartHomeDevice shd = new SmartHomeDevice(name, type, room, 
-				state, stateType, memoryState, 
-				(linkObj != null)? linkObj.toString() : null, meta);
-		//specify more
-		if (Is.notNullOrEmpty(roomIndex)){
-			shd.setRoomIndex(roomIndex);
-		}
-		if (Is.notNullOrEmpty(setCmds)){
-			shd.setCustomCommands(setCmds);
-		}
-		return shd;
+		return state;
 	}
 }

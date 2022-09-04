@@ -103,9 +103,9 @@ public class InternalHub implements SmartHomeHub {
 		}else{
 			//collect
 			for (SmartHomeDevice shd : devicesList){
-				String id = shd.getMetaValueAsString("id");
+				String id = shd.getMetaValueAsString(SmartHomeDevice.META_ID);
 				if (Is.notNullOrEmpty(id)){		//actually this can never be null or empty ... in theory
-					devices.put(shd.getMetaValueAsString("id"), shd);
+					devices.put(shd.getMetaValueAsString(SmartHomeDevice.META_ID), shd);
 				}
 			}
 		}
@@ -184,7 +184,7 @@ public class InternalHub implements SmartHomeHub {
 	@Override
 	public SmartHomeDevice loadDeviceData(SmartHomeDevice device){
 		String interfaceId = device.getInterface();
-		String interfaceDeviceId = device.getMetaValueAsString("interfaceDeviceId");
+		String interfaceDeviceId = device.getInterfaceDeviceId();
 		//System.out.println("Device: " + device.getName() + " " + interfaceId + " " + interfaceDeviceId); 		//DEBUG
 		boolean isIncompleteOrFaulty;
 		if (Is.nullOrEmpty(interfaceId) || Is.nullOrEmpty(interfaceDeviceId)){
@@ -202,13 +202,17 @@ public class InternalHub implements SmartHomeHub {
 					Debugger.println("Smart Home HUB Interface - loadDeviceData"
 							+ " - Connection is SLOW (" + took + "ms)! Plz check interface: " + interfaceId + ", Item: " + interfaceDeviceId, 3);
 				}
-				//import data
 				if (shdFromHub == null){
 					Debugger.println("Smart Home HUB Interface - loadDeviceData"
 							+ " - Failed to get device data: " + interfaceId + " " + interfaceDeviceId, 1);
 					isIncompleteOrFaulty = true;
-					
-				}else if (importHubDeviceDataToInternal(device, shdFromHub)){
+				
+				//skip transfer since its the same object and data just has been added
+				}else if (shdFromHub == device){
+					isIncompleteOrFaulty = false;
+				
+				//transfer data
+				}else if (transferHubDeviceDataToInternal(device, shdFromHub)){
 					isIncompleteOrFaulty = false;
 					
 				}else{
@@ -236,7 +240,7 @@ public class InternalHub implements SmartHomeHub {
 	@Override
 	public boolean setDeviceState(SmartHomeDevice device, String state, String stateType){
 		String interfaceId = device.getInterface();
-		String interfaceDeviceId = device.getMetaValueAsString("interfaceDeviceId");
+		String interfaceDeviceId = device.getInterfaceDeviceId();
 		if (Is.nullOrEmpty(interfaceId) || Is.nullOrEmpty(interfaceDeviceId)){
 			return false;
 		}else{
@@ -270,15 +274,16 @@ public class InternalHub implements SmartHomeHub {
 	
 	/**
 	 * The internal database stores basic info but is usually missing up-to-date info about device state for example.
-	 * This method imports the missing data from the external HUB (or any HUB given by the HUB interface).
+	 * This method transfers the missing data from the external HUB (or any HUB given by the HUB interface).
 	 * @param internalDevice - device loaded from internal DB
 	 * @param hubDevice - device loaded via HUB interface (usually external HUB)
 	 * return true if import worked (which does not mean there was actual data)
 	 */
-	public static boolean importHubDeviceDataToInternal(SmartHomeDevice internalDevice, SmartHomeDevice hubDevice){
+	public static boolean transferHubDeviceDataToInternal(SmartHomeDevice internalDevice, SmartHomeDevice hubDevice){
 		if (internalDevice != null && hubDevice != null){
 			internalDevice.setState(hubDevice.getState());
 			//internalDevice.setStateType(hubDevice.getStateType());
+			//TODO: meta data additions?
 			//memory state?
 			return true;
 		}else{

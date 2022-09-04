@@ -185,7 +185,7 @@ public class OpenHAB implements SmartHomeHub {
 			}
 			if (devicesArray.isEmpty()){
 				//Fail with empty array
-				Debugger.println("Service:OpenHAB - devices array was empty!", 1);
+				Debugger.println("OpenHAB - devices array was empty!", 1);
 				return new HashMap<String, SmartHomeDevice>();
 			}
 			//Build devices map
@@ -226,14 +226,14 @@ public class OpenHAB implements SmartHomeHub {
 				
 			}catch (Exception e){
 				//Fail with faulty array
-				Debugger.println("Service:OpenHAB - devices array seems to be broken! Msg.: " + e.getMessage(), 1);
+				Debugger.println("OpenHAB - devices array seems to be broken! Msg.: " + e.getMessage(), 1);
 				Debugger.printStackTrace(e, 3);
 				return new HashMap<String, SmartHomeDevice>();
 			}
 			
 		}else{
 			//Fail with server contact error
-			Debugger.println("Service:OpenHAB - failed to get devices from server!", 1);
+			Debugger.println("OpenHAB - failed to get devices from server!", 1);
 			return null;
 		}
 	}
@@ -255,6 +255,41 @@ public class OpenHAB implements SmartHomeHub {
 			return null;
 		}else{
 			return SmartHomeDevice.getMatchingDevices(devices, filters);
+		}
+	}
+	
+	@Override
+	public SmartHomeDevice loadDeviceData(SmartHomeDevice device){
+		long tic = System.currentTimeMillis();
+		String id = device.getId();
+		String deviceURL = device.getLink();
+		if (Is.nullOrEmpty(deviceURL) && Is.notNullOrEmpty(id)){
+			deviceURL = this.host + "/rest/items/" + id;
+		}
+		if (Is.nullOrEmpty(deviceURL)){
+			Debugger.println("OpenHAB - 'loadDeviceData' FAILED with msg.: Missing device link", 1);
+			return null;
+		}else{
+			JSONObject response = httpGET(deviceURL);
+			if (Connectors.httpSuccess(response)){
+				Statistics.addExternalApiHit("openHAB loadDevice");
+				Statistics.addExternalApiTime("openHAB loadDevice", tic);
+				SmartHomeDevice shd;
+				if (device.hasInterface()){
+					//use internal HUB config
+					shd = device;
+					addMoreFromResponse(shd, response);
+				}else{
+					//build device from result
+					shd = buildDeviceFromResponse(response);
+				}
+				return shd;
+			}else{
+				Statistics.addExternalApiHit("openHAB loadDevice ERROR");
+				Statistics.addExternalApiTime("openHAB loadDevice ERROR", tic);
+				Debugger.println("OpenHAB - 'loadDeviceData' FAILED with msg.: " + response, 1);
+				return null;
+			}
 		}
 	}
 	
@@ -389,34 +424,6 @@ public class OpenHAB implements SmartHomeHub {
 	public boolean setDeviceStateMemory(SmartHomeDevice device, String stateMemory){
 		return writeDeviceAttribute(device, SmartHomeDevice.SEPIA_TAG_MEM_STATE, stateMemory);
 	}
-
-	@Override
-	public SmartHomeDevice loadDeviceData(SmartHomeDevice device){
-		long tic = System.currentTimeMillis();
-		String id = device.getId();
-		String deviceURL = device.getLink();
-		if (Is.nullOrEmpty(deviceURL) && Is.notNullOrEmpty(id)){
-			deviceURL = this.host + "/rest/items/" + id;
-		}
-		if (Is.nullOrEmpty(deviceURL)){
-			Debugger.println("OpenHAB - 'loadDeviceData' FAILED with msg.: Missing device link", 1);
-			return null;
-		}else{
-			JSONObject response = httpGET(deviceURL);
-			if (Connectors.httpSuccess(response)){
-				Statistics.addExternalApiHit("openHAB loadDevice");
-				Statistics.addExternalApiTime("openHAB loadDevice", tic);
-				//build device from result
-				SmartHomeDevice shd = buildDeviceFromResponse(response);
-				return shd;
-			}else{
-				Statistics.addExternalApiHit("openHAB loadDevice ERROR");
-				Statistics.addExternalApiTime("openHAB loadDevice ERROR", tic);
-				Debugger.println("OpenHAB - 'loadDeviceData' FAILED with msg.: " + response, 1);
-				return null;
-			}
-		}
-	}
 	
 	/**
 	 * Build unified object for SEPIA from HUB device data.
@@ -500,7 +507,43 @@ public class OpenHAB implements SmartHomeHub {
 			room = "";
 		}
 		//create common object
+		JSONObject meta = JSON.make(
+			SmartHomeDevice.META_ID, originalName,
+			SmartHomeDevice.META_ORIGIN, NAME,
+			SmartHomeDevice.META_TYPE_GUESSED, typeGuessed,
+			SmartHomeDevice.META_NAMED_BY_SEPIA, namedBySepia
+		);
+		SmartHomeDevice shd = new SmartHomeDevice(name, type, room, 
+				null, stateType, memoryState, null, meta);
+		//specify more
+		if (Is.notNullOrEmpty(roomIndex)){
+			shd.setRoomIndex(roomIndex);
+		}
+		if (Is.notNullOrEmpty(setCmds)){
+			shd.setCustomCommands(setCmds);
+		}
+		
+		//add rest (including state) - NOTE: we split this to apply same data for internal HUB as well
+		addMoreFromResponse(shd, hubDevice);
+		
+		return shd;
+	}
+	private static void addMoreFromResponse(SmartHomeDevice shd, JSONObject hubDevice){
+		//add URL
+		Object linkObj = hubDevice.get("link");
+		if (linkObj != null){
+			shd.setLink(linkObj.toString());
+		}
+		//TODO: we could add some stuff to meta when we need other data from response.
+		
+		//get state
+		String state = getCommonState(shd, hubDevice);
+		shd.setState(state);
+	}
+	private static String getCommonState(SmartHomeDevice shd, JSONObject hubDevice){
 		String state = JSON.getStringOrDefault(hubDevice, "state", null);
+		String stateType = shd.getStateType();
+		String type = shd.getType();
 		//try to deduce state type if not given
 		if (Is.nullOrEmpty(stateType) && state != null){
 			stateType = SmartHomeDevice.findStateType(state);
@@ -521,24 +564,6 @@ public class OpenHAB implements SmartHomeHub {
 		}
 		//TODO: for temperature we need to check more info (temp. unit? percent? etc...)
 		//TODO: clean up stateObj properly and check special format?
-		Object linkObj = hubDevice.get("link");
-		JSONObject meta = JSON.make(
-				"id", originalName,
-				"origin", NAME,
-				"typeGuessed", typeGuessed,
-				"namedBySepia", namedBySepia
-		);
-		//TODO: we could add some stuff to meta when we need other data from response.
-		SmartHomeDevice shd = new SmartHomeDevice(name, type, room, 
-				state, stateType, memoryState, 
-				(linkObj != null)? linkObj.toString() : null, meta);
-		//specify more
-		if (Is.notNullOrEmpty(roomIndex)){
-			shd.setRoomIndex(roomIndex);
-		}
-		if (Is.notNullOrEmpty(setCmds)){
-			shd.setCustomCommands(setCmds);
-		}
-		return shd;
+		return state;
 	}
 }
