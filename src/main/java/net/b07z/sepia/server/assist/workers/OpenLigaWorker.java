@@ -1,5 +1,6 @@
 package net.b07z.sepia.server.assist.workers;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -346,7 +347,9 @@ public class OpenLigaWorker implements WorkerInterface {
 	//----------------- API -------------------
 	
 	public static final String BUNDESLIGA = "bl1";
-	public static final String BUNDESLIGA_SEASON = "2021";		//TODO: update automatically after season?
+	public static final String BUNDESLIGA_SEASON = (LocalDate.now().getMonthValue() > 6?
+			LocalDate.now().getYear() : LocalDate.now().minusYears(1).getYear()) + ""; 	
+	//TODO: season is set automatically to current year 1 month before start, but server needs restart after ...
 	public static final String BUNDESLIGA_2 = "bl2";
 	public static final String DFB_POKAL = "DFB";
 	public static final String PRIMERA_DIVISION = "PD";
