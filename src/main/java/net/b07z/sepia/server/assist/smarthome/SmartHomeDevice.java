@@ -35,7 +35,17 @@ public class SmartHomeDevice {
 	private String stateMemory;		//state storage for e.g. default values after restart etc.
 	private String link;		//e.g. HTTP direct URL to device
 	private String interfaceId;	//e.g. openhab, fhem
-	private JSONObject meta;	//space for custom stuff
+	//meta data required to operate the device properly:
+	private JSONObject meta;	//e.g. see below META_...
+	
+	//meta variables
+	public static final String META_SET_CMDS = "setCmds";
+	public static final String META_INTERFACE_DEVICE = "interfaceDeviceId";  //the proxy ID in remote HUB
+	public static final String META_INTERFACE_CONFIG = "interfaceConfig";
+	public static final String META_ID = "id";		//the actual ID inside main HUB
+	public static final String META_ORIGIN = "origin";
+	public static final String META_TYPE_GUESSED = "typeGuessed";
+	public static final String META_NAMED_BY_SEPIA = "namedBySepia";
 	
 	//filter options
 	public static final String FILTER_NAME = "name";
@@ -51,7 +61,10 @@ public class SmartHomeDevice {
 	public static final String SEPIA_TAG_DATA = "sepia-data";
 	public static final String SEPIA_TAG_MEM_STATE = "sepia-mem-state";
 	public static final String SEPIA_TAG_STATE_TYPE = "sepia-state-type";
+	//stored in meta:
 	public static final String SEPIA_TAG_SET_CMDS = "sepia-set-cmds";
+	public static final String SEPIA_TAG_INTERFACE_DEVICE = "sepia-interface-device";
+	public static final String SEPIA_TAG_INTERFACE_CONFIG = "sepia-interface-config";
 	
 	public static final String SEPIA_TAG_INTERFACE = "sepia-interface";
 	public static final String SEPIA_TAG_LINK = "sepia-link";
@@ -184,6 +197,12 @@ public class SmartHomeDevice {
 	 */
 	public void setInterface(String interfaceId) {
 		this.interfaceId = interfaceId;
+	}
+	/**
+	 * Check if this device object has an interface ID and thus is based on the internal SEPIA HUB data config data.
+	 */
+	public boolean hasInterface(){
+		return Is.notNullOrEmpty(this.interfaceId);
 	}
 	
 	/**
@@ -365,10 +384,10 @@ public class SmartHomeDevice {
 	 * @return
 	 */
 	public String getId(){
-		if (Is.notNullOrEmpty(this.interfaceId)){
-			return getMetaValueAsString("interfaceDeviceId");
+		if (this.hasInterface()){
+			return getInterfaceDeviceId();
 		}else{
-			return getMetaValueAsString("id");
+			return getMetaValueAsString(META_ID);
 		}
 	}
 	
@@ -380,14 +399,46 @@ public class SmartHomeDevice {
 		if (meta == null){
 			return null;
 		}else{
-			return JSON.getJObject(meta, "setCmds");
+			return JSON.getJObject(meta, META_SET_CMDS);
 		}
 	}
 	/**
 	 * Set custom commands object (aka 'setCmds'; no write to HUB!)
 	 */
 	public void setCustomCommands(JSONObject setCmds){
-		setMetaValue("setCmds", setCmds);
+		setMetaValue(META_SET_CMDS, setCmds);
+	}
+	
+	/**
+	 * Get 'interfaceDeviceId' from meta, e.g. to use it in internal HUB.
+	 * @return ID string or null
+	 */
+	public String getInterfaceDeviceId(){
+		return getMetaValueAsString(META_INTERFACE_DEVICE);
+	}
+	/**
+	 * Set 'interfaceDeviceId'.
+	 */
+	public void setInterfaceDeviceId(String interfaceDeviceId){
+		setMetaValue(META_INTERFACE_DEVICE, interfaceDeviceId);
+	}
+	
+	/**
+	 * Get interface configuration data for external HUB (aka 'interfaceConfig').
+	 * @return
+	 */
+	public JSONObject getInterfaceConfig(){
+		if (meta == null){
+			return null;
+		}else{
+			return JSON.getJObject(meta, META_INTERFACE_CONFIG);
+		}
+	}
+	/**
+	 * Set interface configuration data for external HUB (aka 'interfaceConfig'; no write to HUB!)
+	 */
+	public void setInterfaceConfig(JSONObject interfaceConfig){
+		setMetaValue(META_INTERFACE_CONFIG, interfaceConfig);
 	}
 	
 	/**
@@ -425,10 +476,7 @@ public class SmartHomeDevice {
 		this.stateMemory = JSON.getString(deviceJson, "stateMemory");
 		this.link = JSON.getString(deviceJson, "link");
 		this.meta = JSON.getJObject(deviceJson, "meta");
-		//fix some formats
-		if (this.meta != null){
-			this.setCustomCommands(this.getCustomCommands());
-		}
+		//NOTE: meta includes e.g. "setCmds", "interfaceConfig", "interfaceDeviceId" ...
 		return this;
 	}
 	
@@ -749,7 +797,7 @@ public class SmartHomeDevice {
 	}
 	
 	/**
-	 * Get state set command from custom object, e.g. defined in control HUB for specific device.
+	 * Get set-command for a state from the custom 'setCmds' object, e.g. defined in control HUB for specific device.
 	 * @param state - state as given by NLU, e.g. on, off, 50%
 	 * @param stateType - type of state to set, e.g. text (on,off) or number (50%), as seen in {@link StateType}
 	 * @param setCmds - JSONObject usually taken from device meta data
