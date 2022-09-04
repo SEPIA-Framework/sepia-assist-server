@@ -185,6 +185,7 @@ public class IntegrationsEndpoint {
 			//Build interface
 			String hubName = params.getString("hubName");
 			String hubHost = params.getString("hubHost");
+			String hubInterfaceId = params.getString("hubInterfaceId");
 			SmartHomeHub shh = null;
 			if (Is.notNullOrEmpty(hubHost) && Is.notNullOrEmpty(hubName)){
 				if (Is.notNullOrEmpty(Config.smarthome_hub_host) && Config.smarthome_hub_host.equalsIgnoreCase(hubHost) 
@@ -200,6 +201,9 @@ public class IntegrationsEndpoint {
 							"error", "HUB name and/or host address are unknown to server! Call has been BLOCKED! Please check 'smarthome_hub_...' in your server settings."
 					).toJSONString(), 200);
 				}
+			}else if (Is.notNullOrEmpty(hubInterfaceId) && fun.equalsIgnoreCase("getDevices")){
+				//NOTE: we currently allow this for getDevices only
+				shh = DB.getSmartDevicesDb().getCachedInterfaces().get(hubInterfaceId);
 			}
 			if (shh == null){
 				//FAIL
