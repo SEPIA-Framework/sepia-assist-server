@@ -14,7 +14,10 @@ public class Test_HomeAssistant {
 		SmartHomeHub smartHomeHub = new HomeAssistant(host);
 		smartHomeHub.setAuthenticationInfo(AuthType.Bearer.name(), authToken);
 		
-		getDevices(smartHomeHub);
+		Map<String, SmartHomeDevice> devices = getDevices(smartHomeHub);
+		
+		SmartHomeDevice foundShd = devices.values().iterator().next();
+		loadDeviceData(smartHomeHub, foundShd);
 	}
 	
 	private static Map<String, SmartHomeDevice> getDevices(SmartHomeHub smartHomeHub){
@@ -30,6 +33,16 @@ public class Test_HomeAssistant {
 			}
 		}
 		return devicesMap;
+	}
+	
+	private static SmartHomeDevice loadDeviceData(SmartHomeHub smartHomeHub, SmartHomeDevice shd){
+		SmartHomeDevice shdTest = smartHomeHub.loadDeviceData(shd);
+		System.out.println("Device name: " + shdTest.getName()
+		+ " - type: " + shdTest.getType() 
+		+ " - room: " + shdTest.getRoom() 
+		+ " - state-type: " + shdTest.getStateType()
+		+ " - state: " + shdTest.getState());
+		return shdTest;
 	}
 
 }
