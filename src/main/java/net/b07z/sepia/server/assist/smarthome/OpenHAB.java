@@ -534,7 +534,7 @@ public class OpenHAB implements SmartHomeHub {
 		if (linkObj != null){
 			shd.setLink(linkObj.toString());
 		}
-		//TODO: we could add some stuff to meta when we need other data from response.
+		//TODO: we could add some stuff to meta that is only found in response (not configurable via UI/internal HUB).
 		
 		//get state
 		String state = getCommonState(shd, hubDevice);

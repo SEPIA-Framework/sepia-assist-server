@@ -26,6 +26,7 @@ public class TestCalculator {
 		String expression8 = "m*x + n";
 		String expression9 = "m*x + m";
 		String expression10 = "m*x + z";
+		String expression11 = "round(x*11.1)/10";
 		
 		assertTrue(Calculator.parseExpression(expression1).doubleValue() == 2d);
 		assertTrue(Calculator.parseExpression(expression2).doubleValue() == 11d);
@@ -52,6 +53,8 @@ public class TestCalculator {
 		assertThrows(IllegalArgumentException.class, () -> {
 			Calculator.parseExpression("Hello World");
 		});
+		
+		assertTrue(Calculator.parseExpression(expression11, variables1).floatValue() == 5.6f);
 	}
 
 }

@@ -11,6 +11,7 @@ import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.parameters.Room;
 import net.b07z.sepia.server.assist.parameters.SmartDevice;
+import net.b07z.sepia.server.assist.tools.Calculator;
 import net.b07z.sepia.server.assist.parameters.Number;
 import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
@@ -737,9 +738,9 @@ public class SmartHomeDevice {
 	 * case a trivial adaptation can be made. If the user says "set lights to 20 degrees celsius" adaptation is not possible and the method
 	 * will throw an exception.
 	 * @param inputState - state to set, typically a number (as string)
+	 * @param inputStateType - state type given as input, e.g. {@link StateType#number_plain} (string)
 	 * @param deviceType - type of smart device that might be used to make smart assumptions, e.g. {@link SmartDevice.Types#light}
 	 * @param deviceStateType - expected state type of device, e.g. {@link StateType#number_temperature_c} (string)
-	 * @param inputStateType - state type given as input, e.g. {@link StateType#number_plain} (string)
 	 * @param nluInput - {@link NluInput} that can be used to add user/client specific preferences like a temperature unit. Ignored if null.
 	 * @return {@link SimpleEntry} with new stateType as key and new state as value.
 	 * @throws Exception thrown when adaptation not possible
@@ -830,5 +831,53 @@ public class SmartHomeDevice {
 			}
 		}
 		return null;
+	}
+	
+	/**
+	 * A more complex way of extracting the state from a given data JSONObject,
+	 * supporting a nested path and mathematical expression.
+	 * @param readExpression - use &lt;path&gt; to define state location and add math., e.g.: "100 * &lt;attr.brightness&gt; / 255"
+	 * @param data - JSON object holding the state, e.g. {"attr": {"brightness": 255}} 
+	 * @return
+	 */
+	public static String getStateFromJsonViaExpression(String readExpression, JSONObject data){
+		try {
+			//identify variable
+			String readVar;
+			if (readExpression.contains("<")){
+				readVar = readExpression.replaceFirst(".*?(<.*?>).*", "$1")
+					.replaceFirst("^<", "").replaceFirst(">$", "").trim();
+				//make expression a proper math. string
+				readExpression = readExpression.replace("<" + readVar + ">", "x");
+			}else{
+				readVar = readExpression;
+				readExpression = "x";
+			}
+			//load variable value
+			String[] readPath = readVar.split("\\.");
+			Object state = JSON.getObject(data, readPath);
+			//System.out.println("readExpression=" + readExpression);			//DEBUG
+			//System.out.println("readPath=" + String.join("->", readPath));	//DEBUG
+			if (state == null){
+				return null;
+			}else{
+				String stateStr = Converters.obj2StringOrDefault(state, "");
+				if (readExpression.equals("x")){
+					//just return
+					return stateStr;
+				}else if (stateStr.matches("(-|)\\d+(\\.\\d+|)")){	//NOTE: we do NOT support 1,2 only 1.2
+					//calculate
+					Map<String, Double> calcVars = new HashMap<>();
+					calcVars.put("x", Double.valueOf(stateStr));
+					return Calculator.parseExpression(readExpression, calcVars).toString();
+				}else{
+					//expression cannot be calculated
+					return null;
+				}
+			}
+		}catch(Exception ex){
+			Debugger.println("'getStateFromJsonViaExpression' failed! Err.: " + ex.getMessage(), 1);
+			return null;
+		}
 	}
 }

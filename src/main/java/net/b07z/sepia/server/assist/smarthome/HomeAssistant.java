@@ -14,7 +14,9 @@ import net.b07z.sepia.server.assist.parameters.SmartDevice;
 import net.b07z.sepia.server.assist.parameters.SmartDevice.Types;
 import net.b07z.sepia.server.assist.server.Statistics;
 import net.b07z.sepia.server.assist.smarthome.SmartHomeDevice.StateType;
+import net.b07z.sepia.server.assist.tools.Calculator;
 import net.b07z.sepia.server.core.tools.Connectors;
+import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
@@ -244,7 +246,13 @@ public class HomeAssistant implements SmartHomeHub {
 				if (device.hasInterface()){
 					//use given data defined via internal SEPIA HUB
 					shd = device;
-					addMoreFromResponse(shd, response, JSON.getJObject(response, "attributes"));
+					//make sure again that this is not null (can happen via
+					JSONObject attributes = JSON.getJObject(response, "attributes");
+					if (attributes == null){
+						//we require non-null for following checks
+						attributes = new JSONObject();
+					}
+					addMoreFromResponse(shd, response, attributes, device.getInterfaceConfig());
 				}else{
 					//build device from result
 					shd = buildDeviceFromResponse(response);
@@ -289,12 +297,12 @@ public class HomeAssistant implements SmartHomeHub {
 	public boolean setDeviceState(SmartHomeDevice device, String state, String stateType) {
 		long tic = System.currentTimeMillis();
 		String id = device.getId();
-		String haPlatform = "";		//TODO: get platform like "light"
-		String haService = "";		//TODO: get service like "turn_on"
-		String haServiceURL = this.host + "/api/services/" + haPlatform + "/" + haService;
+		JSONObject haSetup = device.getInterfaceConfig();
+		String haService = "";		//TODO: get service like "light/turn_on"
+		String haServiceURL = this.host + "/api/services/" + haService;
 		//System.out.println("state: " + state); 				//DEBUG
 		//System.out.println("stateType: " + stateType); 		//DEBUG
-		if (Is.nullOrEmpty(haPlatform) || Is.nullOrEmpty(haService)){
+		if (Is.nullOrEmpty(haService)){
 			Debugger.println("HomeAssistant - 'setDeviceState' FAILED with msg.: Missing 'service' info!", 1);
 			return false;
 		}else{
@@ -357,14 +365,57 @@ public class HomeAssistant implements SmartHomeHub {
 
 	//-----------------
 	
-	private static class ServicePayloadData {
-		public String serviceUrl;
-		public JSONObject payload;
+	//helper class to hold custom interface config
+	private static class HaInterfaceConfig {
+		public final String setService;
+		public final String offService;
+		public final String readExpression;
+		public final String writeExpression;
+		public final JSONObject defaultState;
+		public final StateType stateType;
 		
-		public ServicePayloadData(String url, JSONObject data){
-			this.serviceUrl = url;
-			this.payload = data;
+		public HaInterfaceConfig(String setService, String offService,
+				String readExpression, String writeExpression, JSONObject defaultState, StateType stateType){
+			this.setService = setService;
+			this.offService = offService;
+			this.readExpression = readExpression;
+			this.writeExpression = writeExpression;
+			this.defaultState = defaultState;
+			this.stateType = stateType;
 		}
+		public HaInterfaceConfig(JSONObject jsonConfig, StateType stateType){
+			this(JSON.getStringOrDefault(jsonConfig, "set", null),
+				JSON.getStringOrDefault(jsonConfig, "off", null),
+				JSON.getStringOrDefault(jsonConfig, "read", null),
+				JSON.getStringOrDefault(jsonConfig, "write", null),
+				JSON.getJObject(jsonConfig, "default"),
+				stateType);
+		} 
+		public JSONObject getJson(){
+			//NOTE: stateType is just for internal mappings
+			return JSON.make(
+				"set", this.setService,
+				"off", this.offService,
+				"write", this.writeExpression,
+				"read", this.readExpression,
+				"default", this.defaultState
+			);
+		}
+		public static HaInterfaceConfig getFromName(String configName){
+			return haInterfaceConfigMap.get(configName);
+		}
+	}
+	private static Map<String, HaInterfaceConfig> haInterfaceConfigMap;
+	static {
+		haInterfaceConfigMap = new HashMap<>();
+		haInterfaceConfigMap.put("light.onoff", new HaInterfaceConfig(
+			"light/turn_on", "light/turn_off",
+			"<state>", "<state>", JSON.make("state", "off", "value", "off"),
+			StateType.text_binary));
+		haInterfaceConfigMap.put("light.brightness", new HaInterfaceConfig(
+			"light/turn_on", "light/turn_off",
+			"<attributes.brightness>*0.39", "<attributes.brightness_pct>", JSON.make("state", "off", "value", "0"),
+			StateType.number_percent));
 	}
 	
 	/**
@@ -454,18 +505,17 @@ public class HomeAssistant implements SmartHomeHub {
 		}else{
 			dt = Types.valueOf(type);
 		}
-		//extract stateType
-		StateType st;
-		if (stateType == null){
-			st = extractStateTypeFromAttributes(dt, attributes);
-			if (st != null){
-				stateType = st.name();
-			}else{
-				//TODO: device with unknown stateType - what now?
-				st = StateType.text_raw;
+		
+		//extract interface config using predefined setups
+		if (sepiaHaSetup == null){
+			HaInterfaceConfig haic = extractInterfaceConfigFromAttributes(dt, attributes);
+			if (haic != null){
+				sepiaHaSetup = haic.getJson();
+				//get state type
+				if (stateType == null){
+					stateType = haic.stateType.name();
+				}
 			}
-		}else{
-			st = StateType.valueOf(stateType);
 		}
 		
 		//build
@@ -485,43 +535,85 @@ public class HomeAssistant implements SmartHomeHub {
 		if (Is.notNullOrEmpty(setCmds)){
 			shd.setCustomCommands(setCmds);
 		}
+		//interface config for HA
+		if (Is.notNullOrEmpty(haProxyEntity)){
+			shd.setInterfaceDeviceId(haProxyEntity);
+		}
+		if (Is.notNullOrEmpty(sepiaHaSetup)){
+			shd.setInterfaceConfig(sepiaHaSetup);
+		}
 		
 		//add rest
-		addMoreFromResponse(shd, hubDevice, attributes);
+		addMoreFromResponse(shd, hubDevice, attributes, sepiaHaSetup);
 		
 		return shd;
 	}
-	private static void addMoreFromResponse(SmartHomeDevice shd, JSONObject hubDevice, JSONObject attributes){
+	private static void addMoreFromResponse(SmartHomeDevice shd, JSONObject hubDevice,
+			JSONObject attributes, JSONObject sepiaHaSetup){
 		//add URL
 		//Object linkObj = null;	//NOTE: since read and write don't use the same URL we don't set it
+		//TODO: we could add some stuff to meta that is only found in response (not configurable via UI/internal HUB).
 		
-		//TODO: we could add some stuff to meta when we need other data from response.
+		//check if config is individual or name reference
+		if (sepiaHaSetup != null && sepiaHaSetup.containsKey("config")){
+			String configName = JSON.getStringOrDefault(sepiaHaSetup, "config", null);
+			if (Is.notNullOrEmpty(configName)){
+				HaInterfaceConfig haic = HaInterfaceConfig.getFromName(configName);
+				if (haic != null){
+					//replace with predefined config
+					sepiaHaSetup = haic.getJson();
+				}
+			}
+		}
 				
 		//get state
-		String state = getCommonState(shd, hubDevice, attributes);
+		String state = getCommonState(shd, hubDevice, attributes, sepiaHaSetup);
 		shd.setState(state);
 	}
-	private static String getCommonState(SmartHomeDevice shd, JSONObject hubDevice, JSONObject attributes){
+	private static String getCommonState(SmartHomeDevice shd, JSONObject hubDevice,
+			JSONObject attributes, JSONObject sepiaHaSetup){
 		String state = null;
 		String deviceType = shd.getType();
 		String stateType = shd.getStateType();
 		String stateBasic = JSON.getStringOrDefault(hubDevice, "state", null);
-		if (stateBasic == null || stateBasic.equalsIgnoreCase("unknown")){
-			state = null;
-		}else{
-			switch (deviceType){
-				case "light":
-					state = getStateForLights(stateBasic, stateType, attributes);
-					break;
-				case "sensor":
-					state = stateBasic;
-					break;
-				case "unknown":
-					state = stateBasic;
-					
-				//TODO: implement more
-				default:
-					break;
+		if (stateBasic == null || stateBasic.equalsIgnoreCase("unknown") || stateBasic.equalsIgnoreCase("unavailable")){
+			//device not reachable?
+			return null;
+		}
+		//specifically defined field for "clean" state?
+		state = getStateFromCustomField(attributes);	//if exists we fully trust the HA script to give good values 
+		if (Is.nullOrEmpty(state)){
+			//use interface config?
+			if (Is.notNullOrEmpty(sepiaHaSetup)){
+				state = getStateUsingConfig(new HaInterfaceConfig(sepiaHaSetup, StateType.valueOf(stateType)), hubDevice);
+				if (state == null && sepiaHaSetup.containsKey("default")){
+					//fallback to default
+					Object refState = JSON.getObject(sepiaHaSetup, new String[]{"default", "state"});
+					if (refState != null &&  Converters.obj2StringOrDefault(refState, "").equalsIgnoreCase(stateBasic)){
+						Object refValue = JSON.getObject(sepiaHaSetup, new String[]{"default", "value"});
+						if (refValue != null){
+							//always make sure we don't accidentally cast number to string and crash ^^
+							state = Converters.obj2StringOrDefault(refValue, null);
+						}
+					}
+				}
+			
+			//use best guess
+			}else{
+				switch (deviceType){
+					case "light":
+						state = getStateForLights(stateBasic, stateType, attributes);
+						break;
+					case "sensor":
+						state = stateBasic;
+						break;
+					case "unknown":
+						state = stateBasic;
+						
+					//TODO: implement more
+					default:
+						break;
+				}
 			}
 		}
 		if (state != null){
@@ -560,50 +652,48 @@ public class HomeAssistant implements SmartHomeHub {
 		}
 	}
 	
-	private static StateType extractStateTypeFromAttributes(Types deviceType, JSONObject attributes){
+	private static HaInterfaceConfig extractInterfaceConfigFromAttributes(Types deviceType, JSONObject attributes) {
 		if (deviceType == null) return null;
-		//states: https://github.com/home-assistant/core/blob/dev/homeassistant/const.py#L315
 		switch (deviceType){
+			//LIGHT
 			case light:
-				return extractStateTypeForLights(attributes);
+				JSONArray scm = JSON.getJArray(attributes, "supported_color_modes");
+				if (Is.nullOrEmpty(scm)){
+					return HaInterfaceConfig.getFromName("light.onoff");
+				}else if (scm.contains("brightness")){
+					return HaInterfaceConfig.getFromName("light.brightness");
+				}else if (scm.contains("onoff")){
+					return HaInterfaceConfig.getFromName("light.onoff");
+				}
+				//TODO: check more (e.g. something with color)
+				return null;
 			
 			//TODO: implement more
 			default:
 				return null;
 		}
 	}
-	//LIGHTS
-	private static StateType extractStateTypeForLights(JSONObject attributes){
-		//https://developers.home-assistant.io/docs/core/entity/light
-		//relevant: brightness, onoff, color_temp, ..?
-		String cm = JSON.getStringOrDefault(attributes, "color_mode", null);
-		if (cm == null){
-			//get from supported types
-			JSONArray scm = JSON.getJArray(attributes, "supported_color_modes");
-			if (scm != null){
-				if (scm.contains("brightness")){
-					return StateType.number_percent;
-				}else if (scm.contains("onoff")){
-					return StateType.text_binary;
-				}
-			}
-		}else{
-			//get what is explicitly set
-			if (cm.equals("brightness")){
-				return StateType.number_percent;
-			}else if (cm.equals("onoff")){
-				return StateType.text_binary;
-			}
-		}
-		return null;
+	
+	//state via config
+	private static String getStateUsingConfig(HaInterfaceConfig haic, JSONObject hubDevice){
+		if (haic == null) return null;
+		String readExpression = Is.notNullOrEmpty(haic.readExpression)? haic.readExpression : "<state>";	//"state" is HA default
+		return SmartHomeDevice.getStateFromJsonViaExpression(readExpression, hubDevice);
 	}
+	
+	//state via CUSTOM
+	private static String getStateFromCustomField(JSONObject attributes){
+		return Converters.obj2StringOrDefault(attributes.get(SEPIA_STATE), null);
+	}
+
+	//state for LIGHTS
 	private static String getStateForLights(String basicState, String stateType, JSONObject attributes){
 		switch (StateType.valueOf(stateType)){
 			case number_percent:
 				if (basicState.equalsIgnoreCase("on")){
 					int brightness = JSON.getIntegerOrDefault(attributes, "brightness", -1);
 					if (brightness > 0){
-						return String.valueOf(Math.round(brightness/255.0f));
+						return String.valueOf(Math.round(100.0f*brightness/255.0f));
 					}else{
 						return null;
 					}
@@ -615,16 +705,5 @@ public class HomeAssistant implements SmartHomeHub {
 			default:
 				return basicState;
 		}
-	}
-	private static ServicePayloadData getWriteDataForLights(SmartHomeDevice device, String state){
-		switch (StateType.valueOf(device.getStateType())){
-			case number_percent:
-				break;
-			case text_binary:
-				break;
-			default:
-				break;
-		}
-		return new ServicePayloadData(null, null);
 	}
 }
