@@ -197,7 +197,7 @@ public class ConfigServer {
 			String reloadDB = params.getString("reloadDB");
 			String dbReloadMsg = "no-update"; 
 			if (reloadDB != null && !reloadDB.isEmpty()){
-				String[] dbCmd = reloadDB.split("-");
+				String[] dbCmd = reloadDB.split("-", 2);
 				if (dbCmd.length == 2){
 					if (dbCmd[0].equals("es")){
 						if (!dbCmd[1].isEmpty()){
