@@ -710,7 +710,7 @@ public class SmartHomeDevice {
 		}else{
 			return state;
 		}
-		//TODO: add more?
+		//TODO: add more? Use deviceType?
 	}
 	
 	/**
@@ -758,7 +758,7 @@ public class SmartHomeDevice {
 		if (Is.typeEqual(newInputStateType, StateType.number_plain)){
 			//we take selectedDevice stateType since this is definitely defined at this point
 			newInputStateType = deviceStateType;
-			//TODO: need to properly convert state to newInputState?
+			//TODO: need to properly convert state to newInputState? What if 'deviceStateType' is binary ON/OFF?
 		}
 		//devices with state value type temp. only accept plain number or temp. number
 		if (deviceStateType.startsWith(StateType.number_temperature.name())){
@@ -802,35 +802,50 @@ public class SmartHomeDevice {
 	 * @param state - state as given by NLU, e.g. on, off, 50%
 	 * @param stateType - type of state to set, e.g. text (on,off) or number (50%), as seen in {@link StateType}
 	 * @param setCmds - JSONObject usually taken from device meta data
-	 * @return new set command or null
+	 * @return SimpleEntry with (key, command) or null
 	 */
-	public static String getStateFromCustomSetCommands(String state, String stateType, JSONObject setCmds){
+	public static SimpleEntry<String, String> getKeyAndStateFromCustomSetCommands(String state, String stateType, JSONObject setCmds){
 		if (stateType != null){
 			if (stateType.matches(REGEX_STATE_TYPE_NUMBER)){
 				String cmd = Converters.obj2StringOrDefault(setCmds.get("number"), null);
 				if (Is.notNullOrEmpty(cmd)){
-					return cmd.replaceAll("<val>|<value>", state);
+					return new SimpleEntry<>("number", cmd.replaceAll("<val>|<value>", state));
 				}
 			}else if (stateType.matches(REGEX_STATE_TYPE_TEXT)){
 				if (state.matches(REGEX_STATE_ENABLE)){
 					String cmd = Converters.obj2StringOrDefault(setCmds.get("enable"), null);
 					if (Is.notNullOrEmpty(cmd)){
-						return cmd;
+						return new SimpleEntry<>("enable", cmd);
 					}
 				}else if (state.matches(REGEX_STATE_DISABLE)){
 					String cmd = Converters.obj2StringOrDefault(setCmds.get("disable"), null);
 					if (Is.notNullOrEmpty(cmd)){
-						return cmd;
+						return new SimpleEntry<>("disable", cmd);
 					}
 				}else if (Is.typeEqual(stateType, StateType.text_raw)){
 					String cmd = Converters.obj2StringOrDefault(setCmds.get("raw"), null);
 					if (Is.notNullOrEmpty(cmd)){
-						return cmd.replaceAll("<val>|<value>", state);
+						return new SimpleEntry<>("raw", cmd.replaceAll("<val>|<value>", state));
 					}
 				}
 			}
 		}
 		return null;
+	}
+	/**
+	 * Get set-command for a state from the custom 'setCmds' object, e.g. defined in control HUB for specific device.
+	 * @param state - state as given by NLU, e.g. on, off, 50%
+	 * @param stateType - type of state to set, e.g. text (on,off) or number (50%), as seen in {@link StateType}
+	 * @param setCmds - JSONObject usually taken from device meta data
+	 * @return new set command or null
+	 */
+	public static String getStateFromCustomSetCommands(String state, String stateType, JSONObject setCmds){
+		SimpleEntry<String, String> se = getKeyAndStateFromCustomSetCommands(state, stateType, setCmds);
+		if (se == null){
+			return null;
+		}else{
+			return se.getValue();
+		}
 	}
 	
 	/**
@@ -877,6 +892,45 @@ public class SmartHomeDevice {
 			}
 		}catch(Exception ex){
 			Debugger.println("'getStateFromJsonViaExpression' failed! Err.: " + ex.getMessage(), 1);
+			return null;
+		}
+	}
+	/**
+	 * Calculate the new state and build nested JSON object according to path variable in write expression. 
+	 * @param writeExpression - expression with path variable, e.g.: "&lt;attr.brightness&gt;" or "2.55 * &lt;attr.brightness&gt;"
+	 * @param state - state to write, optionally used as value for calculation variable
+	 * @return JSON object depending on expression, e.g. '{"attr": {"brightness": state}}' for "&lt;attr.brightness&gt;"
+	 */
+	public static JSONObject buildStateDataFromWriteExpression(String writeExpression, String state){
+		try {
+			//identify variable
+			String writeVar;
+			if (writeExpression.contains("<")){
+				writeVar = writeExpression.replaceFirst(".*?(<.*?>).*", "$1")
+					.replaceFirst("^<", "").replaceFirst(">$", "").trim();
+				//make expression a proper math. string
+				writeExpression = writeExpression.replace("<" + writeVar + ">", "x");
+			}else{
+				writeVar = writeExpression;
+				writeExpression = "x";
+			}
+			//build data
+			JSONObject data = new JSONObject();
+			if (writeExpression.equals("x")){
+				//no state change
+				return JSON.putWithDotPath(data, writeVar, state);
+			}else if (state.matches("(-|)\\d+(\\.\\d+|)")){	//NOTE: we do NOT support 1,2 only 1.2
+				//calculate
+				Map<String, Double> calcVars = new HashMap<>();
+				calcVars.put("x", Double.valueOf(state));
+				String calcRes = Calculator.parseExpression(writeExpression, calcVars).toString();	//NOTE: this will be e.g. 10.0 not 10!
+				return JSON.putWithDotPath(data, writeVar, calcRes);
+			}else{
+				//expression cannot be calculated
+				return null;
+			}
+		}catch (Exception ex){
+			Debugger.println("'buildStateDataFromWriteExpression' failed! Err.: " + ex.getMessage(), 1);
 			return null;
 		}
 	}

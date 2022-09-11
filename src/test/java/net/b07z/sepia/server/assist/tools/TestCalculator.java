@@ -29,8 +29,10 @@ public class TestCalculator {
 		String expression11 = "round(x*11.1)/10";
 		
 		assertTrue(Calculator.parseExpression(expression1).doubleValue() == 2d);
+		assertTrue(Calculator.parseExpression(expression1).toString().equals("2.0"));
 		assertTrue(Calculator.parseExpression(expression2).doubleValue() == 11d);
 		assertTrue(Calculator.parseExpression(expression3).doubleValue() == 10d);
+		assertTrue(Calculator.parseExpression(expression3).toString().equals("10.0"));
 		
 		assertTrue(Calculator.parseExpression(expression4, variables1).doubleValue() == 31d);
 		

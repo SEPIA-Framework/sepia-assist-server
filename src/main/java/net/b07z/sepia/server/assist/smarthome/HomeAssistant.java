@@ -1,5 +1,6 @@
 package net.b07z.sepia.server.assist.smarthome;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -10,11 +11,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import net.b07z.sepia.server.assist.parameters.SmartDevice;
 import net.b07z.sepia.server.assist.parameters.SmartDevice.Types;
 import net.b07z.sepia.server.assist.server.Statistics;
 import net.b07z.sepia.server.assist.smarthome.SmartHomeDevice.StateType;
-import net.b07z.sepia.server.assist.tools.Calculator;
 import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
@@ -53,6 +52,9 @@ public class HomeAssistant implements SmartHomeHub {
 	private static final String SEPIA_STATE_TYPE = SmartHomeDevice.SEPIA_TAG_STATE_TYPE;
 	private static final String SEPIA_SET_CMDS = SmartHomeDevice.SEPIA_TAG_SET_CMDS;
 	
+	/**
+	 * Default constructor.
+	 */
 	public HomeAssistant(String host){
 		if (Is.nullOrEmpty(host)){
 			throw new RuntimeException("No host address found for HomeAssistant integration!");
@@ -252,7 +254,7 @@ public class HomeAssistant implements SmartHomeHub {
 						//we require non-null for following checks
 						attributes = new JSONObject();
 					}
-					addMoreFromResponse(shd, response, attributes, device.getInterfaceConfig());
+					addMoreFromResponse(shd, response, attributes);
 				}else{
 					//build device from result
 					shd = buildDeviceFromResponse(response);
@@ -296,53 +298,121 @@ public class HomeAssistant implements SmartHomeHub {
 	@Override
 	public boolean setDeviceState(SmartHomeDevice device, String state, String stateType) {
 		long tic = System.currentTimeMillis();
-		String id = device.getId();
+		loadPredefinedInterfaceConfigIfGiven(device);
+		String haDevice = device.getInterfaceDeviceId();	//TODO: what if it's not internal interface?
 		JSONObject haSetup = device.getInterfaceConfig();
-		String haService = "";		//TODO: get service like "light/turn_on"
-		String haServiceURL = this.host + "/api/services/" + haService;
-		//System.out.println("state: " + state); 				//DEBUG
-		//System.out.println("stateType: " + stateType); 		//DEBUG
-		if (Is.nullOrEmpty(haService)){
-			Debugger.println("HomeAssistant - 'setDeviceState' FAILED with msg.: Missing 'service' info!", 1);
+		/*
+		System.out.println("haDevice: " + haDevice);		//DEBUG
+		System.out.println("haSetup: " + haSetup);			//DEBUG
+		System.out.println("stateType set: " + stateType);	//DEBUG
+		System.out.println("state set: " + state);			//DEBUG
+		*/
+		if (Is.nullOrEmpty(haSetup)){
+			Debugger.println("HomeAssistant - 'setDeviceState' FAILED with msg.: Missing interface config!", 1);
 			return false;
 		}else{
+			String action = "enable";	//best guess: enable - current options: enable, disable, number, raw
 			//set command overwrite?
 			JSONObject setCmds = device.getCustomCommands();
 			if (Is.notNullOrEmpty(setCmds)){
-				String newState = SmartHomeDevice.getStateFromCustomSetCommands(state, stateType, setCmds);
+				//if (givenType != null && Is.typeEqual(givenType, SmartDevice.Types.roller_shutter)){
+				SimpleEntry<String, String> se = SmartHomeDevice.getKeyAndStateFromCustomSetCommands(state, stateType, setCmds);
+				String newState = se != null? se.getValue() : null;
 				if (newState != null){
+					action = se.getKey();
 					state = newState;
 				}
+				//TODO: fix roller shutter mapping for enable/disable (here or in SmartHomeHubConnector?)
 				
 			//check deviceType to find correct set command
 			}else{
-				String givenType = device.getType();
+				String givenStateType = device.getStateType();
 				if (stateType != null){
-					//ROLLER SHUTTER
-					if (givenType != null && Is.typeEqual(givenType, SmartDevice.Types.roller_shutter)){
+					/*//ROLLER SHUTTER
+					String givenType = device.getType();
+					if (givenType != null && Is.typeEqual(givenType, Types.roller_shutter)){
 						if (Is.typeEqualIgnoreCase(state, SmartHomeDevice.State.open)){
 							state = "UP";
 						}else if (Is.typeEqualIgnoreCase(state, SmartHomeDevice.State.closed)){
 							state = "DOWN";
 						}
-					//ELSE
-					}else{
-						if (stateType.equals(SmartHomeDevice.StateType.text_binary.name())){
-							//all upper case text for openHAB
-							state = state.toUpperCase();
+					}*/
+					if (stateType.equals(StateType.text_binary.name())){
+						if (Is.typeEqualIgnoreCase(state, SmartHomeDevice.State.on)){
+							action = "enable";
+							if (givenStateType.equals(StateType.number_percent.name())){
+								state = device.getStateMemory();	//TODO: is this ever set?
+								if (Is.nullOrEmpty(state)){
+									//assume ON is 100 percent
+									state = "100";
+								}
+							}
+						}else if (Is.typeEqualIgnoreCase(state, SmartHomeDevice.State.off)){
+							action = "disable";
+							if (givenStateType.equals(StateType.number_percent.name())){
+								//assume OFF is 0 percent
+								state = "0";
+							}
 						}
+						//state = ...
+					}else if (stateType.startsWith("number_")){
+						action = "number";
 					}
-					//TODO: improve stateType check (temp. etc)
 				}
 			}
-			//TODO: we could check mem-state here if state is e.g. SmartHomeDevice.STATE_ON
-			
-			JSONObject data = JSON.make("entity_id", id, "brightness_pct", state);	//TODO: fix
-			
+			//convert action to HA service
+			JSONObject haAction;
+			if (action.equals("disable")){
+				haAction = JSON.getJObject(haSetup, "off");
+			}else if (action.equals("enable")){
+				haAction = JSON.getJObject(haSetup, "on");
+			}else{
+				haAction = JSON.getJObject(haSetup, "set");
+			}
+			if (haAction == null){
+				Debugger.println("HomeAssistant - 'setDeviceState' FAILED with msg.: Missing interface config entry!", 1);
+				return false;
+			}
+			//intent or service
+			String intentName = JSON.getStringOrDefault(haAction, "intent", null);
+			String serviceName = JSON.getStringOrDefault(haAction, "service", null);
+			if (Is.nullOrEmpty(serviceName) && Is.nullOrEmpty(intentName)){
+				Debugger.println("HomeAssistant - 'setDeviceState' FAILED with msg.: Missing 'service' or 'intent' in config!", 1);
+				return false;
+			}
+			//data expression
+			JSONObject reqData = JSON.make("entity_id", haDevice);
+			String writeExpression = JSON.getStringOrDefault(haAction, "write", null);
+			if (Is.notNullOrEmpty(writeExpression)){
+				JSONObject data = SmartHomeDevice.buildStateDataFromWriteExpression(writeExpression, state);
+				if (data != null && data.containsKey("attributes")){
+					JSONObject attr = JSON.getJObject(data, new String[]{"attributes"});
+					if (attr != null){
+						JSON.forEach(attr, (key, val) -> {
+							JSON.put(reqData, key, val);
+						});
+					}
+				}
+			}
+			JSONObject reqBody;
+			String haActionURL = this.host;
+			if (Is.notNullOrEmpty(serviceName)){
+				//service
+				haActionURL += "/api/services/" + serviceName;
+				reqBody = reqData;
+			}else{
+				//intent
+				haActionURL += "/api/intent/handle";
+				reqBody = JSON.make("name", intentName, "data", reqData);
+			}
+			/*
+			System.out.println("haAction: " + haAction);		//DEBUG
+			System.out.println("reqBody: " + reqBody);			//DEBUG
+			*/
 			Map<String, String> headers = new HashMap<>();
 			headers.put("Content-Type", "text/plain");
 			headers.put("Accept", "application/json");
-			JSONObject response = httpPOST(haServiceURL, data, headers);
+			JSONObject response = httpPOST(haActionURL, reqBody, headers);
 			//System.out.println("RESPONSE: " + response); 		//this is usually empty if there was no error
 			boolean success = Connectors.httpSuccess(response); 
 			if (!success){
@@ -367,55 +437,67 @@ public class HomeAssistant implements SmartHomeHub {
 	
 	//helper class to hold custom interface config
 	private static class HaInterfaceConfig {
-		public final String setService;
-		public final String offService;
-		public final String readExpression;
-		public final String writeExpression;
+		public final JSONObject onConfig;	//e.g.: {"service": "light/turn_on"} OR {"intent": "TurnOnLight"} 
+		public final JSONObject setConfig;	//e.g.: {"service": "light/turn_on", "write": "<attributes.brightness_pct>"}
+		public final JSONObject offConfig;	//e.g.: {"service": "light/turn_off"}
+		public final String readExpression;	//e.g.: "round(<attributes.brightness>*0.39)"
 		public final JSONObject defaultState;
-		public final StateType stateType;
+		//public final StateType stateType;
 		
-		public HaInterfaceConfig(String setService, String offService,
-				String readExpression, String writeExpression, JSONObject defaultState, StateType stateType){
-			this.setService = setService;
-			this.offService = offService;
+		public HaInterfaceConfig(JSONObject onConfig, JSONObject setConfig, JSONObject offConfig,
+				String readExpression, JSONObject defaultState){
+			this.onConfig = onConfig;
+			this.setConfig = setConfig;
+			this.offConfig = offConfig;
 			this.readExpression = readExpression;
-			this.writeExpression = writeExpression;
 			this.defaultState = defaultState;
-			this.stateType = stateType;
 		}
-		public HaInterfaceConfig(JSONObject jsonConfig, StateType stateType){
-			this(JSON.getStringOrDefault(jsonConfig, "set", null),
-				JSON.getStringOrDefault(jsonConfig, "off", null),
+		public HaInterfaceConfig(JSONObject jsonConfig){
+			//try 'on' for 'set' and vice versa if one is null
+			this(jsonConfig.containsKey("on")? JSON.getJObject(jsonConfig, "on") : JSON.getJObject(jsonConfig, "set"),
+				jsonConfig.containsKey("set")? JSON.getJObject(jsonConfig, new String[]{"set"}) : JSON.getJObject(jsonConfig, "on"),
+				JSON.getJObject(jsonConfig, "off"),
 				JSON.getStringOrDefault(jsonConfig, "read", null),
-				JSON.getStringOrDefault(jsonConfig, "write", null),
-				JSON.getJObject(jsonConfig, "default"),
-				stateType);
-		} 
+				JSON.getJObject(jsonConfig, "default")
+			);
+		}
 		public JSONObject getJson(){
-			//NOTE: stateType is just for internal mappings
-			return JSON.make(
-				"set", this.setService,
-				"off", this.offService,
-				"write", this.writeExpression,
+			JSONObject json = JSON.make(
+				"on", this.onConfig,
+				"set", this.setConfig,
+				"off", this.offConfig,
 				"read", this.readExpression,
 				"default", this.defaultState
 			);
+			return json;
+			//NOTE: 'stateType' is not included but set via 'device' when a predefined HA config is used
 		}
+		
 		public static HaInterfaceConfig getFromName(String configName){
 			return haInterfaceConfigMap.get(configName);
 		}
 	}
 	private static Map<String, HaInterfaceConfig> haInterfaceConfigMap;
+	private static Map<String, StateType> haInterfaceConfigStateTypeMap;
+	//private static Map<String, JSONObject> haSetCommandsMap;
 	static {
 		haInterfaceConfigMap = new HashMap<>();
+		haInterfaceConfigStateTypeMap = new HashMap<>();
+		//haSetCommandsMap = new HashMap<>();
+		
+		//Lights - on/off
 		haInterfaceConfigMap.put("light.onoff", new HaInterfaceConfig(
-			"light/turn_on", "light/turn_off",
-			"<state>", "<state>", JSON.make("state", "off", "value", "off"),
-			StateType.text_binary));
+			JSON.make("service", "light/turn_on"), JSON.make("service", "light/turn_on"), JSON.make("service", "light/turn_off"),
+			"<state>", JSON.make("state", "off", "value", "off")));
+		haInterfaceConfigStateTypeMap.put("light.onoff", StateType.text_binary);
+		//haSetCommandsMap.put("light.onoff", JSON.make("enable", "on", "disable", "off", "number", "on"));
+		
+		//Lights - brightness
 		haInterfaceConfigMap.put("light.brightness", new HaInterfaceConfig(
-			"light/turn_on", "light/turn_off",
-			"<attributes.brightness>*0.39", "<attributes.brightness_pct>", JSON.make("state", "off", "value", "0"),
-			StateType.number_percent));
+			JSON.make("service", "light/turn_on"), JSON.make("service", "light/turn_on", "write", "<attributes.brightness_pct>"), JSON.make("service", "light/turn_off"),
+			"round(<attributes.brightness>*0.392)", JSON.make("state", "off", "value", "0")));
+		haInterfaceConfigStateTypeMap.put("light.brightness", StateType.number_percent);
+		//haSetCommandsMap.put("light.brightness", JSON.make("enable", "100", "disable", "0", "number", "<val>"));
 	}
 	
 	/**
@@ -508,15 +590,19 @@ public class HomeAssistant implements SmartHomeHub {
 		
 		//extract interface config using predefined setups
 		if (sepiaHaSetup == null){
-			HaInterfaceConfig haic = extractInterfaceConfigFromAttributes(dt, attributes);
-			if (haic != null){
-				sepiaHaSetup = haic.getJson();
-				//get state type
-				if (stateType == null){
-					stateType = haic.stateType.name();
+			String configName = extractInterfaceConfigFromAttributes(dt, attributes);
+			if (configName != null){
+				HaInterfaceConfig haic = HaInterfaceConfig.getFromName(configName);
+				if (haic != null){
+					sepiaHaSetup = haic.getJson();
+					//add stateType info?
+					if (stateType == null){
+						stateType = haInterfaceConfigStateTypeMap.get(configName).name();
+					}
 				}
 			}
 		}
+		//NOTE: else 'haic' restore from predefined "config" and stateType mismatch is handled below
 		
 		//build
 		Object linkObj = null;		//TODO: since read and write don't use the same URL we don't set it
@@ -538,40 +624,31 @@ public class HomeAssistant implements SmartHomeHub {
 		//interface config for HA
 		if (Is.notNullOrEmpty(haProxyEntity)){
 			shd.setInterfaceDeviceId(haProxyEntity);
+		}else{
+			shd.setInterfaceDeviceId(entityId);
 		}
 		if (Is.notNullOrEmpty(sepiaHaSetup)){
 			shd.setInterfaceConfig(sepiaHaSetup);
 		}
 		
 		//add rest
-		addMoreFromResponse(shd, hubDevice, attributes, sepiaHaSetup);
+		addMoreFromResponse(shd, hubDevice, attributes);
 		
 		return shd;
 	}
-	private static void addMoreFromResponse(SmartHomeDevice shd, JSONObject hubDevice,
-			JSONObject attributes, JSONObject sepiaHaSetup){
+	private static void addMoreFromResponse(SmartHomeDevice shd, JSONObject hubDevice, JSONObject attributes){
 		//add URL
 		//Object linkObj = null;	//NOTE: since read and write don't use the same URL we don't set it
 		//TODO: we could add some stuff to meta that is only found in response (not configurable via UI/internal HUB).
 		
 		//check if config is individual or name reference
-		if (sepiaHaSetup != null && sepiaHaSetup.containsKey("config")){
-			String configName = JSON.getStringOrDefault(sepiaHaSetup, "config", null);
-			if (Is.notNullOrEmpty(configName)){
-				HaInterfaceConfig haic = HaInterfaceConfig.getFromName(configName);
-				if (haic != null){
-					//replace with predefined config
-					sepiaHaSetup = haic.getJson();
-				}
-			}
-		}
+		loadPredefinedInterfaceConfigIfGiven(shd);
 				
 		//get state
-		String state = getCommonState(shd, hubDevice, attributes, sepiaHaSetup);
+		String state = getCommonState(shd, hubDevice, attributes);
 		shd.setState(state);
 	}
-	private static String getCommonState(SmartHomeDevice shd, JSONObject hubDevice,
-			JSONObject attributes, JSONObject sepiaHaSetup){
+	private static String getCommonState(SmartHomeDevice shd, JSONObject hubDevice,	JSONObject attributes){
 		String state = null;
 		String deviceType = shd.getType();
 		String stateType = shd.getStateType();
@@ -584,8 +661,9 @@ public class HomeAssistant implements SmartHomeHub {
 		state = getStateFromCustomField(attributes);	//if exists we fully trust the HA script to give good values 
 		if (Is.nullOrEmpty(state)){
 			//use interface config?
+			JSONObject sepiaHaSetup = shd.getInterfaceConfig();
 			if (Is.notNullOrEmpty(sepiaHaSetup)){
-				state = getStateUsingConfig(new HaInterfaceConfig(sepiaHaSetup, StateType.valueOf(stateType)), hubDevice);
+				state = getStateUsingConfig(new HaInterfaceConfig(sepiaHaSetup), hubDevice);
 				if (state == null && sepiaHaSetup.containsKey("default")){
 					//fallback to default
 					Object refState = JSON.getObject(sepiaHaSetup, new String[]{"default", "state"});
@@ -618,8 +696,7 @@ public class HomeAssistant implements SmartHomeHub {
 		}
 		if (state != null){
 			if (stateType != null){
-				state = SmartHomeDevice.convertAnyStateToGeneralizedState(state, stateType);		
-				//TODO: this might require deviceType (see comment inside method)
+				state = SmartHomeDevice.convertAnyStateToGeneralizedState(state, stateType);
 			}
 		}
 		return state;
@@ -652,18 +729,18 @@ public class HomeAssistant implements SmartHomeHub {
 		}
 	}
 	
-	private static HaInterfaceConfig extractInterfaceConfigFromAttributes(Types deviceType, JSONObject attributes) {
+	private static String extractInterfaceConfigFromAttributes(Types deviceType, JSONObject attributes) {
 		if (deviceType == null) return null;
 		switch (deviceType){
 			//LIGHT
 			case light:
 				JSONArray scm = JSON.getJArray(attributes, "supported_color_modes");
 				if (Is.nullOrEmpty(scm)){
-					return HaInterfaceConfig.getFromName("light.onoff");
+					return "light.onoff";
 				}else if (scm.contains("brightness")){
-					return HaInterfaceConfig.getFromName("light.brightness");
+					return "light.brightness";
 				}else if (scm.contains("onoff")){
-					return HaInterfaceConfig.getFromName("light.onoff");
+					return "light.onoff";
 				}
 				//TODO: check more (e.g. something with color)
 				return null;
@@ -671,6 +748,22 @@ public class HomeAssistant implements SmartHomeHub {
 			//TODO: implement more
 			default:
 				return null;
+		}
+	}
+	private static void loadPredefinedInterfaceConfigIfGiven(SmartHomeDevice shd){
+		JSONObject sepiaHaSetup = shd.getInterfaceConfig();
+		if (sepiaHaSetup != null && sepiaHaSetup.containsKey("config")){
+			String configName = JSON.getStringOrDefault(sepiaHaSetup, "config", null);
+			if (Is.notNullOrEmpty(configName)){
+				HaInterfaceConfig haic = HaInterfaceConfig.getFromName(configName);
+				if (haic != null){
+					//replace with predefined config
+					sepiaHaSetup = haic.getJson();
+					shd.setInterfaceConfig(sepiaHaSetup);
+					//stateType
+					//TODO: what if there is a mismatch between shd.getStateType() and haic.stateType??
+				}
+			}
 		}
 	}
 	

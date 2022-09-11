@@ -221,8 +221,8 @@ public interface SmartHomeHub {
 	/**
 	 * Push new status to device (e.g. via direct access link (URL) given in object).
 	 * @param device - {@link SmartHomeDevice} taken from getDevices()
-	 * @param state - new status value (NOTE: the HUB implementation might have to translate the state value to its own format)
-	 * @param stateType - type of state variable, e.g. {@link SmartHomeDevice#STATE_TYPE_NUMBER_PERCENT} = number in percent
+	 * @param state - new status value (NOTE: the HUB implementation might have to translate the state value and type to its own format)
+	 * @param stateType - type of (input) state variable, e.g. {@link SmartHomeDevice#STATE_TYPE_NUMBER_PERCENT} = number in percent
 	 * @return true IF no error was thrown after request
 	 */
 	public boolean setDeviceState(SmartHomeDevice device, String state, String stateType);
