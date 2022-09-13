@@ -7,6 +7,7 @@ import java.util.HashSet;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.parameters.SportsLeague;
 import net.b07z.sepia.server.assist.parameters.SportsTeam;
 import net.b07z.sepia.server.assist.server.Statistics;
@@ -509,10 +510,10 @@ public class OpenLigaWorker implements WorkerInterface {
 					}
 					String summary = "";
 					if((System.currentTimeMillis() - dateUNIX) > 0){
-						summary = DateTimeConverters.convertDateFormat(date.replaceFirst("T", "_"), "yyyy-MM-dd_HH:mm:ss", "dd.MM.' - 'HH:mm'h'") 
+						summary = DateTimeConverters.convertDateFormat(date.replaceFirst("T", "_"), "yyyy-MM-dd_HH:mm:ss", "dd.MM.' - 'HH:mm'h'", LANGUAGES.DE) 
 								+ ", " + team1 + " - " + team2 + ", " + goals1 + ":" + goals2;
 					}else{
-						summary = DateTimeConverters.convertDateFormat(date.replaceFirst("T", "_"), "yyyy-MM-dd_HH:mm:ss", "dd.MM.' - 'HH:mm'h'") 
+						summary = DateTimeConverters.convertDateFormat(date.replaceFirst("T", "_"), "yyyy-MM-dd_HH:mm:ss", "dd.MM.' - 'HH:mm'h'", LANGUAGES.DE) 
 								+ ", " + team1 + " - " + team2 + ", " + "-" + ":" + "-";
 					}
 					JSON.add(matchOut, "summary", summary);
@@ -575,7 +576,7 @@ public class OpenLigaWorker implements WorkerInterface {
 					JSON.add(matchOut, "id1", ((JSONObject) matchInput.get("Team1")).get("TeamId"));
 					JSON.add(matchOut, "team2", team2);
 					JSON.add(matchOut, "id2", ((JSONObject) matchInput.get("Team2")).get("TeamId"));
-					String summary = DateTimeConverters.convertDateFormat(date.replaceFirst("T", "_"), "yyyy-MM-dd_HH:mm:ss", "dd.MM.' - 'HH:mm'h'") 
+					String summary = DateTimeConverters.convertDateFormat(date.replaceFirst("T", "_"), "yyyy-MM-dd_HH:mm:ss", "dd.MM.' - 'HH:mm'h'", LANGUAGES.DE) 
 							+ ", " + team1 + " - " + team2 + ", " + "-" + ":" + "-";
 					JSON.add(matchOut, "summary", summary);
 					

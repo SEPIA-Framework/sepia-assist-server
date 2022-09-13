@@ -427,7 +427,7 @@ public class DateAndTime implements ParameterHandler{
 		}
 		
 		//get time difference
-		HashMap<String, Long> diff = null;
+		HashMap<String, Long> diff;
 		if (time.isEmpty()){
 			//calculate difference to same time of other date
 			String nowTime = nluInput.userTimeLocal.split(Config.defaultSdfSeparatorRegex)[1];
@@ -514,34 +514,34 @@ public class DateAndTime implements ParameterHandler{
 			
 			//eu
 			if (formattedDate.matches("\\d{1,2}\\.\\d{1,2}\\.\\d{4,}")){
-				dayDate = DateTimeConverters.convertDateFormat(formattedDate, "dd.MM.yyyy", "yyyy.MM.dd");
+				dayDate = DateTimeConverters.convertDateFormat(formattedDate, "dd.MM.yyyy", "yyyy.MM.dd", nluInput.language);
 			}else if (formattedDate.matches("\\d{1,2}\\.\\d{1,2}\\.\\d{2,}")){
-				dayDate = DateTimeConverters.convertDateFormat(formattedDate, "dd.MM.yy", "yyyy.MM.dd");
+				dayDate = DateTimeConverters.convertDateFormat(formattedDate, "dd.MM.yy", "yyyy.MM.dd", nluInput.language);
 			}else if (formattedDate.matches("\\d{1,2}\\.\\d{1,2}(\\.|)")){
 				String year = DateTimeConverters.getToday("yyyy", nluInput);
-				dayDate = DateTimeConverters.convertDateFormat((formattedDate+"."+year).replaceAll("\\.\\.", "."), "dd.MM.yyyy", "yyyy.MM.dd");
+				dayDate = DateTimeConverters.convertDateFormat((formattedDate+"."+year).replaceAll("\\.\\.", "."), "dd.MM.yyyy", "yyyy.MM.dd", nluInput.language);
 			}else if (formattedDate.matches("\\d{1,2}\\.\\d{4,}")){
 				String day = DateTimeConverters.getToday("dd", nluInput);
-				dayDate = DateTimeConverters.convertDateFormat((day+"."+formattedDate).replaceAll("\\.\\.", "."), "dd.MM.yyyy", "yyyy.MM.dd");
+				dayDate = DateTimeConverters.convertDateFormat((day+"."+formattedDate).replaceAll("\\.\\.", "."), "dd.MM.yyyy", "yyyy.MM.dd", nluInput.language);
 			}else if (formattedDate.matches("\\d{1,2}(\\.)")){
 				String month_year = DateTimeConverters.getToday("MM.yyyy", nluInput);
-				dayDate = DateTimeConverters.convertDateFormat((formattedDate+"."+month_year).replaceAll("\\.\\.", "."), "dd.MM.yyyy", "yyyy.MM.dd");
+				dayDate = DateTimeConverters.convertDateFormat((formattedDate+"."+month_year).replaceAll("\\.\\.", "."), "dd.MM.yyyy", "yyyy.MM.dd", nluInput.language);
 			}
 			//us
 			else if (formattedDate.matches("\\d{1,2}/\\d{1,2}/\\d{4,}")){
-				dayDate = DateTimeConverters.convertDateFormat(formattedDate, "MM/dd/yyyy", "yyyy.MM.dd");
+				dayDate = DateTimeConverters.convertDateFormat(formattedDate, "MM/dd/yyyy", "yyyy.MM.dd", nluInput.language);
 			}else if (formattedDate.matches("\\d{1,2}/\\d{1,2}/\\d{2,}")){
-				dayDate = DateTimeConverters.convertDateFormat(formattedDate, "MM/dd/yy", "yyyy.MM.dd");
+				dayDate = DateTimeConverters.convertDateFormat(formattedDate, "MM/dd/yy", "yyyy.MM.dd", nluInput.language);
 			}else if (formattedDate.matches("\\d{1,2}/\\d{4,}")){
 				String day = DateTimeConverters.getToday("dd", nluInput);
-				dayDate = DateTimeConverters.convertDateFormat(day+"/"+formattedDate, "dd/MM/yyyy", "yyyy.MM.dd");
+				dayDate = DateTimeConverters.convertDateFormat(day+"/"+formattedDate, "dd/MM/yyyy", "yyyy.MM.dd", nluInput.language);
 			}else if (formattedDate.matches("\\d{1,2}/\\d{1,2}")){
 				String year = DateTimeConverters.getToday("yyyy", nluInput);
-				dayDate = DateTimeConverters.convertDateFormat(formattedDate+"/"+year, "MM/dd/yyyy", "yyyy.MM.dd");
+				dayDate = DateTimeConverters.convertDateFormat(formattedDate+"/"+year, "MM/dd/yyyy", "yyyy.MM.dd", nluInput.language);
 			}else if (formattedDate.matches("\\d\\dth|\\dth|1st|2nd|3rd")){
 				formattedDate = formattedDate.replaceAll("th|st|nd|rd", "").trim(); 
 				String month_year = DateTimeConverters.getToday("MM.yyyy", nluInput);
-				dayDate = DateTimeConverters.convertDateFormat((formattedDate+"."+month_year).replaceAll("\\.\\.", "."), "dd.MM.yyyy", "yyyy.MM.dd");
+				dayDate = DateTimeConverters.convertDateFormat((formattedDate+"."+month_year).replaceAll("\\.\\.", "."), "dd.MM.yyyy", "yyyy.MM.dd", nluInput.language);
 			}
 			//System.out.println("FORMATTED DAY CONVERTED: " + dayDate);
 		}
@@ -657,7 +657,7 @@ public class DateAndTime implements ParameterHandler{
 			//CONVERT - in case default changes
 			if (!dayDate.matches(Config.defaultSdfRegex)){
 				Debugger.println("DateAndTime - convertTagToDate - default date format has changed??? - see: " + dayDate, 3);
-				dayDate = DateTimeConverters.convertDateFormat(dayDate, "yyyy.MM.dd_HH:mm:ss", Config.defaultSdf);
+				dayDate = DateTimeConverters.convertDateFormat(dayDate, "yyyy.MM.dd_HH:mm:ss", Config.defaultSdf, nluInput.language);
 			}
 			//ADD
 			//System.out.println("Total offset (s): " + totalOffset); 	//DEBUG
@@ -668,7 +668,7 @@ public class DateAndTime implements ParameterHandler{
 			//CONVERT - in case default changes
 			if (!dayDate.isEmpty() && !dayDate.matches(Config.defaultSdfRegex)){
 				Debugger.println("DateAndTime - convertTagToDate - default date format has changed??? - see: " + dayDate, 3);
-				dayDate = DateTimeConverters.convertDateFormat(dayDate, "yyyy.MM.dd_HH:mm:ss", Config.defaultSdf);
+				dayDate = DateTimeConverters.convertDateFormat(dayDate, "yyyy.MM.dd_HH:mm:ss", Config.defaultSdf, nluInput.language);
 			}
 			date = dayDate;
 		}
