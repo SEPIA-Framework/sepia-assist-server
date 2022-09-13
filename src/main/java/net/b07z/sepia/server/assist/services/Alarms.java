@@ -218,7 +218,7 @@ public class Alarms implements ServiceInterface{
 			}
 			//note: since we split date and time here and can ask separately for time we have to add it all together in the end
 			
-			long timeUnix = -1;
+			long timeUnix = -1;		//TODO: this can remain -1 !!
 			long diffDays = -1;
 			long diffHours = -1;
 			long diffMinutes = -1;
@@ -456,16 +456,8 @@ public class Alarms implements ServiceInterface{
 				api.setStatusOkay();
 			
 			}else{
-				//make card
-				Card card = new Card(Card.TYPE_UNI_LIST);
-				for (UserDataList udl : udlList){
-					card.addGroupeElement(ElementType.userDataList, udl.indexType, udl.getJSON());
-				}
-				api.addCard(card);
-				api.hasCard = true;
-				
 				//build answer with next alarm/timer
-				JSONObject nextAlarm = getNextTimeEventInList(udlList);
+				JSONObject nextAlarm = getNextTimeEventInList(udlList, true);
 				if (isTimer){
 					if (nextAlarm == null){
 						api.setCustomAnswer(answerShowTimers);
@@ -491,6 +483,15 @@ public class Alarms implements ServiceInterface{
 						api.setCustomAnswer(answerNextAlarm);
 					}
 				}
+				
+				//make card
+				Card card = new Card(Card.TYPE_UNI_LIST);
+				for (UserDataList udl : udlList){
+					card.addGroupeElement(ElementType.userDataList, udl.indexType, udl.getJSON());
+				}
+				api.addCard(card);
+				api.hasCard = true;
+				
 				api.setStatusSuccess();
 			}
 			
@@ -627,7 +628,7 @@ public class Alarms implements ServiceInterface{
 		);
 	}
 	
-	private JSONObject getNextTimeEventInList(List<UserDataList> udlList){
+	private JSONObject getNextTimeEventInList(List<UserDataList> udlList, boolean markAsNext){
 		JSONObject nextAlarm = null;
 		long shortestTime = Long.MAX_VALUE;
 		for (UserDataList udl : udlList){
@@ -639,6 +640,9 @@ public class Alarms implements ServiceInterface{
 					shortestTime = execTime;
 				}
 			}
+		}
+		if (nextAlarm != null && markAsNext){
+			JSON.put(nextAlarm, "isNextEvent", true);
 		}
 		return nextAlarm;
 	}
