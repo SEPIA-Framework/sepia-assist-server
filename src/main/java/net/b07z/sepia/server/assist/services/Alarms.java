@@ -211,6 +211,7 @@ public class Alarms implements ServiceInterface{
 				if (isTimer){
 					api.setIncompleteAndAsk(PARAMETERS.CLOCK, askTimerClock, metaInfo);
 				}else{
+					//TODO: this question accepts date and time as answer, but we should probably include the date in the question if given  
 					api.setIncompleteAndAsk(PARAMETERS.CLOCK, askAlarmClock, metaInfo);
 				}
 				ServiceResult result = api.buildResult();
@@ -218,12 +219,12 @@ public class Alarms implements ServiceInterface{
 			}
 			//note: since we split date and time here and can ask separately for time we have to add it all together in the end
 			
-			long timeUnix = -1;		//TODO: this can remain -1 !!
 			long diffDays = -1;
 			long diffHours = -1;
 			long diffMinutes = -1;
 			long diffSeconds = -1;
 			long totalDiff_ms = -1;
+			String diffExceptionNote = "unknown";
 			if (dateTimeP.getData().containsKey(InterviewData.DATE_TIME)){
 				//get total difference from dateTime parameter since time was already there
 				JSONObject diff = (JSONObject) dateTimeP.getData().get(InterviewData.TIME_DIFF);
@@ -233,10 +234,13 @@ public class Alarms implements ServiceInterface{
 					diffHours = JSON.getLongOrDefault(diff, "hh", -1);
 					diffMinutes = JSON.getLongOrDefault(diff, "mm", -1);
 					diffSeconds = JSON.getLongOrDefault(diff, "ss", -1);
+				}else{
+					diffExceptionNote = "Failed to get time-diff. from parameter.";
 				}
 			}else{
 				//construct new difference
 				String newRefDate = dateDay + Config.defaultSdfSeparator + dateTime;
+				//System.out.println("newRefDate: " + newRefDate); 	//DEBUG
 				HashMap<String, Long> diff = DateTimeConverters.dateDifference(nluResult.input.userTimeLocal, newRefDate);
 				if (diff != null){
 					totalDiff_ms = diff.get("total_ms");
@@ -244,6 +248,8 @@ public class Alarms implements ServiceInterface{
 					diffHours = diff.get("hh");
 					diffMinutes = diff.get("mm");
 					diffSeconds = diff.get("ss");
+				}else{
+					diffExceptionNote = "Failed to get time-diff. from new ref.: " + newRefDate;
 				}
 			}
 			//what if the time lies in the past? Make some smart decisions!
@@ -278,6 +284,8 @@ public class Alarms implements ServiceInterface{
 						diffHours = diff.get("hh");
 						diffMinutes = diff.get("mm");
 						diffSeconds = diff.get("ss");
+					}else{
+						diffExceptionNote = "Failed to get time-diff. from changed date.";
 					}
 					
 				//...or just abort with "is past" message
@@ -288,9 +296,18 @@ public class Alarms implements ServiceInterface{
 					ServiceResult result = api.buildResult();
 					return result;
 				}
-				
+			}
+			//check again and finally assign
+			long targetTimeUnix = -1;		//default is -1 for past or unknown
+			if (totalDiff_ms > 0){
+				targetTimeUnix = System.currentTimeMillis() + totalDiff_ms;
+			
+			//...or abort with error
 			}else{
-				timeUnix = System.currentTimeMillis() + totalDiff_ms;
+				api.setStatusFail();
+				Debugger.println(getClass().getName() + " - 'targetTimeUnix' was unexpectedly in the past. Info: " + diffExceptionNote, 3);
+				ServiceResult result = api.buildResult();
+				return result;
 			}
 			
 			//make a (hopefully) unique ID
@@ -345,7 +362,7 @@ public class Alarms implements ServiceInterface{
 				}
 				//build data
 				JSONObject data = UserDataList.createEntryTimer(
-					timeUnix, 
+					targetTimeUnix, 
 					name, 
 					null, 
 					System.currentTimeMillis(), 
@@ -358,7 +375,7 @@ public class Alarms implements ServiceInterface{
 				//TODO: make action fields identical to listElements?
 				api.addAction(ACTIONS.TIMER);
 					api.putActionInfo("info", "set");
-					api.putActionInfo("targetTimeUnix", timeUnix);
+					api.putActionInfo("targetTimeUnix", targetTimeUnix);
 					api.putActionInfo("name", name);
 					api.putActionInfo("eventId", eventId);
 					api.putActionInfo("eleType", UserDataList.EleType.timer.name());
@@ -393,7 +410,7 @@ public class Alarms implements ServiceInterface{
 				
 				//build data
 				JSONObject data = UserDataList.createEntryAlarm(
-					timeUnix, 
+					targetTimeUnix, 
 					speakableDay, 
 					dateTime, 
 					speakableDate, 
@@ -410,7 +427,7 @@ public class Alarms implements ServiceInterface{
 				//TODO: make action fields identical to listElements?
 				api.addAction(ACTIONS.ALARM);
 					api.putActionInfo("info", "set");
-					api.putActionInfo("targetTimeUnix", timeUnix);
+					api.putActionInfo("targetTimeUnix", targetTimeUnix);
 					api.putActionInfo("day", speakableDay);
 					api.putActionInfo("time", dateTime);
 					api.putActionInfo("date", speakableDate);
