@@ -197,7 +197,7 @@ public class Action implements ParameterHandler{
 					+ "^volume (of .* |)(to )|"
 					+ "^value (of .* |)(to )";
 			toggle = "toggle|switch";
-			show = "show|shows|display|check|what does .* say|how much|what is the|tell me|"
+			show = "show|shows|display|check|what does .* say|how much|(what is|whats) the|tell me|"
 					+ "status|state of|"
 					+ "what value(s|) ((do|does) .* | )(has|have)|value(s|) of";
 			add = "add|enter|"

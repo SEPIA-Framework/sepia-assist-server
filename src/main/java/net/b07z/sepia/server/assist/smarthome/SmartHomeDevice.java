@@ -135,7 +135,22 @@ public class SmartHomeDevice {
 			localName = states_en.get(state.toLowerCase());
 		}
 		if (localName == null){
-			boolean skipWarning = state.matches("\\d+") || (stateType != null && Is.typeEqual(stateType, StateType.text_raw));
+			if (stateType != null){
+				switch (StateType.valueOf(stateType)) {
+				case text_raw:
+				case number_plain:
+					return state;
+				case number_percent:
+					return state + " %";
+				case number_temperature_c:
+					return state + " °C";
+				case number_temperature_f:
+					return state + " °F";
+				default:
+					break;
+				}
+			}
+			boolean skipWarning = state.matches("\\d+.*");
 			if (!skipWarning){
 				Debugger.println(SmartHomeDevice.class.getSimpleName() + 
 					" - getStateLocal() has no '" + language + "' version for '" + state + "'", 3);

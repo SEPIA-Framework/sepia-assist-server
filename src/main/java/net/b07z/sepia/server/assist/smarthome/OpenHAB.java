@@ -400,7 +400,7 @@ public class OpenHAB implements SmartHomeHub {
 					//TODO: improve stateType check (temp. etc)
 				}
 			}
-			//TODO: we could check mem-state here if state is e.g. SmartHomeDevice.STATE_ON
+			//TODO: we could check mem-state here if state is e.g. SmartHomeDevice.State.on/.open/.connect
 			
 			Map<String, String> headers = new HashMap<>();
 			headers.put("Content-Type", "text/plain");

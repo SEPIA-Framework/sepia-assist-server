@@ -457,7 +457,7 @@ public class Fhem implements SmartHomeHub {
 					}
 				}
 			}
-			//TODO: we could check mem-state here if state is e.g. SmartHomeDevice.STATE_ON
+			//TODO: we could check mem-state here if state is e.g. SmartHomeDevice.State.on/.open/.connect
 			
 			String cmdUrl = URLBuilder.getString(
 					deviceCmdLink, "=", "set " + fhemId + " " + state,
