@@ -498,6 +498,13 @@ public class HomeAssistant implements SmartHomeHub {
 			"round(<attributes.brightness>*0.392)", JSON.make("state", "off", "value", "0")));
 		haInterfaceConfigStateTypeMap.put("light.brightness", StateType.number_percent);
 		//haSetCommandsMap.put("light.brightness", JSON.make("enable", "100", "disable", "0", "number", "<val>"));
+	
+		//Sensor - state
+		haInterfaceConfigMap.put("sensor.state", new HaInterfaceConfig(
+			JSON.make("service", ""), JSON.make("service", "", "write", ""), JSON.make("service", ""),
+			"<state>", JSON.make("state", "unknown")));
+		haInterfaceConfigStateTypeMap.put("sensor.state", StateType.text_raw);
+		//haSetCommandsMap.put("sensor.state", JSON.make("enable", "", "disable", "", "raw", "<val>"));
 	}
 	
 	/**
@@ -605,7 +612,7 @@ public class HomeAssistant implements SmartHomeHub {
 		//NOTE: else 'haic' restore from predefined "config" and stateType mismatch is handled below
 		
 		//build
-		Object linkObj = null;		//TODO: since read and write don't use the same URL we don't set it
+		Object linkObj = null;		//since read and write don't use the same URL we don't set it
 		JSONObject meta = JSON.make(
 			SmartHomeDevice.META_ID, entityId,
 			SmartHomeDevice.META_ORIGIN, NAME,
