@@ -64,7 +64,7 @@ public class TestHub implements SmartHomeHub {
 			)
 	);
 	private static SmartHomeDevice heater = new SmartHomeDevice(
-			"Thermostat (1)", 
+			"Heater (1)", 
 			SmartDevice.Types.heater.name(), 
 			Room.Types.livingroom.name(), 
 			SmartHomeDevice.State.off.name(), SmartHomeDevice.StateType.number_temperature_c.name(), "", 
@@ -99,8 +99,44 @@ public class TestHub implements SmartHomeHub {
 					"namedBySepia", true
 			)
 	);
+	private static SmartHomeDevice fan = new SmartHomeDevice(
+			"Fan (1)", 
+			SmartDevice.Types.fan.name(), 
+			Room.Types.livingroom.name(), 
+			SmartHomeDevice.State.off.name(), SmartHomeDevice.StateType.number_percent.name(), "", 
+			"link", JSON.make(
+					"id", "Fan_Test_A",
+					"origin", NAME,
+					"typeGuessed", false,
+					"namedBySepia", true
+			)
+	);
+	private static SmartHomeDevice sensor1 = new SmartHomeDevice(
+			"Gas", 
+			SmartDevice.Types.sensor.name(), 
+			Room.Types.basement.name(), 
+			"1000 kWh", SmartHomeDevice.StateType.text_raw.name(), "", 
+			"link", JSON.make(
+					"id", "Gas_Sensor_A",
+					"origin", NAME,
+					"typeGuessed", false,
+					"namedBySepia", true
+			)
+	);
+	private static SmartHomeDevice sensor2 = new SmartHomeDevice(
+			"Electricity", 
+			SmartDevice.Types.sensor.name(), 
+			Room.Types.basement.name(), 
+			"3500 kWh", SmartHomeDevice.StateType.text_raw.name(), "", 
+			"link", JSON.make(
+					"id", "Electricity_Sensor_A",
+					"origin", NAME,
+					"typeGuessed", false,
+					"namedBySepia", true
+			)
+	);
 	private static SmartHomeDevice genericDevice = new SmartHomeDevice(
-			"A (1)", 
+			"Device A", 
 			SmartDevice.Types.device.name(), 
 			Room.Types.garage.name(), 
 			SmartHomeDevice.State.off.name(), SmartHomeDevice.StateType.text_binary.name(), "", 
@@ -112,7 +148,7 @@ public class TestHub implements SmartHomeHub {
 			)
 	);
 	private static List<SmartHomeDevice> devicesList = Arrays.asList(
-			light, light2, heater, rollerShutter, tv, genericDevice
+			light, light2, heater, rollerShutter, tv, fan, sensor1, sensor2, genericDevice
 	);
 	
 	//--------------------------

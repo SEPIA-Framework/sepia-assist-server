@@ -45,12 +45,14 @@ public class SmartDevice implements ParameterHandler{
 		heater,
 		tv,
 		music_player,
-		fridge,
-		oven,
-		coffee_maker,
 		roller_shutter,
 		power_outlet,
 		sensor,
+		fridge,
+		oven,
+		coffee_maker,
+		garage_door,
+		fan,
 		device,
 		//no extract methods:
 		other,
@@ -79,6 +81,8 @@ public class SmartDevice implements ParameterHandler{
 		types_de.put("fridge", "der Kühlschrank");
 		types_de.put("oven", "der Ofen");
 		types_de.put("coffee_maker", "die Kaffeemaschine");
+		types_de.put("garage_door", "das Garagentor");
+		types_de.put("fan", "der Lüfter");
 		types_de.put("device", "das Gerät");
 		types_de.put("other", "");
 		types_de.put("hidden", "");
@@ -94,6 +98,8 @@ public class SmartDevice implements ParameterHandler{
 		types_en.put("fridge", "the fridge");
 		types_en.put("oven", "the oven");
 		types_en.put("coffee_maker", "the coffee maker");
+		types_en.put("garage_door", "the garage door");
+		types_en.put("fan", "the fan");
 		types_en.put("device", "the device");
 		types_en.put("other", "");
 		types_en.put("hidden", "");
@@ -121,6 +127,8 @@ public class SmartDevice implements ParameterHandler{
 		return localName;
 	}
 	
+	public static final String sensorRegEx_en = "(electricity|gas|temperature)(-| )(meter|gauge)|thermometer|"
+											+ "(electricity |gas |temperature |)sensor(s|)";
 	public static final String lightRegEx_en = "light(s|)|lighting|lamp(s|)|"
 											+ "illumination|"
 											+ "brightness";
@@ -129,14 +137,17 @@ public class SmartDevice implements ParameterHandler{
 											+ "thermostat(s|)";
 	public static final String tvRegEx_en = "tv|television";
 	public static final String musicPlayerRegEx_en = "(stereo|music)( |)(player)|stereo|bluetooth(-| )(speaker|box)|speaker(s|)";
+	public static final String rollerShutterRegEx_en = "((roller|window|sun)( |-|)|)(shutter(s|)|blind(s|)|louver(s|))|jalousie(s|)";
+	public static final String powerOutletRegEx_en = "((wall|power)( |-|)|)(socket(s|)|outlet(s|))";
 	public static final String fridgeRegEx_en = "fridge|refrigerator";
 	public static final String ovenRegEx_en = "oven|stove";
 	public static final String coffeeMakerRegEx_en = "coffee (maker|brewer|machine)";
-	public static final String rollerShutterRegEx_en = "((roller|window|sun)( |-|)|)(shutter(s|)|blind(s|)|louver(s|))|jalousie(s|)";
-	public static final String powerOutletRegEx_en = "((wall|power)( |-|)|)(socket(s|)|outlet(s|))";
-	public static final String sensorRegEx_en = "sensor(s|)";
+	public static final String garageDoorRegEx_en = "garage (door|gate)";
+	public static final String fanRegEx_en = "fan|ventilator(s|)|blower(s|)";
 	public static final String genericDeviceRegEx_en = "device(s|)";
 	
+	public static final String sensorRegEx_de = "gaszaehler|stromzaehler|thermometer|"
+											+ "(gas |strom |temperatur |)sensor(en|s|)";
 	public static final String lightRegEx_de = "\\w*(licht(er|es|)|lampe(n|)|beleuchtung|leuchte(n|))|"
 											+ "helligkeit";
 	public static final String heaterRegEx_de = "\\w*(heiz(er|ungen|ung|koerper(s|)|luefter(s|)|strahler(s|)))|"
@@ -147,12 +158,13 @@ public class SmartDevice implements ParameterHandler{
 											+ "bluetooth(-| )(lautsprecher(s|)|box)|"
 											+ "\\w*(lautsprecher(s|))|"
 											+ "\\w*(boxen)";
+	public static final String rollerShutterRegEx_de = "(fenster|rol(l|))(l(a|ae)den)|jalousie(n|)|rollo(s|)|markise";
+	public static final String powerOutletRegEx_de = "(steck|strom)( |-|)dose(n|)|stromanschluss(es|)";
 	public static final String fridgeRegEx_de = "kuehlschrank(s|)";
 	public static final String ovenRegEx_de = "ofen(s|)|herd(es|s)";
 	public static final String coffeeMakerRegEx_de = "kaffeemaschine";
-	public static final String rollerShutterRegEx_de = "(fenster|rol(l|))(l(a|ae)den)|jalousie(n|)|rollo(s|)|markise";
-	public static final String powerOutletRegEx_de = "(steck|strom)( |-|)dose(n|)|stromanschluss(es|)";
-	public static final String sensorRegEx_de = "sensor(en|s|)";
+	public static final String garageDoorRegEx_de = "garagen( |-|)(tor|tuer)";
+	public static final String fanRegEx_de = "\\w*(luefter|ventilator(en|)|geblaese)";
 	public static final String genericDeviceRegEx_de = "geraet(e|)";
 	//----------------
 	
@@ -185,32 +197,36 @@ public class SmartDevice implements ParameterHandler{
 		//German
 		if (language.matches(LANGUAGES.DE)){
 			type = NluTools.stringFindFirst(input, "("
+					+ sensorRegEx_de + "|"	//NOTE: we put this first to catch sensors like "temperature sensor"
 					+ lightRegEx_de + "|"
 					+ heaterRegEx_de + "|"
 					+ tvRegEx_de + "|"
 					+ musicPlayerRegEx_de + "|"
 					+ rollerShutterRegEx_de + "|"
 					+ powerOutletRegEx_de + "|"
-					+ sensorRegEx_de + "|"
 					+ fridgeRegEx_de + "|"
 					+ ovenRegEx_de + "|"
 					+ coffeeMakerRegEx_de + "|"
+					+ garageDoorRegEx_de + "|"
+					+ fanRegEx_de + "|"
 					+ genericDeviceRegEx_de
 				+ ")");
 			
 		//English and other
 		}else{
 			type = NluTools.stringFindFirst(input, "("
+					+ sensorRegEx_en + "|"
 					+ lightRegEx_en + "|"
 					+ heaterRegEx_en + "|"
 					+ tvRegEx_en + "|"
 					+ musicPlayerRegEx_en + "|"
 					+ rollerShutterRegEx_en + "|"
 					+ powerOutletRegEx_en + "|"
-					+ sensorRegEx_en + "|"
 					+ fridgeRegEx_en + "|"
 					+ ovenRegEx_en + "|"
 					+ coffeeMakerRegEx_en + "|"
+					+ garageDoorRegEx_en + "|"
+					+ fanRegEx_en + "|"
 					+ genericDeviceRegEx_en
 				+ ")");
 			
@@ -262,7 +278,10 @@ public class SmartDevice implements ParameterHandler{
 		final String deviceType;
 		
 		if (language.matches(LANGUAGES.DE)){
-			if (NluTools.stringContains(device, lightRegEx_de)){
+			if (NluTools.stringContains(device, sensorRegEx_de)){
+				deviceType = Types.sensor.name();
+				
+			}else if (NluTools.stringContains(device, lightRegEx_de)){
 				deviceType = Types.light.name();
 				
 			}else if (NluTools.stringContains(device, heaterRegEx_de)){
@@ -280,9 +299,6 @@ public class SmartDevice implements ParameterHandler{
 			}else if (NluTools.stringContains(device, powerOutletRegEx_de)){
 				deviceType = Types.power_outlet.name();
 				
-			}else if (NluTools.stringContains(device, sensorRegEx_de)){
-				deviceType = Types.sensor.name();
-				
 			}else if (NluTools.stringContains(device, fridgeRegEx_de)){
 				deviceType = Types.fridge.name();
 				
@@ -292,11 +308,20 @@ public class SmartDevice implements ParameterHandler{
 			}else if (NluTools.stringContains(device, coffeeMakerRegEx_de)){
 				deviceType = Types.coffee_maker.name();
 			
+			}else if (NluTools.stringContains(device, garageDoorRegEx_de)){
+				deviceType = Types.garage_door.name();
+			
+			}else if (NluTools.stringContains(device, fanRegEx_de)){
+				deviceType = Types.fan.name();
+			
 			}else{
 				deviceType = Types.device.name();
 			}
 		}else{
-			if (NluTools.stringContains(device, lightRegEx_en)){
+			if (NluTools.stringContains(device, sensorRegEx_en)){
+				deviceType = Types.sensor.name();
+				
+			}else if (NluTools.stringContains(device, lightRegEx_en)){
 				deviceType = Types.light.name();
 				
 			}else if (NluTools.stringContains(device, heaterRegEx_en)){
@@ -314,9 +339,6 @@ public class SmartDevice implements ParameterHandler{
 			}else if (NluTools.stringContains(device, powerOutletRegEx_en)){
 				deviceType = Types.power_outlet.name();
 				
-			}else if (NluTools.stringContains(device, sensorRegEx_en)){
-				deviceType = Types.sensor.name();
-				
 			}else if (NluTools.stringContains(device, fridgeRegEx_en)){
 				deviceType = Types.fridge.name();
 				
@@ -325,6 +347,12 @@ public class SmartDevice implements ParameterHandler{
 				
 			}else if (NluTools.stringContains(device, coffeeMakerRegEx_en)){
 				deviceType = Types.coffee_maker.name();
+				
+			}else if (NluTools.stringContains(device, garageDoorRegEx_en)){
+				deviceType = Types.garage_door.name();
+				
+			}else if (NluTools.stringContains(device, fanRegEx_en)){
+				deviceType = Types.fan.name();
 				
 			}else{
 				deviceType = Types.device.name();
