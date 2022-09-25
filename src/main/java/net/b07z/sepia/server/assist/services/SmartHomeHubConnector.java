@@ -463,7 +463,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 				actionValue = Action.Type.on.name();
 			}
 		}
-		//TODO: OPEN and CLOSE = ON and OFF ... this might be wrong for some devices (see roller shutter below)
+		//TODO: OPEN and CLOSE = ON and OFF ... this might be wrong for some devices (see roller shutter/garage door below)
 		
 		//SHOW
 		if (actionIs(actionValue, Action.Type.show)){
@@ -481,7 +481,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		}else if (actionIs(actionValue, Action.Type.on)){
 			String targetState;
 			boolean hasStateAlready = false;
-			if (Is.typeEqual(deviceType, SmartDevice.Types.roller_shutter)){
+			if (Is.typeEqual(deviceType, SmartDevice.Types.roller_shutter) || Is.typeEqual(deviceType, SmartDevice.Types.garage_door)){
 				targetState = SmartHomeDevice.State.open.name();
 				hasStateAlready = Is.notNullOrEmpty(selectedDeviceState) && selectedDeviceState.equalsIgnoreCase(targetState);
 				//NOTE: we skip the 100 check here because HUBs don't agree if 100 is open or closed
@@ -524,7 +524,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		}else if (actionIs(actionValue, Action.Type.off)){
 			String targetState;
 			boolean hasStateAlready = false;
-			if (Is.typeEqual(deviceType, SmartDevice.Types.roller_shutter)){
+			if (Is.typeEqual(deviceType, SmartDevice.Types.roller_shutter) || Is.typeEqual(deviceType, SmartDevice.Types.garage_door)){
 				targetState = SmartHomeDevice.State.closed.name();
 				hasStateAlready = Is.notNullOrEmpty(selectedDeviceState) && selectedDeviceState.equalsIgnoreCase(targetState);
 				//NOTE: we skip the 100 check here because HUBs don't agree if 100 is open or closed

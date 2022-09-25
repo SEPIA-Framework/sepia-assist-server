@@ -737,7 +737,8 @@ public class SmartHomeDevice {
 	 */
 	public static String makeSmartTypeAssumptionForPlainNumber(SmartDevice.Types deviceType){
 		if (deviceType.equals(SmartDevice.Types.light) 
-				|| deviceType.equals(SmartDevice.Types.roller_shutter)){
+				|| deviceType.equals(SmartDevice.Types.roller_shutter)
+				|| deviceType.equals(SmartDevice.Types.garage_door)){
 			return StateType.number_percent.name();
 		}else if (deviceType.equals(SmartDevice.Types.heater)){
 			return StateType.number_temperature.name();

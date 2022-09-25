@@ -384,7 +384,8 @@ public class OpenHAB implements SmartHomeHub {
 				String givenType = device.getType();
 				if (stateType != null){
 					//ROLLER SHUTTER
-					if (givenType != null && Is.typeEqual(givenType, SmartDevice.Types.roller_shutter)){
+					if (givenType != null && (
+							Is.typeEqual(givenType, SmartDevice.Types.roller_shutter) || Is.typeEqual(givenType, SmartDevice.Types.garage_door))){
 						if (Is.typeEqualIgnoreCase(state, SmartHomeDevice.State.open)){
 							state = "UP";
 						}else if (Is.typeEqualIgnoreCase(state, SmartHomeDevice.State.closed)){

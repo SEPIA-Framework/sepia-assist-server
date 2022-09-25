@@ -87,6 +87,18 @@ public class TestHub implements SmartHomeHub {
 					"namedBySepia", true
 			)
 	);
+	private static SmartHomeDevice garageDoor = new SmartHomeDevice(
+			"Garage Door", 
+			SmartDevice.Types.garage_door.name(), 
+			Room.Types.garage.name(), 
+			"100", SmartHomeDevice.StateType.number_percent.name(), "", 
+			"link", JSON.make(
+					"id", "Garage_Door_Test_A",
+					"origin", NAME,
+					"typeGuessed", false,
+					"namedBySepia", true
+			)
+	);
 	private static SmartHomeDevice tv = new SmartHomeDevice(
 			"TV (1)", 
 			SmartDevice.Types.tv.name(), 
@@ -148,7 +160,8 @@ public class TestHub implements SmartHomeHub {
 			)
 	);
 	private static List<SmartHomeDevice> devicesList = Arrays.asList(
-			light, light2, heater, rollerShutter, tv, fan, sensor1, sensor2, genericDevice
+			light, light2, heater, rollerShutter, garageDoor,
+			tv, fan, sensor1, sensor2, genericDevice
 	);
 	
 	//--------------------------

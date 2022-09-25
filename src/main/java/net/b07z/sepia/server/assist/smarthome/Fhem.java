@@ -420,7 +420,8 @@ public class Fhem implements SmartHomeHub {
 							state = state.toLowerCase();	//on, off, etc is usually lower-case in FHEM
 						}
 					//ROLLER SHUTTER
-					}else if (givenType != null && Is.typeEqual(givenType, SmartDevice.Types.roller_shutter)){
+					}else if (givenType != null && (
+							Is.typeEqual(givenType, SmartDevice.Types.roller_shutter) || Is.typeEqual(givenType, SmartDevice.Types.garage_door))){
 						//check stateType
 						if (stateType.equals(SmartHomeDevice.StateType.number_percent.name())){
 							//percent via "pct" - TODO: does that work?
