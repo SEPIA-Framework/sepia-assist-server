@@ -376,7 +376,8 @@ public class HomeAssistant implements SmartHomeHub {
 			//intent or service
 			String intentName = JSON.getStringOrDefault(haAction, "intent", null);
 			String serviceName = JSON.getStringOrDefault(haAction, "service", null);
-			if (Is.nullOrEmpty(serviceName) && Is.nullOrEmpty(intentName)){
+			boolean useService = Is.notNullOrEmpty(serviceName);
+			if (!useService && Is.nullOrEmpty(intentName)){
 				Debugger.println("HomeAssistant - 'setDeviceState' FAILED with msg.: Missing 'service' or 'intent' in config!", 1);
 				return false;
 			}
@@ -385,18 +386,26 @@ public class HomeAssistant implements SmartHomeHub {
 			String writeExpression = JSON.getStringOrDefault(haAction, "write", null);
 			if (Is.notNullOrEmpty(writeExpression)){
 				JSONObject data = SmartHomeDevice.buildStateDataFromWriteExpression(writeExpression, state);
-				if (data != null && data.containsKey("attributes")){
-					JSONObject attr = JSON.getJObject(data, new String[]{"attributes"});
-					if (attr != null){
-						JSON.forEach(attr, (key, val) -> {
-							JSON.put(reqData, key, val);
-						});
+				if (useService){
+					//requires attributes
+					if (data != null && data.containsKey("attributes")){
+						JSONObject attr = JSON.getJObject(data, new String[]{"attributes"});
+						if (attr != null){
+							JSON.forEach(attr, (key, val) -> {
+								JSON.put(reqData, key, val);
+							});
+						}
+					}
+				}else{
+					//everything is allowed for intents
+					if (data != null){
+						JSON.deepMerge(data, reqData);
 					}
 				}
 			}
 			JSONObject reqBody;
 			String haActionURL = this.host;
-			if (Is.notNullOrEmpty(serviceName)){
+			if (useService){
 				//service
 				haActionURL += "/api/services/" + serviceName;
 				reqBody = reqData;
@@ -406,11 +415,12 @@ public class HomeAssistant implements SmartHomeHub {
 				reqBody = JSON.make("name", intentName, "data", reqData);
 			}
 			/*
+			System.out.println("haActionURL: " + haActionURL);	//DEBUG
 			System.out.println("haAction: " + haAction);		//DEBUG
 			System.out.println("reqBody: " + reqBody);			//DEBUG
 			*/
 			Map<String, String> headers = new HashMap<>();
-			headers.put("Content-Type", "text/plain");
+			headers.put("Content-Type", "application/json");
 			headers.put("Accept", "application/json");
 			JSONObject response = httpPOST(haActionURL, reqBody, headers);
 			//System.out.println("RESPONSE: " + response); 		//this is usually empty if there was no error
@@ -505,6 +515,13 @@ public class HomeAssistant implements SmartHomeHub {
 			"<state>", JSON.make("state", "unknown")));
 		haInterfaceConfigStateTypeMap.put("sensor.state", StateType.text_raw);
 		//haSetCommandsMap.put("sensor.state", JSON.make("enable", "", "disable", "", "raw", "<val>"));
+		
+		//Intent - demo
+		haInterfaceConfigMap.put("intent.demo", new HaInterfaceConfig(
+			JSON.make("intent", "SepiaDemoOn", "write", "<state>"), JSON.make("intent", "SepiaDemoSet", "write", "<state>"), JSON.make("intent", "SepiaDemoOff", "write", "<state>"),
+			"<state>", JSON.make("state", "unknown")));
+		haInterfaceConfigStateTypeMap.put("intent.demo", StateType.number_plain);
+		//haSetCommandsMap.put("intent.demo", JSON.make("enable", "", "disable", "", "number", "<val>"));
 	}
 	
 	/**

@@ -141,7 +141,7 @@ public class SmartHomeDevice {
 				case number_plain:
 					return state;
 				case number_percent:
-					return state + " %";
+					return state + "%";
 				case number_temperature_c:
 					return state + " °C";
 				case number_temperature_f:

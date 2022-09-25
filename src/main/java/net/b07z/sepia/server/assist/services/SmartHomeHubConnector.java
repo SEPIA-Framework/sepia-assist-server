@@ -479,7 +479,8 @@ public class SmartHomeHubConnector implements ServiceInterface {
 			boolean hasStateAlready = false;
 			if (Is.typeEqual(deviceType, SmartDevice.Types.roller_shutter)){
 				targetState = SmartHomeDevice.State.open.name();
-				hasStateAlready = Is.notNullOrEmpty(selectedDeviceState) && selectedDeviceState.equalsIgnoreCase(targetState); 		//NOTE: we skip the 100 check here because HUBs don't agree if 100 is open or closed
+				hasStateAlready = Is.notNullOrEmpty(selectedDeviceState) && selectedDeviceState.equalsIgnoreCase(targetState);
+				//NOTE: we skip the 100 check here because HUBs don't agree if 100 is open or closed
 			}else{
 				targetState = SmartHomeDevice.State.on.name();
 				hasStateAlready = Is.notNullOrEmpty(selectedDeviceState) && (selectedDeviceState.equals("100") || selectedDeviceState.equalsIgnoreCase(targetState));
@@ -521,7 +522,8 @@ public class SmartHomeHubConnector implements ServiceInterface {
 			boolean hasStateAlready = false;
 			if (Is.typeEqual(deviceType, SmartDevice.Types.roller_shutter)){
 				targetState = SmartHomeDevice.State.closed.name();
-				hasStateAlready = Is.notNullOrEmpty(selectedDeviceState) && selectedDeviceState.equalsIgnoreCase(targetState); 		//NOTE: we skip the 100 check here because HUBs don't agree if 100 is open or closed
+				hasStateAlready = Is.notNullOrEmpty(selectedDeviceState) && selectedDeviceState.equalsIgnoreCase(targetState);
+				//NOTE: we skip the 100 check here because HUBs don't agree if 100 is open or closed
 			}else{
 				targetState = SmartHomeDevice.State.off.name();	//TODO: depending on device 0 might be ON
 				hasStateAlready = Is.notNullOrEmpty(selectedDeviceState) && (selectedDeviceState.equals("0") || selectedDeviceState.equalsIgnoreCase(targetState));
@@ -614,6 +616,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 						}
 					}
 					//send
+					//TODO: if stateType is 'number_...' write state-memory?
 					//System.out.println("send to device: " + targetSetValue + " - " + targetValueType);		//DEBUG
 					boolean setSuccess = smartHomeHUB.setDeviceState(selectedDevice, newValue, newValueType);
 					if (setSuccess){
