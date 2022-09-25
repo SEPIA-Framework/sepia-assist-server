@@ -737,10 +737,10 @@ public class HomeAssistant implements SmartHomeHub {
 			case "light":
 				return Types.light;
 			case "cover":
-				//TODO: in HA this can be for example a garage door as well - check: attributes
+				//TODO: in HA this can be for example a garage_door as well - check: attributes
 				return Types.roller_shutter;
 			case "climate":
-				//TODO: in HA this can be for example a fan as well - check: attributes
+				//TODO: in HA this can be for example HVAC/fan/air conditioner as well - check: attributes
 				return Types.heater;
 			case "sensor":
 			case "binary_sensor":
