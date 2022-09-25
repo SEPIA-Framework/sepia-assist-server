@@ -43,6 +43,13 @@ public class TestTtsTools {
 		assertTrue(TtsTools.optimizePronunciation("1,2 ist die Nummer", language, engine)
 				.equals("1,2 ist die Nummer."));
 		
+		assertTrue(TtsTools.optimizePronunciation("3000 kWh", language, engine)
+				.equals("3000 Kilowattstunden."));
+		assertTrue(TtsTools.optimizePronunciation("5 kW", language, engine)
+				.equals("5 Kilowatt."));
+		assertTrue(TtsTools.optimizePronunciation("300 W", language, engine)
+				.equals("300 Watt."));
+		
 		assertTrue(TtsTools.optimizePronunciation("Eine %%WINDOWS%% Variable", language, engine)
 				.equals("Eine Prozent Prozent WINDOWS Prozent Prozent Variable."));
 		assertTrue(TtsTools.optimizePronunciation("Eine $LINUX Variable", language, engine)
@@ -87,6 +94,13 @@ public class TestTtsTools {
 				.equals("Number 1.2."));
 		assertTrue(TtsTools.optimizePronunciation("1.2 is the number", language, engine)
 				.equals("1.2 is the number."));
+		
+		assertTrue(TtsTools.optimizePronunciation("3000 kWh", language, engine)
+				.equals("3000 kilowatt hours."));
+		assertTrue(TtsTools.optimizePronunciation("5 kW", language, engine)
+				.equals("5 kilowatt."));
+		assertTrue(TtsTools.optimizePronunciation("300 W", language, engine)
+				.equals("300 watt."));
 		
 		assertTrue(TtsTools.optimizePronunciation("The proof[1] is there [2].", language, engine)
 				.equals("The proof 1 is there 2."));
