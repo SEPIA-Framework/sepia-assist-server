@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.database.DB;
+import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
@@ -134,7 +135,13 @@ public class InternalHub implements SmartHomeHub {
 					//currently we only check these filters
 					for (String filter : filters.keySet()){
 						//System.out.println("filter: " + filter + ", val.: " + filters.get(filter));		//DEBUG
-						if (filter.equals(SmartHomeDevice.FILTER_TYPE)){
+						if (filter.equals(SmartHomeDevice.FILTER_TYPE_ARRAY)){
+							List<String> types = Converters.stringOrCollection2ListStr(filters.get(filter));
+							if (types == null || !types.contains(shd.getType())){
+								filterMatch = false;
+								break;
+							}
+						}else if (filter.equals(SmartHomeDevice.FILTER_TYPE)){
 							if (!((String) filters.get(filter)).equals(shd.getType())){
 								filterMatch = false;
 								break;
@@ -158,7 +165,7 @@ public class InternalHub implements SmartHomeHub {
 					}
 				}
 				if (filterMatch){
-					shd = loadDeviceData(shd);
+					shd = loadDeviceData(shd);	//THIS is why we call it parallel
 					filteredDevices.add(shd);
 				}
 			}, timeout, maxNumOfThreads);

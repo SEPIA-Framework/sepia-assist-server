@@ -192,8 +192,9 @@ public interface SmartHomeHub {
 	/**
 	 * Get a list of devices with optional filters:<br>
 	 * <li>name</li>
-	 * <li>type as seen in {@link SmartDevice.Types}</li>
-	 * <li>room as seen in {@link Room.Types}</li>
+	 * <li>type (match one specific {@link SmartDevice.Types})</li>
+	 * <li>typeArray (match multiple {@link SmartDevice.Types}, collection or comma separated string)</li>
+	 * <li>room (match a {@link Room.Types})</li>
 	 * <li>roomIndex</li>
 	 * <li>limit</li>
 	 * @param filters - map with optional filters as seen above (or null)

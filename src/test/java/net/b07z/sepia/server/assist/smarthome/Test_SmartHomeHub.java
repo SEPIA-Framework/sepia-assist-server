@@ -1,5 +1,6 @@
 package net.b07z.sepia.server.assist.smarthome;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +42,8 @@ public class Test_SmartHomeHub {
 		System.out.println("");
 		
 		//search any light
-		List<SmartHomeDevice> deviceMatches = SmartHomeDevice.getMatchingDevices(devicesMap, SmartDevice.Types.light.name(), "", "", -1);
+		List<SmartHomeDevice> deviceMatches = SmartHomeDevice.getMatchingDevices(
+				devicesMap, Arrays.asList(SmartDevice.Types.light.name()), "", "", -1);
 		
 		//show all
 		System.out.println("Found lights: ");

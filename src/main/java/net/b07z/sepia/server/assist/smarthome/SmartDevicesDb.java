@@ -5,6 +5,9 @@ import java.util.Set;
 
 import org.json.simple.JSONObject;
 
+import net.b07z.sepia.server.assist.parameters.Room;
+import net.b07z.sepia.server.assist.parameters.SmartDevice;
+
 /**
  * Interface that manages the database for smart home/device interfaces and custom devices/items.
  * 
@@ -59,7 +62,7 @@ public interface SmartDevicesDb {
 	/**
 	 * Get all custom smart devices that correspond to filter set.<br>
 	 * NOTE: If you add multiple filters the method will try to get the best fit but may return partial fits! Be sure to check the result again afterwards.  
-	 * @param filters - Map with filters, e.g. type=light, room=livingroom, etc.
+	 * @param filters - Map with filters, e.g. type="light" ({@link SmartDevice.Types}) or typeArray="heater, fan" (string or collection), room="livingroom" ({@link Room.Types}) or roomArray, etc.
 	 * @return
 	 */
 	public Map<String, SmartHomeDevice> getCustomDevices(Map<String, Object> filters);

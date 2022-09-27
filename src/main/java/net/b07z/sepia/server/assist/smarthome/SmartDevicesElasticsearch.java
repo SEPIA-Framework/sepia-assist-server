@@ -231,9 +231,27 @@ public class SmartDevicesElasticsearch implements SmartDevicesDb {
 				//use filters
 				List<QueryElement> qes = new ArrayList<>();
 				filters.entrySet().forEach(e -> {
+					String k = e.getKey();
 					Object v = e.getValue();
 					if (v != null){
-						qes.add(new QueryElement(e.getKey(), v));
+						if (k.contains("Array")){
+							try {
+								k = k.replace("Array", "");
+								List<String> vArr = Converters.stringOrCollection2ListStr(v);
+								if (Is.notNullOrEmpty(vArr)){
+									for (String vn : vArr){
+										if (!vn.isEmpty()){
+											qes.add(new QueryElement(k, vn));
+										}
+									}
+								}
+							}catch (Exception err) {
+								Debugger.println("Smart Devices - failed to parse 'getCustomDevices' filter: " + k 
+										+ " - Error: " + err.getMessage(), 1);
+							}
+						}else{
+							qes.add(new QueryElement(k, v));
+						}
 					}
 				});
 				query = EsQueryBuilder.getBoolShouldMatch(qes);

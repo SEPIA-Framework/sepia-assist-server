@@ -51,6 +51,7 @@ public class SmartHomeDevice {
 	//filter options
 	public static final String FILTER_NAME = "name";
 	public static final String FILTER_TYPE = "type";
+	public static final String FILTER_TYPE_ARRAY = "typeArray";
 	public static final String FILTER_ROOM = "room";
 	public static final String FILTER_ROOM_INDEX = "roomIndex";
 	
@@ -518,14 +519,14 @@ public class SmartHomeDevice {
 	/**
 	 * Get devices from the list that match type and room (optionally).
 	 * @param devices - map of devices taken e.g. from getDevices()
-	 * @param deviceType - type of device (or null), see {@link SmartDevice.Types}
+	 * @param deviceTypeList - list of device types (or null), see {@link SmartDevice.Types}
 	 * @param roomType - type of room (or null), see {@link Room.Types}
 	 * @param roomIndex - e.g. a number (as string) or null
 	 * @param maxDevices - maximum number of matches (0 or negative for all possible)
 	 * @return list of devices (can be empty)
 	 */
 	public static List<SmartHomeDevice> getMatchingDevices(Map<String, SmartHomeDevice> devices, 
-				String deviceType, String roomType, String roomIndex, int maxDevices){
+				List<String> deviceTypeList, String roomType, String roomIndex, int maxDevices){
 		List<SmartHomeDevice> matchingDevices = new ArrayList<>();
 		//get all devices with right type and optionally room
 		int found = 0;
@@ -533,8 +534,8 @@ public class SmartHomeDevice {
 			//check type
 			SmartHomeDevice data = entry.getValue();
 			String thisType = data.getType();
-			if (Is.notNullOrEmpty(deviceType)){
-				if (thisType == null || !thisType.equals(deviceType)){
+			if (Is.notNullOrEmpty(deviceTypeList)){
+				if (thisType == null || !deviceTypeList.contains(thisType)){
 					continue;
 				}
 			}
@@ -584,18 +585,24 @@ public class SmartHomeDevice {
 	/**
 	 * Get devices from the list that match a set of filters.
 	 * @param devices - map of devices taken e.g. from getDevices()
-	 * @param filters - map of filters like "type", "room", etc.
+	 * @param filters - map of filters like "type" or "typeArray" (list or comma separated string), "room", "roomIndex", "limit" etc.
 	 * @return list of devices (can be empty)
 	 */
 	public static List<SmartHomeDevice> getMatchingDevices(Map<String, SmartHomeDevice> devices,
 			Map<String, Object> filters){
 		//filters
-		String deviceType = null;
+		List<String> deviceTypeList = null;
 		String roomType = null;
 		String roomIndex = null;
 		int limit = -1;
 		if (filters != null){
-			deviceType = Converters.obj2StringOrDefault(filters.get("type"), null);
+			Object typeArrayOrStringObj = filters.getOrDefault("typeArray", filters.get("type"));
+			if (typeArrayOrStringObj != null){
+				List<String> typeArray = Converters.stringOrCollection2ListStr(typeArrayOrStringObj);
+				if (Is.notNullOrEmpty(typeArray)){
+					deviceTypeList = typeArray;
+				}
+			}
 			roomType = Converters.obj2StringOrDefault(filters.get("room"), null);
 			roomIndex = Converters.obj2StringOrDefault(filters.get("roomIndex"), null);
 			Object limitObj = filters.get("limit");
@@ -605,7 +612,7 @@ public class SmartHomeDevice {
 			}
 		}
 		//get all devices with right type and optionally right room
-		List<SmartHomeDevice> matchingDevices = getMatchingDevices(devices, deviceType, roomType, roomIndex, limit);
+		List<SmartHomeDevice> matchingDevices = getMatchingDevices(devices, deviceTypeList, roomType, roomIndex, limit);
 		return matchingDevices;
 	}
 	
