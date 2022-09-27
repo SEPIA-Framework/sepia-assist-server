@@ -43,6 +43,8 @@ public class SmartDevice implements ParameterHandler{
 	public static enum Types {
 		light,
 		heater,
+		air_conditioner,
+		temperature_control,
 		tv,
 		music_player,
 		roller_shutter,
@@ -73,6 +75,8 @@ public class SmartDevice implements ParameterHandler{
 	static {
 		types_de.put("light", "das Licht");
 		types_de.put("heater", "die Heizung");
+		types_de.put("air_conditioner", "die Klimaanlage");
+		types_de.put("temperature_control", "die Temperatur");
 		types_de.put("tv", "der Fernseher");
 		types_de.put("music_player", "die Musikanlage");
 		types_de.put("roller_shutter", "der Rollladen");
@@ -90,6 +94,8 @@ public class SmartDevice implements ParameterHandler{
 		
 		types_en.put("light", "the light");
 		types_en.put("heater", "the heater");
+		types_en.put("air_conditioner", "the air conditioner");
+		types_en.put("temperature_control", "the temperature");
 		types_en.put("tv", "the TV");
 		types_en.put("music_player", "the music player");
 		types_en.put("roller_shutter", "the roller shutter");
@@ -132,8 +138,9 @@ public class SmartDevice implements ParameterHandler{
 	public static final String lightRegEx_en = "light(s|)|lighting|lamp(s|)|"
 											+ "illumination|"
 											+ "brightness";
-	public static final String heaterRegEx_en = "heat(er(s|)|ing)|"
-											+ "temperature(s|)|"
+	public static final String heaterRegEx_en = "heat(er(s|)|ing)|radiator(s|)";
+	public static final String airConditionerRegEx_en = "air condition(er(s|)|ing)( unit|)";
+	public static final String tempControlRegEx_en = "temperature(s|)( control|)|"
 											+ "thermostat(s|)";
 	public static final String tvRegEx_en = "tv|television";
 	public static final String musicPlayerRegEx_en = "(stereo|music)( |)(player)|stereo|bluetooth(-| )(speaker|box)|speaker(s|)";
@@ -143,15 +150,16 @@ public class SmartDevice implements ParameterHandler{
 	public static final String ovenRegEx_en = "oven|stove";
 	public static final String coffeeMakerRegEx_en = "coffee (maker|brewer|machine)";
 	public static final String garageDoorRegEx_en = "garage (door|gate)";
-	public static final String fanRegEx_en = "fan|ventilator(s|)|blower(s|)";
+	public static final String fanRegEx_en = "fan|ventilator(s|)|ventilation|venting|blower(s|)";
 	public static final String genericDeviceRegEx_en = "device(s|)";
 	
 	public static final String sensorRegEx_de = "gaszaehler|stromzaehler|thermometer|"
 											+ "(gas |strom |temperatur |)sensor(en|s|)";
 	public static final String lightRegEx_de = "\\w*(licht(er|es|)|lampe(n|)|beleuchtung|leuchte(n|))|"
 											+ "helligkeit";
-	public static final String heaterRegEx_de = "\\w*(heiz(er|ungen|ung|koerper(s|)|luefter(s|)|strahler(s|)))|"
-											+ "\\w*(thermostat(es|s|))|"
+	public static final String heaterRegEx_de = "\\w*(heiz(er|ungen|ung|koerper(s|)|luefter(s|)|strahler(s|)))";
+	public static final String airConditionerRegEx_de = "klima(-| |)(anlage(n|)|geraet(es|e|))";
+	public static final String tempControlRegEx_de = "\\w*(thermostat(es|s|))|"
 											+ "temperatur(regler(s|)|en|)";
 	public static final String tvRegEx_de = "tv(s|)|television(s|)|fernseh(er(s|)|geraet(es|s|)|apparat(es|s|))";
 	public static final String musicPlayerRegEx_de = "(stereo|musi(k|c))( |)(anlage|player(s|))|"
@@ -164,7 +172,7 @@ public class SmartDevice implements ParameterHandler{
 	public static final String ovenRegEx_de = "ofen(s|)|herd(es|s)";
 	public static final String coffeeMakerRegEx_de = "kaffeemaschine";
 	public static final String garageDoorRegEx_de = "garagen( |-|)(tor|tuer)";
-	public static final String fanRegEx_de = "\\w*(luefter|ventilator(en|)|geblaese)";
+	public static final String fanRegEx_de = "\\w*(luefter|ventilator(en|)|geblaese|(be|)lueftung)";
 	public static final String genericDeviceRegEx_de = "geraet(e|)";
 	//----------------
 	
@@ -200,6 +208,8 @@ public class SmartDevice implements ParameterHandler{
 					+ sensorRegEx_de + "|"	//NOTE: we put this first to catch sensors like "temperature sensor"
 					+ lightRegEx_de + "|"
 					+ heaterRegEx_de + "|"
+					+ airConditionerRegEx_de + "|"
+					+ tempControlRegEx_de + "|"
 					+ tvRegEx_de + "|"
 					+ musicPlayerRegEx_de + "|"
 					+ rollerShutterRegEx_de + "|"
@@ -218,6 +228,8 @@ public class SmartDevice implements ParameterHandler{
 					+ sensorRegEx_en + "|"
 					+ lightRegEx_en + "|"
 					+ heaterRegEx_en + "|"
+					+ airConditionerRegEx_en + "|"
+					+ tempControlRegEx_en + "|"
 					+ tvRegEx_en + "|"
 					+ musicPlayerRegEx_en + "|"
 					+ rollerShutterRegEx_en + "|"
@@ -287,6 +299,12 @@ public class SmartDevice implements ParameterHandler{
 			}else if (NluTools.stringContains(device, heaterRegEx_de)){
 				deviceType = Types.heater.name();
 				
+			}else if (NluTools.stringContains(device, airConditionerRegEx_de)){
+				deviceType = Types.air_conditioner.name();
+				
+			}else if (NluTools.stringContains(device, tempControlRegEx_de)){
+				deviceType = Types.temperature_control.name();
+				
 			}else if (NluTools.stringContains(device, tvRegEx_de)){
 				deviceType = Types.tv.name();
 				
@@ -326,6 +344,12 @@ public class SmartDevice implements ParameterHandler{
 				
 			}else if (NluTools.stringContains(device, heaterRegEx_en)){
 				deviceType = Types.heater.name();
+				
+			}else if (NluTools.stringContains(device, airConditionerRegEx_en)){
+				deviceType = Types.air_conditioner.name();
+				
+			}else if (NluTools.stringContains(device, tempControlRegEx_en)){
+				deviceType = Types.temperature_control.name();
 				
 			}else if (NluTools.stringContains(device, tvRegEx_en)){
 				deviceType = Types.tv.name();

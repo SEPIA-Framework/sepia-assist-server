@@ -1,6 +1,7 @@
 package net.b07z.sepia.server.assist.services;
 
 import java.util.AbstractMap.SimpleEntry;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,6 +73,8 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		info.setCustomTriggerRegX(""
 				+ SmartDevice.lightRegEx_de + "|"
 				+ SmartDevice.heaterRegEx_de + "|"
+				+ SmartDevice.airConditionerRegEx_de + "|"
+				+ SmartDevice.tempControlRegEx_de + "|"
 				+ SmartDevice.tvRegEx_de + "|"
 				+ SmartDevice.musicPlayerRegEx_de + "|"
 				+ SmartDevice.fridgeRegEx_de + "|"
@@ -91,6 +94,8 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		info.setCustomTriggerRegX(""
 				+ SmartDevice.lightRegEx_en + "|"
 				+ SmartDevice.heaterRegEx_en + "|"
+				+ SmartDevice.airConditionerRegEx_en + "|"
+				+ SmartDevice.tempControlRegEx_en + "|"
 				+ SmartDevice.tvRegEx_en + "|"
 				+ SmartDevice.musicPlayerRegEx_en + "|"
 				+ SmartDevice.fridgeRegEx_en + "|"
@@ -120,7 +125,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		info.addParameter(p1);
 		
 		//optional
-		Parameter p2 = new Parameter(PARAMETERS.ACTION, Action.Type.toggle);	//toggle seems to be the most reasonable default action "lights" -> "light on"
+		Parameter p2 = new Parameter(PARAMETERS.ACTION, "");
 		Parameter p3 = new Parameter(PARAMETERS.SMART_DEVICE_VALUE, "");
 		Parameter p4 = new Parameter(PARAMETERS.ROOM, "");
 		Parameter p5 = new Parameter(PARAMETERS.GENERAL_VALUE, "");		//used only when SMART_DEVICE_VALUE is missing (or unclear?)
@@ -163,7 +168,8 @@ public class SmartHomeHubConnector implements ServiceInterface {
 	private static final String askRoom = "smartdevice_1c";
 	private static final String askStateValue = "smartdevice_1d";
 	private static final String askFirstOfMany = "default_ask_first_of_many_0a";
-	private static final String okDoNothing = "ok_0a";
+	//private static final String okDoNothing = "ok_0a";
+	private static final String okDoNothing = "default_abort_no_change_0a";
 	
 	@Override
 	public ServiceResult getResult(NluResult nluResult){
@@ -225,6 +231,22 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		
 		//get optional parameters:
 		Parameter action = nluResult.getOptionalParameter(PARAMETERS.ACTION, "");
+		String actionValue = action.getValueAsString().replaceAll("^<|>$", "").trim(); 		//TODO: NOTE! There is an inconsistency in parameter format with device and room here
+		if (Is.nullOrEmpty(actionValue)){
+			//get a device dependent default
+			switch (SmartDevice.Types.valueOf(deviceType)) {
+			case light:
+			case garage_door:
+			case power_outlet:
+			case tv:
+			case fan:
+				actionValue = Action.Type.toggle.name();
+				break;
+			default:
+				actionValue = Action.Type.show.name();
+				break;
+			}
+		}
 		
 		Parameter deviceValue = nluResult.getOptionalParameter(PARAMETERS.SMART_DEVICE_VALUE, "");	//a number of type plain, percent, temperature, ...
 		String targetSetValue = deviceValue.getValueAsString();
@@ -278,13 +300,27 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		//find device - NOTE: the HUB implementation is responsible for caching the data
 		Map<String, Object> filters = new HashMap<>();
 		//if (Is.notNullOrEmpty(deviceName)) filters.put(SmartHomeDevice.FILTER_NAME, deviceName);  //not supported by all HUBs! Need to filter ourself
-		if (!isDeviceNameKnownButNoType) filters.put(SmartHomeDevice.FILTER_TYPE, deviceType);
+		boolean isGroupOfDevices = false;
+		if (!isDeviceNameKnownButNoType){
+			if (Is.typeEqual(deviceType, SmartDevice.Types.temperature_control)){
+				//temp. control is a bit special because it can be heater/air cond./specific controller
+				filters.put(SmartHomeDevice.FILTER_TYPE_ARRAY, Arrays.asList(
+					SmartDevice.Types.temperature_control.name(),
+					SmartDevice.Types.heater.name(),
+					SmartDevice.Types.air_conditioner.name()
+				));
+				isGroupOfDevices = true;
+			}else{
+				filters.put(SmartHomeDevice.FILTER_TYPE, deviceType);
+			}
+		}
 		if (Is.notNullOrEmpty(roomType)) filters.put(SmartHomeDevice.FILTER_ROOM, roomType);
 		if (roomNumber != Integer.MIN_VALUE){
 			filters.put(SmartHomeDevice.FILTER_ROOM_INDEX, Integer.toString(roomNumber));		//NOTE: we use String because actually room-index is not restricted to numbers
 		}
 		filters.put("limit", -1);
 		List<SmartHomeDevice> matchingDevices = smartHomeHUB.getFilteredDevicesList(filters);
+		//System.out.println("matchingDevices: " + matchingDevices);		//DEBUG
 		
 		//abort with no result?
 		if (matchingDevices == null){
@@ -407,9 +443,10 @@ public class SmartHomeHubConnector implements ServiceInterface {
 					//OK
 					selectedDevice = matchingDevices.get(0);
 				}else{
-					//NO selection, abort - TODO: improve
+					//NO selection, abort
+					//TODO: improve
 					service.setStatusOkay();
-					service.setCustomAnswer(okDoNothing);	//"soft"-fail with "ok" answer and just do nothing
+					service.setCustomAnswer(okDoNothing);	//"soft"-fail with "abort, no change" answer and do nothing
 					return service.buildResult();
 				}
 			}
@@ -432,7 +469,6 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		
 		//ACTIONS
 		
-		String actionValue = action.getValueAsString().replaceAll("^<|>$", "").trim(); 		//TODO: NOTE! There is an inconsistency in parameter format with device and room here
 		Debugger.println("cmd: smartdevice, action: " + actionValue + ", device: " + deviceType + ", room: " + roomType, 2);		//debug
 		
 		//response info
@@ -465,6 +501,14 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		}
 		//TODO: OPEN and CLOSE = ON and OFF ... this might be wrong for some devices (see roller shutter/garage door below)
 		
+		//Some impossible actions
+		if (Is.typeEqual(deviceType, SmartDevice.Types.sensor) && actionIs(actionValue, Action.Type.set)){
+			//sensors can only show data and maybe get switched on/off
+			service.setStatusOkay();
+			service.setCustomAnswer(actionNotPossible);		//"soft"-fail with "not possible" answer
+			return service.buildResult();
+		}
+		
 		//SHOW
 		if (actionIs(actionValue, Action.Type.show)){
 			//response info
@@ -481,7 +525,8 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		}else if (actionIs(actionValue, Action.Type.on)){
 			String targetState;
 			boolean hasStateAlready = false;
-			if (Is.typeEqual(deviceType, SmartDevice.Types.roller_shutter) || Is.typeEqual(deviceType, SmartDevice.Types.garage_door)){
+			if (Is.typeEqual(deviceType, SmartDevice.Types.roller_shutter) 
+					|| Is.typeEqual(deviceType, SmartDevice.Types.garage_door)){
 				targetState = SmartHomeDevice.State.open.name();
 				hasStateAlready = Is.notNullOrEmpty(selectedDeviceState) && selectedDeviceState.equalsIgnoreCase(targetState);
 				//NOTE: we skip the 100 check here because HUBs don't agree if 100 is open or closed

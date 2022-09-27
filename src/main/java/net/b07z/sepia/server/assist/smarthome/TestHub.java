@@ -11,7 +11,6 @@ import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.parameters.Room;
 import net.b07z.sepia.server.assist.parameters.SmartDevice;
-import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
@@ -67,9 +66,33 @@ public class TestHub implements SmartHomeHub {
 			"Heater (1)", 
 			SmartDevice.Types.heater.name(), 
 			Room.Types.livingroom.name(), 
-			SmartHomeDevice.State.off.name(), SmartHomeDevice.StateType.number_temperature_c.name(), "", 
+			"22", SmartHomeDevice.StateType.number_temperature_c.name(), "", 
 			"link", JSON.make(
 					"id", "Heater_Test_A",
+					"origin", NAME,
+					"typeGuessed", false,
+					"namedBySepia", true
+			)
+	);
+	private static SmartHomeDevice airConditioner = new SmartHomeDevice(
+			"Air Conditioner (1)", 
+			SmartDevice.Types.air_conditioner.name(), 
+			Room.Types.livingroom.name(), 
+			SmartHomeDevice.State.off.name(), SmartHomeDevice.StateType.number_temperature_c.name(), "", 
+			"link", JSON.make(
+					"id", "Aircon_Test_A",
+					"origin", NAME,
+					"typeGuessed", false,
+					"namedBySepia", true
+			)
+	);
+	private static SmartHomeDevice tempControl = new SmartHomeDevice(
+			"Temperature", 
+			SmartDevice.Types.temperature_control.name(), 
+			Room.Types.livingroom.name(), 
+			"21", SmartHomeDevice.StateType.number_temperature_c.name(), "", 
+			"link", JSON.make(
+					"id", "Temp_Test_A",
 					"origin", NAME,
 					"typeGuessed", false,
 					"namedBySepia", true
@@ -160,8 +183,8 @@ public class TestHub implements SmartHomeHub {
 			)
 	);
 	private static List<SmartHomeDevice> devicesList = Arrays.asList(
-			light, light2, heater, rollerShutter, garageDoor,
-			tv, fan, sensor1, sensor2, genericDevice
+			light, light2, heater, airConditioner, tempControl, fan, 
+			rollerShutter, garageDoor, tv, sensor1, sensor2, genericDevice
 	);
 	
 	//--------------------------
@@ -285,23 +308,12 @@ public class TestHub implements SmartHomeHub {
 
 	@Override
 	public List<SmartHomeDevice> getFilteredDevicesList(Map<String, Object> filters){
-		//filters
-		String deviceType = null;
-		String roomType = null;
-		String roomIndex = null;
-		int limit = -1;
-		if (filters != null){
-			deviceType = (String) filters.get("type");
-			roomType = (String) filters.get("room");
-			roomIndex = Converters.obj2StringOrDefault(filters.get("roomIndex"), null);
-			Object limitObj = filters.get("limit");
-			if (limitObj != null){
-				limit = (int) limitObj;
-			}
+		Map<String, SmartHomeDevice> devices = getDevices();
+		if (devices == null){
+			return null;
+		}else{
+			return SmartHomeDevice.getMatchingDevices(devices, filters);
 		}
-		//get all devices with right type and optionally right room
-		List<SmartHomeDevice> matchingDevices = SmartHomeDevice.getMatchingDevices(getDevices(), deviceType, roomType, roomIndex, limit);
-		return matchingDevices;
 	}
 
 	@Override
