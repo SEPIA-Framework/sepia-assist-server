@@ -81,15 +81,15 @@ public class DataLoader {
 	/**
 	 * Load predefined commands from txt-files. File names are build for every language as follows:
 	 * file_base_en.txt, file_base_de.txt, ... as supported.
-	 * @param file_base - path + base name of txt-file used to load the commands 
+	 * @param fileBase - path + base name of txt-file used to load the commands 
 	 */
-	public Map<String, TreeMap<String, String>> loadCommandsFromFilebase(String file_base){
-		
+	public Map<String, TreeMap<String, String>> loadCommandsFromFilebase(String fileBase){
+		Debugger.println("Loading commands from files '" + fileBase + "_*' for " + Config.preloadLanguages .size() + " languages...", 3);
 		Map<String, TreeMap<String, String>> map = new HashMap<>();
-		for (String l : Config.supportedLanguages){
-			TreeMap<String, String> cmdsFromFile = loadCommandsFromFileToMap_Reverse(file_base + "_" + l + ".txt", l);
+		for (String l : Config.preloadLanguages){
+			TreeMap<String, String> cmdsFromFile = loadCommandsFromFileToMap_Reverse(fileBase + "_" + l + ".txt", l);
 			//check custom file as well
-			String customFile = file_base + "_" + l + "_custom.txt";
+			String customFile = fileBase + "_" + l + "_custom.txt";
 			if (Files.exists(Paths.get(customFile))){
 				TreeMap<String, String> customCmdsFromFile = loadCommandsFromFileToMap_Reverse(customFile, l);
 				customCmdsFromFile.keySet().forEach((String key) -> {
@@ -105,15 +105,15 @@ public class DataLoader {
 	/**
 	 * Load predefined answers for all languages from txt-files. File names are build for every language as follows:
 	 * file_base_en.txt, file_base_de.txt, ... as supported. 
-	 * @param file_base - path + base name of txt-file used to load the answers
+	 * @param fileBase - path + base name of txt-file used to load the answers
 	 */
-	public Map<String, Map<String, List<Answer>>> loadAnswersFromFilebase(String file_base){
-		
+	public Map<String, Map<String, List<Answer>>> loadAnswersFromFilebase(String fileBase){
+		Debugger.println("Loading answers from files '" + fileBase + "_*' for " + Config.preloadLanguages .size() + " languages...", 3);
 		Map<String, Map<String, List<Answer>>> answers = new HashMap<>();
-		for (String l : Config.supportedLanguages){
-			Map<String, List<Answer>> answersFromFile = loadAnswersFromFileToMap(file_base + "_" + l + ".txt", l);
+		for (String l : Config.preloadLanguages){
+			Map<String, List<Answer>> answersFromFile = loadAnswersFromFileToMap(fileBase + "_" + l + ".txt", l);
 			//check custom file as well
-			String customFile = file_base + "_" + l + "_custom.txt";
+			String customFile = fileBase + "_" + l + "_custom.txt";
 			if (Files.exists(Paths.get(customFile))){
 				Map<String, List<Answer>> customAnswersFromFile = loadAnswersFromFileToMap(customFile, l);
 				customAnswersFromFile.keySet().forEach((String key) -> {

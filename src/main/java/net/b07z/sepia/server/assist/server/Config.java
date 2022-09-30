@@ -221,9 +221,9 @@ public class Config {
 		}
 	}
 		
-	//Languages
-	// - array of supported languages - TODO: this needs a deeper integration!
-	public static String[] supportedLanguages = {
+	//Languages 
+	// - array of supported languages
+	public static final List<String> supportedLanguages = Arrays.asList(
 			LANGUAGES.DE,			LANGUAGES.EN,
 			LANGUAGES.TR,			LANGUAGES.SV,
 			LANGUAGES.FR,			LANGUAGES.ES,
@@ -232,7 +232,12 @@ public class Config {
 			LANGUAGES.JA,			LANGUAGES.KO,
 			LANGUAGES.NL,			LANGUAGES.PL,
 			LANGUAGES.PT,			LANGUAGES.RU
-	};
+	);
+	// - array of languages used when pre-loaded resources like answers, commands etc.
+	public static List<String> preloadLanguages = Arrays.asList(
+			LANGUAGES.DE,			LANGUAGES.EN
+	);
+	//TODO: this needs a deeper integration (currently used in answer/commands file loading, but not radio, news, ...)!
 	
 	//NLU related configuration
 	
@@ -506,6 +511,16 @@ public class Config {
 			enableFileCORS = pr.getBooleanOrDefault("enable_file_cors", enableFileCORS);
 			//policies
 			privacyPolicyLink = pr.getStringProperty("privacy_policy");
+			//languages
+			String preloadLangString = pr.getStringPropertyOrDefault("languages_preload", "de, en");
+			preloadLanguages = new ArrayList<>();
+			for (String l : preloadLangString.split("\\s*,\\s*")){
+				if (supportedLanguages.contains(l)){
+					preloadLanguages.add(l);
+				}else{
+					Debugger.println("Failed to add language code from 'languages_preload', not supported yet: " + l, 1);
+				}
+			}
 			//modules
 			String authAndAccountModule = pr.getStringProperty("module_account");
 			if (authAndAccountModule != null){
@@ -556,14 +571,14 @@ public class Config {
 			//NLU chain
 			String nluInterpretationChainArr = pr.getStringPropertyOrDefault("nlu_interpretation_chain", null);
 			if (nluInterpretationChainArr != null && !nluInterpretationChainArr.isEmpty()){
-				nluInterpretationStepsCustomChain = Arrays.asList(nluInterpretationChainArr.split(","));
+				nluInterpretationStepsCustomChain = Arrays.asList(nluInterpretationChainArr.split("\\s*,\\s*"));
 			}
 			//NLU performance profilers
 			parameterPerformanceMode = pr.getIntegerOrDefault("parameter_performance_mode", parameterPerformanceMode);
 			//workers
 			String backgroundWorkersArr = pr.getStringPropertyOrDefault("background_workers", null);
 			if (backgroundWorkersArr != null && !backgroundWorkersArr.isEmpty()){
-				backgroundWorkers = Arrays.asList(backgroundWorkersArr.split(","));
+				backgroundWorkers = Arrays.asList(backgroundWorkersArr.split("\\s*,\\s*"));
 			}
 			//web content
 			urlCreateUser = pr.getStringProperty("url_createUser"); 	
@@ -647,15 +662,16 @@ public class Config {
 			settingsLoaded = pr.getReadValuesMap();		//remember loaded settings
 			settingsFileLoaded = confFile;
 			
-			Debugger.println("loading settings from " + confFile + "... done." , 3);
+			Debugger.println("Loading settings from " + confFile + "... done." , 3);
 		}catch (Exception e){
 			Debugger.printStackTrace(e, 3);
-			Debugger.println("loading settings from " + confFile + "... failed!" , 1);
+			Debugger.println("Loading settings from " + confFile + "... failed!" , 1);
 			throw e; 
 		}
 	}
 	/**
-	 * Save server settings to file. Skip security relevant fields.
+	 * Save server settings to file. Skips security relevant fields.<br>
+	 * NOTE: This method creates only a minimal viable config file in case the original got lost!
 	 * @throws Exception  
 	 */
 	public static void saveSettings(String confFile) throws Exception {
@@ -717,15 +733,15 @@ public class Config {
 		//API keys
 		//...
 		//API URLs
-		//...
+		//... ...
 		*/
 		
 		try{
 			FilesAndStreams.saveSettings(confFile, config);
-			Debugger.println("saving settings to " + confFile + "... done." , 3);
+			Debugger.println("Saving settings to " + confFile + "... done." , 3);
 		}catch (Exception e){
 			Debugger.printStackTrace(e, 3);
-			Debugger.println("saving settings to " + confFile + "... failed!" , 1);
+			Debugger.println("Saving settings to " + confFile + "... failed!" , 1);
 			throw e;
 		}
 	}
