@@ -1,12 +1,12 @@
 package net.b07z.sepia.server.assist.services;
 
 import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
-
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.answers.AnswerTools;
@@ -301,6 +301,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		Map<String, Object> filters = new HashMap<>();
 		//if (Is.notNullOrEmpty(deviceName)) filters.put(SmartHomeDevice.FILTER_NAME, deviceName);  //not supported by all HUBs! Need to filter ourself
 		boolean isGroupOfDevices = false;
+		String primaryTypeOfGroup = null;
 		if (!isDeviceNameKnownButNoType){
 			if (Is.typeEqual(deviceType, SmartDevice.Types.temperature_control)){
 				//temp. control is a bit special because it can be heater/air cond./specific controller
@@ -310,6 +311,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 					SmartDevice.Types.air_conditioner.name()
 				));
 				isGroupOfDevices = true;
+				primaryTypeOfGroup = SmartDevice.Types.temperature_control.name();
 			}else{
 				filters.put(SmartHomeDevice.FILTER_TYPE, deviceType);
 			}
@@ -322,6 +324,8 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		List<SmartHomeDevice> matchingDevices = smartHomeHUB.getFilteredDevicesList(filters);
 		//System.out.println("matchingDevices: " + matchingDevices);		//DEBUG
 		
+		//TODO: can we combine multiple of the following steps into one to save some loops?
+				
 		//abort with no result?
 		if (matchingDevices == null){
 			Debugger.println(SmartHomeHub.class.getSimpleName() + " failed to get devices! Connection to smart home HUB might be broken.", 1);		//debug
@@ -391,6 +395,22 @@ public class SmartHomeHubConnector implements ServiceInterface {
 				matchingDevices = matchingDevicesWithSameTag;
 				didTagMatch = true;
 				matchesN = matchesWithTagN;
+			}
+		}
+		
+		//check group of devices - TODO: is this the best spot for this filter? -_-
+		if (isGroupOfDevices){
+			//at this stage we (potentially) matched: room, index and tag
+			List<SmartHomeDevice> primaryTypeMatchingDevices = new ArrayList<>();
+			for (SmartHomeDevice shd : matchingDevices){
+				String thisDeviceType = shd.getType();
+				if (thisDeviceType != null && thisDeviceType.equals(primaryTypeOfGroup)){
+					primaryTypeMatchingDevices.add(shd);
+				}
+			}
+			if (!primaryTypeMatchingDevices.isEmpty()){
+				//prefer exact type match if still some left
+				matchingDevices = primaryTypeMatchingDevices;
 			}
 		}
 		
