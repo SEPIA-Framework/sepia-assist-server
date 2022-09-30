@@ -134,8 +134,8 @@ public class ClientControls implements ServiceInterface{
 		Parameter mediaControlsP = nluResult.getOptionalParameter(PARAMETERS.MEDIA_CONTROLS, "");
 		String mediaControls = mediaControlsP.getValueAsString().replaceAll("^<|>$", "").trim();	//note: < and > are typically already removed
 		String mediaControlsLocal = (String) mediaControlsP.getDataFieldOrDefault(InterviewData.VALUE_LOCAL);
-		boolean isActionOpen = (action.equals(Action.Type.show.name()) || action.equals(Action.Type.on.name()));
-		boolean isActionClose = (action.equals(Action.Type.remove.name()) || action.equals(Action.Type.off.name()));
+		boolean isActionOpen = (action.equals(Action.Type.show.name()) || action.equals(Action.Type.on.name()) || action.equals(Action.Type.open.name()));
+		boolean isActionClose = (action.equals(Action.Type.remove.name()) || action.equals(Action.Type.off.name()) || action.equals(Action.Type.close.name()));
 		boolean isActionIncrease = (action.equals(Action.Type.increase.name()) || action.equals(Action.Type.add.name()));
 		boolean isActionDecrease = (action.equals(Action.Type.decrease.name()) || action.equals(Action.Type.remove.name())); 	//note: remove is close and decrease here
 		boolean isActionEdit = (action.equals(Action.Type.set.name()) || action.equals(Action.Type.edit.name()));

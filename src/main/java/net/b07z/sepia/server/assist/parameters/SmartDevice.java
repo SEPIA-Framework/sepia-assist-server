@@ -1,11 +1,14 @@
 package net.b07z.sepia.server.assist.parameters;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.json.simple.JSONObject;
 
@@ -67,6 +70,36 @@ public class SmartDevice implements ParameterHandler{
 	 */
 	public static String getExtractedValueFromType(Types deviceType, String name){
 		return ("<" + deviceType.name() + ">;;" + name);
+	}
+	
+	private static Map<Types, List<Types>> typeGroups = new HashMap<>();
+	static {
+		typeGroups.put(Types.temperature_control, Arrays.asList(
+			Types.temperature_control,
+			Types.heater,
+			Types.air_conditioner)
+		);
+	}
+	/**
+	 * Types can sometimes be logically grouped for devices that have similar purpose
+	 * like temperature_control that includes heaters and air conditioners. This method
+	 * returns a group if existing.
+	 * @param primaryType - the primary type that was recognized
+	 * @return List of Types including primary type
+	 */
+	public static List<Types> getTypeGroup(Types primaryType){
+		if (primaryType == null) return null;
+		return typeGroups.get(primaryType);
+	}
+	/**
+	 * Same as {@link #getTypeGroup(Types)} but returns strings.
+	 * @param primaryType - the primary type that was recognized
+	 * @return List of Types as strings including primary type
+	 */
+	public static List<String> getTypeGroupAsStrings(Types primaryType){
+		List<Types> types = getTypeGroup(primaryType);
+		if (types == null) return null;
+		return types.stream().map(t -> { return t.name(); }).collect(Collectors.toList());
 	}
 	
 	//Parameter local type names
@@ -139,9 +172,9 @@ public class SmartDevice implements ParameterHandler{
 											+ "illumination|"
 											+ "brightness";
 	public static final String heaterRegEx_en = "heat(er(s|)|ing)|radiator(s|)|heat pump(s|)";
-	public static final String airConditionerRegEx_en = "air condition(er(s|)|ing)( unit|)";
+	public static final String airConditionerRegEx_en = "air condition(er(s|)|ing|)( unit|)|a/c";
 	public static final String tempControlRegEx_en = "temperature(s|)( control|)|"
-											+ "thermostat(s|)|thermometer(s|)|hvac|a/c";
+											+ "thermostat(s|)|thermometer(s|)|hvac";
 	public static final String tvRegEx_en = "tv|television";
 	public static final String musicPlayerRegEx_en = "(stereo|music)( |)(player)|stereo|bluetooth(-| )(speaker|box)|speaker(s|)";
 	public static final String rollerShutterRegEx_en = "((roller|window|sun)( |-|)|)(shutter(s|)|blind(s|)|louver(s|))|jalousie(s|)";
@@ -232,8 +265,8 @@ public class SmartDevice implements ParameterHandler{
 		}else{
 			type = NluTools.stringFindFirst(input, "("
 					+ sensorRegEx_en + "|"
-					+ lightRegEx_en + "|"
-					+ heaterRegEx_en
+					+ heaterRegEx_en + "|"
+					+ airConditionerRegEx_en
 				+ ")");
 			if (type.isEmpty()){
 				type = NluTools.stringFindFirst(input, "("
@@ -584,7 +617,25 @@ public class SmartDevice implements ParameterHandler{
 						deviceNames.addAll(set);
 					});
 				}else{
-					deviceNames = deviceNamesByType.get(deviceType);
+					//grouped?
+					Types deviceTypeEnum;
+					try {
+						deviceTypeEnum = SmartDevice.Types.valueOf(deviceType);
+					}catch(Exception e){
+						deviceTypeEnum = SmartDevice.Types.unknown;
+					}
+					List<String> typeGroup = getTypeGroupAsStrings(deviceTypeEnum);
+					if (Is.notNullOrEmpty(typeGroup)){
+						deviceNames = new HashSet<>();
+						typeGroup.forEach(dt -> {
+							Set<String> dvn = deviceNamesByType.get(dt);
+							if (Is.notNullOrEmpty(dvn)){
+								deviceNames.addAll(dvn);
+							}
+						});
+					}else{
+						deviceNames = deviceNamesByType.get(deviceType);
+					}
 				}
 				if (Is.notNullOrEmpty(deviceNames)){
 					//System.out.println("input: " + input); 					//DEBUG

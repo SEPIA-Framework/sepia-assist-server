@@ -1761,17 +1761,19 @@ public class RegexParameterSearch {
 	public static String[] get_control_action(String input, String language){
 		String action = "";
 		String extracted = "";
-		String on, off, increase, decrease, set, toggle;
+		String on, off, open, close, increase, decrease, set, toggle;
 		//German
 		if (language.matches("de")){
 			on = "(mach|schalte) .*\\b(an|ein)|"
 					+ "^\\w+\\b (an$|ein$)|"
-					+ "oeffne|oeffnen|aktiviere|aktivieren|starte|starten|start|"
+					+ "aktiviere|aktivieren|starte|starten|start|"
 					+ "anschalten|einschalten|anmachen|spielen|spiele|spiel|abspielen";
+			open = "oeffne|oeffnen|aufmachen";
 			off = "(mach|schalte) .*\\b(aus)|"
 					+ "^\\w+\\b (aus$)|"
-					+ "schliessen|schliesse|deaktivieren|deaktiviere|"
+					+ "deaktivieren|deaktiviere|"
 					+ "beenden|beende|ausschalten|ausmachen|stoppen|stoppe|stop";
+			close = "schliessen|schliesse|zu( |)machen";
 			increase = "(?<!(wie ))hoch|rauf|hoeher|groesser|erhoehen|erhoehe|verstaerken|verstaerke|heller|(?<!(ist ))schneller|(?<!(ist ))staerker|waermer|warm";
 			decrease = "runter|kleiner|niedriger|erniedrigen|erniedrige|abschwaechen|schwaecher|schwaeche|dunkler|dimmen|dimme|(?<!(wie ))langsam|langsamer|kaelter|(?<!(wie ))kalt";
 			set = "setzen|setze|stelle|stellen|aendern|aendere|auswaehlen|waehlen|waehle";
@@ -1783,10 +1785,12 @@ public class RegexParameterSearch {
 		}else{
 			on = "(make|switch|turn) .*\\b(on)|"
 					+ "^\\w+\\b (on$)|"
-					+ "open|activate|start|play";
+					+ "activate|start|play";
+			open = "open";
 			off = "(make|switch|turn) .*\\b(off)|"
 					+ "^\\w+\\b (off$)|"
-					+ "close|deactivate|end|stop|shut\\b.*? down";
+					+ "deactivate|end|stop|shut\\b.*? down";
+			close = "close";
 			increase = "(make|switch|turn) .*\\b(up)|"
 					+ "^\\w+\\b (up$)|"
 					+ "upwards|higher|bigger|increase|amplify|brighter|(?<!(is ))faster|(?<!(is ))stronger|fast|warmer|warm";
@@ -1804,9 +1808,15 @@ public class RegexParameterSearch {
 		//ON
 		}else if (NluTools.stringContains(extracted, on)){
 			action = "<" + Action.Type.on + ">";
+		//OPEN
+		}else if (NluTools.stringContains(extracted, open)){
+			action = "<" + Action.Type.open + ">";
 		//OFF
 		}else if (NluTools.stringContains(extracted, off)){
 			action = "<" + Action.Type.off + ">";
+		//CLOSE
+		}else if (NluTools.stringContains(extracted, close)){
+			action = "<" + Action.Type.close + ">";
 		//INCREASE
 		}else if (NluTools.stringContains(extracted, increase)){
 			action = "<" + Action.Type.increase + ">";

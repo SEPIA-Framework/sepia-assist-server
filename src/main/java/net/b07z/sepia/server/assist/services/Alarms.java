@@ -164,9 +164,12 @@ public class Alarms implements ServiceInterface{
 			}
 			api.overwriteParameter(PARAMETERS.ACTION, "<" + action + ">"); 		//NOTE: value has to be valid input for parameter build method!
 		}
-		boolean isActionSet = (action.equals(Action.Type.set.name()) || action.equals(Action.Type.add.name()) || action.equals(Action.Type.create.name()) || action.equals(Action.Type.on.name()));
+		boolean isActionSet = (action.equals(Action.Type.set.name()) || action.equals(Action.Type.add.name()) 
+				|| action.equals(Action.Type.create.name()) || action.equals(Action.Type.on.name())
+				|| action.equals(Action.Type.open.name()));
 		boolean isActionShow = (action.equals(Action.Type.show.name()) || action.equals(Action.Type.edit.name()));
-		boolean isActionStop = action.equals(Action.Type.remove.name()) || action.equals(Action.Type.pause.name()) || action.equals(Action.Type.off.name());
+		boolean isActionStop = action.equals(Action.Type.remove.name()) || action.equals(Action.Type.pause.name())
+				|| action.equals(Action.Type.off.name()) || action.equals(Action.Type.close.name());
 		
 		Debugger.println("cmd: " + CMD.TIMER + ", alarmType=" + alarmType + ", alarmName=" + alarmName + ", action=" + action + 
 				", time=" + dateDay + "_" + dateTime, 2);	//debug

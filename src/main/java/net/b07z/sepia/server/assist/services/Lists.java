@@ -172,7 +172,8 @@ public class Lists implements ServiceInterface{
 		Parameter actionP = nluResult.getOptionalParameter(PARAMETERS.ACTION, Action.Type.show.name());
 		String action = ((String) actionP.getDataFieldOrDefault(InterviewData.VALUE)).replaceAll("^<|>$", "").trim();
 		boolean isActionAdd = (action.equals(Action.Type.set.name()) || action.equals(Action.Type.add.name()));
-		boolean isActionShow = (action.equals(Action.Type.show.name()) || action.equals(Action.Type.edit.name()) || action.equals(Action.Type.on.name()));
+		boolean isActionShow = (action.equals(Action.Type.show.name()) || action.equals(Action.Type.edit.name())
+				|| action.equals(Action.Type.on.name()) || action.equals(Action.Type.open.name()));
 		boolean isActionRemove = action.equals(Action.Type.remove.name());
 		boolean isActionCreate = action.equals(Action.Type.create.name());
 		

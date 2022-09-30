@@ -31,7 +31,9 @@ public class Action implements ParameterHandler{
 		add,
 		remove,
 		create,
-		edit
+		edit,
+		open,
+		close
 		//TODO: OPEN and CLOSE are currently included in ON and OFF, this might need to be updated at some point
 	}
 	/**
@@ -136,20 +138,24 @@ public class Action implements ParameterHandler{
 			return action;
 		}
 		
-		String on, off, pause, resume, increase, decrease, set, toggle, show, add, remove, create, edit;
+		String on, open, off, close, pause, resume, increase, decrease, set, toggle, show, add, remove, create, edit;
 		//German
 		if (language.matches(LANGUAGES.DE)){
 			on = "(mach|schalte|dreh|(setze|stelle)) .*\\b(an|ein)|"
 					//+ "(^|^\\w+ |auf )(an|ein)$|"
 					+ "(^| )(an|ein)$|"
-					+ "oeffne|oeffnen|aktiviere|aktivieren|starte|starten|start|lade|laden|"
-					+ "anschalten|einschalten|anmachen|an machen|aufmachen|auf machen|aufdrehen|auf drehen|spielen|spiele|spiel|abspielen|"
+					+ "aktiviere|aktivieren|starte|starten|start|lade|laden|"
+					+ "anschalten|einschalten|anmachen|an machen|aufdrehen|spielen|spiele|spiel|abspielen|"
 					+ "ausfuehren|aufrufen";
+			open = "(mach|dreh) .*\\b(auf)|auf( |)drehen|^auf|" 
+					+ "oeffne|oeffnen|auf( |)machen";
 			off = "(mach|schalte|dreh|(setze|stelle)) .*\\b(aus)|"
 					//+ "(^|^\\w+ |auf )(aus)$|"
 					+ "(^| )(aus)$|"
-					+ "schliessen|schliesse|deaktivieren|deaktiviere|"
+					+ "deaktivieren|deaktiviere|"
 					+ "beenden|beende|(aus|ab)schalten|aus schalten|ausmachen|aus machen|ausdrehen|aus drehen|stop(pen|pe|p|)|exit";
+			close = "(mach|dreh) .*\\b(zu)|zu( |)drehen|^zu|"
+					+ "schliessen|schliesse|zu( |)machen";
 			pause = "pausieren|pause|anhalten|halte .*\\b(an)";
 			resume = "fortsetzen|weiter|setze .*\\b(fort)";
 			increase = "(mach|dreh) .*\\b(auf|hoch)|"
@@ -177,11 +183,13 @@ public class Action implements ParameterHandler{
 					//+ "(^\\w+ )(on$)|"
 					+ "(^| )(on$)|"
 					+ "(^|to )(active$)|"
-					+ "open|activate|start|play|load|run|execute|call";
+					+ "activate|start|play|load|run|execute|call";
+			open = "open";
 			off = "(make|switch|turn|set) .*\\b(off)|"
 					//+ "(^|^\\w+ |to )(off$)|"
 					+ "(^| )(off$)|"
-					+ "close|deactivate|end|exit|quit|stop|shut\\b.*? down";
+					+ "deactivate|end|exit|quit|stop|shut\\b.*? down";
+			close = "close";
 			pause = "pause|onhold|on hold";
 			resume = "resume|continue";
 			increase = "(make|switch|turn) .*\\b(up)|"
@@ -207,9 +215,11 @@ public class Action implements ParameterHandler{
 			edit = "(change|edit)(?! (" + add + "))";			//we need this now to compensate for the more exotic "add" actions
 		}
 		
-		String extracted = NluTools.stringFindFirst(input, set + "|" + on + "|" + off + "|" + pause + "|" + resume + "|"
-						+ increase + "|" + decrease + "|" + toggle + "|" + show + "|" + add + "|" + remove
-						+ "|" + create + "|" + edit);
+		String extracted = NluTools.stringFindFirst(input,
+				set + "|" + on + "|" + off	+ "|" + pause + "|" + resume + "|"
+				+ open + "|" + close + "|" + increase + "|" + decrease + "|" 
+				+ toggle + "|" + show + "|" + add + "|" + remove
+				+ "|" + create + "|" + edit);
 		
 		if (!extracted.isEmpty()){
 			//SET/TOGGLE 1
@@ -218,9 +228,15 @@ public class Action implements ParameterHandler{
 			//ON
 			}else if (NluTools.stringContains(extracted, on)){
 				action = "<" + Type.on + ">";
+			//OPEN
+			}else if (NluTools.stringContains(extracted, open)){
+				action = "<" + Type.open + ">";
 			//OFF
 			}else if (NluTools.stringContains(extracted, off)){
 				action = "<" + Type.off + ">";
+			//CLOSE
+			}else if (NluTools.stringContains(extracted, close)){
+				action = "<" + Type.close + ">";
 			//PAUSE
 			}else if (NluTools.stringContains(extracted, pause)){
 				action = "<" + Type.pause + ">";

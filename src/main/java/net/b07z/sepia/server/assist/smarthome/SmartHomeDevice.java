@@ -734,6 +734,15 @@ public class SmartHomeDevice {
 		}
 		//TODO: add more? Use deviceType?
 	}
+	/**
+	 * Check if state is a non-zero number like "100", "50%", "0.1", "13 °C" etc.,
+	 * but not "0%", "0.0", "0 °C" etc..
+	 * @param state - any state as string
+	 * @return
+	 */
+	public static boolean isStateNonZeroNumber(String state){
+		return state.matches(".*\\d.*") && !state.replaceAll("\\D", "").trim().matches("[0]+");
+	}
 	
 	/**
 	 * If state type is a plain number make smart assumption about the intended type using device type info.
@@ -747,7 +756,9 @@ public class SmartHomeDevice {
 				|| deviceType.equals(SmartDevice.Types.roller_shutter)
 				|| deviceType.equals(SmartDevice.Types.garage_door)){
 			return StateType.number_percent.name();
-		}else if (deviceType.equals(SmartDevice.Types.heater)){
+		}else if (deviceType.equals(SmartDevice.Types.heater)
+				|| deviceType.equals(SmartDevice.Types.air_conditioner)
+				|| deviceType.equals(SmartDevice.Types.temperature_control)){
 			return StateType.number_temperature.name();
 		}else{
 			return StateType.number_plain.name();

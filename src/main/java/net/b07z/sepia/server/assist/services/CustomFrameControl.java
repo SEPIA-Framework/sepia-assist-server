@@ -139,8 +139,10 @@ public class CustomFrameControl implements ServiceInterface {
 		//get background parameters
 		String reply = nluResult.getParameter(PARAMETERS.REPLY);	//a custom reply (defined via Teach-UI)
 		
-		boolean isActionOpen = (Is.typeEqual(action, Action.Type.show) || Is.typeEqual(action, Action.Type.on));
-		boolean isActionClose = (Is.typeEqual(action, Action.Type.remove) || Is.typeEqual(action, Action.Type.off));
+		boolean isActionOpen = (Is.typeEqual(action, Action.Type.show) || Is.typeEqual(action, Action.Type.on)
+				|| Is.typeEqual(action, Action.Type.open));
+		boolean isActionClose = (Is.typeEqual(action, Action.Type.remove) || Is.typeEqual(action, Action.Type.off)
+				|| Is.typeEqual(action, Action.Type.close));
 		boolean isActionSet = Is.typeEqual(action, Action.Type.set);
 		
 		//build result
