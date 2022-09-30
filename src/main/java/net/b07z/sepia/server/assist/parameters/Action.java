@@ -161,7 +161,7 @@ public class Action implements ParameterHandler{
 					+ "^lautstaerke (von .* |)(auf )|"
 					+ "^wert(e|) (von .* |)(auf )";
 			toggle = "umschalten|schalten|schalte";
-			show = "anzeigen|zeig|zeigen|check|checken|was sagt|sag mir|wie( |)viel|wie ist|"
+			show = "anzeigen|zeig(en|e|)|check(en|e|)|pruefe(n|)|was sagt|sag mir|wie( |)viel|wie ist|"
 					+ "(\\w+|)status(?! .* (" + set + "|(an|aus)$))|"
 					+ "welche(n|r) wert(e|) (hat|haben)|"
 					+ "wert (von|der)(?! .* (" + set + "))";
