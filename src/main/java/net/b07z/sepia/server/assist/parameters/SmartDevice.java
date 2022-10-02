@@ -72,32 +72,32 @@ public class SmartDevice implements ParameterHandler{
 		return ("<" + deviceType.name() + ">;;" + name);
 	}
 	
-	private static Map<Types, List<Types>> typeGroups = new HashMap<>();
+	private static Map<Types, List<Types>> semanticTypeGroups = new HashMap<>();
 	static {
-		typeGroups.put(Types.temperature_control, Arrays.asList(
+		semanticTypeGroups.put(Types.temperature_control, Arrays.asList(
 			Types.temperature_control,
 			Types.heater,
 			Types.air_conditioner)
 		);
 	}
 	/**
-	 * Types can sometimes be logically grouped for devices that have similar purpose
+	 * Types can sometimes be semantically grouped if devices have similar purpose
 	 * like temperature_control that includes heaters and air conditioners. This method
 	 * returns a group if existing.
 	 * @param primaryType - the primary type that was recognized
 	 * @return List of Types including primary type
 	 */
-	public static List<Types> getTypeGroup(Types primaryType){
+	public static List<Types> getSemanticTypeGroup(Types primaryType){
 		if (primaryType == null) return null;
-		return typeGroups.get(primaryType);
+		return semanticTypeGroups.get(primaryType);
 	}
 	/**
-	 * Same as {@link #getTypeGroup(Types)} but returns strings.
+	 * Same as {@link #getSemanticTypeGroup(Types)} but returns strings.
 	 * @param primaryType - the primary type that was recognized
 	 * @return List of Types as strings including primary type
 	 */
-	public static List<String> getTypeGroupAsStrings(Types primaryType){
-		List<Types> types = getTypeGroup(primaryType);
+	public static List<String> getSemanticTypeGroupAsStrings(Types primaryType){
+		List<Types> types = getSemanticTypeGroup(primaryType);
 		if (types == null) return null;
 		return types.stream().map(t -> { return t.name(); }).collect(Collectors.toList());
 	}
@@ -624,7 +624,7 @@ public class SmartDevice implements ParameterHandler{
 					}catch(Exception e){
 						deviceTypeEnum = SmartDevice.Types.unknown;
 					}
-					List<String> typeGroup = getTypeGroupAsStrings(deviceTypeEnum);
+					List<String> typeGroup = getSemanticTypeGroupAsStrings(deviceTypeEnum);
 					if (Is.notNullOrEmpty(typeGroup)){
 						deviceNames = new HashSet<>();
 						typeGroup.forEach(dt -> {

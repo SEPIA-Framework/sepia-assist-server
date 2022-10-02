@@ -741,7 +741,7 @@ public class HomeAssistant implements SmartHomeHub {
 				return Types.roller_shutter;
 			case "climate":
 				//TODO: in HA this can be for example HVAC/fan/air conditioner as well - check: attributes
-				return Types.heater;
+				return Types.temperature_control;
 			case "sensor":
 			case "binary_sensor":
 				//TODO: check 'device_class'

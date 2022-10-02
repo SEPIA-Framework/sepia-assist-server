@@ -407,8 +407,11 @@ public class Fhem implements SmartHomeHub {
 			}else{
 				String givenType = device.getType();
 				if (stateType != null){
+					SmartDevice.Types givenTypeEnum = givenType != null? SmartDevice.Types.valueOf(givenType) : SmartDevice.Types.unknown;
+					boolean isDeviceGroupCover = givenTypeEnum.equals(SmartDevice.Types.roller_shutter) 
+							|| givenTypeEnum.equals(SmartDevice.Types.garage_door);
 					//LIGHT
-					if (givenType != null && Is.typeEqual(givenType, SmartDevice.Types.light)){
+					if (givenTypeEnum.equals(SmartDevice.Types.light)){
 						//check stateType
 						if (stateType.equals(SmartHomeDevice.StateType.number_percent.name())){
 							String cmd = NluTools.stringFindFirst(setOptions, "\\b(pct|dim|bri)(?=(\\b|\\d))");
@@ -419,9 +422,8 @@ public class Fhem implements SmartHomeHub {
 						}else{
 							state = state.toLowerCase();	//on, off, etc is usually lower-case in FHEM
 						}
-					//ROLLER SHUTTER
-					}else if (givenType != null && (
-							Is.typeEqual(givenType, SmartDevice.Types.roller_shutter) || Is.typeEqual(givenType, SmartDevice.Types.garage_door))){
+					//COVERS (roller shutter, garage door, etc.)
+					}else if (isDeviceGroupCover){
 						//check stateType
 						if (stateType.equals(SmartHomeDevice.StateType.number_percent.name())){
 							//percent via "pct" - TODO: does that work?

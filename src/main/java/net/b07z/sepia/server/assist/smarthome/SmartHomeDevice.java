@@ -760,6 +760,8 @@ public class SmartHomeDevice {
 				|| deviceType.equals(SmartDevice.Types.air_conditioner)
 				|| deviceType.equals(SmartDevice.Types.temperature_control)){
 			return StateType.number_temperature.name();
+		}else if (deviceType.equals(SmartDevice.Types.sensor)){
+			return StateType.text_raw.name();
 		}else{
 			return StateType.number_plain.name();
 		}

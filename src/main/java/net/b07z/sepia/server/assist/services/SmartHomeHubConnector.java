@@ -310,7 +310,7 @@ public class SmartHomeHubConnector implements ServiceInterface {
 		String primaryTypeOfGroup = null;
 		if (!isDeviceNameKnownButNoType){
 			//check device type groups like 'SmartDevice.Types.temperature_control' and get matches for all types in group
-			List<String> typeGroup = SmartDevice.getTypeGroupAsStrings(deviceTypeEnum);
+			List<String> typeGroup = SmartDevice.getSemanticTypeGroupAsStrings(deviceTypeEnum);
 			if (Is.notNullOrEmpty(typeGroup)){
 				filters.put(SmartHomeDevice.FILTER_TYPE_ARRAY, typeGroup);
 				isGroupOfDevices = true;
