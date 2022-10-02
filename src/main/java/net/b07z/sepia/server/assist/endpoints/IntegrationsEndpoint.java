@@ -217,6 +217,7 @@ public class IntegrationsEndpoint {
 			
 			//Devices
 			if (fun.equalsIgnoreCase("getDevices")){
+				//TODO: support "typeArray" in first and second filter step 
 				//get devices
 				String deviceTypeFilter = params.getString("deviceTypeFilter");
 				if (deviceTypeFilter != null && deviceTypeFilter.trim().isEmpty()){
@@ -237,11 +238,18 @@ public class IntegrationsEndpoint {
 					devicesList = devicesMap.values();
 				} */
 				
-				if (devicesList == null || devicesList.isEmpty()){
+				if (devicesList == null){
 					//FAIL
 					return SparkJavaFw.returnResult(request, response, JSON.make(
 							"result", "fail", 
-							"error", "no devices found or failed to contact HUB"
+							"error", "failed to load data from HUB"
+					).toJSONString(), 500);
+				}else if (devicesList.isEmpty()){
+					//FAIL
+					return SparkJavaFw.returnResult(request, response, JSON.make(
+							"result", "success",
+							"devices", new JSONArray(),
+							"error", "no devices found"
 					).toJSONString(), 200);
 				}
 				
