@@ -383,9 +383,11 @@ public class OpenHAB implements SmartHomeHub {
 			}else{
 				String givenType = device.getType();
 				if (stateType != null){
+					SmartDevice.Types givenTypeEnum = givenType != null? SmartDevice.Types.valueOf(givenType) : SmartDevice.Types.unknown;
+					boolean isDeviceGroupCover = givenTypeEnum.equals(SmartDevice.Types.roller_shutter) 
+							|| givenTypeEnum.equals(SmartDevice.Types.garage_door);
 					//ROLLER SHUTTER
-					if (givenType != null && (
-							Is.typeEqual(givenType, SmartDevice.Types.roller_shutter) || Is.typeEqual(givenType, SmartDevice.Types.garage_door))){
+					if (isDeviceGroupCover){
 						if (Is.typeEqualIgnoreCase(state, SmartHomeDevice.State.open)){
 							state = "UP";
 						}else if (Is.typeEqualIgnoreCase(state, SmartHomeDevice.State.closed)){
@@ -482,23 +484,45 @@ public class OpenHAB implements SmartHomeHub {
 			name = originalName;
 		}
 		if (type == null){
-			String openHabCategory = JSON.getString(hubDevice, "category").toLowerCase();	//NOTE: we prefer category, not type
-			String openHabType = JSON.getString(hubDevice, "type").toLowerCase();
+			String openHabCategory = JSON.getStringOrDefault(hubDevice, "category", "").toLowerCase();
+			String openHabType = JSON.getStringOrDefault(hubDevice, "type", "").toLowerCase();
 			//TODO: category might not be defined
 			//TODO: 'type' can give possible set options
-			if (Is.notNullOrEmpty(openHabCategory)){
-				if (openHabCategory.matches("(.*\\s|^|,)(light.*|lamp.*)")){
-					type = SmartDevice.Types.light.name();		//LIGHT
-					typeGuessed = true;
-				}else if (openHabCategory.matches("(.*\\s|^|,)(heat.*|thermo.*)")){
-					type = SmartDevice.Types.heater.name();		//HEATER
-					typeGuessed = true;
+			if (!openHabCategory.isEmpty()){
+				if (openHabCategory.contains("light")){
+					type = SmartDevice.Types.light.name();
+				}else if (openHabCategory.contains("temperature") || openHabCategory.contains("heat")){
+					type = SmartDevice.Types.temperature_control.name();
+				}else if (openHabCategory.contains("rollershutter")){
+					type = SmartDevice.Types.roller_shutter.name();
 				}else{
-					type = openHabCategory;		//take this if we don't have a specific type yet
+					switch (openHabCategory) {
+					case "humidity":
+					case "batterylevel":
+					case "lowbattery":
+					case "carbondioxide":
+					case "energy":
+					case "gas":
+					case "oil":
+					case "water":
+					case "smoke":
+					case "pressure":
+					case "fire":
+					case "presence":
+						type = SmartDevice.Types.sensor.name();
+						break;
+					default:
+						type = openHabCategory;		//take this if we don't have a specific type yet
+						break;
+					}
 				}
-			}else if (Is.notNullOrEmpty(openHabType)){
-				if (openHabType.equals("rollershutter")){
-					type = SmartDevice.Types.roller_shutter.name();		//ROLLER SHUTTER
+				typeGuessed = true;
+			}else if (!openHabType.isEmpty()){
+				if (openHabType.equals("number:temperature")){
+					type = SmartDevice.Types.temperature_control.name();
+					typeGuessed = true;
+				}else if (openHabType.equals("rollershutter")){
+					type = SmartDevice.Types.roller_shutter.name();
 					typeGuessed = true;
 				}
 				//TODO: add more
