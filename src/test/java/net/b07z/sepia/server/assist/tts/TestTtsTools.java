@@ -113,6 +113,14 @@ public class TestTtsTools {
 		assertTrue(TtsTools.optimizePronunciation("$$", language, engine)
 				.equals("$ $."));
 		
+		//----------------------------
+		
+		engine = EngineType.txt2pho_mbrola.name();
+		
+		assertTrue(TtsTools.optimizePronunciation("Licht steht auf 70.", language, engine)
+				.equals("Licht steht auf 70"));
+		assertTrue(TtsTools.optimizePronunciation("Licht steht auf 70%.", language, engine)
+				.equals("Licht steht auf 70 %."));
 	}
 
 }

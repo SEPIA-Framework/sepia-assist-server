@@ -154,10 +154,15 @@ public class TtsTools {
 			input = input.replaceAll("%", " % ");		//Note: does this prevent variable expansion in Linux as well?
 		}
 		
-		//make sure text ends with something (useful for some TTS systems)
-		if (!input.matches(".*(!|\\?|\\.)$") && !engine.equals(EngineType.txt2pho_mbrola.name())){
+		//fix some unique quirks
+		if (engine.equals(EngineType.txt2pho_mbrola.name())){
+			//txt2pho has some issues with dots after numbers so we try to avoid this
+			//e.g.: 10 Uhr 52. -> zehn Uhr zweiundfünfzigste - Licht steht auf 70. -> 70 is not spoken at all
+			input = input.replaceFirst("(\\d)\\.$", "$1");
+		
+		//make sure text ends with something
+		}else if (!input.matches(".*(!|\\?|\\.)$")){
 			input = input + ".";
-			//NOTE: we skip this for 'txt2pho_mbrola' because e.g.: 10 Uhr 52. -> zehn Uhr zweiundfünfzigste
 		}
 		
 		input = input.replaceAll("\\s+", " ").replaceAll(" \\?$", "?").replaceAll(" \\.$", ".").trim();
