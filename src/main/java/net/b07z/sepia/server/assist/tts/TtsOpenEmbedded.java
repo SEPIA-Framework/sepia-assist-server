@@ -163,7 +163,14 @@ public class TtsOpenEmbedded implements TtsInterface {
 				}
 			}
 			if (supportedEngines.get(EngineType.espeak_mbrola)){
-				Debugger.println("TTS module - MBROLA found. Please make sure you comply with the LICENSE conditions!", 3);
+				if (Config.allowNonCommercialFeatures){
+					Debugger.println("TTS module - MBROLA found. Please make sure you comply with the LICENSE conditions!", 3);
+				}else{
+					//revert
+					supportedEngines.put(EngineType.espeak_mbrola, false);
+					Debugger.println("TTS module - MBROLA found but settings option 'allow_non_commercial_features' is not enabled! "
+							+ "Please enable it and make sure you comply with the LICENSE conditions to use MBROLA!", 1);
+				}
 			}
 		}
 		//TXT2PHO-MBROLA
@@ -182,7 +189,14 @@ public class TtsOpenEmbedded implements TtsInterface {
 			}
 		}
 		if (supportedEngines.get(EngineType.txt2pho_mbrola)){
-			Debugger.println("TTS module - txt2pho and MBROLA found. Please make sure you comply with the LICENSE conditions!", 3);
+			if (Config.allowNonCommercialFeatures){
+				Debugger.println("TTS module - txt2pho and MBROLA found. Please make sure you comply with the LICENSE conditions!", 3);
+			}else{
+				//revert
+				supportedEngines.put(EngineType.txt2pho_mbrola, false);
+				Debugger.println("TTS module - txt2pho found but settings option 'allow_non_commercial_features' is not enabled! "
+						+ "Please enable it and make sure you comply with the LICENSE conditions to use txt2pho and MBROLA!", 1);
+			}
 		}
 		//PICO
 		supportedEngines.put(EngineType.pico, false);
