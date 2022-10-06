@@ -99,6 +99,7 @@ public class Config {
 	
 	//test and other configurations
 	public static boolean restrictRegistration = true; 			//check new registrations against white-list?
+	public static boolean allowNonCommercialFeatures = false;	//allow features that require non-commercial license like certain TTS voices etc.	
 	public static boolean enableSDK = false;					//enable or disable SDK uploads
 	//public static boolean useSandboxPolicy = true;				//use security sandbox for server (should always be true in production systems! Can only be set via commandline argument)
 	public static boolean connectToWebSocket = true;					//**connect assistant to WebSocket chat-server?
@@ -553,6 +554,7 @@ public class Config {
 			ttsWebServerUrl = pr.getStringPropertyOrDefault("tts_endpoint", ttsWebServerUrl);
 			ttsModuleEnabled = pr.getBooleanOrDefault("tts_enabled", ttsModuleEnabled);
 			enableSDK = pr.getBooleanOrDefault("enable_sdk", enableSDK);
+			allowNonCommercialFeatures = pr.getBooleanOrDefault("allow_non_commercial_features", allowNonCommercialFeatures);
 			//useSandboxPolicy = Boolean.valueOf(settings.getProperty("use_sandbox_security_policy", "true"));		//NOTE: this will only be accessible via commandline argument
 			useSentencesDB = pr.getBooleanOrDefault("enable_custom_commands", useSentencesDB);
 			//databases
@@ -698,6 +700,7 @@ public class Config {
 		config.setProperty("db_elastic_endpoint_us1", ConfigElasticSearch.endpoint_us1);
 		//modules
 		config.setProperty("enable_sdk", String.valueOf(enableSDK));
+		config.setProperty("allow_non_commercial_features", String.valueOf(allowNonCommercialFeatures));
 		config.setProperty("enable_custom_commands", String.valueOf(useSentencesDB));
 		//chat
 		config.setProperty("connect_to_websocket", String.valueOf(connectToWebSocket));
