@@ -1077,10 +1077,11 @@ public class DB {
 		
 		//simply write when no docId is given
 		JSONObject setResult;
+		int code;
 		if (docId == null || docId.isEmpty()){
 			JSON.put(listData, "lastEdit", System.currentTimeMillis());
 			setResult = knowledge.setAnyItemData(DB.USERDATA, UserDataList.LISTS_TYPE, listData);
-		
+			code = JSON.getIntegerOrDefault(setResult, "code", -1);
 		}else{
 			listData.remove("_id"); //prevent to have id twice
 			JSON.put(listData, "lastEdit", System.currentTimeMillis());
@@ -1098,13 +1099,18 @@ public class DB {
 			JSON.put(newListData, "script", script);//"ctx.op = ctx._source.user == " + userId + "? 'update' : 'none'");
 			JSON.put(newListData, "scripted_upsert", true);
 			
-			int code = knowledge.updateItemData(DB.USERDATA, UserDataList.LISTS_TYPE, docId, newListData);
+			code = knowledge.updateItemData(DB.USERDATA, UserDataList.LISTS_TYPE, docId, newListData);
 			setResult = JSON.make("code", code);
 		}
 		
 		//statistics
-		Statistics.addOtherApiHit("setListDataInDB");
-		Statistics.addOtherApiTime("setListDataInDB", tic);
+		if (code == 0){
+			Statistics.addOtherApiHit("setListDataInDB");
+			Statistics.addOtherApiTime("setListDataInDB", tic);
+		}else{
+			Statistics.addOtherApiHit("setListDataInDB-Error");
+			Statistics.addOtherApiTime("setListDataInDB-Error", tic);
+		}
 				
 		return setResult;
 	}
@@ -1136,7 +1142,7 @@ public class DB {
 			dataAssign += ("ctx._source." + key + "=params." + key + "; ");
 		}*/
 		
-		//TODO: finish method  
+		//TODO: finish method
 		//use https://iridakos.com/programming/2019/05/02/add-update-delete-elasticsearch-nested-objects
 		
 		
@@ -1160,8 +1166,13 @@ public class DB {
 		
 		
 		//statistics
-		Statistics.addOtherApiHit("updateListDataInDB");
-		Statistics.addOtherApiTime("updateListDataInDB", tic);
+		if (code == 0){
+			Statistics.addOtherApiHit("updateListDataInDB");
+			Statistics.addOtherApiTime("updateListDataInDB", tic);
+		}else{
+			Statistics.addOtherApiHit("updateListDataInDB-Error");
+			Statistics.addOtherApiTime("updateListDataInDB-Error", tic);
+		}
 				
 		return updateResult;
 	}
