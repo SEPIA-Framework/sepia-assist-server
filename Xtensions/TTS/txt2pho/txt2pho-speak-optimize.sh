@@ -4,4 +4,7 @@ if [ "$#" -ne 4 ]; then
   echo "Example: bash speak.sh f de3/de3 \"Hallo Welt\" hallo_welt.wav"
   exit 1
 fi
-echo "$3" | iconv -cs -f UTF-8 -t ISO-8859-1 | ./preproc data/PPRules/rules.lst data/hadifix.abk | ./txt2pho "-$1" | mbrola /usr/share/mbrola/"$2" - "$4"
+script_path=$(dirname "$0")
+cd "$script_path"
+echo "$3" | iconv -cs -f UTF-8 -t ISO-8859-1 | ./preproc -r data/preproc.rls -a data/preproc.abk | ./txt2pho "-$1" | mbrola /usr/share/mbrola/"$2" - "../../../""$4"
+#echo "$1 - $2 - $3 - ../../../$4" >> log.out
