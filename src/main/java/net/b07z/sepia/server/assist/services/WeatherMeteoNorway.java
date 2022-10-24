@@ -952,6 +952,14 @@ public class WeatherMeteoNorway implements ServiceInterface {
 	private static JSONObject getOneHourSummary(String predictTime,	JSONObject dayJson, String warning, ServiceBuilder service){
 		
 		JSONObject nextHour = JSON.getJObject(dayJson, new String[]{"data", "next_1_hours"});
+		if (nextHour == null){
+			//set a default if "unknown"
+			JSONObject summaryDescAndIcon = getIconWithDescription("default", null, service.language, predictTime); 
+			return JSON.make(
+				DESC, (String) summaryDescAndIcon.get(DESC),
+				ICON, (String) summaryDescAndIcon.get(ICON)
+			);
+		}
 		JSONObject oneHourSummary = JSON.getJObject(nextHour, "summary");
 		JSONObject oneHourDetails = JSON.getJObject(nextHour, "details");
 		
