@@ -169,7 +169,7 @@ public class Alarms implements ServiceInterface{
 				|| action.equals(Action.Type.open.name()));
 		boolean isActionShow = (action.equals(Action.Type.show.name()) || action.equals(Action.Type.edit.name()));
 		boolean isActionStop = action.equals(Action.Type.remove.name()) || action.equals(Action.Type.pause.name())
-				|| action.equals(Action.Type.off.name()) || action.equals(Action.Type.close.name());
+				|| action.equals(Action.Type.off.name()) || action.equals(Action.Type.close.name()) || action.equals(Action.Type.cancel.name());
 		
 		Debugger.println("cmd: " + CMD.TIMER + ", alarmType=" + alarmType + ", alarmName=" + alarmName + ", action=" + action + 
 				", time=" + dateDay + "_" + dateTime, 2);	//debug
