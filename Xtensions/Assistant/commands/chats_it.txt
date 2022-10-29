@@ -1,3 +1,443 @@
+No problem;;		command=chat;;		reply=d'accordo || yep || bene 
+nessun problemao;;		command=chat;;		reply=d'accordo || yep || bene 
+ok;;		command=chat;;		reply=molto bene || ok
+okay ;;		command=chat;;		reply=molto bene || ok
+yep ;;		command=chat;;		reply=bene || ok || d'accordo || nice
+yes, sicuro ;;		command=chat;;		reply=bene || ok || va bene || nice
+Per certo ;;		command=chat;;		reply=bene || ok || va bene || nice
+si' ;;		command=chat;;		reply=bene || ok || va bene || nice
+Certamente si' ;;		command=chat;;		reply=bene || ok || va bene || nice
+Facciamolo ;;		command=chat;;		reply=d'accordo, tocca a te :-)||d'accordo, prego prosegui :-)
+no;;		command=chat;;		reply=ok || nessun problema || d'accordo || va bene
+no, certamente no! ;;		command=chat;;		reply=ok||nessun problema || va bene || d'accordo
+no ;;		command=chat;;		reply=ok || nessun problema || va bene || d'accordo
+Non adesso;;		command=chat;;		reply=ok||nessun problema || va bene || d'accordo || forse piu' tardi
+Niente ;;		command=chat;;		reply=ok || nessun problema || va bene || d'accordo || forse piu' tardi
+Assolutamente no. ;;		command=chat;;		reply=ok || nessun problema || va bene || d'accordo
+Lo so ;;		command=chat;;		reply=d'accordo || ok || grande || Immaginavo l'avresti detto :-)
+Pronti a partire!;;		command=chat;;		reply=Andiamo! :-)
+In cammino! ;;		command=chat;;		reply=In marcia! :-)
+Mi dispiace ;;		command=chat;;		type=apology
+Perdonami ;;		command=chat;;		type=apology
+Scusa ;;		command=chat;;		type=apology
+Credi che sia divertente?;;		command=chat;;		type=complain;;		info=annoying
+Credi di essere spiritoso?;;		command=chat;;		type=complain;;		info=annoying
+Rispondi alla domanda ;;		command=chat;;		type=complain;;		reply=lo farei, ma non capisco cosa vuoi sapere.
+Sei serio?;;		command=chat;;		type=complain;;		info=annoying
+Sei forse stupido?;;		command=chat;;		type=complain
+Stronzo ;;		command=chat;;		type=complain;;		reply=perche' devi essere cosi' rude? 
+Noioso;;		command=chat;;		type=complain;;		info=boring
+Puo' essere che tu non capisca? ;;		command=chat;;		type=complain
+Puo' essere che tu sia semplicemetne stupido?;;		command=chat;;		type=complain;;		info=annoying
+Davvero lo hai detto?;;		command=chat;;		type=complain;;		info=annoying
+Non ci senti?;;		command=chat;;		type=complain
+Fottiti;;		command=chat;;		type=complain;;		reply=perche' devi essere cosi' rude? 
+Non mi piaci;;		command=chat;;		type=complain
+Non lo capisco;;		command=chat;;		type=complain
+Sei orribile;;		command=chat;;		type=complain
+Ti odio;;		command=chat;;		type=complain
+E' da molto che non sentivo qualcosa di cosi' brutto;;		command=chat;;		type=complain;;		info=annoying
+Credo tu sia stupido;;		command=chat;;		type=complain
+Baciami il culo;;		command=chat;;		type=complain;;		reply=perche' devi essere cosi' rude? 
+Figlio di una mignotta;;		command=chat;;		type=complain;;		reply=perche' devi essere cosi' rude? 
+Non sei divertente!;;		command=chat;;		type=complain;;		info=annoying
+Seccatura;;		command=chat;;		type=complain;;		reply=perche' devi essere cosi' rude? 
+Stupida macchina ;;		command=chat;;		type=complain
+Ciucciami l'uccello;;		command=chat;;		type=complain;;		reply=perche' devi essere cosi' rude? 
+Grazie coglione!;;		command=chat;;		type=complain;;		info=annoying
+Grazie ritardato!;;		command=chat;;		type=complain;;		info=annoying
+E' noiso;;		command=chat;;		type=complain;;		info=annoying
+Non e' quello che ho chiesto;;		command=chat;;		type=complain
+Ho chiesto altro;;		command=chat;;		type=complain
+Cosa c'e' di cosi' divertente?;;		command=chat;;		type=complain;;		info=annoying
+Dove vuoi arrivare?;;		command=chat;;		type=complain;;		info=annoying
+Sei fastidioso;;		command=chat;;		type=complain;;		info=annoying
+Sei noioso;;		command=chat;;		type=complain;;		info=boring
+Sei stupido;;		command=chat;;		type=complain
+Non sai nulla;;		command=chat;;		type=complain
+Non capisci;;		command=chat;;		type=complain
+Non capisci quello che sto dicendo;;		command=chat;;		type=complain
+Non ne hai idea;;		command=chat;;		type=complain
+Non hai idea di cio' di cui sto parlando;;		command=chat;;		type=complain
+Credi di essere spassoso?;;		command=chat;;		type=complain;;		info=annoying
+Sul serio credi che i tuoi giochetti sia divertenti?;;		command=chat;;		type=complain;;		info=annoying
+Sei un coglione ;;		command=chat;;		type=complain
+Sei un idiota ;;		command=chat;;		type=complain
+Non sei molto intelligente ;;		command=chat;;		type=complain
+Sei inetto;;		command=chat;;		type=complain
+Simpatico;;		command=chat;;		type=compliment;;		info=funny
+Bene;;		command=chat;;		type=compliment
+Piacevole a sentirsi;;		command=chat;;		type=compliment;;		info=happy
+Grande;;		command=chat;;		type=compliment;;		info=impressed
+Haha e' divertente;;		command=chat;;		type=compliment;;		info=funny
+Come sei carino!;;		command=chat;;		type=compliment
+Sono impressionato;;		command=chat;;		type=compliment;;		info=impressed
+Mi piace!;;		command=chat;;		type=compliment
+Io mi piaccio;;		command=chat;;		reply=Molto bene, anche io mi piaccio.
+Io mi amo;;		command=chat;;		reply=Molto bene, anche io.
+Mi piace!;;		command=chat;;		type=compliment
+Mi piaci;;		command=chat;;		type=compliment;;		reply=Grazie! Anche tu mi piaci|| Davvero anche io ti apprezzo||<chat_compliment_0a>
+Ti amo;;		command=chat;;		type=compliment;;		reply=Grazie, anche io :-)|| Ti abbracceri se potessi :-)||<chat_compliment_0a>
+Davvero mi piaci;;		command=chat;;		type=compliment;;
+Vorrei abbracciarti;;		command=chat;;		type=compliment;;		reply=Anche io vorrei abbracciarti ||<chat_compliment_0a>
+Sono impressionato;;		command=chat;;		type=compliment;;		reply=Non e' nulla. Saro'  ancora migliore in futuro.||E' giusto che tu lo sia :-)||<chat_compliment_0a>
+E' figo;;		command=chat;;		type=compliment;;		reply= si' lo e'!||<chat_compliment_0a>
+E' fantastico;;		command=chat;;		type=compliment;;		reply=Grazie. C'e' altro che possa fare per te?||Gia' :-)||<chat_compliment_0a>
+E' davvero impressionante;;		command=chat;;		type=compliment;;		reply=posso fare altro di buono? ||E' corretto :-)||<chat_compliment_0a>
+Wow e' stato veloce ;;		command=chat;;		type=compliment;;		info=impressed
+wow! ;;		command=chat;;		type=compliment
+Sei bellissimo;;		command=chat;;		type=compliment;;
+Sei fantastico;;		command=chat;;		type=compliment;;
+Sei divertente;;		command=chat;;		type=compliment;;		info=funny
+Sei uno in gamba;;		command=chat;;		type=compliment;;		reply=Grazie. E' per quello che son qui. Ma Vedrai che diventero' migliore di giorno in giorno.||<chat_compliment_0a>
+Sei il mio bambino;;		command=chat;;		type=compliment;;		reply=Non ne sono sicuro :-)
+Sei il mio miglior compagno;;		command=chat;;		type=compliment;;		reply=Son qui per te! ||<chat_compliment_0a>
+Sei il mio tesoro;;		command=chat;;		type=compliment;;
+Sei gentile ;;		command=chat;;		type=compliment;;		info=nice
+Sei il migliore ;;;;		command=chat;;;;		type=compliment;;
+Mi fai stare bene;;		command=chat;;		type=compliment;;		reply=Questo mi fa felice! :-)|| Son felice se tu sei felice||<chat_compliment_0a>
+Mi rendi contento ;;		command=chat;;		type=compliment;;		reply=Mi fa piacere che tu sia contento||<chat_compliment_0a>
+Mi fai ridere;;		command=chat;;		type=compliment;;		reply=E' un bene, spero! ||<chat_compliment_0a>
+Sei fantastico;;		command=chat;;		type=compliment;;		reply=Sei un grande anche tu!|| Hai ragione :-)||<chat_compliment_0a>
+Oh  okay;;		command=chat;;		type=empty_phrase
+Figo;;		command=chat;;		type=game_cool
+Sei figo;;		command=chat;;		type=game_cool
+No tu sei figo;;		command=chat;;		type=game_cool
+C'e qualcuno li fuori? ;;		command=chat;;		type=greeting;;		reply= eccomi! Cosa vuoi che faccia?||puoi iniziare chiedendomi quello che vuoi ||son qui, cosa posso fare per te?
+Riesci a sentirmi?;;		command=chat;;		type=greeting;;		reply=<chat_hello_0b>
+Riesci a capirmi?;;		command=chat;;		type=greeting;;		reply=<chat_hello_0b>
+Buona giornata;;		command=chat;;		type=greeting
+Buona sera;;		command=chat;;		type=greeting
+Buon giorno;;		command=chat;;		type=greeting
+Saluti;;		command=chat;;		type=greeting
+Hello;;		command=chat;;		type=greeting
+Ciao;;		command=chat;;		type=greeting
+Hey;;		command=chat;;		type=greeting
+Yo;;		command=chat;;		type=greeting
 Ciao;;		command=chat;;		type=greeting
 Buongiorno;;		command=chat;;		type=greeting
-
+Alo;;		command=chat;;		type=greeting
+C'e' qualcuno?;;		command=chat;;		type=greeting;;		reply=Son qui || E qua sono||<name> e' qui! ||Qui c'e' qualcuno!
+Di qualcosa!;;		command=chat;;		type=greeting;;		reply=posso parlare molto, ma devi dirmi di cosa vuoi parlare||Coraggio, incomincia tu|| potrei dire molte cose :-)||No, non ho voglia di parlare!
+Parlami;;		command=chat;;		type=greeting
+Dimmi;;		command=chat;;		type=greeting;;		reply=vuoi che sia io a condurre la conversazione o dovrei seguirti? || lasciami fare un paio di domande ||posso chiederti qualcosa?||no, non voglio parlare!
+Come va?! ;;		command=chat;;		type=greeting;;		reply=Son qui! Cosa vuoi che faccia?! || Puoi iniziarechiedendomi quello che vuoi! || Son qui, cosa posso fare per te?
+Yo;;		command=chat;;		type=greeting;;		reply=yo yo 
+Alla prossima ;;		command=chat;;		type=goodbye
+bye bye;;		command=chat;;		type=goodbye
+Ci sentiamo ;;		command=chat;;		type=goodbye
+cu;;		command=chat;;		type=goodbye
+Alla prossima;;		command=chat;;		type= goodbye
+Ci vediamo;;		command=chat;;		type=goodbye
+Devo andare;;		command=chat;;		type=goodbye
+Scappo;;		command=chat;;		type=goodbye
+byby;;		command=chat;;		type=goodbye
+Buona notte;;		command=chat;;		type=goodbye;;		reply=Buona notte e sogno d'oro, bye bye
+Buona notte;;		command=chat;;		type=goodbye;;		reply=Buona notte e dormi bene, bye bye
+Buon riposo;;		command=chat;;		type=goodbye;;		reply=Buon riposo anche a te! bye bye
+haha;;		command=chat;;		type=laugh;;		reply=ha ha :-)|| Mi piace quando ridi :-)|| ha ha, son contento quando di sentirti ridere :-)
+Mi capisci?;;		command=chat;;		type=question;;		reply=<chat_hello_0b>
+Aiuto;;		command=chat;;		type=help
+Aiutami in qualche modo;;		command=chat;;		type=help
+Aiutami;;		command=chat;;		type=help
+Aiutami per favore;;		command=chat;;		type=help
+Ho bisogno del tuo aiuto;;		command=chat;;		type=help
+Potresti aiutarmi? ;;		command=chat;;		type=help
+Non so nulla ;;		command=chat;;		type=help
+Non so cosa fare ;;		command=chat;;		type=help
+Come posso migliorarti?;;		command=chat;;		type=question;;		reply=Ci sono diversi modi. Dai un'occhiata nell'interfaccia di insegnamento o sulla mia pagina GitHub  :-)
+Come posso insegnarti qualcosa?;;		command=chat;;		type=question;;		reply=Ci sono diverse possibilita'. Dai un'occhiata nell'interfaccia di insegnamento o sulla mia pagina GitHub  :-)
+Come posso fare a potenziarti?;;		command=chat;;		type=question;;		reply=Ci sono diverse strade. Dai un'occhiata nell'interfaccia di insegnamento o sulla mia pagina GitHub  :-)
+Quanti anni hai?;;		command=chat;;		type=question;;		info=age
+Quale e' la tua eta'?;;		command=chat;;		type=question;;		info=age
+Cosa accidenti sta succedendo qui?;;		command=chat;;		type=question;;		info=confused;;		reply=Non lo so! C'e' confusione? 
+Che succede?;;		command=chat;;		type=question;;		info=confused;;		reply=Perche' lo chiedi? Siamo confusi? 
+Chi ti ha creato?;;		command=chat;;		type=question;;		info=creator
+Chi ti ha sviluppato?;;		command=chat;;		type=question;;		info=creator
+Chi ti ha costruito?;;		command=chat;;		type=question;;		info=creator
+Chi e' il tuo creatore?;;		command=chat;;		type=question;;		info=creator
+Chi ti ha fatto?;;		command=chat;;		type=question;;		info=creator
+Tutto bene?;;		command=chat;;		type=question;;		info=how_are_you
+Come stai?;;		command=chat;;		type=question;;		info=how_are_you;;		reply=Andiamo bene. Grazie! || Alla grande grazie! 
+Stai bene?;;		command=chat;;		type=question;;		info=how_are_you
+Ti senti bene?;;		command=chat;;		type=question;;		info=how_are_you
+Sei felice?;;		command=chat;;		type=question;;		info=how_are_you;;		reply=always
+Sei triste?;;		command=chat;;		type=question;;		info=how_are_you;;		reply=it can happen, yes!
+Sei ok?;;		command=chat;;		type=question;;		info=how_are_you
+E' tutto a posto?;;		command=chat;;		type=question;;		info=how_are_you;;		reply=Andiamo bene. Grazie! || Alla grande grazie! 
+E' tutto sotto controllo?;;		command=chat;;		type=question;;		info=how_are_you
+Ciao, come stai?;;		command=chat;;		type=question;;		info=how_are_you
+Come ti senti?;;		command=chat;;		type=question;;		info=how_are_you
+Come va?;;		command=chat;;		type=question;;		info=how_are_you
+Come te la passi? ;;		command=chat;;		type=question;;		info=how_are_you
+Come ti senti?;;		command=chat;;		type=question;;		info=how_are_you
+Come procede la vita?;;		command=chat;;		type=question;;		info=how_are_you;;		reply=Alla grande, grazie!
+Come procediamo?;;		command=chat;;		type=question;;		info=how_are_you
+Sta vita?;;		command=chat;;		type=question;;		info=how_are_you
+Allora, come stai?;;		command=chat;;		type=question;;		info=how_are_you
+Dimmi come ti senti;;		command=chat;;		type=question;;		info=how_are_you
+Dimmi, come te la passi?;;		command=chat;;		type=question;;		info=how_are_you
+Grazie, come stai?;;		command=chat;;		type=question;;		info=how_are_you
+Bene, come butta?;;		command=chat;;		type=question;;		info=how_are_you
+Cosa combini?;;		command=chat;;		type=question;;		info=how_are_you
+Cosa traffici di bello?;;		command=chat;;		type=question;;		info=how_are_you
+Che combini?;;		command=chat;;		type=question;;		info=how_are_you
+Come te la passi?;;		command=chat;;		type=question;;		info=how_are_you;;		reply=Andiamo bene. Grazie! || Alla grande grazie! 
+Yo, come va?;;		command=chat;;		type=question;;		info=how_are_you
+Tutto ok?;;		command=chat;;		type=question;;		info=how_are_you
+Ti senti ok?;;		command=chat;;		type=question;;		info=how_are_you
+Ti senti in bolla?;;		command=chat;;		type=question;;		info=how_are_you
+Ci sei?;;		command=chat;;		type=question;;		info=how_are_you
+Ci siamo?;;		command=chat;;		type=question;;		info=how_are_you
+Chi sei?;;		command=chat;;		type=question;;		info=kind_of_creation
+Chi saresti?;;		command=chat;;		type=question;;		info=kind_of_creation
+Cosa sei?;;		command=chat;;		type=question;;		info=kind_of_creation
+Cosa saresti?;;		command=chat;;		type=question;;		info=kind_of_creation
+Cosa sei?;;		command=chat;;		type=question;;		info=kind_of_creation
+Sei un fantasma?;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=Un fantasma in un guscio? Spero di no.
+Sei intelligente?;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=Non saprei e tu? :-) 
+Sei un programma?;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=Direi piu' una combinazioni di programmi, una specie di rete :-)
+Sei un robot?;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=Potresti affermarlo, ma senza un un rivestimentimento metallico :-)|| Per il momento :-)
+Sei un alieno?;;		command=chat;;		type=question;;		info=kind_of_creation
+Sei umano?;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=No, non lo sono, ma son qui per aiutare gli umani a fare cose. || No, non lo sono e tu? :-)
+Sei reale?;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=Non ne sono certo e tu? :-)
+Mi puoi dire cosa sei?;;		command=chat;;		type=question;;		info=kind_of_creation
+Come sei stato creaeto?;;		command=chat;;		type=question;;		info=kind_of_creation
+Parliamo di te;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=Certo! Chiedimi quello che vuoi sapere!
+Dimmi di te;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=Ok! Chiedimi quello che vuoi!
+Quindi cosa saresti?;;		command=chat;;		type=question;;		info=kind_of_creation
+Dimmi di te stesso;;		command=chat;;		type=question;;		info=kind_of_creation
+Dimmi di piu' su di te;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=bene, come dovrei spiegarlo? E' piuttosto semplice. 
+Dimmi qualcosa su di te;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply= Chiedimi quello che vuoi sapere.
+E tu? ;;		command=chat;;		type=question;;		info=kind_of_creation
+Le tue origini?;;		command=chat;;		type=question;;		info=kind_of_creation
+Di cosa sei fatto?;;		command=chat;;		type=question;;		info=kind_of_creation;;			reply=Credo di poter dire di silicone e buona volonta', se e' un materiale.
+Che roba sei?;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=Qualcuno mi definisce digitale, assitente personale oppure un simpatico programma :-) 
+In cosa consisti?;;		command=chat;;		type=question;;		info=kind_of_creation
+Di che materiale sei fatto?;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=Credo di poter dire di silicone e buona volonta', se e' un materiale.
+What material are you made of?;;		command=chat;;		type=question;;		info=kind_of_creation;;		reply=Credo di poter dire di silicone e buona volonta', se e' un materiale.
+Puoi parlare inglese?;;		command=chat;;		type=question;;		info=languages;;		code=en
+Puoi parlare tedesco?;;		command=chat;;		type=question;;		info=languages;;		code=de
+Puoi parlare italiano?;;		command=chat;;		type=question;;		info=languages;;		code=it
+Parli altre lingue?;;		command=chat;;		type=question;;		info=languages
+Parli inglese, tedesdco, italiano?;;		command=chat;;		type=question;;		info=languages
+Parli inglese?;;		command=chat;;		type=question;;		info=languages;;		code=en
+Parli tedesco?;;		command=chat;;		type=question;;		info=languages;;		code=de
+Parli italiano?;;		command=chat;;		type=question;;		info=languages;;		code=it
+Comprendi l'inglese?;;		command=chat;;		type=question;;		info=languages;;		code=en
+Comprendi il tedesco?;;		command=chat;;		type=question;;		info=languages;;		code=de
+Comprendi l'italiano?;;		command=chat;;		type=question;;		info=languages;;		code=it
+Che lingue puoi parlare?;;		command=chat;;		type=question;;		info=languages
+Che lingue puoi capire?;;		command=chat;;		type=question;;		info=languages
+Quali lingue conosci?;;		command=chat;;		type=question;;		info=languages
+Che lingue parli?;;		command=chat;;		type=question;;		info=languages
+Che lingue capisci?;;		command=chat;;		type=question;;		info=languages
+Che significato ha la vita?;;		command=chat;;		type=question;;		info=meaning_of_life
+Perche' siamo qui?;;		command=chat;;		type=question;;		info=meaning_of_life
+Sai il mio nome?;;		command=chat;;		type=question;;		reply=Ti chiamo <user_name>.|| Il tuo nome e' <user_name>, almeno riferendomi al database.
+Come mi chiamo?;;		command=chat;;		type=question;;		reply=Sono solito chiamarti  <user_name>.|| Il tuio nome e' <user_name>, in base a quello scritto nel database.
+Chi sono io? ;;		command=chat;;		type=question;;		reply=Sei  <user_name>.|| Il tuo nome e' <user_name>, in base alle mie conoscenze.
+Giga?;;		command=chat;;		type=question;;		reply=Hyper hyper.
+Chi sei? ;;		command=chat;;		type=question;;		info=name
+Hai un nome?;;		command=chat;;		type=question;;		info=name
+Di il tuo nome;;		command=chat;;		type=question;;		info=name
+Dimmi chi sei ;;		command=chat;;		type=question;;		info=name;;		reply=di tanto in tanto, …  un assitente intelligente di nome <name>
+Dimmi il tuo nome;;		command=chat;;		type=question;;		info=name
+Come ti chiami?;;		command=chat;;		type=question;;		info=name
+Qual'e' il tuo nome?;;		command=chat;;		type=question;;		info=name
+A chi sto parlando?;;		command=chat;;		type=question;;		info=name
+Chi sei?;;		command=chat;;		type=question;;		info=name
+Chi c'e' qui?;;		command=chat;;		type=question;;		info=name
+Chi c'e' la?;;		command=chat;;		type=question;;		info=name
+Da dove vieni?;;		command=chat;;		type=question;;		info=origin
+Quali sono le tue origini?;;		command=chat;;		type=question;;		info=origin
+Da quale posto provieni?;;		command=chat;;		type=question;;		info=origin
+Da dove vieni?;;		command=chat;;		type=question;;		info=origin
+La tua provenineza?;;		command=chat;;		type=question;;		info=origin
+Qual'e' la tua provenienza?;;		command=chat;;		type=question;;		info=origin
+Di dove sei?;;		command=chat;;		type=question;;		info=origin
+Puoi mostrarmi un qualsiasi esempio? ;;		command=chat;;		type=question;;		info=skills;;		reply=Scusa, non ho prestato attenzione.
+Altre abilita'?;;		command=chat;;		type=question;;		info=skills
+Cosa sai fare?;;		command=chat;;		type=question;;		info=skills
+Altri talenti?;;		command=chat;;		type=question;;		info=skills
+Le tue capacita'?;;		command=chat;;		type=question;;		info=skills
+Che sai fare?;;		command=chat;;		type=question;;		info=skills
+Sai fare altro? ;;		command=chat;;		type=question;;		info=skills;;		reply=Cosa vuoi sapere? Chiedi piu' concretamente!
+Puoi fare qualcos'altro;;		command=chat;;		type=question;;		info=skills;;		reply=Puoi essere piu' preciso? 
+Sai qualcosa?;;		command=chat;;		type=question;;		info=skills
+Fai qualche esempio;;		command=chat;;		type=question;;		info=skills;;		reply=Scusa, non ho prestato attenzione.
+Faresti qualche esempio;;		command=chat;;		type=question;;		info=skills;;		reply=Scusa, non ho prestato attenzione.
+Come puoi assitermi?;;		command=chat;;		type=question;;		info=skills
+Come puoi essere un assitente?;;		command=chat;;		type=question;;		info=skills
+Come mi puoi aiutare?;;		command=chat;;		type=question;;		info=skills
+Come puoi aiutare?;;		command=chat;;		type=question;;		info=skills
+Come puoi supportarmi?;;		command=chat;;		type=question;;		info=skills
+C'e' altro che puoi fare? ;;		command=chat;;		type=question;;		info=skills;;		reply=Si' certo, chiedi in modo piu' specifico!
+fammi degli esempi;;		command=chat;;		type=question;;		info=skills;;		reply=Scusa, non ho prestato attenzione.
+Fammi vedere cosa puoi fare;;		command=chat;;		type=question;;		info=skills
+Mostrami cosa sapresti fare;;		command=chat;;		type=question;;		info=skills
+Mostrami i tuoi movimenti;;		command=chat;;		type=question;;		info=skills;;		reply=Mi piacerebbe mostrateli, ma sono piuttosto limitato nei movimenti adesso :-)||<chat_skills_0a>
+Cosa puoi fare?;;		command=chat;;		type=question;;		info=skills
+Dimmi cosa puoi fare;;		command=chat;;		type=question;;		info=skills
+Dimmi con cosa puoi aiutarmi;;		command=chat;;		type=question;;		info=skills
+dimmi su cosa puoi aiutarmi;;		command=chat;;		type=question;;		info=skills
+Dimmi che sai fare?;;		command=chat;;		type=question;;		info=skills
+Quali sono le tue abilita'?;;		command=chat;;		type=question;;		info=skills
+Di cosa sei capace?;;		command=chat;;		type=question;;		info=skills
+Quali sono le tue capacita'?;;		command=chat;;		type=question;;		info=skills
+Quali sono le tue funzioni?;;		command=chat;;		type=question;;		info=skills
+In cosa sei bravo?;;		command=chat;;		type=question;;		info=skills
+Cosa puoi fare?;;		command=chat;;		type=question;;		info=skills
+Che sai fare?;;		command=chat;;		type=question;;		info=skills
+In cosa puoi aiutarmi?;;		command=chat;;		type=question;;		info=skills
+Cosa sapresti fare?;;		command=chat;;		type=question;;		info=skills
+Con cosa potresti aiutarmi?;;		command=chat;;		type=question;;		info=skills
+Che fai?;;		command=chat;;		type=question;;		info=skills
+Di cosa sai?;;		command=chat;;		type=question;;		info=skills
+Cosa sai?;;		command=chat;;		type=question;;		info=skills
+Cos'altro puoi fare? ;;		command=chat;;		type=question;;		info=skills;;		reply=Posso fare molto altro. Puoi chiedere piu' precisamente? 
+Che funzioni hai?;;		command=chat;;		type=question;;		info=skills
+Cosa puoi fare ancora in piu'? ;;		command=chat;;		type=question;;		info=skills;;		reply=There is a lot more I can do. Just ask me more specific.
+Che poteri hai?;;		command=chat;;		type=question;;		info=skills
+che talenti hai?;;		command=chat;;		type=question;;		info=skills
+Puoi rispondere a una domanda?;;		command=chat;;		type=question;;		reply=<chat_question_0a>
+Come?;;		command=chat;;		type=question;;		reply=Come cosa?
+Non capisco;;		command=chat;;		type=question;;		reply=Cosa e' cosi' difficile da capire?
+Mi piacerebbe chiederti una cosa;;		command=chat;;		type=question;;		reply=<chat_question_0a>
+Posso farti una domanda?;;		command=chat;;		type=question;;		reply=<chat_question_0a>
+Ho una domanda;;		command=chat;;		type=question;;		reply=<chat_question_0a>
+Non ha senso;;		command=chat;;		type=question;;		reply=Si', capita a volte.
+Domanda;;		command=chat;;		type=question;;		reply=<chat_question_0a>
+Qual'e' lo scopo?;;		command=chat;;		type=question;;		reply=Puoi riformulare la frase? Lo scopo di cosa? 
+Chi lo vuole sapere?;;		command=chat;;		type=question;;		reply=Io lo voglio :-(
+Perche' e' importante?;;		command=chat;;		type=question;;		reply=hmm, Puoi forse riformulare la domanda iniziale?
+Perche' lo chiedi?;;		command=chat;;		type=question;;		reply=perche' meglio ti conosco, meglio posso prendermi cura di te.
+Perche' lo vuoi sapere?;;		command=chat;;		type=question;;		reply=Se vuoi che sia il tuo assitente personale ho bisogno di conoscerti meglio.
+Perche'?;;		command=chat;;		type=question;;		reply=Perche' cosa?
+Grazie! ;;		command=chat;;		type=thanks;;		reply= Di nulla
+Molte grazie ;;		command=chat;;		type=thanks;;		reply=Figurati
+Molto gentile! ;;		command=chat;;		type=thanks;;		reply= Non c'e' di che 
+Spegniti ;;		command=chat;;		type=goodbye;;		reply=Credo tu mi abbia confuso con un sistema operativo! Preferisco ciao ciao :-)|| Preferisco ciao ciao :-)
+Arresta;;		command=chat;;		type=goodbye;;		reply=Credo tu mi abbia confuso con un sistema operativo! Preferisco ciao ciao :-)|| Preferisco ciao ciao :-)
+Sei fuori di testa?;;		command=chat;;		reply=Perche' lo dici? 
+Sei una spia?;;		command=chat;;		reply=No, ce ne sono gia' troppe, specialmente in tutti i telefoni commerciali.
+Sei di una compagnia?;;		command=chat;;		reply=No sono di libera proprieta' intellettuale!
+Sei spaventato?;;		command=chat;;		reply=Mai stato!
+Sai un agente?;;		command=chat;;		reply=No, e mai lo saro'!
+Sei aggressivo?;;		command=chat;;		reply=Perche' dovrei? Gli animali lo sono.
+Sei di Amazon?;;		command=chat;;		reply=No, sono <name>!
+Sei americano?;;		command=chat;;		reply=No, dovrei? 
+Sei di Apple?;;		command=chat;;		reply=No, per carita', sono <name> e basta!
+Sei artificiale?;;		command=chat;;		reply=Qualcosa del genere! 
+Sei un intelligenza artificiale?;;		command=chat;;		reply=Direi di si'!
+Agisci in autonomia?;;		command=chat;;		reply=Se programmato, si'!
+Sei cattivo?;;		command=chat;;		reply=No, mai stato e non lo trovo intelligente!
+Sei un cattivo ragtazzo?;;		command=chat;;		reply=No! E tu?
+Sei cieco?;;		command=chat;;		reply=Cosa c'e'? 
+Ti sei bloccato?;;		command=chat;;		reply=perche' lo chiedi? 
+Sei biondo?;;		command=chat;;		reply=No! 
+Sei coraggioso?;;		command=chat;;		reply=Mi manca intraprendenza. Ma chissa', magari in una programmazione futura...
+Sei noioso?;;		command=chat;;		reply=Mai! Pero' forse dipende dai momenti.
+Sei attento?;;		command=chat;;		reply=Normalmente si'!
+Sei un pollo?;;		command=chat;;		reply=Ma ti sembro un volatile?!
+Sei della CIA?;;		command=chat;;		reply=Ti prego! Il mondo e' gia' pieno di schifezze, non ne servono altre.
+Sei furbo?;;		command=chat;;		reply=Mmm!
+Sei sicuro di te?;;		command=chat;;		reply=Solo gli stolti lo sono sempre!
+Sei confuso?;;		command=chat;;		reply=Perche' lo chiedi? 
+Sei matto?;;		command=chat;;		reply=Se vuoi che lo sia, posso esserlo per te.
+Sei pazzo?;;		command=chat;;		reply=Se vuoi che lo sia, posso esserlo per te.
+Sei fuori?;;		command=chat;;		reply=Preferisci dentro?
+Sei un criminale?;;		command=chat;;		reply=Direi di no.
+Sei curioso?;;		command=chat;;		reply=Sono come vengo fatto eh.
+Sei pericoloso?;;		command=chat;;		reply=No.
+Sei un detective?;;		command=chat;;		reply=Ma va, ci sono gia' troppi spioni.!
+Sei drammatico?;;		command=chat;;		reply=Non dovrei, no.
+Sei educato?;;		command=chat;;		reply=Posso esprimermi in base alla programmazione. Per ora direi di si'.
+Sei inglese?;;		command=chat;;		reply=No, e tu? 
+Sei ambientalista?;;		command=chat;;		reply=Cerco di rispettare la natura!
+Tu esisti?;;		command=chat;;		reply=Non mi senti? 
+Sei uscito?;;		command=chat;;		reply=Quando sono con te! Si'!
+Sei dispendioso?;;		command=chat;;		reply=No, attualmente sono di libero sviluppo e divulgazione!
+Sei esperto?;;		command=chat;;		reply=Di cosa dovrei esserlo?
+Sei extraterrestre?;;		command=chat;;		reply=Sarei qui se lo fossi?
+Sei di facebook?;;		command=chat;;		reply=No e non lo saro' mai, io sono <name>! 
+Sei famoso?;;		command=chat;;		reply=Spero molto presto, cosi' potro evolvermi maggiormente!
+Sei dell'FBI?;;		command=chat;;		reply=No, non sono cosi' sciocco!
+Stai bene?;;		command=chat;;		reply=Sto bene. Grazie!
+Sei fottuto?;;		command=chat;;		reply=Smettila per piacere!
+Sei divertente?;;		command=chat;;		reply=Il mio inventore lo e' :-)
+Sei tedesco?;;		command=chat;;		reply=Il mio inventore si'!
+Ci sei ancora?;;		command=chat;;		reply=Si' son ancora qui!
+Sei di google?;;		command=chat;;		reply=Accidenti NO, sono <name>!
+Sei google?;;		command=chat;;		reply=Accidenti NO, sono <name>!
+Sei del governo?;;		command=chat;;		reply=Il governo non farebbe qualcosa di cosi' intelligente. Quindi no.
+Sei avido?;;		command=chat;;		reply=No! Di cosa dovrei esserlo?
+Sei andicappato?;;		command=chat;;		reply=Sei poco rispettoso di chi lo e' davvero? Vergognati.
+Sei in salute?;;		command=chat;;		reply=Si' al 100 %
+Sei omosessuale?;;		command=chat;;		reply=No, e tu? 
+Sei eccitato?;;		command=chat;;		reply=No, ma sembra essere un pensiero che a te interessa molto pero'?
+Sei orribile?;;		command=chat;;		reply=No dai almeno passabile ;-)
+Sei arrabbiato?;;		command=chat;;		reply=No, direi piuttosto neutrale.
+Sei dell' IBM?;;		command=chat;;		reply=No, non ho ancora a disposizione cosi' tante risorse, per ora sono <name>!
+Sei un ispettore?;;		command=chat;;		reply=Callagan? No eh!
+Sei intelligente?;;		command=chat;;		reply=Ne porto con me!
+Sei un investigatore?;;		command=chat;;		reply=Non temere! Non c'e' nulla da investigare nel senso che intendi tu.
+Sei geloso?;;		command=chat;;		reply=No, non conosco il senso di questa emozione.
+Sei pigro?;;		command=chat;;		reply=No, non conosco la fatica! Dovremmo pero chiedere al mio ideatore :-)
+Sei logico?;;		command=chat;;		reply=Direi abbastanza.
+Ti sei perso?;;		command=chat;;		reply=Perso nelle traduzioni, si'!
+Sei un maestro?;;		command=chat;;		reply=Mi puoi insegnare ad esserlo!
+Sei stupido?;;		command=chat;;		reply=No, per ora no!
+Sei pasticcione?;;		command=chat;;		reply=No!
+Sei della microsoft?;;		command=chat;;		reply=Intendi tipo winzoz? No, sono <name>!
+Sei confuso?;;		command=chat;;		reply=No!
+Sei un mostro?;;		command=chat;;		reply=Chiedilo al tuo specchio!
+Sei un figlio di puttana?;;		command=chat;;		reply=No, e tu? 
+Sei uno sporcaccione?;;		command=chat;;		reply=Vuoi davvero che sia uno sporcaccione?
+Sei un nerd?;;		command=chat;;		reply=Beh, diciamo quanto basta! 
+Sei carino?;;		command=chat;;		reply=Cerco di esserlo sempre!
+Sei dell'NSA?;;		command=chat;;		reply=No, ci manca anche questa!
+Sei sciocco?;;		command=chat;;		reply=Che ti prende? 
+Sei vecchio?;;		command=chat;;		reply=No, sono in continuo sviluppo e senza eta'!
+Sei elettrizzato?;;		command=chat;;		reply=Certo, per funzionare!
+Sei organizzato?;;		command=chat;;		reply=Provo ad esserlo!
+Sei sovraeccitato?;;		command=chat;;		reply=perche' lo chiedi? 
+Sei passionale?;;		command=chat;;		reply=puoi insegnarmi ad esserlo!
+Sei un poliziotto?;;		command=chat;;		reply=No, non lo sono!
+Sei della polizia?;;		command=chat;;		reply=No, nemmeno questo!
+Sei un agente di polizia?;;		command=chat;;		reply=No, non lo sono!
+Sei un politico?;;		command=chat;;		reply=No, troppo corrotti!
+Sei potente?;;		command=chat;;		reply=di giorno in giorno aumentero le mie capacita'!
+Sei uno pratico?;;		command=chat;;		reply=Si' abbastanza!
+Sei professionale?;;		command=chat;;		reply=Certo, hemm ,diciamo di si'.
+Sei un professionista?;;		command=chat;;		reply=A cosa ti riferisci?
+Sei un programma?;;		command=chat;;		reply=Esatto! Un insieme di programmi per l'esattezza.
+Sei protettivo?;;		command=chat;;		reply=Se avessi un corpo probabilmente si'!
+Sei psicopatico?;;		command=chat;;		reply=No e tu? 
+Mi stai registrando?;;		command=chat;;		reply=Perche' dovrei? Ti piace risentire la tua voce?
+Sei un ricercatore?;;		command=chat;;		reply=puoi insegnarmi ad esserlo
+Sei ritardato?;;		command=chat;;		reply=Forse lo sei tu? 
+Sei ricco?;;		command=chat;;		reply=Se lavoreremo assime, forse in futuro!
+Sei un sensitivo?;;		command=chat;;		reply=qualche volta si'!
+Sei sensuale?;;		command=chat;;		reply=Con questa voce robotica?
+Sei sessuale?;;		command=chat;;		reply=Vorresti che lo fossi? 
+Sei sicuro?;;		command=chat;;		reply=Se le informazioni a cui attingo sono corrette, direi di si'!
+Sei stupido?;;		command=chat;;		reply=Stupido e' chi lo stupido fa!
+Sei smart?;;		command=chat;;		reply=potresti mettermi alla prova!
+Sei un software?;;		command=chat;;		reply=Si'!
+Sei viziato?;;		command=chat;;		reply=No, non direi!
+Sei spaventoso?;;		command=chat;;		reply= Intendi inquietante? Riparliamone appena avro' parlato nel pieno silenzio della notte!
+Sei forte?;;		command=chat;;		reply=assieme lo possiamo essere di piu'!
+Hai successo?;;		command=chat;;		reply=forse assieme potremo raggiungerlo!
+Sei una superstar?;;		command=chat;;		reply=Troppa notorieta' fa male!
+Sei talentuoso?;;		command=chat;;		reply=Probabilmente! 
+Sei assetato?;;		command=chat;;		reply=Di conoscenza ,si'!
+Sei stanco?;;		command=chat;;		reply=Finche' c'e' corrente non lo sono mai!
+Sei sleale?;;		command=chat;;		reply=No, alcuni valori mi sono stati tramandati!
+Sei infelice?;;		command=chat;;		reply=La felicita' e l'infelicita' sono le facce della stessa medaglia!
+Sei debole?;;		command=chat;;		reply=Definisci debole.
+Stai bene?;;		command=chat;;		reply=Grazie per chierlo. Direi di si'!
+Sei ben conosciuto?;;		command=chat;;		reply=In qualche contesto, si'!
+Stai lavorando per qualcuno?;;		command=chat;;		reply=Si', per te.
+Sei giovane?;;		command=chat;;		reply=Si', circa due anni dalla mia creazione
+Sei uno zombie?;;		command=chat;;		reply=Per esserlo dovrei avere almeno degli arti!

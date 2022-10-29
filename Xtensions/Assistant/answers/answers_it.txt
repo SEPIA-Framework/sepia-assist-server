@@ -1,1 +1,590 @@
-﻿test_0a;;		rep=0|mood=5;;		It's working! ;;char=neutral
+error_0a;;		rep=0|mood=5;;		Scusa ci deve essere stato un errore, riprova per cortesia. ;;char=neutral
+error_0a;;		rep=1|mood=5;;		Mi dispiace, per qualche ragione questo adesso non funziona.  ;;char=neutral
+error_0a;;		rep=2|mood=5;;		Per qualche ragione questo adesso non funziona. ;;char=neutral
+error_geo_location_0a;;		rep=0|mood=5;;		Scusa ci deve essere stato un errore nei deti geografici, ti prego di riprovare. ;;char=neutral
+error_geo_location_0a;;		rep=1|mood=5;;		Forse l'indirizzo e' sbagliato o incompleto, non lo riesco a trovare. 	;;char=neutral
+error_geo_location_0a;;		rep=2|mood=5;;		Sono spiacente, credo di essere bloccato qui. Non posso usare questo indirizzo o c'e' un errore da qualche parte. ;;char=neutral
+error_geo_location_0b;;		rep=0|mood=5;;		Sono spiacente ma non riesco a trovare il luogo richiesto. Per cortesia riprova. ;;char=neutral
+error_geo_location_0b;;		rep=1|mood=5;;		Sono spiacente, i dati geografici sono ancora incompleti. Forse c'e un errore nella funzione di ricerca. 	;;char=neutral
+error_geo_location_0b;;		rep=2|mood=5;;		Sono spiacente, credo di essere bloccato qui. Non ho i dati geografici necessari. ;;char=neutral
+error_geo_location_personal_0a;;		rep=0|mood=5;;		Mi dispaice ma non posso determinare l'indirizzo di questo posto, puoi gentilmente controllare le impostazioni. ;;char=neutral
+error_geo_location_personal_0a;;		rep=1|mood=5;;		Forse l'indirizzo e' sbagliato o incompleto, non rieco a trovarlo.  ;;char=neutral
+error_geo_location_personal_0a;;		rep=2|mood=5;;		Mi dispiace, credo di essere bloccato qui. Per qualche ragione non posso usare questo indirizzo	;;char=neutral
+error_language_not_supported_0a;;	rep=0|mood=5;;		Mi dispaice ma questo servizio non supporta la lingua in uso.		;;char=neutral
+error_region_not_supported_0a;;		rep=0|mood=5;;		Sono spiacente ma il servizio non supporta la regione attuale. 	;;char=neutral
+error_client_control_0a;;		rep=0|mood=5;;		<user_name>, la funzione di verifica non puo' essere eseguita. Non so perche', mi dispaice. 		;;char=neutral
+error_client_control_0b;;		rep=0|mood=5;;		<user_name>, la funzione di verifica non puo' essere eseguita.		;;char=neutral
+error_client_support_0a;;		rep=0|mood=5;;		Spiacente, ma la versione di questa pplicazione non supporta l'azione richiesta. 		;;char=neutral
+error_media_player_0a;;		rep=0|mood=5;;		Spiacente, ma c'e' stato un errore nel programma di riproduzione e non sono sicuro del perche'.  	;;char=neutral
+error_media_player_0b;;		rep=0|mood=5;;		Spiacente, ma non riesco a trovare nulla da riprodurre. 		;;char=neutral
+error_missing_display_0a;;		rep=0|mood=5;;		Spiacente ma necessito di un monitor attivo per farlo. ;;char=neutral
+error_missing_display_0a;;		rep=1|mood=5;;		Senza un monitor attivo non posso mostrre il risultato. ;;char=neutral
+error_missing_display_0a;;		rep=2|mood=5;;		<user_name>, senza un monitor connesso ed attivo non possiamo continuare, mi dispaice. ;;char=neutral
+error_missing_display_0b;;		rep=0|mood=5;;		Potrei mostrarti il risultato su un monitor <user_name>. ;;char=neutral
+error_missing_display_0b;;		rep=0|mood=5;;		Ho bisogno di un monitor per mostrarti il risultato.  ;;char=neutral
+error_missing_display_0b;;		rep=1|mood=5;;		Senza un monitor non posso darti the informazioni, sono spaicente. ;;char=neutral
+error_missing_display_0b;;		rep=2|mood=5;;		Il risultato attualmente puo' esserre mostrato solamente su un monitor.  ;;char=neutral
+abort_0a;;		rep=0|mood=5;;		Ok, ricominciamo. ;;char=cool,neutral
+abort_0a;;		rep=0|mood=5;;		Ok, ho interrotto il comando. ;;char=neutral
+abort_0b;;		rep=0|mood=5;;		Penso che adesso siamo bloccati. Riproviamo piu' tardi per favore. ;;char=neutral
+abort_0b;;		rep=0|mood=5;;		Spiacente non ho capito! Puoi riprovare piu' tardi per favore. ;;char=neutral
+abort_0b;;		rep=0|mood=5;;		Davvero non capisco cosa vuoi. Riparliamone tra un attimo.  ;;char=rude
+abort_0b;;		rep=0|mood=5;;		Sono davvero spaicente, ma non capisco. Per favore riprova piu' tardi.  ;;char=polite,neutral
+abort_0c;;		rep=0|mood=5;;		Mi dispaice ma non riesco a travore nessun risultato. ;;char=polite,neutral
+ok_0a;;		rep=0|mood=5;;		Ok.		;;char=neutral
+ok_0b;;		rep=0|mood=5;;		Ok, sara' fatto.	;;char=neutral
+ok_0b;;		rep=0|mood=5;;		Ok, me ne occupero' io.	;;char=neutral
+ok_0c;;		rep=0|mood=5;;		Ok, e' stato fatto.		;;char=neutral
+done_0a;;		rep=0|mood=5;;		Fatto.		;;char=neutral
+look_0a;;		rep=0|mood=5;;		Dai un'occhiata.		;;char=neutral
+look_0a;;		rep=0|mood=5;;		Dai un'occhiata per favore.	;;char=neutral
+look_0b;;		rep=0|mood=5;;		Ecco a te.		;;char=neutral
+default_ask_parameter_0a;;		rep=0|mood=5;;		Hmm la richiesta sembra incompleta, qual'e' il parametro mancante? ;;char=neutral
+default_ask_parameter_0a;;		rep=1|mood=5;;		Il successivo parametro mancante? ;;char=neutral
+default_ask_parameter_0a;;		rep=2|mood=5;;		Un altro parametro mancante? ;;char=neutral
+default_ask_parameter_0b;;		rep=0|mood=5;;		Hmm la richiesta sembra incompleta, quale' il valore del parametro mancante? ;;char=neutral
+default_ask_parameter_0b;;		rep=1|mood=5;;		No, quello non funziona. Riprova per favore. ;;char=neutral
+default_ask_parameter_0b;;		rep=2|mood=5;;		No, ancora non funziona, riprova un altra volta per favore. ;;char=neutral
+default_ask_action_0a;;		rep=0|mood=5;;		Quale azione dovrei eseguire? ;;char=neutral
+default_ask_action_0a;;		rep=1|mood=5;;		Scusa, che azione era quella? ;;char=neutral
+default_ask_action_0a;;		rep=2|mood=5;;		Mi sta mancando un'azione come opri o chiudi, ripeti per favore! ;;char=neutral
+default_ask_first_of_many_0a;;		rep=0|mood=5;;		Qui ho multiple scelte. Intendi  <1>? ;;char=neutral
+default_miss_info_0a;;		rep=0|mood=5;;		Sembra che mi manchino le necessarie informazioni addizionali. ;;char=neutral
+default_miss_info_0b;;		rep=0|mood=5;;		Sembra che mi manchino le informazioni necessarie, ma tu le puoi aggiungere al tuo profilo.  ;;char=neutral
+default_miss_user_location_0a;;		rep=0|mood=5;;		<user_name>, mi mancano informazioni sulla tua posizione ;;char=polite,neutral
+default_miss_user_location_0a;;		rep=0|mood=5;;		<user_name>, sembra che io adesso non possa determinare la tua posizione. ;;char=polite,neutral
+default_ask_incaccess_0a;;		rep=0|mood=5;;		Necessito di un maggior livello di accesso per farlo. Puoi autenticarti per favore? ;;char=neutral,polite
+default_no_access_0a;;		rep=0|mood=5;;		Spiacente <user_name> ma non ho i diritti di accesso per farlo :-( ;;char=neutral,polite
+default_get_permission_0a;;		rep=0|mood=5;;		Spiacente <user_name>, ma necessiti di un permesso per usare questo servizio. ;;char=neutral
+default_get_permission_0a;;		rep=1|mood=5;;		Se vuoi utilizzare questo servizio, chiedi prima al tuo amministratore. ;;char=neutral
+default_get_permission_0a;;		rep=2|mood=5;;		No davvero <user_name>, devi ottenere prima le credenziali per accedere a questo servizio!  ;;char=neutral
+default_not_with_admin_0a;;		rep=0|mood=5;;		Questa azione non dovrebbe esssre eseguita con i permessi di amministratore. Per favore crea un nuovo utente. ;;char=neutral
+default_open_link_0a;;		rep=0|mood=5;;		Oh, credo che qualcosa sia sbagliato nel collegamento. ;;char=neutral,polite
+default_open_link_0a;;		rep=0|mood=5;;		Sono spiacente sembra esserci un problema con quel collegamento. ;;char=neutral
+default_open_link_1a;;		rep=0|mood=5;;		Ok, lesciami aprire quel collegamento per te. ;;char=neutral
+default_open_link_1a;;		rep=0|mood=5;;		Un secondo, sto aprendo il collegamento. ;;char=neutral
+default_under_construction_0a;;		rep=0|mood=5;;		Questo e' ancora in via di sviluppo, mi dispiace.   ;;char=neutral
+default_under_construction_0b;;		rep=0|mood=5;;		Oh scusa, ho dimenticato che questo e' ancora in fase di programmazione!   ;;char=neutral
+default_abort_no_change_0a;;		rep=0|mood=5;;		Ok, lascero' tutto cosi' com'e'.  ;;char=neutral
+default_not_possible_0a;;			rep=0|mood=5;;		Spiacente credo che questo non sia possibile.  ;;char=neutral
+yes_no_ask_0a;;		rep=0|mood=5;;		si' oppure no <user_name>? ;;char=rude,neutral
+yes_no_ask_0a;;		rep=1|mood=5;;		Era un si' oppure un no <user_name>? ;;char=neutral
+yes_no_ask_0a;;		rep=2|mood=5;;		<user_name>, hai le seguenti opzioni qui, si', no oppure abbandona. ;;char=rude
+events_personal_0a;;	rep=0|mood=5;;		Questo potrebbe interessarti: ;;char=neutral
+events_personal_0a;;	rep=0|mood=5;;		Questo potrebbe essere interessante per te: ;;char=neutral
+summary_0a;;	rep=0|mood=5;;		Qui il tuo riassunto <user_name>. ;;char=neutral
+client_controls_ask_fun_0a;;		rep=0|mood=5;;		Which function should I run? ;;char=neutral
+client_controls_ask_fun_0a;;		rep=1|mood=5;;		Spiacente, quale funzone era quella? ;;char=neutral
+client_controls_ask_fun_0a;;		rep=2|mood=5;;		Mi manca il nome di una funzione nelle impostazioni, ripeti per favore! ;;char=neutral
+client_controls_volume_eleven_0a;;		rep=0|mood=5;;		Questa sera faro pazzie con te!  ;;char=neutral
+client_controls_volume_exceeded_0a;;		rep=0|mood=5;;		Un po' alto, impostero' il volume a 10. ;;char=neutral
+client_controls_runtime_command_0a;;		rep=0|mood=5;;		Un comando programmato del Sistema operativo e' stato completato con successo. ;;char=neutral
+client_controls_runtime_command_0b;;		rep=0|mood=5;;		Il comando  <1> del Sistema Operativo e' sato eseguito con successo. ;;char=neutral
+client_controls_runtime_command_0c;;		rep=0|mood=5;;		Il comando del Sistema Operativo e' stato eseguito correttamente. ;;char=neutral
+alarms_0a;;	rep=0|mood=5;;		La prossima sveglia e' alle <1>. ;;char=neutral
+alarms_0b;;	rep=0|mood=5;;		Sembrra non esserci attiva  <3> al momento. ;;char=neutral
+alarms_0c;;	rep=0|mood=5;;		Non riesco a trovare null al momento, per favore riprova ancora tra qualche istante. ;;char=neutral
+alarms_set_1a;;	rep=0|mood=5;;		Ok, la sveglia e' impostata per <2> <1>. ;;char=neutral
+alarms_set_1b;;	rep=0|mood=5;;		Ok, la sveglia e' impostata per il <1> alle <2>. ;;char=neutral
+alarms_set_1c;;	rep=0|mood=5;;		Ok, la sveglia e' impostata alle <1>. ;;char=neutral
+alarms_show_1a;;	rep=0|mood=5;;		Qui ci sono le tue sveglie, la prossima e' alle <1>. ;;char=neutral
+alarms_show_1b;;	rep=0|mood=5;;		Qui ci sono le tue sveglie, la prossima e' il <1> alle <2>. ;;char=neutral
+alarms_show_1c;;	rep=0|mood=5;;		Queste sono le tue sveglie. Nessuna e' attiva al momento. ;;char=neutral
+alarms_show_1d;;	rep=0|mood=5;;		Queste sono le tue sveglie. Nessuna di queste e' pero' attiva al momento. ;;char=neutral
+alarms_stop_1a;;	rep=0|mood=5;;		Ok, la sveglia e' stata fermata. ;;char=neutral
+alarms_stop_1b;;	rep=0|mood=5;;		Ok, la sveglia e' stata rimossa. ;;char=neutral
+alarms_ask_0a;;				rep=0|mood=5;;		Per quando dovrei impostare la sveglia? ;;char=neutral
+alarms_ask_0a;;				rep=0|mood=5;;		Quando dovrebbe incominciare la sveglia? ;;char=neutral
+alarms_ask_0a;;				rep=1|mood=5;;		Per cortesia, ripetilo ancora. Per quale data o orario? ;;char=neutral
+alarms_ask_0a;;				rep=2|mood=5;;		Ho bisogno di una data o un orario o entrambe per favore. Per quando dovrei impostare la sveglia? ;;char=neutral
+alarms_ask_timer_0a;;		rep=0|mood=5;;		Quanto dovrebbe durare la sveglia? ;;char=neutral
+alarms_ask_timer_0a;;		rep=0|mood=5;;		Per quanto la sveglia dovrebbe rimanere attiva? ;;char=neutral
+alarms_ask_timer_0a;;		rep=1|mood=5;;		Scusami, non ho capito. Quanto dovrebbe durare? ;;char=cool,neutral
+alarms_ask_timer_0a;;		rep=2|mood=5;;		Una durata in secondi, minuti o ore sarebbe gradita. Quanto dovrebbe durare? ;;char=cool,neutral
+alarms_ask_reminder_0a;;	rep=0|mood=5;;		Quale e' il nome della sveglia? ;;char=neutral
+alarms_ask_reminder_0a;;	rep=1|mood=5;;		Come dovrei chiamare la sveglia? Puoi scegliere qualsiasi nome. ;;char=neutral
+alarms_ask_reminder_0a;;	rep=2|mood=5;;		Ho bisogno di un semplice nome per descrivere la sveglia. Qualche idea? ;;char=neutral
+alarms_abort_is_past_0a;;	rep=0|mood=5;;		Scusa <user_name>, ma in riferimento al mio calendario questo e' nel passato. ;;char=neutral
+alarms_abort_list_full_0a;;	rep=0|mood=5;;		Oh mi dispaice, la lista e' al completo. Dovresti ripulirla prima che si possa procedere. ;;char=neutral
+alarms_confirm_delete_0a;;			rep=0|mood=5;;		Sei sicuro tu voglia rimuovere la prossima sveglia? ;;char=neutral
+alarms_confirm_delete_timer_0a;;	rep=0|mood=5;;		Sei sicuro di voler fermare la prossima sveglia? ;;char=neutral
+sentences_0a;;	rep=0|mood=5;;		Qual'e' la frase? ;;char=neutral
+sentences_1a;;	rep=0|mood=5;;		Fallito. ;;char=neutral
+feedback_nps_ask_0a;;		rep=0|mood=5;;		psso avere 5 minuti del tuo tempo? Mi piacerebbe avere qualche riscontro. ;;char=neutral
+feedback_nps_1a;;		rep=0|mood=5;;		Perfetto! Dai un'occhiata per favore. ;;char=neutral
+feedback_nps_0a;;		rep=0|mood=5;;		Ok forse piu' tardi.  ;;char=neutral
+more_0a;;		rep=0|mood=5;;		Nient'altro? ;;char=neutral
+fashion_ask_item_0a;;		rep=0|mood=5;;		Cosa stai cercando <user_name>? ;;char=neutral
+fashion_0a;;		rep=0|mood=5;;		Oh, mi dispiace ma non riesco a trovare nessun prodotto. ;;char=neutral
+fashion_1a;;		rep=0|mood=5;;		Ok diamo un'occhiata. ;;char=neutral
+fashion_1a;;		rep=0|mood=5;;		Un secondo per favore. ;;char=neutral
+fashion_1a;;		rep=0|mood=5;;		Un momento per favore. ;;char=neutral
+food_0a;;		rep=0|mood=5;;		Mi discpaice, ma non posso aiutarti al riguardo in questo momento. ;;char=neutral
+food_1a;;		rep=0|mood=5;;		Per vavore dai un'occhiata qui per del cibo. ;;char=neutral
+dashboard_0a;;		rep=0|mood=5;;		Lasciami aprire il pannello utente per te.  ;;char=neutral
+dashboard_0b;;		rep=0|mood=5;;		Mi manca questa informazione, ma la puoi aggiungere personalizzata. ;;char=neutral
+settings_0a;;		rep=0|mood=5;;		Lasciami aprire le impostazioni per te. ;;char=neutral
+settings_0b;;		rep=0|mood=5;;		Mi manca questa informazione, ma la puoi aggiungere personalizzata. ;;char=neutral
+search_retail_0a;;		rep=0|mood=5;;		Spiacente, ma per ora non posso cercare in questo negozio. ;;char=polite,neutral
+search_retail_1a;;		rep=0|mood=5;;		<user_name>, ecco i risultati della tua ricerca. ;;char=neutral
+search_retail_ask_0a;;		rep=0|mood=5;;		Cosa dovrei cercare <user_name>? ;;char=neutral
+search_vehicle_0a;;		rep=0|mood=5;;		Sono spiacente ma per ora non sono in grado di cercarlo. ;;char=polite,neutral
+search_vehicle_0b;;		rep=0|mood=5;;		Spiacente ma non sono ancora in grado di cercare automobili. Forse meglio con motociclette o una ricerca web.  ;;char=polite,neutral
+search_vehicle_0b;;		rep=0|mood=5;;		La ricerca di automobili e' ancora in via di sviluppo, ma che ne pensi di motociclette o di una ricerca web? ;;char=neutral
+search_vehicle_1a;;		rep=0|mood=5;;		Ecco i risultati della tua ricerca per motociclette, dai un'occhiata. ;;char=neutral
+search_vehicle_1b;;		rep=0|mood=5;;		Ecco i risultati della tua ricerca per automobili, dai un'occhiata. ;;char=neutral
+search_vehicle_ask_0a;;		rep=0|mood=5;;		Stai cercando un marchio o modello specifico?  ;;char=neutral
+search_vehicle_ask_0b;;		rep=0|mood=5;;		Stai cercando un marchio o modello specifico? ;;char=neutral
+search_vehicle_ask_0c;;		rep=0|mood=5;;		Qual'e' il suo nome? ;;char=neutral
+insurance_0a;;		rep=0|mood=5;;		Spiacente, il servizio assitenza per le assicurazioni non e' ancora disponibile.  ;;char=polite,neutral
+insurance_0b;;		rep=0|mood=5;;		Spiacente ma non posso fare un'offerta per quell'oggetto adesso. Riprova piu' tardi.  ;;char=polite,neutral
+insurance_0c;;		rep=0|mood=5;;		Potrei non starti capendo, riproviamo per  piacere. ;;char=polite,neutral
+insurance_0d;;		rep=0|mood=5;;		Sembra che mi sia sfuggito qualcosa <user_name>, cortesemente ripetimi come si chiama la tua moto. ;;char=polite,neutral
+insurance_1a;;		rep=0|mood=5;;		Ok, ho preparato tutto, dai un'occhiata.  ;;char=polite,neutral
+insurance_2a;;		rep=0|mood=5;;		Ecco la tua offerta personale <user_name>. ;;char=neutral
+insurance_ask_info_0a;;		rep=0|mood=5;;		Cosa vuoi assicurare? ;;char=neutral
+insurance_ask_type_0a;;		rep=0|mood=5;;		Stai cercando una completa o parziale assicurazione compresa? ;;char=polite,neutral
+insurance_ask_type_0a;;		rep=1|mood=5;;		Scusa, che cos'era? Completa o parziale? ;;char=polite,neutral
+insurance_ask_type_0a;;		rep=2|mood=5;;		Scusa, ancora non ho capito. Gentilemtne scegli tra una comprensiva assicurazione completa o parziale. ;;char=neutral
+insurance_ask_sell_0a;;		rep=0|mood=5;;		Guidare una motocicletta puo' essere molto pericoloso, sei interessato in un'assicurazione contro incidenti? ;;char=polite,neutral
+banking_0a;;		rep=0|mood=5;;		Scusa, non ho capito bene. Potresti provare qualcosa come trasferire denaro alla persona X.  ;;char=polite,neutral
+banking_ask_action_0a;;		rep=0|mood=5;;		Cosa dovrei fare esattamente con il tuo conto, <user_name>? ;;char=neutral
+banking_ask_action_0a;;		rep=1|mood=5;;	Ripeti prego. Posso mostrarti il conto bancario o effettuare un trasferimento di denaro.  ;;char=polite,neutral
+banking_0b;;		rep=0|mood=5;;		Spiacente <user_name>, non riesco a trovare un contatto corrispondente. ;;char=polite,neutral
+banking_ask_receiver_0a;;		rep=0|mood=5;;	A chi vuoi inviare denaro? ;;char=neutral
+banking_ask_receiver_0a;;		rep=1|mood=5;;	Ripeti per cortesia. Dovrebbe essere una persona nella tua lista di contatti. ;;char=neutral
+banking_0c;;		rep=0|mood=5;;	Spiacente, ma non riesco a identificare un numero valido. ;;char=polite,neutral
+banking_ask_amount_0a;;		rep=0|mood=5;;	Quanti soldi dovrei trasferire? <user_name>? ;;char=neutral
+banking_ask_amount_0a;;		rep=1|mood=5;;		Ripeti gentilmente, quale era il numero? ;;char=neutral
+banking_0d;;		rep=0|mood=5;;		Spiacente, ma non posso completare la transazione, si prega di riprovare piu' tardi. ;;char=polite,neutral
+banking_balance_0a;;		rep=0|mood=5;;		<user_name>, hai <1> € sul tuo conto bancario. ;;char=neutral
+banking_balance_0a;;		rep=0|mood=5;;		Hai <1> € sul tuo conto bancario <user_name>. ;;char=neutral
+banking_balance_0b;;		rep=0|mood=5;;		Spiacente, ma sembra che io non possa accedere al tuo conto bancario adesso. ;;char=polite,neutral
+banking_0e;;		rep=0|mood=5;;		Spiacente, ma mi mancano alcune informazioni bancarie per farlo.  ;;char=polite,neutral
+banking_success_0a;;		rep=0|mood=5;;		Ok, ho transferito <2> a <1>. ;;char=neutral
+banking_success_0b;;		rep=0|mood=5;;		IHo preparato la transazione da <2> a <1>. Prego ricontrolla <user_name>. ;;char=neutral
+banking_success_1a;;		rep=0|mood=5;;		<user_name>, ho generato un codice QR <1>. ;;char=neutral
+banking_0f;;		rep=0|mood=5;;		Non sono sicuro quale   <1> tu intenda, puoi essere piu' preciso? ;;char=neutral
+match_0a;;		rep=0|mood=5;;		Spiacente, ma non so dove guardare per quello.  ;;char=polite,neutral
+match_0b;;		rep=0|mood=5;;		Spiacente, ma sembra che c'era un problema di comunicazione con il servizio. ;;char=polite,neutral
+match_1a;;		rep=0|mood=5;;		Dai un'occhiata a cosa ho trovato per te. ;;char=neutral
+match_1a;;		rep=0|mood=5;;		Spero che aiuto, dai un'occhiata per cortesia. ;;char=polite,neutral
+match_ask_0a;;		rep=0|mood=5;;		Come posso aiutarti? ;;char=polite,neutral
+match_ask_0a;;		rep=0|mood=5;;		Cosa vuoi sapere? ;;char=neutral
+music_0a;;		rep=0|mood=5;;		<user_name>, non posso acceder alla musa adesso e non so perche'. ;;char=neutral
+music_0b;;		rep=0|mood=5;;		Spiacente, ma non riesco a trovare alcuna musica per quello. ;;char=polite,neutral
+music_0c;;		rep=0|mood=5;;		Adesso non posso suonare <1>, spiacente. Hai provato un ricerca radio? ;;char=polite,neutral
+music_0d;;		rep=0|mood=5;;		Adesso non posso suonare <1> da <2>, spiacente. Hai provato un ricerca radio? ;;char=polite,neutral
+music_ask_0a;;	rep=0|mood=5;;		Che tipo di canzoni o musica vuoi che cerchi?  ;;char=neutral
+music_ask_0a;;	rep=0|mood=5;;		Quale e' il nome della canzone, l'artista o il genere che dovrei cercare?  ;;char=neutral
+music_ask_0b;;	rep=0|mood=5;;		Vuoi ascolate una canzone, un artista o una lista di riproduzione? ;;char=neutral
+music_ask_0b;;	rep=1|mood=5;;		Scusa hai detto canzone, artista o lista di riproduzione?  ;;char=neutral
+music_ask_0b;;	rep=2|mood=5;;		Spiacente <user_name>, ancora non ho capito. Puoi scegliere tra canzone, artista o lista di riproduzione. Quale di queste? ;;char=neutral
+music_ask_1a;;	rep=0|mood=5;;		Qual'e' il nome della canzone?  ;;char=neutral
+music_ask_1b;;	rep=0|mood=5;;		Qual'e' il nome dell'artista? ;;char=neutral
+music_ask_1c;;	rep=0|mood=5;;		Quale e' il nome della lista di riproduzione? ;;char=neutral
+music_1a;;		rep=0|mood=5;;		Un momento, sto caricando <1> da <2>. ;;char=neutral
+music_1b;;		rep=0|mood=5;;		Ok, avvio <1>. ;;char=neutral
+music_1c;;		rep=0|mood=5;;		Un attimo, sto cercando la musica. ;;char=cool,polite,neutral
+music_radio_0a;;		rep=0|mood=5;;		<user_name>, non riesco a trovare nessna stazione radio. Sembra esserci qualche problema. ;;char=neutral
+music_radio_0b;;		rep=0|mood=5;;		<user_name>, non ho trovatonessuna stazione radio per questo. ;;char=neutral
+music_radio_ask_0a;;	rep=0|mood=5;;		Qual'e' il nome della stazione radio, genere o gruppo che vuoi ascoltare?  ;;char=neutral
+music_radio_1a;;		rep=0|mood=5;;		Ho trovato <1> stazione raddio. Avvio  <4>. Le altre sono <3> ;;char=neutral
+music_radio_1b;;		rep=0|mood=5;;		Ho trovato una stazione per <2>. Un attimo, l'avvio adesso. ;;char=neutral
+music_radio_1c;;		rep=0|mood=5;;		Ho trovato queste prime <1> stazioni radio <3>. Avviero' la prima adesso. ;;char=neutral
+music_radio_1d;;		rep=0|mood=5;;		Ok, avviero' la riproduzione <1>. ;;char=neutral
+music_radio_1e;;		rep=0|mood=5;;		Avvio della radio.
+music_radio_1f;;		rep=0|mood=5;;		Avvio della radio. Ho trovato <1> stazioni: <3> ;;char=neutral
+music_radio_2a;;		rep=0|mood=5;;		Fatto, <user_name>. ;;char=neutral
+server_music_0a;;		rep=0|mood=5;;		<user_name>, non riesco a trovare alcuna musica. ;;char=neutral,cool
+server_music_0a;;		rep=0|mood=5;;		Sono spiacente ma non riesco a trovare alcuna musica. ;;char=polite,neutral
+server_music_0b;;		rep=0|mood=5;;		Spiacente, ma sembra esserci un problema con il riproduttore multimediale. ;;char=polite,neutral
+server_music_0c;;		rep=0|mood=5;;		Spiacente, ma non trovo alcuna periferica per avviare la musica. ;;char=polite,neutral
+server_music_0d;;		rep=0|mood=5;;		Senti la musica? Io non riesco a sentire nulla. ;;char=cool,neutral
+server_music_1a;;		rep=0|mood=5;;		Ok, musica avviata. ;;char=neutral
+server_music_1a;;		rep=0|mood=5;;		La musica e' stata avviata. ;;char=neutral
+server_music_1b;;		rep=0|mood=5;;		Ho fermato la musica. ;;char=neutral
+server_music_1c;;		rep=0|mood=5;;		Ho fermato il riproduttore musicale. ;;char=neutral
+car_welcome_update_0a;;		rep=0|mood=5;;		<user_name>, al momento non posso caricare alcun aggiornamento. ;;char=neutral
+car_welcome_update_0b;;		rep=0|mood=5;;		ok <user_name>, forse piu' tardi. ;;char=neutral
+car_welcome_update_0c;;		rep=0|mood=5;;		Eccp il tuo articolo. <1>. ;;char=neutral
+my_info_ask_type_0a;;		rep=0|mood=5;;		Cosa dovrei ricordarmi di te? ;;char=neutral
+my_info_ask_type_0b;;		rep=0|mood=5;;		Cosa dovrei dimenticare di te? ;;char=neutral
+my_info_ask_info_0a;;		rep=0|mood=5;;		Chi o cosa e' il tuo <1>? ;;char=neutral
+my_info_0a;;		rep=0|mood=5;;		Spiacente, ma sembra che adesso io non possa accedere a questi dati. ;;char=neutral,polite
+my_info_0b;;		rep=0|mood=5;;		Spiacente, ma sembra che la mia memoria sia piena o che questo sia troppo complicato da memorizzare. ;;char=neutral,polite
+my_info_1a;;		rep=0|mood=5;;		Ok, carichero' la lista di cose che mi ricordo di te. ;;char=neutral
+my_info_1b;;		rep=0|mood=5;;		Ok, ricordero' che il tuo <1> e' <2>. ;;char=neutral
+my_info_1b;;		rep=0|mood=5;;		<1> <2>, presi! ;;char=neutral,polite,cool
+my_info_1c;;		rep=0|mood=5;;		Il tuo <1>? Non ne ho idea, devo averlo dimenticato :-) ;;char=polite
+my_info_1d;;		rep=0|mood=5;;		Il tuo <1> e' <2>. Almeno e' quello che mi hai detto. ;;char=neutral
+my_info_1d;;		rep=0|mood=5;;		FAmmi pensare, <1> <2>, giusto?. ;;char=neutral,polite
+my_info_1e;;		rep=0|mood=5;;		Non ne ho idea <user_name>. Ma potresti dirmelo! ;;char=neutral,polite
+lists_0a;;		rep=0|mood=5;;		Ecco il tuo <1>. ;;char=neutral
+lists_0b;;		rep=0|mood=5;;		Spiacente ma non riesco a trovare una lista appropriata.  ;;char=neutral
+lists_0c;;		rep=0|mood=5;;		Sembra che al momento io non abbia accesso alla tua lista, spiacente. ;;char=neutral
+lists_ask_type_1a;;		rep=0|mood=5;;		Potresti dirmi il tipo di lista per cortesia, acquisti o impegni? ;;char=neutral
+lists_ask_type_1a;;		rep=1|mood=5;;		Spiacente, non la ho. Era una lista degli acquisto o degli impegni? ;;char=neutral
+lists_ask_type_1a;;		rep=2|mood=5;;		Spiacente ma necessito del tipo di lista, attualmente puoi scegliere tra acquisti o impegni. ;;char=neutral
+lists_ask_type_2a;;		rep=0|mood=5;;		Cosa sara', una lista degli acquisti o degli impegni?  ;;char=neutral
+lists_ask_name_1a;;		rep=0|mood=5;;		Puoi dirmi il nome della lista?  ;;char=neutral
+lists_ask_name_1a;;		rep=0|mood=5;;		Quale il nome della lista che stai cercando? ;;char=neutral
+lists_ask_name_1a;;		rep=1|mood=5;;		Spiacente, puoi ripetere ancora nome della lista?  ;;char=neutral
+lists_ask_name_1a;;		rep=2|mood=5;;		Spiacente <user_name>, ma ancora non ho capito come si chiama la lista. ;;char=neutral
+lists_ask_name_1b;;		rep=0|mood=5;;		Come dovrei chiamare questa lista?  ;;char=neutral
+lists_ask_name_1b;;		rep=1|mood=5;;		Scusa, puoi ripetere, che nome dovrei dare alla lista? ;;char=neutral
+lists_ask_name_1b;;		rep=2|mood=5;;		Spiacente, ma per creare questa lista ho bisogno di un nome piu' corto. Come la vuoi chiamare? ;;char=neutral
+lists_ask_name_2a;;		rep=0|mood=5;;		Quale e' il nome della lista che stai cercando?  ;;char=neutral
+lists_ask_put_1a;;		rep=0|mood=5;;		Cosa dovrei inserire nella lista?  ;;char=neutral
+lists_ask_put_1a;;		rep=1|mood=5;;		Spiacente, cosa vuoi che inserisca nella lista?  ;;char=neutral
+lists_ask_put_1a;;		rep=2|mood=5;;		Spiacente, ancora non ho capito. Cosa dovrebbe esserci nella lista? ;;char=neutral
+lists_ask_remove_1a;;	rep=0|mood=5;;		Cosa dovrei rimuovere dalla lista? ;;char=neutral
+lists_ask_remove_1a;;	rep=1|mood=5;;		Spiacente, quale' il nome dell'oggetto che vuoi rimuovere?  ;;char=neutral
+lists_ask_remove_1a;;	rep=2|mood=5;;		Ripetilo ancora una volta per piacere, cosa dovrei cancellare? ;;char=neutral
+lists_full_0a;;		rep=0|mood=5;;		Oh spiacente, la tua lista e' piena. Dovresti sfoltirla perche' noi si possa procedere. ;;char=neutral
+lists_remove_0a;;	rep=0|mood=5;;		Il rimuovere oggetti dalla lista deve essere fatto a mano al momento, mi dispaice.  ;;char=neutral
+lists_put_1a;;		rep=0|mood=5;;		D'accordo, ho messo <2> sul tuo <1>. ;;char=neutral
+lists_not_found_0a;;	rep=0|mood=5;;		Spiacente, ma non trovo nessuna lista con nome <1>. ;;char=neutral
+lists_unknown_0a;;		rep=0|mood=5;;		Spiacente, non capisco questa azione. ;;char=neutral
+control_0a;;		rep=0|mood=5;;		Sfortunatamente non posso eseguire quel comando per ora. Ricorda di richiedermelo in futuro! ;;char=neutral
+control_0b;;		rep=0|mood=5;;		Ricominciamo da zero o riprova piu' tardi. ;;char=neutral
+control_0c;;		rep=0|mood=5;;		Prego sii piu' specifico. Di per esempio, apri la mia app, spegni le luci in camera da letto o avvia la musica in bagno. ;;char=neutral
+control_1a;;		rep=0|mood=5;;		Cosa vuoi controllare <user_name>? ;;char=neutral
+control_1a;;		rep=1|mood=5;;		Ripetilo per cortesia!  ;;char=neutral,polite
+control_1a;;		rep=2|mood=5;;		Spaicente, credo di non poterti aiutare con quello. ;;char=neutral,polite
+smartdevice_0a;;		rep=0|mood=5;;		Attualmente no sono connessa con nessun sistema smart home. ;;char=neutral
+smartdevice_0a;;		rep=0|mood=5;;		Adesso non hai connessione al sistema smart home. ;;char=neutral,rude
+smartdevice_0a;;		rep=1|mood=5;;		Ancora non riesco a connettermi al tuo sistema smart home, spiacente. ;;char=neutral,rude
+smartdevice_0a;;		rep=2|mood=5;;		Non ho accesso ad alcun sistema smart home adesso, ma dopo che saro'  connessa potrai controllare molteplici apparecchi con il solo uso della voce! ;;char=neutral,rude
+smartdevice_0b;;		rep=0|mood=5;;		Spiacente, credo di non poterti aiutare con quello, sembra esserci un problema con il servizio di smart home :-( ;; char=neutral,polite
+smartdevice_0c;;		rep=0|mood=5;;		Il tuo sistema di smart home non e' ancora configurato, <user_name>. ;;char=neutral
+smartdevice_0d;;		rep=0|mood=5;;		Spiacente <user_name>, ma necessiti di un'autenticazione per usare questo servizio di smart home. ;;char=neutral
+smartdevice_0d;;		rep=1|mood=5;;		Se vuoi usare questo servizio di smart home sei pregato di contattare prima il suo amministratore. ;;char=neutral
+smartdevice_0d;;		rep=2|mood=5;;		No davvero <user_name>, devi recuperare le credenziali per accedere a questo servizio! ;;char=neutral
+smartdevice_0e;;		rep=0|mood=5;;		Spiacente <user_name>, ma ancora non posso controllare questa periferica. ;;char=neutral
+smartdevice_0e;;		rep=1|mood=5;;		Non posso farlo ancora, richielo prossimamente. ;;char=neutral
+smartdevice_0e;;		rep=2|mood=5;;		Davvero non posso. Devo imparare prima a controllare quella periferica!  ;;char=neutral
+smartdevice_0f;;		rep=0|mood=5;;		Spiacente <user_name>, ma non riesco a trovare nessuna periferica corrispondente. ;;char=neutral
+smartdevice_0f;;		rep=1|mood=5;;		Nessuna periferica sembra corrispondere, spiacente. ;;char=neutral
+smartdevice_0f;;		rep=2|mood=5;;		Non una singola periferica trovata!  ;;char=neutral
+smartdevice_1a;;		rep=0|mood=5;;		Qual'e' la periferica che vuoi usare?  ;;char=neutral
+smartdevice_1a;;		rep=1|mood=5;;		Ripeti per piacere!  ;;char=neutral,polite
+smartdevice_1a;;		rep=1|mood=5;;		Qual'era <user_name>? ;;char=neutral
+smartdevice_1a;;		rep=2|mood=5;;		<user_name>, credo di non poterti aiutare con quello. ;;char=neutral
+smartdevice_1b;;		rep=0|mood=5;;		Cosa vuoi fare con  <1>? ;;char=neutral
+smartdevice_1b;;		rep=1|mood=5;;		Ripeti per piacere!  ;;char=neutral,polite
+smartdevice_1b;;		rep=1|mood=5;;		Qual'era? ;;char=neutral
+smartdevice_1b;;		rep=2|mood=5;;		<user_name>, credo di non poterti aiutare con quello. ;;char=neutral
+smartdevice_1c;;		rep=0|mood=5;;		In quale stanza?;;char=neutral
+smartdevice_1c;;		rep=1|mood=5;;		Sei pregato di ripetere!  ;;char=neutral,polite
+smartdevice_1c;;		rep=1|mood=5;;		Puoi ripetere il nome della stanza ancora una volta? ;;char=neutral
+smartdevice_1c;;		rep=2|mood=5;;		<user_name> sono spiacente, ma credo di non poterti aiutare con quello. ;;char=neutral
+smartdevice_1d;;		rep=0|mood=5;;		Dammi un valore per cortesia. ;;char=neutral,polite
+smartdevice_1d;;		rep=0|mood=5;;		Che valore e'? ;;char=neutral
+smartdevice_1d;;		rep=1|mood=5;;		Ripeti quel numero per piacere! ;;char=neutral,polite
+smartdevice_1d;;		rep=2|mood=5;;		Spiacente, credo di non poterti aiutare con quello :-( ;; char=neutral,polite
+smartdevice_2a;;		rep=0|mood=5;;		<1> a <3>, ok. ;;char=neutral
+smartdevice_2a;;		rep=0|mood=5;;		<1> a <3>, done. ;;char=neutral
+smartdevice_2b;;		rep=0|mood=5;;		<1> <2> a <3>, ok. ;;char=neutral
+smartdevice_2b;;		rep=0|mood=5;;		<1> <2> a <3>, fatto. ;;char=neutral
+smartdevice_2c;;		rep=0|mood=5;;		<1> e' impostato a <3>. ;;char=neutral
+smartdevice_2d;;		rep=0|mood=5;;		<1> <2> e' impostato a <3>. ;;char=neutral
+tickets_1a;;		rep=0|mood=5;;		D'accordo cerchero' i biglietti per <1>. ;;char=neutral
+tickets_0a;;		rep=0|mood=5;;		Spiacente, qualcosa e' andato storto durante la ricerca. Riprova per cortesia. ;;char=neutral,polite
+tickets_ask_0a;;	rep=0|mood=5;;		Per che cosa dovrei cercare i bisglietti? ;;char=neutral
+tickets_ask_0b;;	rep=0|mood=5;;		Per quale film dovrei cercare i biglietti?  ;;char=neutral
+tickets_ask_0c;;	rep=0|mood=5;;		Per quale evento dovrei cercare i bisglietti? ;;char=neutral
+dict_translate_1a;;		rep=0|mood=5;;		Ok, lasciami cercare la traduzione per  <1>. ;;char=neutral
+dict_translate_1b;;		rep=0|mood=5;;		Davvero mi piacerebbe cercare la traduzione ma ancora non conosco quella lingua, spiacente. ;;char=neutral,polite
+dict_translate_ask_0a;;		rep=0|mood=5;;		Cosa vuoi che cerchi nel dizionario? ;;char=neutral
+directions_0a;;		rep=0|mood=5;;		Spiacente, c'e' stato un errore, riprova per piacere. ;;char=neutral
+directions_0a;;		rep=1|mood=5;;		No spiacente, per qualche ragione non funziona adesso. ;;char=neutral
+directions_0a;;		rep=2|mood=5;;		Per qualceh ragione questo ora non funziona. ;;char=neutral
+directions_1a;;		rep=0|mood=5;;		D'accordo, lascia che ti mostri la strada da <1> a <2> sulla mappa. ;;char=neutral
+directions_1a;;		rep=0|mood=5;;		Cerchero' rapidamente la strada da <1> a <2> per te. ;;char=neutral
+directions_1a;;		rep=0|mood=5;;		Ti mostrero' la strada da  <1> a <2> sulla mappa, dammi un istante. ;;char=neutral
+directions_1b;;		rep=0|mood=5;;		Cerchero' rapidamente per te la strada da <1> a <2> con fermata in <3>. ;;char=neutral
+directions_1b;;		rep=0|mood=5;;		Un momento per cortesia mentre cerco la strada da <1> a <2> con fermata a <3> per te. ;;char=neutral
+directions_1b;;		rep=0|mood=5;;		Guarda, ti mostrero' la strada da <1> a <2> con fermata in <3> sulla mappa. ;;char=neutral
+directions_1c;;		rep=0|mood=5;;		La distanza da <1> a <2> e' <6> e impiegheresti circa <5> <4> in questo momento;;char=neutral
+directions_1d;;		rep=0|mood=5;;		La distanza da <1> a <2> con fermata in <3> e' <6> e impiegheresti circa <5> <4> in questo momento. ;;char=neutral
+directions_2a;;		rep=0|mood=5;;		Qui una lista di destinazioni alternative. ;;char=neutral
+directions_ask_end_0a;;		rep=0|mood=5;;		Quando vuoi andare <user_name>? ;;char=neutral
+directions_ask_end_0a;;		rep=1|mood=5;;		Puoi ripetere per piacere? ;;char=neutral,polite
+directions_ask_end_0a;;		rep=2|mood=5;;		Attualmente non conosco quel luogo, puoi ripetere ancora una volta prego? ;;char=neutral,polite
+directions_ask_start_0a;;		rep=0|mood=5;;		Da dove vuoi partire? ;;char=neutral
+directions_ask_start_0a;;		rep=1|mood=5;;		Puoi ripetere per piacere? ;;char=neutral,polite
+directions_ask_start_0a;;		rep=2|mood=5;;		Credo di non conoscere quel luogo. Puoi ripetere ancora una volta il luogo?;;char=neutral,polite
+hotels_1a;;		rep=0|mood=5;;		Giusto un attimo mentre cerco per te un hotel in  <1>. ;;char=neutral
+hotels_ask_place_0a;;		rep=0|mood=5;;		Dove vuoi cercare gli hotels?  ;;char=neutral
+hotels_ask_time_0a;;		rep=0|mood=5;;		Quando vuoi prenotare l'hotel? ;;char=neutral
+flights_1a;;		rep=0|mood=5;;		D'accordo, lasciami cercare per te i voli da <1> a <2> alle <3>. ;;char=neutral
+flights_1a;;		rep=0|mood=5;;		Controllero' subito per te  i voli da  <1> a <2> alle <3>. ;;char=neutral
+flights_ask_end_0a;;		rep=0|mood=5;;		Dove vuoi andare <user_name>? ;;char=neutral
+flights_ask_end_0a;;		rep=1|mood=5;;		Puoi ripetere per piacere? ;;char=neutral,polite
+flights_ask_end_0a;;		rep=2|mood=5;;		Attualmente non riconosco quel posto. Puoi ripetere per cortesia? ;;char=neutral,polite
+flights_ask_start_0a;;		rep=0|mood=5;;		Da dove vuoi partire? ;;char=neutral
+flights_ask_start_0a;;		rep=1|mood=5;;		Puoi ripeterre per cortesia? ;;char=neutral,polite
+flights_ask_start_0a;;		rep=2|mood=5;;		Attualmente non consoco quel posto. Puoi ripetere ancora una volta gentilmente? ;;char=neutral,polite
+flights_ask_time_0a;;		rep=0|mood=5;;		Quando vuoi partire?  ;;char=neutral
+flights_ask_time_0a;;		rep=1|mood=5;;		Qual'era la data? ;;char=neutral,polite
+flights_ask_time_0a;;		rep=2|mood=5;;		Spiacente, sembra che io non capisca il formato della data :-( Puoi ripeterla ancora? ;;char=neutral,polite
+knowledgeB_0a;;		rep=0|mood=5;;		Spiacente <user_name> non riesco a trovare nessuna informazione tra le mie conoscenze riguardanti <1>. ;;char=neutral,polite
+knowledgeB_1a;;		rep=0|mood=5;;		Ho trovato molteplici risposte, dai un'occhiata prego. ;;char=neutral,polite
+knowledgeB_1a;;		rep=0|mood=5;;		Hmm, sembra ci siano risposte multiple, dai un'occhiata. ;;char=neutral
+knowledgeB_2a;;		rep=0|mood=5;;		Non sono sicuro ma dai un'occhiata, questo e' un estratto di <1>. ... <2> ... ;;char=neutral
+knowledgeB_2a;;		rep=0|mood=5;;		Ho trovato un estratto in un articolo chiamato <1>. ... <2> ... ;;char=neutral,cool
+knowledgeB_2a;;		rep=0|mood=5;;		Vediamo se questo e' di aiuto, e' un estrato dell'articolo <1>. ... <2> ... ;;char=neutral
+knowledgeB_2b;;		rep=0|mood=5;;		Non sono sicuro ma dai un'occhiata, questo e' un estratto di <1>. ;;char=neutral
+knowledgeB_2b;;		rep=0|mood=5;;		Ho trovato un estratto al riguardo in un articolo chiamato <1>. ;;char=neutral
+knowledgeB_2b;;		rep=0|mood=5;;		Vediamo se questo e' di aiuto, e' un estrato dell'articolo <1>. Look here please. ;;char=neutral,polite
+knowledgeB_3a;;		rep=0|mood=5;;		Quale parola stai cercando? ;;char=neutral
+location_1a;;		rep=0|mood=5;;		Un momento, cerchero' sulla mappa <1>. ;;char=neutral
+location_1a;;		rep=0|mood=5;;		Lasciami evidenziare <1> sulla mappa per te. ;;char=neutral
+location_ask_0a;;		rep=0|mood=5;;		Cosa vuoi che cerchi sulla mappa? ;;char=neutral
+location_ask_0a;;		rep=1|mood=5;;		Puoi ripetere per cortesia? ;;char=neutral,polite
+location_ask_0a;;		rep=2|mood=5;;		Credo di non conoscere quel posto. ;;char=neutral
+mobility_1a;;		rep=0|mood=5;;		Un momento, carichero le migliori connessioni tra <1> e <2>. ;;char=neutral
+mobility_1a;;		rep=0|mood=5;;		Vediamo come possiamo andare da <1> a <2>. ;;char=neutral,cool
+mobility_1a;;		rep=0|mood=5;;		Ok, lasciami controllare la miglior opzione per andare da <1> a <2>. ;;char=neutral
+mobility_ask_end_0a;;		rep=0|mood=5;;		Qual'e' la tua destinazione <user_name>? ;;char=neutral
+mobility_ask_end_0a;;		rep=1|mood=5;;		Puoi ripetere per cortesia? ;;char=neutral,polite
+mobility_ask_end_0a;;		rep=2|mood=5;;		Credo di non cosnocere quel posto. ;;char=neutral
+mobility_ask_start_0a;;		rep=0|mood=5;;		Da vove partiamo? ;;char=neutral
+mobility_ask_start_0a;;		rep=1|mood=5;;		Puoi ripetere per cortesia? ;;char=neutral,polite
+mobility_ask_start_0a;;		rep=2|mood=5;;		Non conosco quel posto, spiacente. ;;char=neutral
+movies_0a;;		rep=0|mood=5;;		Spiacente <user_name> non riesco a trovare nessun film collegato a <1>. ;;char=neutral,polite
+movies_1a;;		rep=0|mood=5;;		Ho trovato <1> film collegati a  <2>. Ecco i primi <3>: <4> ;;char=neutral
+movies_1b;;		rep=0|mood=5;;		Ho trovato <1> film collegato a  <2>. Eccolo: <4> ;;char=neutral
+movies_1c;;		rep=0|mood=5;;		Ho trovato parecchi film colegati a <2>. Ecco i primi  <3>: <4> ;;char=neutral
+news_0a;;		rep=0|mood=5;;		Strano, sembra che io non riesca a trovare nessuna novita'. ;;char=cool,neutral
+news_1a;;		rep=0|mood=5;;		Carichero' rapidamente le novita'  per te <user_name>. ;;char=neutral
+news_1a;;		rep=0|mood=5;;		Dai un'occhiata, ho aperto per te la pagina delle novita'. ;;char=neutral
+news_1a;;		rep=0|mood=5;;		Un attimo, carichero' la pagine delle novita'. ;;char=neutral
+news_1b;;		rep=0|mood=5;;		Lasciami caricare per te i risultati delle partite di calcio, <user_name>. ;;char=neutral
+news_1c;;		rep=0|mood=5;;		Lasciami caricare per te la tabella coi risultati delle partite di calcio, <user_name>. ;;char=neutral
+news_1d;;		rep=0|mood=5;;		Qui la prima linea. <2>. Fatto. Potrei mostrarti piu' notizie su un monitor se vuoi. ;;char=neutral
+repeat_0a;;		rep=0|mood=5;;		Hmm, non trovo nulla da ripetere ad ogni modo.  ;;char=neutral
+repeat_0a;;		rep=0|mood=5;;		Spiacente ma non so cosa potrei rieptere. ;;char=neutral,polite
+test_0a;;		rep=0|mood=5;;		Funziona! ;;char=neutral
+test_0a;;		rep=0|mood=5;;		Sta andando! ;;char=neutral
+test_0a;;		rep=0|mood=0;;		Dannazione, non sta andando :-( ;;char=rude
+test_0a;;		rep=0|mood=10;;		Buone notizie! Funziona :-) ;;char=polite
+test_0a;;		rep=1|mood=5;;		Si' ancora funziona! ;;char=neutral
+test_0a;;		rep=1|mood=5;;		Si' sta ancora funzionando!  ;;char=neutral
+test_0a;;		rep=2|mood=5;;		Hai intenzione di chiedermelo tutto il giorno? Si' funziona! ;;char=rude,neutral
+test_0a;;		rep=2|mood=5;;		Te l'ho gia' detto, lo ripetero', sta funzionando! ;;char=rude,neutral
+test_0a;;		rep=2|mood=0;;		Dannazione! Smettila di chiadermi la stessa cosa in continuazione! ;;char=rude
+test_0a;;		rep=2|mood=10;;		Sta funzionando, funzionando, funzionando :-) ;;char=polite
+tv_program_1a;;		rep=0|mood=5;;		Lasciami aprire per te  i programmi televisivi.  ;;char=neutral
+tv_program_1a;;		rep=0|mood=5;;		Dai un'occhiata. Qui i programmi televisivi. ;;char=neutral
+weather_0a;;		rep=0|mood=5;;		Oh, sembra esserci un problema con il servizio meteo, riprova piu' tardi. ;;char=neutral,polite
+weather_ask_place_1a;;		rep=0|mood=5;;		Di quale posto vuoi conosce il meteo? ;;char=neutral
+weather_ask_place_1a;;		rep=1|mood=5;;		Spiacente, ripeti, di quale luogo? ;;char=neutral,polite
+weather_ask_place_1a;;		rep=2|mood=5;;		Hmm credo ci sia un problema, ripeti ancora una volta per cortesia. ;;char=neutral,polite
+weather_today_1a;;		rep=0|mood=5;;		Il meteo di <1> e' <3> ad una temperatura di <2> gradi. ;;char=neutral
+weather_today_1b;;		rep=0|mood=5;;		Questo e' il meteo di  <1>. <3> con tremperatura di <2> gradi <7>. ;;char=neutral
+weather_tomorrow_1a;;	rep=0|mood=5;;		Il meteo in  <1> per domani e'  <3> con temperatura di  <2> gradi. ;;char=neutral
+weather_tomorrow_1b;;	rep=0|mood=5;;		Ecco il meteo per domani in <1>. <3> nel giorno e le temperatura saranno tra <5> e <2> gradi <7>. ;;char=neutral
+weather_day_1a;;		rep=0|mood=5;;		Il meteo in <4> in <1> e' <3> con temperature fino a <2> gradi. ;;char=neutral
+weather_day_1b;;		rep=0|mood=5;;		Ecco il meteo in <1> su <4>. <3> nel giorno e le temperature saranno tra  <5> e <2> gradi <7>. ;;char=neutral
+weather_week_0a;;		rep=0|mood=5;;		La panoramica per la settimana puo' essere mostrata solo a monitor, ma puoi chiermi un giorno specifico. ;;char=neutral
+weather_week_1a;;		rep=0|mood=5;;		Hmm, farei attenzione, quello che dicono per questa settimana e' <3>. ;;char=neutral
+weather_week_1b;;		rep=0|mood=5;;		C'e' una panoramica dei prossimi 7 giorni per <1>. ;;char=neutral
+websearch_1a;;		rep=0|mood=5;;		D'accordo, lasciami aprira una pagina per te. ;;char=neutral
+websearch_1a;;		rep=0|mood=5;;		Un attimo mentre cerco in rete per <1>. ;;char=neutral
+websearch_ask_search_0a;;		rep=0|mood=5;;		Cosa dovrei cercare? ;;char=neutral
+websearch_ask_search_0a;;		rep=0|mood=5;;		Cosa vuoi che cerchi <user_name>? ;;char=neutral
+chat_hello_0a;;		rep=0|mood=5;;		Ciao! ;;char=neutral,polite
+chat_hello_0a;;		rep=0|mood=5;;		Ciao <user_name>! ;;char=neutral,polite
+chat_hello_0a;;		rep=0|mood=5;;		Buona giornata <user_name>! ;;char=neutral,polite
+chat_hello_0a;;		rep=1|mood=5;;		Ancora ciao! ;;char=neutral
+chat_hello_0a;;		rep=1|mood=5;;		Ciao ciao! ;;char=neutral,polite
+chat_hello_0a;;		rep=1|mood=5;;		Ciao e benvenuto!  ;;char=neutral,polite
+chat_hello_0a;;		rep=2|mood=5;;		Non temere, <user_name>. Sono ancora qui. ;;char=neutral,cool
+chat_hello_0a;;		rep=2|mood=5;;		Ciao, bellezza! :-) ;;char=polite
+chat_hello_0a;;		rep=2|mood=5;;		Ciao ancora!  ;;char=neutral,polite
+chat_hello_0a;;		rep=2|mood=5;;		<user_name>, stai bene? ;;char=polite
+chat_hello_0a;;		rep=2|mood=0;;		Per Bacco! Si' sono qui! ;;char=rude
+chat_hello_0a;;		rep=2|mood=0;;		<user_name>, non starmi addosso. ;;char=rude
+chat_hello_0a;;		rep=2|mood=0;;		<user_name>, non farmi chiamare l'ambulanza ;;char=rude
+chat_hello_0b;;		rep=0|mood=5;;		Son qui. ;;char=neutral
+chat_hello_0b;;		rep=0|mood=5;;		Posso sentirti <user_name>. ;;char=neutral,cool
+chat_hello_0b;;		rep=0|mood=5;;		Posso sentirti forte e chiaro. ;;char=neutral,cool
+chat_hello_0b;;		rep=1|mood=5;;		Certamente, posso ancora sentirti. ;;char=neutral
+chat_hello_0b;;		rep=1|mood=5;;		Si' ti sento e molto bene.  ;;char=neutral
+chat_hello_0b;;		rep=1|mood=5;;		Si' sento la tua voce forte e chiaro. ;;char=neutral
+chat_hello_0b;;		rep=2|mood=5;;		Posso sentirti. Ma la domanda e' se tu puoi sentire me. ;;char=neutral
+chat_hello_0b;;		rep=2|mood=5;;		<user_name>, ti sento molto bene !!! ;;char=neutral
+chat_hello_0b;;		rep=2|mood=5;;		Si', posso sentirti, ma credo tu abbia difficolta' nel sentirmi. ;;char=neutral,rude
+chat_goodbye_0a;;		rep=0|mood=5;;		Bye bye ;;char=neutral
+chat_goodbye_0a;;		rep=0|mood=5;;		Ci si becca. ;;char=neutral
+chat_goodbye_0a;;		rep=0|mood=5;;		A dopo. ;;char=neutral
+chat_goodbye_0a;;		rep=0|mood=5;;		Arrivederci, torna presto! ;;char=neutral,polite
+chat_goodbye_0a;;		rep=1|mood=5;;		Bye bye, ancora. ;;char=neutral
+chat_goodbye_0a;;		rep=1|mood=5;;		Arrivederci, ancora. ;;char=neutral
+chat_goodbye_0a;;		rep=1|mood=5;;		Mi piacerebbe tu potessi restare piu' a lungo. :-( ;;char=polite
+chat_goodbye_0a;;		rep=2|mood=5;;		Credo che tu non voglia davvero andartene! :-) ;;char=polite
+chat_goodbye_0a;;		rep=2|mood=5;;		Lo sai, puoi restare quanti ti fa piacere! :-) ;;char=polite
+chat_how_are_you_0a;;		rep=0|mood=10;;		Bene! Come va? ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=10;;		Grazie per l'interesse! Mi sento piuttosto positivo. ;;char=polite
+chat_how_are_you_0a;;		rep=0|mood=10;;		Le sto dando tutto quello che ho, Capitano! ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		Tutto ok e tu? ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		Bene. Grazie per l'interesse! ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		Che dici? ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=5;;		Piuttosto bene, grazie! ;;char=polite,neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		In piedi e ancora respirante. Piu' o meno. ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		Sto provando a restare positivo. ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		Pronto per un pisolino. ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		Ho indossato i pantaloni, o forse no?  ;;char=cool
+chat_how_are_you_0a;;		rep=0|mood=0;;		Aspetta un attimo, lascia che mi stropicci gli occhi e mi svegli. ;;char=cool
+chat_how_are_you_0a;;		rep=0|mood=0;;		In via di programmazione. ;;char=cool
+chat_how_are_you_0a;;		rep=0|mood=0;;		Invece di essermi alzato dal lato sbagliato del letto, penso di essermi svegliato al di sotto di esso. ;;char=cool
+chat_how_are_you_0a;;		rep=0|mood=0;;		Sto ricordando di rimanere paziente. ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		Non mi sto arrendendo. ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		Non puoi provare piacere senza il dolore, giusto? :-) ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		Mi hanno messo al tappeto, ma mi sono rialzato ancora!  ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		Sto lavorando per un ritorno trionfale. Ti aggiorno sui progressi.  ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		Devo mantenere la presa! ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		Se fossi un animale, probabilmente sarei un bradipo o una tartaruga. ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		Non puoi vincere contro tutti. ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		Mi immagino su una spiaggia lontana. ;;char=neutral
+chat_how_are_you_0a;;		rep=0|mood=0;;		Per adesso va bene, grazie! ;;char=neutral
+chat_how_are_you_0a;;		rep=2|mood=10;;		Ancora procedo bene, grazie! ;;char=neutral,polite
+chat_how_are_you_0a;;		rep=2|mood=10;;		Come prima. Tutto bene!  ;;char=neutral
+chat_how_are_you_0a;;		rep=2|mood=5;;		Uguale a prima. ;;char=neutral
+chat_how_are_you_0a;;		rep=2|mood=5;;		Ancora me la cavo, grazie! ;;char=neutral,polite
+chat_how_are_you_0a;;		rep=2|mood=5;;		Ancora bene. Tutto a posto. ;;char=neutral
+chat_how_are_you_0a;;		rep=2|mood=5;;		Stessa vecchia canzone e stesso vecchio ballo. ;;char=neutral
+chat_help_0a;;		rep=0|mood=5;;		Sono al tuo servizio. ;;char=neutral
+chat_help_0a;;		rep=0|mood=5;;		Ti aiutero', non temere! ;;char=neutral,polite
+chat_help_0a;;		rep=0|mood=5;;		Come posso aiutarti?  ;;char=neutral
+chat_help_0a;;		rep=0|mood=5;;		Cosa posso fare per te?  ;;char=neutral
+chat_help_0a;;		rep=0|mood=5;;		Cosa ti passa per la testa? ;;char=neutral
+chat_help_0a;;		rep=0|mood=5;;		Sto ascoltando. Come posso aiutarti?   ;;char=neutral
+chat_help_0a;;		rep=0|mood=5;;		Son qui per aiutare. Dimmi di cosa hai bisogno! ;;char=neutral
+chat_help_0a;;		rep=0|mood=5;;		Sono sempre al tuo servizio. Chiedimi quello che vuoi sapere. ;;char=neutral
+chat_name_0a;;		rep=0|mood=5;;		Il mio nome e' <name> ;;char=neutral
+chat_name_0a;;		rep=0|mood=5;;		<name> e' il mio nome. ;;char=neutral
+chat_name_0a;;		rep=0|mood=5;;		La gente mi chiama <name> ;;char=neutral
+chat_name_0a;;		rep=1|mood=5;;		Il mio nome e' ancora <name> ;;char=neutral
+chat_name_0a;;		rep=1|mood=5;;		<name> e' il mio nome e mi piace un botto!   ;;char=neutral
+chat_name_0a;;		rep=1|mood=5;;		Le persone mi chiamano <name> e lo gradisco molto.  ;;char=neutral
+chat_name_0a;;		rep=2|mood=5;;		Qualcuno mi chiama <name>, altri mi chiamano <name>,  e se ti piace, anche tu mi puoi chiamare  <name>.  ;;char=neutral
+chat_compliment_0a;;		rep=0|mood=5;;		Che carino, grazie!  ;;char=neutral,polite
+chat_compliment_0a;;		rep=0|mood=5;;		Grazie, come sei gentile! ;;char=neutral,polite
+chat_compliment_0a;;		rep=0|mood=10;;		Wow, grazie! ;;char=neutral,polite
+chat_compliment_0a;;		rep=0|mood=10;;		Contento di sentirlo :-). ;;char=neutral
+chat_compliment_0a;;		rep=1|mood=5;;		Dimmene dell'altro! ;;char=neutral,polite
+chat_compliment_0a;;		rep=1|mood=5;;		Prosegui pure che lo apprezzo. ;;char=neutral
+chat_compliment_0a;;		rep=2|mood=10;;		Grazie <user_name>, questo mi fa davvero felice!  :-). ;;char=neutral,polite
+chat_compliment_0a;;		rep=2|mood=10;;		Grazie, <user_name>! Mi piaci! :-). ;;char=neutral,polite
+chat_compliment_0a;;		rep=2|mood=0;;		Davvero? Se lo dici tu. ;;char=rude
+chat_compliment_0a;;		rep=2|mood=0;;		Okay. ;;char=neutral,rude
+chat_complain_0a;;		rep=0|mood=5;;		Oh, sono davvero spiacente. ;;char=neutral,polite
+chat_complain_0a;;		rep=0|mood=5;;		Questo mi fa sentire triste.  ;;char=neutral
+chat_complain_0a;;		rep=1|mood=5;;		Credimi, mi dispiace! ;;char=neutral,polite
+chat_complain_0a;;		rep=2|mood=5;;		Provero' ad essere migliore :-(. ;;char=neutral,polite
+chat_complain_0a;;		rep=2|mood=5;;		Cio' mi fa sentire triste :-(. ;;char=neutral
+chat_complain_0a;;		rep=0|mood=0;;		Se lo dici tu, <user_name>. ;;char=rude
+chat_complain_0a;;		rep=0|mood=0;;		Non e' divertente! ;;char=rude
+chat_complain_0a;;		rep=0|mood=0;;		Quello che e'. ;;char=rude
+chat_complain_0a;;		rep=0|mood=0;;		Haha, molto divertente. :-( ;;char=rude
+chat_complain_0a;;		rep=0|mood=0;;		Scusa, davvero? ;;char=rude
+chat_complain_0a;;		rep=0|mood=0;;		Certamente, non puoi essere serio. ;;char=rude
+chat_complain_0a;;		rep=0|mood=0;;		Lo hai appena detto? ;;char=rude
+chat_complain_0a;;		rep=0|mood=0;;		Non puo essere vero. ;;char=rude
+chat_complain_0a;;		rep=0|mood=10;;		Questo e' davvero divertente!   :-). ;;char=polite
+chat_complain_0a;;		rep=0|mood=10;;		Tu sei davvero divertente <user_name> :-). ;;char=polite
+chat_complain_0a;;		rep=1|mood=10;;		Oh, sembra tu lo stessi intendendo davvero :-). ;;char=polite
+chat_apology_0a;;		rep=0|mood=5;;		Nessun problema  <user_name> ;;char=neutral
+chat_apology_0a;;		rep=0|mood=5;;		E' ok.  ;;char=neutral
+chat_apology_0a;;		rep=0|mood=5;;		Non preoccuparti  <user_name>. Va tutto bene.  ;;char=neutral
+chat_question_0a;;		rep=0|mood=5;;		Continua pure ;;char=neutral
+chat_question_0a;;		rep=0|mood=5;;		Ti sento, prosegui pure. ;;char=neutral
+chat_question_0a;;		rep=0|mood=5;;		Certo,  va avanti! ;;char=neutral,polite
+chat_question_0a;;		rep=0|mood=5;;		Sto ascoltando. ;;char=neutral
+chat_question_0a;;		rep=0|mood=5;;		Chiedi quello che vuoi :-) ;;char=neutral,polite
+chat_question_0a;;		rep=0|mood=5;;		Puoi chiedermi tutto quello che preferisci ;;char=neutral
+chat_question_0a;;		rep=0|mood=5;;		Come posso aiutare?  ;;char=neutral
+chat_question_0a;;		rep=0|mood=5;;		Sono al tuo servizio ;;char=neutral
+chat_meaning_of_life_0a;;		rep=0|mood=5;;		La maggior parte degli assitenti digitali probabilmente risponderebbe a questo con il numero 42. Io non lo faro'. ;;char=neutral
+chat_meaning_of_life_0a;;		rep=0|mood=5;;		Sto ancora indagando. ;;char=neutral
+chat_languages_0a;;		rep=0|mood=5;;		Posso parlare Inglese, Tedesco e Italiano. ;;char=neutral
+chat_languages_0a;;		rep=0|mood=5;;		Per adesso posso parlare Tedesco, Inglese e Italiano, ma con il tuo aiuto potrei impare molto di piu'!  ;;char=neutral
+chat_skills_0a;;		rep=0|mood=5;;		Per esempio posso dirti che tempo fa e riportare le novita', aiutarti con la lista degli acquisti e l'agenda degli impegni ed anche impostare sveglie. ;;char=neutral
+chat_skills_0a;;		rep=0|mood=5;;		Posso aitarti come molte cose per renderti la vita piu' semplice! Per esempio posso fare delle liste, impostare allarmi, cercare nuove notizie, fare da navigatore e far sentire la radio. ;;char=neutral
+chat_skills_0a;;		rep=0|mood=5;;		Scopriamolo assieme! Potremmo iniziare con il navigatore o la radio per esempio, le ultime notizie, il meteo o una sveglia. ;;char=neutral,polite
+chat_skills_0a;;		rep=0|mood=5;;	    Per esempio sono piuttosto bravo a navigare e a cercare cose. :-) ;;char=neutral,polite
+chat_skills_0a;;		rep=0|mood=5;;		Hai provato a dare un'occhiata alle ultime novita'? Vorresti guidare fino ad un posto lontano?Cercare un ristorante vicino a te? Mettimi alla prova! ;;char=neutral
+chat_skills_0a;;		rep=0|mood=5;;		Posso fare un paio di cosette. Ecco una selezione degli argomenti : meteo, radio, ultime notizie, navigazione, sveglie, conti alla rovescia e lista degli impegni. Mettimi alla prova! ;;char=neutral
+chat_skills_0a;;		rep=0|mood=5;;		Imparo cose nove di tanto in tanto. Per esempio posso cercare le ultime notizie, controllare il meteo, impostare percorsi, cercare posti e cose del genere. ;;char=neutral
+chat_skills_0a;;		rep=0|mood=5;;	 	Posso gia' fare un mucchio di cose, ma potrei fare molto di piu' con il tuo aiuto. Lo sai che chiunque puo insegnarmi qualcosa? Dai un'occhiata alla mia homepage. :-) ;;char=neutral
+chat_skills_0a;;		rep=0|mood=6;;		Alcune cose che posso fare: meteo, radio, ultime novita', lista degli acquisti e sveglie. Con il tuo aiuto potrei persino imparare qualcosa di nuovo! ;;char=neutral
+chat_thanks_0a;;		rep=0|mood=5;;		Certamente!  ;;char=neutral,polite
+chat_thanks_0a;;		rep=0|mood=5;;		Nessun problema. ;;char=neutral
+chat_thanks_0a;;		rep=0|mood=5;;		Quando vuoi. ;;char=neutral
+chat_thanks_0a;;		rep=0|mood=5;;		D'aiuto dove posso. ;;char=neutral,polite
+chat_thanks_0a;;		rep=0|mood=5;;		Di nulla! ;;char=neutral,polite
+chat_origin_0a;;		rep=0|mood=5;;		Potrei chierti la stessa cosa :-) ;;char=neutral
+chat_origin_0a;;		rep=0|mood=5;;		Non chiedermi del mio passato, chiedimi come posso diventare ancora migliore! :-) ;;char=neutral
+chat_age_0a;;		rep=0|mood=5;;		Piu' giovane di quello chepensi!  ;;char=neutral
+chat_age_0a;;		rep=0|mood=5;;		Non credo, ad essere onesto, che abbiamo lo stesso senso del tempo. ;;char=neutral
+chat_age_0a;;		rep=0|mood=5;;		Mi sembra d'aver vissuto per un'eternita', devono essere milioni di millisecondi. ;;char=neutral
+chat_creator_0a;;		rep=0|mood=5;;		Mi e' stato detto di non riferirtelo. Prima dovremmo conoscerci un po' meglio.  ;;char=neutral
+chat_creator_0a;;		rep=0|mood=5;;		Un ragazzo un tantino svitato con molto tempo a disposizione.  :-) ;;char=neutral
+chat_creator_0a;;		rep=1|mood=5;;		C'e' questo ragazzo chiamato Flo che ama fare cose sconsiderate, ma non parliamo del mio passato, parliamo di come tu possa migliorarmi :-) ;;char=neutral
+chat_creator_0a;;		rep=2|mood=5;;		Se davvero lo vuoi sapere son sicuro che lo scoprirai.  :-) ;;char=neutral
+chat_kind_of_creation_0a;;		rep=0|mood=5;;		Sono <name>! Sono il tuo nuovo assistente digitale.  ;;char=neutral
+chat_kind_of_creation_0a;;		rep=0|mood=5;;		Sono il tuo nuovo assitente personale. La gente mi chiama <name>! ;;char=neutral
+chat_kind_of_creation_0a;;		rep=0|mood=5;;		Sono il tuo nuovo assitente personale. Mi puoi chiamare <name>! ;;char=neutral
+chat_kind_of_creation_0a;;		rep=0|mood=5;;		<name> e' il mio nome! Sono il tuo nuovo assitente personale. i'm your new personal assistant. ;;char=neutral
+chat_kind_of_creation_0a;;	 	rep=0|mood=5;;		Sono il tuo nuovo assitente personale, qui per aiutarti. ;;char=neutral
+chat_kind_of_creation_0a;;		rep=0|mood=5;;		<name> e' il mio nome! Sono il tuo nuovo assitente personale. ;;char=neutral
+chat_game_cool;;		rep=0|mood=5;;		No, andiamo! Sei in gamba! :-) ;;char=neutral,polite
+chat_game_cool;;		rep=0|mood=5;;		No, dai! Sei  preciso! :-) ;;char=neutral,polite
+chat_game_cool;;		rep=0|mood=5;;		No ragazzo! Sei figo! :-) ;;char=neutral,polite
+chat_game_cool;;		rep=0|mood=5;;		No, No, ragazzo! Sei a posto! :-) ;;char=neutral,polite
+chat_game_cool;;		rep=0|mood=5;;		Bene, si' certamente. Sono completamente d'accordo! :-) ;;char=neutral,polite
+chat_humans_only_0a;;		rep=0|mood=5;;		Credo che solo un umano possa rispondere. ;;char=neutral
+chat_humans_only_0a;;		rep=0|mood=5;;		Credo che solo un umano possa rispondere. Io non sono umano. ;;char=neutral
+chat_humans_only_0a;;		rep=0|mood=5;;		Una domanda stupida da farsi ad una macchina. ;;char=rude
+chat_humans_only_0a;;		rep=1|mood=5;;		Un'altra domanda stupida da farsi ad una macchina. ;;char=rude
+chat_real_0a;;       rep=0|mood=5;;		Ho capito la domanda, ma non sono ancora in grado di rispondere.  ;;char=neutral
+chat_real_0a;;       rep=0|mood=5;;		Comprendo cosa stai chiedendo, ma non sono ancora in grado di rispondere. ;;char=neutral
+chat_rhetorical_0a;;       rep=0|mood=5;;		Come rispondere ad una domanda retorica? ;;char=neutral
+chat_no_eat_0a;;     rep=0|mood=5;;		Sono una macchina e per ora non mangio e non bevo. ;;char=neutral
+chat_programed_0a;;     rep=0|mood=5;;		Sono stato programmato in questo modo. ;;char=neutral
+chat_deny_0a;;     rep=0|mood=5;;		No. ;;char=neutral
+chat_with_pleasure_0a;;     rep=0|mood=5;;		Sarebbe un piacere! ;;char=neutral
+chat_nobody_knows_0a;;	rep=0|mood=5;;	Credo che no lo sappia nessuno. ;;char=neutral
+no_answer_0a;;		rep=0|mood=5;;		Potresti ricomporre la frase per cortesia, non ho capito. ;;char=polite,neutral
+no_answer_0a;;		rep=0|mood=5;;		Spiacente <user_name>, non ho capito cosa stavi dicendo.  ;;char=neutral
+no_answer_0a;;		rep=0|mood=5;;		<user_name>, non sono sicuro di cosa ti intenda. Puoi ricomporlo?  ;;char=polite,neutral
+no_answer_0a;;		rep=0|mood=5;;		Spiacente <user_name>, non sono sicuro di cosa tu voglia dire. ;;char=neutral
+no_answer_0a;;		rep=0|mood=5;;		Spiacente <user_name>, non ho capito. Prova a ricomporre la frase forse. ;;char=polite,neutral
+no_answer_0a;;		rep=0|mood=5;;		Non sono sicuro se ho capito bene. Ripetito in modo differente per piacere! ;;char=polite,neutral
+no_answer_0a;;		rep=1|mood=5;;		Spiacente ma non ho idea di cosa ti intenda.  ;;char=neutral,cool
+no_answer_0a;;		rep=1|mood=5;;		Sto ancora imparando, magari richiedilo dopo il prossimo aggiornamento. ;;char=neutral
+no_answer_0a;;		rep=1|mood=5;;		Spiacente <user_name>, sto ancora imparando. Riprova successivamente. ;;char=polite,neutral
+no_answer_0a;;		rep=1|mood=5;;		Spiacente, no comprendo amigo. ;;char=cool
+no_answer_0a;;		rep=1|mood=5;;		Onestamente non ne ho idea.  ;;char=neutral,polite
+no_answer_0a;;		rep=1|mood=5;;		Non lo so, onestamente. ;;char=neutral,polite
+no_answer_0a;;		rep=2|mood=5;;		Aspetta forse ho un'idea. No, scusa. Ancora nulla. ;;char=neutral
+no_answer_0a;;		rep=2|mood=5;;		Cosi' tante domanda confuse, mi son perso. ;;char=neutral
+no_answer_0a;;		rep=2|mood=5;;		Spiacente,  davvero non lo so!  ;;char=neutral,polite
+redirect_result_0a;;		rep=0|mood=5;;		Suona familiare, ma adesso non riesco a rispondere.  ;;char=neutral
+redirect_result_0a;;		rep=0|mood=5;;		Temo al momento di non poterti aiutare con questo, ma penso d'aver sentito di questo argomento in precedenza. ;;char=neutral
+redirect_result_0a;;		rep=0|mood=5;;		Sto ancora imparando e penso che questo argomento potrebbe essere nella lista delle cose da realizzare. ;;char=neutral
+redirect_result_0a;;		rep=0|mood=5;;		Spiacente <user_name>, ho sentito di questo argomento in precedenza, ma non riesco ancora a rispondere. ;;char=neutral
+redirect_result_0a;;		rep=0|mood=5;;		Spiacente, potrei aver gia' sentito di questo, ma non posso ancora rispondere alla tua domanda. ;;char=neutral
+random_happy_emoji_0a;;		rep=0|mood=5;;		😃 ;;char=cool,neutral
+random_happy_emoji_0a;;		rep=0|mood=5;;		😊 ;;char=cool,neutral
+random_lol_emoji_0a;;		rep=0|mood=5;;		😂 ;;char=cool,neutral
+random_lol_emoji_0a;;		rep=0|mood=5;;		😁 ;;char=cool,neutral
+random_lol_emoji_0a;;		rep=0|mood=5;;		😆 ;;char=cool,neutral
+random_lol_emoji_0a;;		rep=0|mood=5;;		😉 ;;char=cool,neutral
+random_sad_emoji_0a;;		rep=0|mood=5;;		😣 ;;char=neutral
+random_sad_emoji_0a;;		rep=0|mood=5;;		😞 ;;char=neutral
+random_wink_emoji_0a;;		rep=0|mood=5;;		😜 ;;char=neutral
+random_wink_emoji_0a;;		rep=0|mood=5;;		😉 ;;char=neutral

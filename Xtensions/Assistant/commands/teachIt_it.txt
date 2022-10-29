@@ -1,1 +1,80 @@
-Test;;		command=chat;;		reply=<chat_hello_0a>
+Test;;		command=chat;;		reply=<test_0a>
+Questo e' un test;;		command=chat;;		reply=<test_0a>
+Tutto funzona?;;		command=chat;;		reply=<test_0a>
+Vediamo se funziona.;;		command=chat;;		reply=<test_0a>
+Verifica se tutto funziona.;;		command=chat;;		reply=<test_0a>
+Il sistema funziona?;;		command=chat;;		reply=<test_0a>
+E' tutto operativo?;;		command=chat;;		reply=<test_0a>
+E' tutto funzionante?;;		command=chat;;		reply=<test_0a>
+Sta andando?;;		command=chat;;		reply=<test_0a>
+Il sistema sta andando?;;		command=chat;;		reply=<test_0a>
+Fai il test.;;		command=chat;;		reply=<test_0a>
+Testa il sistema.;;		command=chat;;		reply=<test_0a>
+Prova il sistema.;;		command=chat;;		reply=<test_0a>
+Avvia il test.;;		command=chat;;		reply=<test_0a>
+Rifallo.;;		command=repeat
+Ripetilo.;;		command=repeat
+Dillo ancora.;;			command=repeat
+Puoi ripertelo per piacere?;;		command=repeat
+Ripeti questo;;					command=repeat
+interrompere;;		command=chat;;		reply=Non c'è nulla da interrompere in questo momento||Non c'è nulla da interrompere
+Navi;;		command=directions;;
+Navigazione ;;		command=directions;;
+GPS;;		command=directions;;
+Percorso;;		command=directions;;
+Navigatore;;		command=directions;;
+Dizionario;;		command=dict_translate;;
+Traduttore;;  command=dict_translate;;
+Wikipedia;;		command=knowledgebase;;
+Wiki;;		command=knowledgebase;;
+Cruscotto;;		command=dashboard;;
+Plancia;;  command=dashboard;;
+Impostazioni;;		command=dashboard;;
+Configura;;		command=dashboard;;
+Partita;;		command=match;;		collection=messe_muenchen;;
+Conto;;		command=count;;
+Conta;;		command=count;;
+1;;		command=count;;		number=1;;		memory=1;;
+uno;;		command=count;;		number=1;;		memory=1;;
+Tempo;;		command=chat;;		reply=Sono le <local_time_hhmm>.
+Ore?;;		command=chat;;		reply=Sono le <local_time_hhmm>.
+Che ore sono?;;		command=chat;;		reply=sono le  <local_time_hhmm>.
+Sai che ore sono?;;		command=chat;;		reply=Sono le <local_time_hhmm>.
+Le ore per cortesia;;		command=chat;;		reply=Sono le <local_time_hhmm>.
+Le ore per piacere;; command=chat;;		reply=Sono le <local_time_hhmm> 
+Data;;		command=chat;;		reply=Oggi e' il  <local_date_MMddyyyy>
+Che giorno e' oggi?;;		command=chat;;		reply=Oggi e' <local_date_MMddyyyy>
+La data di oggi?;;		command=chat;;		reply=Oggi e' <local_date_MMddyyyy>
+Che giorno e'?;;		command=chat;;		reply=Oggi e' <local_date_MMddyyyy>
+La data di oggi per piacere;;		command=chat;;		reply=Oggi e' <local_date_MMddyyyy>
+La data di oggi per cortesia;;		command=chat;;		reply=Oggi e' <local_date_MMddyyyy>
+Arresta il sistema;; 	command=client_controls;;	client_fun=<runtimeCommands>;;	data={"value": {"shortcut":"os_shutdown", "delay":16000}};;		action=<set>;;		reply=Ok, ci proverò;;"
+Spegni il sistema;; 	command=client_controls;;	client_fun=<runtimeCommands>;;	data={"value": {"shortcut":"os_shutdown", "delay":16000}};;		action=<set>;;		reply=Ok, ci proverò;;"
+Arresta tutto;; 	command=client_controls;;	client_fun=<runtimeCommands>;;	data={"value": {"shortcut":"os_shutdown", "delay":16000}};;		action=<set>;;		reply=Ok, ci proverò;;"
+Spegni tutto;; 	command=client_controls;;	client_fun=<runtimeCommands>;;	data={"value": {"shortcut":"os_shutdown", "delay":16000}};;		action=<set>;;		reply=Ok, ci proverò;;"
+Riavvia il sistema;; 	command=client_controls;;	client_fun=<runtimeCommands>;;	data={"value": {"shortcut":"os_reboot", "delay":16000}};;		action=<set>;;		reply=Ok, ci proverò;;"
+Riavvia;; 	command=client_controls;;	client_fun=<runtimeCommands>;;	data={"value": {"shortcut":"os_reboot", "delay":16000}};;		action=<set>;;		reply=Ok, ci proverò;;"
+=);;			command=chat;;		type=emote_happy;; 		reply=<random_lol_emoji_0a>
+:-D;;			command=chat;;		type=emote_happy;; 		reply=<random_lol_emoji_0a>
+:D;;			command=chat;;		type=emote_happy;; 		reply=<random_lol_emoji_0a>
+😁;;				command=chat;;		type=emote_happy;; 		reply=<random_lol_emoji_0a>
+😂;;				command=chat;;		type=emote_happy;; 		reply=<random_lol_emoji_0a>
+:-);;				command=chat;;		type=emote_happy;; 		reply=<random_happy_emoji_0a>
+:);;				command=chat;;		type=emote_happy;; 		reply=<random_happy_emoji_0a>
+😊;;					command=chat;;		type=emote_happy;; 		reply=<random_happy_emoji_0a>
+😃;;					command=chat;;		type=emote_happy;; 		reply=<random_happy_emoji_0a>
+:-(;;			command=chat;;		type=emote_sad;; 		reply=<random_sad_emoji_0a>
+:(;;			command=chat;;		type=emote_sad;; 		reply=<random_sad_emoji_0a>
+😣;;				command=chat;;		type=emote_sad;; 		reply=<random_sad_emoji_0a>
+😞;;				command=chat;;		type=emote_sad;; 		reply=<random_sad_emoji_0a>
+;);;				command=chat;;		type=emote_happy;; 		reply=<random_wink_emoji_0a>
+;-);;				command=chat;;		type=emote_happy;; 		reply=<random_wink_emoji_0a>
+😉;;					command=chat;;		type=emote_happy;; 		reply=<random_wink_emoji_0a>
+😜;;					command=chat;;		type=emote_happy;; 		reply=<random_wink_emoji_0a>
+ERR;;		command=chat;;		reply=<error_0a>
+shl;;		command=lists;;list_type=<shopping>;;
+nps;; 	command=feedback_nps;;  
+evnts;; 	command=events_personal;; 
+test chain;;	command=sentence_connect;;		sentences=hello&&weather;;	reply=Here is your summary.||<summary_0a>;;
+Client Mesh-Node test;;		command=client_controls;;		client_fun=<meshNode>;;		data={"url":"http://localhost:20780", "plugin":"HelloPlugin"};;		action=<on>;;
+Linebreak;;			command=chat;;		reply=This is line 1.  And this is line 2.  END
