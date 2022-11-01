@@ -11,6 +11,7 @@ import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.parameters.Room;
 import net.b07z.sepia.server.assist.parameters.SmartDevice;
+import net.b07z.sepia.server.assist.tools.Calculator;
 import net.b07z.sepia.server.assist.parameters.Number;
 import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
@@ -35,11 +36,22 @@ public class SmartHomeDevice {
 	private String stateMemory;		//state storage for e.g. default values after restart etc.
 	private String link;		//e.g. HTTP direct URL to device
 	private String interfaceId;	//e.g. openhab, fhem
-	private JSONObject meta;	//space for custom stuff
+	//meta data required to operate the device properly:
+	private JSONObject meta;	//e.g. see below META_...
+	
+	//meta variables
+	public static final String META_SET_CMDS = "setCmds";
+	public static final String META_INTERFACE_DEVICE = "interfaceDeviceId";  //the proxy ID in remote HUB
+	public static final String META_INTERFACE_CONFIG = "interfaceConfig";
+	public static final String META_ID = "id";		//the actual ID inside main HUB
+	public static final String META_ORIGIN = "origin";
+	public static final String META_TYPE_GUESSED = "typeGuessed";
+	public static final String META_NAMED_BY_SEPIA = "namedBySepia";
 	
 	//filter options
 	public static final String FILTER_NAME = "name";
 	public static final String FILTER_TYPE = "type";
+	public static final String FILTER_TYPE_ARRAY = "typeArray";
 	public static final String FILTER_ROOM = "room";
 	public static final String FILTER_ROOM_INDEX = "roomIndex";
 	
@@ -51,7 +63,10 @@ public class SmartHomeDevice {
 	public static final String SEPIA_TAG_DATA = "sepia-data";
 	public static final String SEPIA_TAG_MEM_STATE = "sepia-mem-state";
 	public static final String SEPIA_TAG_STATE_TYPE = "sepia-state-type";
+	//stored in meta:
 	public static final String SEPIA_TAG_SET_CMDS = "sepia-set-cmds";
+	public static final String SEPIA_TAG_INTERFACE_DEVICE = "sepia-interface-device";
+	public static final String SEPIA_TAG_INTERFACE_CONFIG = "sepia-interface-config";
 	
 	public static final String SEPIA_TAG_INTERFACE = "sepia-interface";
 	public static final String SEPIA_TAG_LINK = "sepia-link";
@@ -121,7 +136,22 @@ public class SmartHomeDevice {
 			localName = states_en.get(state.toLowerCase());
 		}
 		if (localName == null){
-			boolean skipWarning = state.matches("\\d+") || (stateType != null && Is.typeEqual(stateType, StateType.text_raw));
+			if (stateType != null){
+				switch (StateType.valueOf(stateType)) {
+				case text_raw:
+				case number_plain:
+					return state;
+				case number_percent:
+					return state + "%";
+				case number_temperature_c:
+					return state + " °C";
+				case number_temperature_f:
+					return state + " °F";
+				default:
+					break;
+				}
+			}
+			boolean skipWarning = state.matches("\\d+.*");
 			if (!skipWarning){
 				Debugger.println(SmartHomeDevice.class.getSimpleName() + 
 					" - getStateLocal() has no '" + language + "' version for '" + state + "'", 3);
@@ -184,6 +214,12 @@ public class SmartHomeDevice {
 	 */
 	public void setInterface(String interfaceId) {
 		this.interfaceId = interfaceId;
+	}
+	/**
+	 * Check if this device object has an interface ID and thus is based on the internal SEPIA HUB data config data.
+	 */
+	public boolean hasInterface(){
+		return Is.notNullOrEmpty(this.interfaceId);
 	}
 	
 	/**
@@ -365,10 +401,10 @@ public class SmartHomeDevice {
 	 * @return
 	 */
 	public String getId(){
-		if (Is.notNullOrEmpty(this.interfaceId)){
-			return getMetaValueAsString("interfaceDeviceId");
+		if (this.hasInterface()){
+			return getInterfaceDeviceId();
 		}else{
-			return getMetaValueAsString("id");
+			return getMetaValueAsString(META_ID);
 		}
 	}
 	
@@ -380,14 +416,46 @@ public class SmartHomeDevice {
 		if (meta == null){
 			return null;
 		}else{
-			return JSON.getJObject(meta, "setCmds");
+			return JSON.getJObject(meta, META_SET_CMDS);
 		}
 	}
 	/**
 	 * Set custom commands object (aka 'setCmds'; no write to HUB!)
 	 */
 	public void setCustomCommands(JSONObject setCmds){
-		setMetaValue("setCmds", setCmds);
+		setMetaValue(META_SET_CMDS, setCmds);
+	}
+	
+	/**
+	 * Get 'interfaceDeviceId' from meta, e.g. to use it in internal HUB.
+	 * @return ID string or null
+	 */
+	public String getInterfaceDeviceId(){
+		return getMetaValueAsString(META_INTERFACE_DEVICE);
+	}
+	/**
+	 * Set 'interfaceDeviceId'.
+	 */
+	public void setInterfaceDeviceId(String interfaceDeviceId){
+		setMetaValue(META_INTERFACE_DEVICE, interfaceDeviceId);
+	}
+	
+	/**
+	 * Get interface configuration data for external HUB (aka 'interfaceConfig').
+	 * @return
+	 */
+	public JSONObject getInterfaceConfig(){
+		if (meta == null){
+			return null;
+		}else{
+			return JSON.getJObject(meta, META_INTERFACE_CONFIG);
+		}
+	}
+	/**
+	 * Set interface configuration data for external HUB (aka 'interfaceConfig'; no write to HUB!)
+	 */
+	public void setInterfaceConfig(JSONObject interfaceConfig){
+		setMetaValue(META_INTERFACE_CONFIG, interfaceConfig);
 	}
 	
 	/**
@@ -425,10 +493,7 @@ public class SmartHomeDevice {
 		this.stateMemory = JSON.getString(deviceJson, "stateMemory");
 		this.link = JSON.getString(deviceJson, "link");
 		this.meta = JSON.getJObject(deviceJson, "meta");
-		//fix some formats
-		if (this.meta != null){
-			this.setCustomCommands(this.getCustomCommands());
-		}
+		//NOTE: meta includes e.g. "setCmds", "interfaceConfig", "interfaceDeviceId" ...
 		return this;
 	}
 	
@@ -454,14 +519,14 @@ public class SmartHomeDevice {
 	/**
 	 * Get devices from the list that match type and room (optionally).
 	 * @param devices - map of devices taken e.g. from getDevices()
-	 * @param deviceType - type of device (or null), see {@link SmartDevice.Types}
+	 * @param deviceTypeList - list of device types (or null), see {@link SmartDevice.Types}
 	 * @param roomType - type of room (or null), see {@link Room.Types}
 	 * @param roomIndex - e.g. a number (as string) or null
 	 * @param maxDevices - maximum number of matches (0 or negative for all possible)
 	 * @return list of devices (can be empty)
 	 */
 	public static List<SmartHomeDevice> getMatchingDevices(Map<String, SmartHomeDevice> devices, 
-				String deviceType, String roomType, String roomIndex, int maxDevices){
+				List<String> deviceTypeList, String roomType, String roomIndex, int maxDevices){
 		List<SmartHomeDevice> matchingDevices = new ArrayList<>();
 		//get all devices with right type and optionally room
 		int found = 0;
@@ -469,8 +534,8 @@ public class SmartHomeDevice {
 			//check type
 			SmartHomeDevice data = entry.getValue();
 			String thisType = data.getType();
-			if (Is.notNullOrEmpty(deviceType)){
-				if (thisType == null || !thisType.equals(deviceType)){
+			if (Is.notNullOrEmpty(deviceTypeList)){
+				if (thisType == null || !deviceTypeList.contains(thisType)){
 					continue;
 				}
 			}
@@ -515,6 +580,39 @@ public class SmartHomeDevice {
 			//e.g. "Light 1", "Lamp A" or "Desk-Lamp" ...
 			//I suggest to create an additional parameter called SMART_DEVICE_NAME
 		}
+		return matchingDevices;
+	}
+	/**
+	 * Get devices from the list that match a set of filters.
+	 * @param devices - map of devices taken e.g. from getDevices()
+	 * @param filters - map of filters like "type" or "typeArray" (list or comma separated string), "room", "roomIndex", "limit" etc.
+	 * @return list of devices (can be empty)
+	 */
+	public static List<SmartHomeDevice> getMatchingDevices(Map<String, SmartHomeDevice> devices,
+			Map<String, Object> filters){
+		//filters
+		List<String> deviceTypeList = null;
+		String roomType = null;
+		String roomIndex = null;
+		int limit = -1;
+		if (filters != null){
+			Object typeArrayOrStringObj = filters.getOrDefault("typeArray", filters.get("type"));
+			if (typeArrayOrStringObj != null){
+				List<String> typeArray = Converters.stringOrCollection2ListStr(typeArrayOrStringObj);
+				if (Is.notNullOrEmpty(typeArray)){
+					deviceTypeList = typeArray;
+				}
+			}
+			roomType = Converters.obj2StringOrDefault(filters.get("room"), null);
+			roomIndex = Converters.obj2StringOrDefault(filters.get("roomIndex"), null);
+			Object limitObj = filters.get("limit");
+			limit = -1;
+			if (limitObj != null){
+				limit = (int) limitObj;
+			}
+		}
+		//get all devices with right type and optionally right room
+		List<SmartHomeDevice> matchingDevices = getMatchingDevices(devices, deviceTypeList, roomType, roomIndex, limit);
 		return matchingDevices;
 	}
 	
@@ -634,7 +732,16 @@ public class SmartHomeDevice {
 		}else{
 			return state;
 		}
-		//TODO: add more?
+		//TODO: add more? Use deviceType?
+	}
+	/**
+	 * Check if state is a non-zero number like "100", "50%", "0.1", "13 °C" etc.,
+	 * but not "0%", "0.0", "0 °C" etc..
+	 * @param state - any state as string
+	 * @return
+	 */
+	public static boolean isStateNonZeroNumber(String state){
+		return state.matches(".*\\d.*") && !state.replaceAll("\\D", "").trim().matches("[0]+");
 	}
 	
 	/**
@@ -646,10 +753,15 @@ public class SmartHomeDevice {
 	 */
 	public static String makeSmartTypeAssumptionForPlainNumber(SmartDevice.Types deviceType){
 		if (deviceType.equals(SmartDevice.Types.light) 
-				|| deviceType.equals(SmartDevice.Types.roller_shutter)){
+				|| deviceType.equals(SmartDevice.Types.roller_shutter)
+				|| deviceType.equals(SmartDevice.Types.garage_door)){
 			return StateType.number_percent.name();
-		}else if (deviceType.equals(SmartDevice.Types.heater)){
+		}else if (deviceType.equals(SmartDevice.Types.heater)
+				|| deviceType.equals(SmartDevice.Types.air_conditioner)
+				|| deviceType.equals(SmartDevice.Types.temperature_control)){
 			return StateType.number_temperature.name();
+		}else if (deviceType.equals(SmartDevice.Types.sensor)){
+			return StateType.text_raw.name();
 		}else{
 			return StateType.number_plain.name();
 		}
@@ -662,9 +774,9 @@ public class SmartHomeDevice {
 	 * case a trivial adaptation can be made. If the user says "set lights to 20 degrees celsius" adaptation is not possible and the method
 	 * will throw an exception.
 	 * @param inputState - state to set, typically a number (as string)
+	 * @param inputStateType - state type given as input, e.g. {@link StateType#number_plain} (string)
 	 * @param deviceType - type of smart device that might be used to make smart assumptions, e.g. {@link SmartDevice.Types#light}
 	 * @param deviceStateType - expected state type of device, e.g. {@link StateType#number_temperature_c} (string)
-	 * @param inputStateType - state type given as input, e.g. {@link StateType#number_plain} (string)
 	 * @param nluInput - {@link NluInput} that can be used to add user/client specific preferences like a temperature unit. Ignored if null.
 	 * @return {@link SimpleEntry} with new stateType as key and new state as value.
 	 * @throws Exception thrown when adaptation not possible
@@ -682,7 +794,7 @@ public class SmartHomeDevice {
 		if (Is.typeEqual(newInputStateType, StateType.number_plain)){
 			//we take selectedDevice stateType since this is definitely defined at this point
 			newInputStateType = deviceStateType;
-			//TODO: need to properly convert state to newInputState?
+			//TODO: need to properly convert state to newInputState? What if 'deviceStateType' is binary ON/OFF?
 		}
 		//devices with state value type temp. only accept plain number or temp. number
 		if (deviceStateType.startsWith(StateType.number_temperature.name())){
@@ -722,38 +834,140 @@ public class SmartHomeDevice {
 	}
 	
 	/**
-	 * Get state set command from custom object, e.g. defined in control HUB for specific device.
+	 * Get set-command for a state from the custom 'setCmds' object, e.g. defined in control HUB for specific device.
+	 * @param state - state as given by NLU, e.g. on, off, 50%
+	 * @param stateType - type of state to set, e.g. text (on,off) or number (50%), as seen in {@link StateType}
+	 * @param setCmds - JSONObject usually taken from device meta data
+	 * @return SimpleEntry with (key, command) or null
+	 */
+	public static SimpleEntry<String, String> getKeyAndStateFromCustomSetCommands(String state, String stateType, JSONObject setCmds){
+		if (stateType != null){
+			if (stateType.matches(REGEX_STATE_TYPE_NUMBER)){
+				String cmd = Converters.obj2StringOrDefault(setCmds.get("number"), null);
+				if (Is.notNullOrEmpty(cmd)){
+					return new SimpleEntry<>("number", cmd.replaceAll("<val>|<value>", state));
+				}
+			}else if (stateType.matches(REGEX_STATE_TYPE_TEXT)){
+				if (state.matches(REGEX_STATE_ENABLE)){
+					String cmd = Converters.obj2StringOrDefault(setCmds.get("enable"), null);
+					if (Is.notNullOrEmpty(cmd)){
+						return new SimpleEntry<>("enable", cmd);
+					}
+				}else if (state.matches(REGEX_STATE_DISABLE)){
+					String cmd = Converters.obj2StringOrDefault(setCmds.get("disable"), null);
+					if (Is.notNullOrEmpty(cmd)){
+						return new SimpleEntry<>("disable", cmd);
+					}
+				}else if (Is.typeEqual(stateType, StateType.text_raw)){
+					String cmd = Converters.obj2StringOrDefault(setCmds.get("raw"), null);
+					if (Is.notNullOrEmpty(cmd)){
+						return new SimpleEntry<>("raw", cmd.replaceAll("<val>|<value>", state));
+					}
+				}
+			}
+		}
+		return null;
+	}
+	/**
+	 * Get set-command for a state from the custom 'setCmds' object, e.g. defined in control HUB for specific device.
 	 * @param state - state as given by NLU, e.g. on, off, 50%
 	 * @param stateType - type of state to set, e.g. text (on,off) or number (50%), as seen in {@link StateType}
 	 * @param setCmds - JSONObject usually taken from device meta data
 	 * @return new set command or null
 	 */
 	public static String getStateFromCustomSetCommands(String state, String stateType, JSONObject setCmds){
-		if (stateType != null){
-			if (stateType.matches(REGEX_STATE_TYPE_NUMBER)){
-				String cmd = Converters.obj2StringOrDefault(setCmds.get("number"), null);
-				if (Is.notNullOrEmpty(cmd)){
-					return cmd.replaceAll("<val>|<value>", state);
-				}
-			}else if (stateType.matches(REGEX_STATE_TYPE_TEXT)){
-				if (state.matches(REGEX_STATE_ENABLE)){
-					String cmd = Converters.obj2StringOrDefault(setCmds.get("enable"), null);
-					if (Is.notNullOrEmpty(cmd)){
-						return cmd;
-					}
-				}else if (state.matches(REGEX_STATE_DISABLE)){
-					String cmd = Converters.obj2StringOrDefault(setCmds.get("disable"), null);
-					if (Is.notNullOrEmpty(cmd)){
-						return cmd;
-					}
-				}else if (Is.typeEqual(stateType, StateType.text_raw)){
-					String cmd = Converters.obj2StringOrDefault(setCmds.get("raw"), null);
-					if (Is.notNullOrEmpty(cmd)){
-						return cmd.replaceAll("<val>|<value>", state);
-					}
+		SimpleEntry<String, String> se = getKeyAndStateFromCustomSetCommands(state, stateType, setCmds);
+		if (se == null){
+			return null;
+		}else{
+			return se.getValue();
+		}
+	}
+	
+	/**
+	 * A more complex way of extracting the state from a given data JSONObject,
+	 * supporting a nested path and mathematical expression.
+	 * @param readExpression - use &lt;path&gt; to define state location and add math., e.g.: "100 * &lt;attr.brightness&gt; / 255"
+	 * @param data - JSON object holding the state, e.g. {"attr": {"brightness": 255}} 
+	 * @return
+	 */
+	public static String getStateFromJsonViaExpression(String readExpression, JSONObject data){
+		try {
+			//identify variable
+			String readVar;
+			if (readExpression.contains("<")){
+				readVar = readExpression.replaceFirst(".*?(<.*?>).*", "$1")
+					.replaceFirst("^<", "").replaceFirst(">$", "").trim();
+				//make expression a proper math. string
+				readExpression = readExpression.replace("<" + readVar + ">", "x");
+			}else{
+				readVar = readExpression;
+				readExpression = "x";
+			}
+			//load variable value
+			String[] readPath = readVar.split("\\.");
+			Object state = JSON.getObject(data, readPath);
+			//System.out.println("readExpression=" + readExpression);			//DEBUG
+			//System.out.println("readPath=" + String.join("->", readPath));	//DEBUG
+			if (state == null){
+				return null;
+			}else{
+				String stateStr = Converters.obj2StringOrDefault(state, "");
+				if (readExpression.equals("x")){
+					//just return
+					return stateStr;
+				}else if (stateStr.matches("(-|)\\d+(\\.\\d+|)")){	//NOTE: we do NOT support 1,2 only 1.2
+					//calculate
+					Map<String, Double> calcVars = new HashMap<>();
+					calcVars.put("x", Double.valueOf(stateStr));
+					return Calculator.parseExpression(readExpression, calcVars).toString();
+				}else{
+					//expression cannot be calculated
+					return null;
 				}
 			}
+		}catch(Exception ex){
+			Debugger.println("'getStateFromJsonViaExpression' failed! Err.: " + ex.getMessage(), 1);
+			return null;
 		}
-		return null;
+	}
+	/**
+	 * Calculate the new state and build nested JSON object according to path variable in write expression. 
+	 * @param writeExpression - expression with path variable, e.g.: "&lt;attr.brightness&gt;" or "2.55 * &lt;attr.brightness&gt;"
+	 * @param state - state to write, optionally used as value for calculation variable
+	 * @return JSON object depending on expression, e.g. '{"attr": {"brightness": state}}' for "&lt;attr.brightness&gt;"
+	 */
+	public static JSONObject buildStateDataFromWriteExpression(String writeExpression, String state){
+		try {
+			//identify variable
+			String writeVar;
+			if (writeExpression.contains("<")){
+				writeVar = writeExpression.replaceFirst(".*?(<.*?>).*", "$1")
+					.replaceFirst("^<", "").replaceFirst(">$", "").trim();
+				//make expression a proper math. string
+				writeExpression = writeExpression.replace("<" + writeVar + ">", "x");
+			}else{
+				writeVar = writeExpression;
+				writeExpression = "x";
+			}
+			//build data
+			JSONObject data = new JSONObject();
+			if (writeExpression.equals("x")){
+				//no state change
+				return JSON.putWithDotPath(data, writeVar, state);
+			}else if (state.matches("(-|)\\d+(\\.\\d+|)")){	//NOTE: we do NOT support 1,2 only 1.2
+				//calculate
+				Map<String, Double> calcVars = new HashMap<>();
+				calcVars.put("x", Double.valueOf(state));
+				String calcRes = Calculator.parseExpression(writeExpression, calcVars).toString();	//NOTE: this will be e.g. 10.0 not 10!
+				return JSON.putWithDotPath(data, writeVar, calcRes);
+			}else{
+				//expression cannot be calculated
+				return null;
+			}
+		}catch (Exception ex){
+			Debugger.println("'buildStateDataFromWriteExpression' failed! Err.: " + ex.getMessage(), 1);
+			return null;
+		}
 	}
 }

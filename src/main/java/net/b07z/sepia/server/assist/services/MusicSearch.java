@@ -14,14 +14,12 @@ import net.b07z.sepia.server.assist.data.Card.ElementType;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
+import net.b07z.sepia.server.assist.interviews.DialogTaskValues;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
+import net.b07z.sepia.server.assist.interviews.InterviewMetaData;
 import net.b07z.sepia.server.assist.parameters.ClientFunction;
 import net.b07z.sepia.server.assist.parameters.MusicService;
 import net.b07z.sepia.server.assist.server.Config;
-import net.b07z.sepia.server.assist.services.ServiceBuilder;
-import net.b07z.sepia.server.assist.services.ServiceInfo;
-import net.b07z.sepia.server.assist.services.ServiceInterface;
-import net.b07z.sepia.server.assist.services.ServiceResult;
 import net.b07z.sepia.server.assist.tools.ITunesApi;
 import net.b07z.sepia.server.assist.tools.SpotifyApi;
 import net.b07z.sepia.server.assist.tools.YouTubeApi;
@@ -173,11 +171,13 @@ public class MusicSearch implements ServiceInterface{
 				//System.out.println(typeSelection.toJSONString()); 		//DEBUG
 				int selection = JSON.getIntegerOrDefault(typeSelection, "selection", 0);
 				if (selection == 1){
-					api.setIncompleteAndAsk(PARAMETERS.SONG, "music_ask_1a");
+					InterviewMetaData metaInfo = new InterviewMetaData().setDialogTask(DialogTaskValues.MUSIC);
+					api.setIncompleteAndAsk(PARAMETERS.SONG, "music_ask_1a", metaInfo);
 				}else if (selection == 2){
-					api.setIncompleteAndAsk(PARAMETERS.MUSIC_ARTIST, "music_ask_1b");
+					InterviewMetaData metaInfo = new InterviewMetaData().setDialogTask(DialogTaskValues.MUSIC);
+					api.setIncompleteAndAsk(PARAMETERS.MUSIC_ARTIST, "music_ask_1b", metaInfo);
 				}else if (selection == 3){
-					api.setIncompleteAndAsk(PARAMETERS.PLAYLIST_NAME, "music_ask_1c");
+					api.setIncompleteAndAsk(PARAMETERS.PLAYLIST_NAME, "music_ask_1c", null);
 				}else{
 					//This should never happen
 					Debugger.println("MusicSearch had invalid selection result for 'music_type'", 1);
@@ -186,11 +186,12 @@ public class MusicSearch implements ServiceInterface{
 				ServiceResult result = api.buildResult();
 				return result;
 			}else{
+				InterviewMetaData metaInfo = null;
 				api.askUserToSelectOption(customTypeSelectionParameter, JSON.make(
 						"1", "song|lied", 
 						"2", "artist|kuenstler", 
 						"3", "playlist"
-				), "music_ask_0b");
+				), "music_ask_0b", metaInfo);
 				ServiceResult result = api.buildResult();
 				//System.out.println(result.getResultJSON().toString()); 	//DEBUG
 				return result;

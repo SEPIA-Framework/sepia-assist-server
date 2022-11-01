@@ -7,10 +7,6 @@ import net.b07z.sepia.server.assist.answers.ServiceAnswers;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
-import net.b07z.sepia.server.assist.services.ServiceBuilder;
-import net.b07z.sepia.server.assist.services.ServiceInfo;
-import net.b07z.sepia.server.assist.services.ServiceInterface;
-import net.b07z.sepia.server.assist.services.ServiceResult;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.core.assistant.ACTIONS;
@@ -94,11 +90,13 @@ public class LanguageSwitcher implements ServiceInterface{
 		
 		//Regular expression triggers:
 		info.setCustomTriggerRegX(".*\\b("
-					+ "(change|switch|set)( the | )language (to |$)|"
+					+ "(change|switch|set)( the | )language( to|$)|"
 					+ "^((change|switch) to |speak )(german|english)$"
 				+ ")\\b.*", EN);
 		info.setCustomTriggerRegX(".*\\b("
-					+ "((aendere|setze|stelle|wechs(le|el)) die sprache|sprache (aendern|setzen|stellen|wechseln)) (auf|zu|$)|"
+					+ "(aendere|setze|stelle|wechs(le|el)) die sprache( auf| zu|$)|"
+					+ "sprache (aendern|setzen|stellen|wechseln)( auf| zu|$)|"
+					+ "sprache (auf|zu) (\\w+ ){1,2}(aendern|setzen|stellen|wechseln)|"
 					+ "^(wech(seln|sel|sle) (auf|zu) |sprich |spreche )(deutsch|englisch)$"
 				+ ")\\b.*", DE);
 		info.setCustomTriggerRegXscoreBoost(3);		//boost service a bit to increase priority over similar ones
@@ -143,6 +141,7 @@ public class LanguageSwitcher implements ServiceInterface{
 		//Tell client to perform this platform action);
 		api.addAction(ACTIONS.SWITCH_LANGUAGE);
 		api.putActionInfo("language_code", targetLang);
+		//api.putActionInfo("skip_save", true);
 		
 		//Schedule a test sentence as follow-up result after 3s if possible
 		if (nluResult.input.isDuplexConnection()){

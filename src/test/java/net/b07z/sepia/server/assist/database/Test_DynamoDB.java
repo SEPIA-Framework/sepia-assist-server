@@ -5,7 +5,6 @@ import java.util.HashMap;
 
 import org.json.simple.JSONObject;
 
-import net.b07z.sepia.server.assist.database.DynamoDB;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.users.AuthenticationDynamoDB;
 import net.b07z.sepia.server.assist.users.ID;
@@ -107,8 +106,8 @@ public class Test_DynamoDB {
 		sub.put("firstN", "Mister");
 		sub.put("lastN", "Tester2");
 		sub.put("nickN", "Boss");
-		sub.put("age", new Integer(33));
-		sub.put("ranking", new Integer(1));
+		sub.put("age", 33);
+		sub.put("ranking", 1);
 		sub.put("relation", "brother from another mother");
 		hm.put("test_contacts", sub);
 		//list

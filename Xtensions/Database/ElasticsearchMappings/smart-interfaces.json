@@ -11,15 +11,15 @@
       }
     }
   },
-  "mappings" : {
-    "all" : {
-      "properties" : {
-        "id" : { "type" : "string", "analyzer": "keylower" },
-		"host" : { "type" : "string" },
-		"type" : { "type" : "string", "analyzer": "keylower" },
-		"info" : { "type" : "object" },
-		"authType" : { "type" : "string", "analyzer": "keylower" },
-		"authData" : { "type" : "string" }
+  "mappings": {
+    "all": {
+      "properties": {
+        "id": { "type": "string", "analyzer": "keylower" },
+        "host": { "type": "string" },
+        "type": { "type": "string", "analyzer": "keylower" },
+        "info": { "type": "object", "enabled": false },
+        "authType": { "type": "string", "analyzer": "keylower" },
+        "authData": { "type": "string" }
       }
     }
   }

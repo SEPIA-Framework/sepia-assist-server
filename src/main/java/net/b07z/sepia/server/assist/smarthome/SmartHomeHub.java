@@ -31,6 +31,7 @@ public interface SmartHomeHub {
 		JSON.make("value", OpenHAB.NAME, 			"name", "openHAB"),
 		JSON.make("value", Fhem.NAME, 				"name", "FHEM"),
 		JSON.make("value", IoBrokerConnector.NAME, 	"name", "ioBroker Simple-api"),
+		JSON.make("value", HomeAssistant.NAME, 		"name", "Home Assistant"),
 		JSON.make("value", MqttPublisher.NAME,		"name", "MQTT Publisher"),
 		JSON.make("value", TestHub.NAME, 			"name", "Test")
 	);
@@ -75,6 +76,8 @@ public interface SmartHomeHub {
 			smartHomeHUB = new Fhem(hubHost);
 		}else if (hubName.equalsIgnoreCase(IoBrokerConnector.NAME)){
 			smartHomeHUB = new IoBrokerConnector(hubHost);
+		}else if (hubName.equalsIgnoreCase(HomeAssistant.NAME)){
+			smartHomeHUB = new HomeAssistant(hubHost);
 		}else if (hubName.equalsIgnoreCase(MqttPublisher.NAME)){
 			smartHomeHUB = new MqttPublisher(hubHost);
 		}else if (hubName.equalsIgnoreCase(InternalHub.NAME) || hubName.equalsIgnoreCase("sepia")){
@@ -142,7 +145,7 @@ public interface SmartHomeHub {
 	 * Set authentication info e.g. to do Basic-Authorization against a proxy via request header etc.. 
 	 * Different HUBs can have additional layers of security and this
 	 * is usually the first. It can be independent of the HUB itself.
-	 * @param authType - type of auth. e.g. 'Basic'
+	 * @param authType - type of auth. e.g. 'Basic' (see {@link AuthType})
 	 * @param authData - data for auth. type e.g. a base64 encoded user:password combination 
 	 */
 	public void setAuthenticationInfo(String authType, String authData);
@@ -189,8 +192,9 @@ public interface SmartHomeHub {
 	/**
 	 * Get a list of devices with optional filters:<br>
 	 * <li>name</li>
-	 * <li>type as seen in {@link SmartDevice.Types}</li>
-	 * <li>room as seen in {@link Room.Types}</li>
+	 * <li>type (match one specific {@link SmartDevice.Types})</li>
+	 * <li>typeArray (match multiple {@link SmartDevice.Types}, collection or comma separated string)</li>
+	 * <li>room (match a {@link Room.Types})</li>
 	 * <li>roomIndex</li>
 	 * <li>limit</li>
 	 * @param filters - map with optional filters as seen above (or null)
@@ -218,8 +222,8 @@ public interface SmartHomeHub {
 	/**
 	 * Push new status to device (e.g. via direct access link (URL) given in object).
 	 * @param device - {@link SmartHomeDevice} taken from getDevices()
-	 * @param state - new status value (NOTE: the HUB implementation might have to translate the state value to its own format)
-	 * @param stateType - type of state variable, e.g. {@link SmartHomeDevice#STATE_TYPE_NUMBER_PERCENT} = number in percent
+	 * @param state - new status value (NOTE: the HUB implementation might have to translate the state value and type to its own format)
+	 * @param stateType - type of (input) state variable, e.g. {@link SmartHomeDevice#STATE_TYPE_NUMBER_PERCENT} = number in percent
 	 * @return true IF no error was thrown after request
 	 */
 	public boolean setDeviceState(SmartHomeDevice device, String state, String stateType);

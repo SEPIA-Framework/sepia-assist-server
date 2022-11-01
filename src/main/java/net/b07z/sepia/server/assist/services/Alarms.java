@@ -15,7 +15,9 @@ import net.b07z.sepia.server.assist.events.ChangeEvent;
 import net.b07z.sepia.server.assist.events.EventsBroadcaster;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interpreters.NluTools;
+import net.b07z.sepia.server.assist.interviews.DialogTaskValues;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
+import net.b07z.sepia.server.assist.interviews.InterviewMetaData;
 import net.b07z.sepia.server.assist.parameters.Action;
 import net.b07z.sepia.server.assist.parameters.AlarmType;
 import net.b07z.sepia.server.assist.server.Config;
@@ -162,9 +164,12 @@ public class Alarms implements ServiceInterface{
 			}
 			api.overwriteParameter(PARAMETERS.ACTION, "<" + action + ">"); 		//NOTE: value has to be valid input for parameter build method!
 		}
-		boolean isActionSet = (action.equals(Action.Type.set.name()) || action.equals(Action.Type.add.name()) || action.equals(Action.Type.create.name()) || action.equals(Action.Type.on.name()));
+		boolean isActionSet = (action.equals(Action.Type.set.name()) || action.equals(Action.Type.add.name()) 
+				|| action.equals(Action.Type.create.name()) || action.equals(Action.Type.on.name())
+				|| action.equals(Action.Type.open.name()));
 		boolean isActionShow = (action.equals(Action.Type.show.name()) || action.equals(Action.Type.edit.name()));
-		boolean isActionStop = action.equals(Action.Type.remove.name()) || action.equals(Action.Type.pause.name()) || action.equals(Action.Type.off.name());
+		boolean isActionStop = action.equals(Action.Type.remove.name()) || action.equals(Action.Type.pause.name())
+				|| action.equals(Action.Type.off.name()) || action.equals(Action.Type.close.name()) || action.equals(Action.Type.cancel.name());
 		
 		Debugger.println("cmd: " + CMD.TIMER + ", alarmType=" + alarmType + ", alarmName=" + alarmName + ", action=" + action + 
 				", time=" + dateDay + "_" + dateTime, 2);	//debug
@@ -205,22 +210,24 @@ public class Alarms implements ServiceInterface{
 			//check some info
 			if (dateTime.isEmpty()){
 				//abort with question
+				InterviewMetaData metaInfo = new InterviewMetaData().setDialogTask(DialogTaskValues.TIME);
 				if (isTimer){
-					api.setIncompleteAndAsk(PARAMETERS.CLOCK, askTimerClock);
+					api.setIncompleteAndAsk(PARAMETERS.CLOCK, askTimerClock, metaInfo);
 				}else{
-					api.setIncompleteAndAsk(PARAMETERS.CLOCK, askAlarmClock);
+					//TODO: this question accepts date and time as answer, but we should probably include the date in the question if given  
+					api.setIncompleteAndAsk(PARAMETERS.CLOCK, askAlarmClock, metaInfo);
 				}
 				ServiceResult result = api.buildResult();
 				return result;
 			}
 			//note: since we split date and time here and can ask separately for time we have to add it all together in the end
 			
-			long timeUnix = -1;
 			long diffDays = -1;
 			long diffHours = -1;
 			long diffMinutes = -1;
 			long diffSeconds = -1;
 			long totalDiff_ms = -1;
+			String diffExceptionNote = "unknown";
 			if (dateTimeP.getData().containsKey(InterviewData.DATE_TIME)){
 				//get total difference from dateTime parameter since time was already there
 				JSONObject diff = (JSONObject) dateTimeP.getData().get(InterviewData.TIME_DIFF);
@@ -230,10 +237,13 @@ public class Alarms implements ServiceInterface{
 					diffHours = JSON.getLongOrDefault(diff, "hh", -1);
 					diffMinutes = JSON.getLongOrDefault(diff, "mm", -1);
 					diffSeconds = JSON.getLongOrDefault(diff, "ss", -1);
+				}else{
+					diffExceptionNote = "Failed to get time-diff. from parameter.";
 				}
 			}else{
 				//construct new difference
 				String newRefDate = dateDay + Config.defaultSdfSeparator + dateTime;
+				//System.out.println("newRefDate: " + newRefDate); 	//DEBUG
 				HashMap<String, Long> diff = DateTimeConverters.dateDifference(nluResult.input.userTimeLocal, newRefDate);
 				if (diff != null){
 					totalDiff_ms = diff.get("total_ms");
@@ -241,6 +251,8 @@ public class Alarms implements ServiceInterface{
 					diffHours = diff.get("hh");
 					diffMinutes = diff.get("mm");
 					diffSeconds = diff.get("ss");
+				}else{
+					diffExceptionNote = "Failed to get time-diff. from new ref.: " + newRefDate;
 				}
 			}
 			//what if the time lies in the past? Make some smart decisions!
@@ -275,6 +287,8 @@ public class Alarms implements ServiceInterface{
 						diffHours = diff.get("hh");
 						diffMinutes = diff.get("mm");
 						diffSeconds = diff.get("ss");
+					}else{
+						diffExceptionNote = "Failed to get time-diff. from changed date.";
 					}
 					
 				//...or just abort with "is past" message
@@ -285,9 +299,18 @@ public class Alarms implements ServiceInterface{
 					ServiceResult result = api.buildResult();
 					return result;
 				}
-				
+			}
+			//check again and finally assign
+			long targetTimeUnix = -1;		//default is -1 for past or unknown
+			if (totalDiff_ms > 0){
+				targetTimeUnix = System.currentTimeMillis() + totalDiff_ms;
+			
+			//...or abort with error
 			}else{
-				timeUnix = System.currentTimeMillis() + totalDiff_ms;
+				api.setStatusFail();
+				Debugger.println(getClass().getName() + " - 'targetTimeUnix' was unexpectedly in the past. Info: " + diffExceptionNote, 3);
+				ServiceResult result = api.buildResult();
+				return result;
 			}
 			
 			//make a (hopefully) unique ID
@@ -342,7 +365,7 @@ public class Alarms implements ServiceInterface{
 				}
 				//build data
 				JSONObject data = UserDataList.createEntryTimer(
-					timeUnix, 
+					targetTimeUnix, 
 					name, 
 					null, 
 					System.currentTimeMillis(), 
@@ -355,7 +378,7 @@ public class Alarms implements ServiceInterface{
 				//TODO: make action fields identical to listElements?
 				api.addAction(ACTIONS.TIMER);
 					api.putActionInfo("info", "set");
-					api.putActionInfo("targetTimeUnix", timeUnix);
+					api.putActionInfo("targetTimeUnix", targetTimeUnix);
 					api.putActionInfo("name", name);
 					api.putActionInfo("eventId", eventId);
 					api.putActionInfo("eleType", UserDataList.EleType.timer.name());
@@ -390,7 +413,7 @@ public class Alarms implements ServiceInterface{
 				
 				//build data
 				JSONObject data = UserDataList.createEntryAlarm(
-					timeUnix, 
+					targetTimeUnix, 
 					speakableDay, 
 					dateTime, 
 					speakableDate, 
@@ -407,7 +430,7 @@ public class Alarms implements ServiceInterface{
 				//TODO: make action fields identical to listElements?
 				api.addAction(ACTIONS.ALARM);
 					api.putActionInfo("info", "set");
-					api.putActionInfo("targetTimeUnix", timeUnix);
+					api.putActionInfo("targetTimeUnix", targetTimeUnix);
 					api.putActionInfo("day", speakableDay);
 					api.putActionInfo("time", dateTime);
 					api.putActionInfo("date", speakableDate);
@@ -453,16 +476,8 @@ public class Alarms implements ServiceInterface{
 				api.setStatusOkay();
 			
 			}else{
-				//make card
-				Card card = new Card(Card.TYPE_UNI_LIST);
-				for (UserDataList udl : udlList){
-					card.addGroupeElement(ElementType.userDataList, udl.indexType, udl.getJSON());
-				}
-				api.addCard(card);
-				api.hasCard = true;
-				
 				//build answer with next alarm/timer
-				JSONObject nextAlarm = getNextTimeEventInList(udlList);
+				JSONObject nextAlarm = getNextTimeEventInList(udlList, true);
 				if (isTimer){
 					if (nextAlarm == null){
 						api.setCustomAnswer(answerShowTimers);
@@ -488,6 +503,15 @@ public class Alarms implements ServiceInterface{
 						api.setCustomAnswer(answerNextAlarm);
 					}
 				}
+				
+				//make card
+				Card card = new Card(Card.TYPE_UNI_LIST);
+				for (UserDataList udl : udlList){
+					card.addGroupeElement(ElementType.userDataList, udl.indexType, udl.getJSON());
+				}
+				api.addCard(card);
+				api.hasCard = true;
+				
 				api.setStatusSuccess();
 			}
 			
@@ -504,9 +528,11 @@ public class Alarms implements ServiceInterface{
 			if (confirmStatus == 0){
 				//ASK CONFIRM
 				if (isTimer){
-					api.confirmActionOrParameter("do_remove", areYouSureTimer);
+					api.confirmActionOrParameter("do_remove", areYouSureTimer,
+						new InterviewMetaData().setDialogTask(DialogTaskValues.YES_OR_NO));
 				}else{
-					api.confirmActionOrParameter("do_remove", areYouSureAlarm);
+					api.confirmActionOrParameter("do_remove", areYouSureAlarm,
+						new InterviewMetaData().setDialogTask(DialogTaskValues.YES_OR_NO));
 				}
 				ServiceResult result = api.buildResult();
 				return result;
@@ -622,7 +648,7 @@ public class Alarms implements ServiceInterface{
 		);
 	}
 	
-	private JSONObject getNextTimeEventInList(List<UserDataList> udlList){
+	private JSONObject getNextTimeEventInList(List<UserDataList> udlList, boolean markAsNext){
 		JSONObject nextAlarm = null;
 		long shortestTime = Long.MAX_VALUE;
 		for (UserDataList udl : udlList){
@@ -634,6 +660,9 @@ public class Alarms implements ServiceInterface{
 					shortestTime = execTime;
 				}
 			}
+		}
+		if (nextAlarm != null && markAsNext){
+			JSON.put(nextAlarm, "isNextEvent", true);
 		}
 		return nextAlarm;
 	}

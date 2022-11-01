@@ -12,8 +12,6 @@ import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.data.Card;
 import net.b07z.sepia.server.assist.data.Name;
-import net.b07z.sepia.server.assist.database.DB;
-import net.b07z.sepia.server.assist.database.Elasticsearch;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.Start;
 import net.b07z.sepia.server.assist.users.ACCOUNT;
@@ -198,7 +196,7 @@ public class Test_ElasticSearch {
 		HashMap<String, Object> filters = new HashMap<>();
 		filters.put("userIds", "assistant,uid1002,gig1011,gig1012");
 		filters.put("language", "de");
-		filters.put("includePublic", new Boolean(true));
+		filters.put("includePublic", true);
 		//filters.put("searchText", "synonym");
 		JSONArray res = DB.getCommands(filters);
 		System.out.println("res: " + res);
@@ -218,7 +216,7 @@ public class Test_ElasticSearch {
 		filters.put("userIds", userId);
 		filters.put("language", language);
 		filters.put("searchText", textToMatch);
-		filters.put("matchExactText", new Boolean(true));
+		filters.put("matchExactText", true);
 		JSONArray ja = DB.getCommands(filters);
 		System.out.println("JA: " + ja);
 		System.out.println("ID Match: " + DB.getIdOfCommand(userId, language, textToMatch));

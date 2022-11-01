@@ -39,9 +39,11 @@ public class ConfigServer {
 		//check request origin
 		if (!Config.allowGlobalDevRequests){
 			if (!SparkJavaFw.requestFromPrivateNetwork(request)){
-				JSONObject result = new JSONObject();
-				JSON.add(result, "result", "fail");
-				JSON.add(result, "error", "Not allowed to access service from outside the private network!");
+				JSONObject result = JSON.make(
+					"result", "fail",
+					"error", "Not allowed to access service from outside the private network!",
+					"host", request.host()
+				);
 				return SparkJavaFw.returnResult(request, response, result.toJSONString(), 200);
 			}
 		}
@@ -195,7 +197,7 @@ public class ConfigServer {
 			String reloadDB = params.getString("reloadDB");
 			String dbReloadMsg = "no-update"; 
 			if (reloadDB != null && !reloadDB.isEmpty()){
-				String[] dbCmd = reloadDB.split("-");
+				String[] dbCmd = reloadDB.split("-", 2);
 				if (dbCmd.length == 2){
 					if (dbCmd[0].equals("es")){
 						if (!dbCmd[1].isEmpty()){

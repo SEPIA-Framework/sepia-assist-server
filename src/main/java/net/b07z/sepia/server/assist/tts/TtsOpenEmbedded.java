@@ -163,7 +163,14 @@ public class TtsOpenEmbedded implements TtsInterface {
 				}
 			}
 			if (supportedEngines.get(EngineType.espeak_mbrola)){
-				Debugger.println("TTS module - MBROLA found. Please make sure you comply with the LICENSE conditions!", 3);
+				if (Config.allowNonCommercialFeatures){
+					Debugger.println("TTS module - MBROLA found. Please make sure you comply with the LICENSE conditions!", 3);
+				}else{
+					//revert
+					supportedEngines.put(EngineType.espeak_mbrola, false);
+					Debugger.println("TTS module - MBROLA found but settings option 'allow_non_commercial_features' is not enabled! "
+							+ "Please enable it and make sure you comply with the LICENSE conditions to use MBROLA!", 1);
+				}
 			}
 		}
 		//TXT2PHO-MBROLA
@@ -182,7 +189,14 @@ public class TtsOpenEmbedded implements TtsInterface {
 			}
 		}
 		if (supportedEngines.get(EngineType.txt2pho_mbrola)){
-			Debugger.println("TTS module - txt2pho and MBROLA found. Please make sure you comply with the LICENSE conditions!", 3);
+			if (Config.allowNonCommercialFeatures){
+				Debugger.println("TTS module - txt2pho and MBROLA found. Please make sure you comply with the LICENSE conditions!", 3);
+			}else{
+				//revert
+				supportedEngines.put(EngineType.txt2pho_mbrola, false);
+				Debugger.println("TTS module - txt2pho found but settings option 'allow_non_commercial_features' is not enabled! "
+						+ "Please enable it and make sure you comply with the LICENSE conditions to use txt2pho and MBROLA!", 1);
+			}
 		}
 		//PICO
 		supportedEngines.put(EngineType.pico, false);
@@ -289,9 +303,16 @@ public class TtsOpenEmbedded implements TtsInterface {
 									voiceInfo[1].split("_")[0].toLowerCase(), voiceInfo[2], JSON.make("LOCALE", voiceInfo[1]));
 							TtsVoice v = new TtsVoice();
 							String name = voiceInfo[1].replace("_", "-") + " marytts " + voiceInfo[0];
+							//try to parse gender or fallback to 'undefined'
+							GenderCode gc;
+							try {
+								gc = GenderCode.valueOf(vt.getGenderCode());
+							}catch (Exception e){
+								gc = GenderCode.undefined;
+							}
 							v.setName(name);
 							v.setLanguageCode(vt.getLanguageCode());
-							v.setGenderCode(GenderCode.valueOf(vt.getGenderCode()));
+							v.setGenderCode(gc);
 							v.setType(EngineType.marytts);
 							v.setMoods(Arrays.asList(vt));
 							voices.put(name , v);

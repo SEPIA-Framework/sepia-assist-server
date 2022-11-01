@@ -185,6 +185,7 @@ public class IntegrationsEndpoint {
 			//Build interface
 			String hubName = params.getString("hubName");
 			String hubHost = params.getString("hubHost");
+			String hubInterfaceId = params.getString("hubInterfaceId");
 			SmartHomeHub shh = null;
 			if (Is.notNullOrEmpty(hubHost) && Is.notNullOrEmpty(hubName)){
 				if (Is.notNullOrEmpty(Config.smarthome_hub_host) && Config.smarthome_hub_host.equalsIgnoreCase(hubHost) 
@@ -200,6 +201,9 @@ public class IntegrationsEndpoint {
 							"error", "HUB name and/or host address are unknown to server! Call has been BLOCKED! Please check 'smarthome_hub_...' in your server settings."
 					).toJSONString(), 200);
 				}
+			}else if (Is.notNullOrEmpty(hubInterfaceId) && fun.equalsIgnoreCase("getDevices")){
+				//NOTE: we currently allow this for getDevices only
+				shh = DB.getSmartDevicesDb().getCachedInterfaces().get(hubInterfaceId);
 			}
 			if (shh == null){
 				//FAIL
@@ -213,6 +217,7 @@ public class IntegrationsEndpoint {
 			
 			//Devices
 			if (fun.equalsIgnoreCase("getDevices")){
+				//TODO: support "typeArray" in first and second filter step 
 				//get devices
 				String deviceTypeFilter = params.getString("deviceTypeFilter");
 				if (deviceTypeFilter != null && deviceTypeFilter.trim().isEmpty()){
@@ -233,11 +238,18 @@ public class IntegrationsEndpoint {
 					devicesList = devicesMap.values();
 				} */
 				
-				if (devicesList == null || devicesList.isEmpty()){
+				if (devicesList == null){
 					//FAIL
 					return SparkJavaFw.returnResult(request, response, JSON.make(
 							"result", "fail", 
-							"error", "no devices found or failed to contact HUB"
+							"error", "failed to load data from HUB"
+					).toJSONString(), 500);
+				}else if (devicesList.isEmpty()){
+					//FAIL
+					return SparkJavaFw.returnResult(request, response, JSON.make(
+							"result", "success",
+							"devices", new JSONArray(),
+							"error", "no devices found"
 					).toJSONString(), 200);
 				}
 				

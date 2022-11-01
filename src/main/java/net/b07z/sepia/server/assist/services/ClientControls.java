@@ -8,14 +8,12 @@ import net.b07z.sepia.server.assist.answers.AnswerTools;
 import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
+import net.b07z.sepia.server.assist.interviews.DialogTaskValues;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
+import net.b07z.sepia.server.assist.interviews.InterviewMetaData;
 import net.b07z.sepia.server.assist.parameters.Action;
 import net.b07z.sepia.server.assist.parameters.ClientFunction;
 import net.b07z.sepia.server.assist.parameters.MediaControls;
-import net.b07z.sepia.server.assist.services.ServiceBuilder;
-import net.b07z.sepia.server.assist.services.ServiceInfo;
-import net.b07z.sepia.server.assist.services.ServiceInterface;
-import net.b07z.sepia.server.assist.services.ServiceResult;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.core.assistant.ACTIONS;
@@ -136,8 +134,8 @@ public class ClientControls implements ServiceInterface{
 		Parameter mediaControlsP = nluResult.getOptionalParameter(PARAMETERS.MEDIA_CONTROLS, "");
 		String mediaControls = mediaControlsP.getValueAsString().replaceAll("^<|>$", "").trim();	//note: < and > are typically already removed
 		String mediaControlsLocal = (String) mediaControlsP.getDataFieldOrDefault(InterviewData.VALUE_LOCAL);
-		boolean isActionOpen = (action.equals(Action.Type.show.name()) || action.equals(Action.Type.on.name()));
-		boolean isActionClose = (action.equals(Action.Type.remove.name()) || action.equals(Action.Type.off.name()));
+		boolean isActionOpen = (action.equals(Action.Type.show.name()) || action.equals(Action.Type.on.name()) || action.equals(Action.Type.open.name()));
+		boolean isActionClose = (action.equals(Action.Type.remove.name()) || action.equals(Action.Type.off.name()) || action.equals(Action.Type.close.name()));
 		boolean isActionIncrease = (action.equals(Action.Type.increase.name()) || action.equals(Action.Type.add.name()));
 		boolean isActionDecrease = (action.equals(Action.Type.decrease.name()) || action.equals(Action.Type.remove.name())); 	//note: remove is close and decrease here
 		boolean isActionEdit = (action.equals(Action.Type.set.name()) || action.equals(Action.Type.edit.name()));
@@ -236,7 +234,8 @@ public class ClientControls implements ServiceInterface{
 				actionName = ("volume;;" + num); 		//we take the shortcut here =)
 			}else if (num.isEmpty() && (mediaControls.equals(MediaControls.Type.volume_set.name()) || isActionEdit)){
 				//abort with generic question
-				api.setIncompleteAndAsk(PARAMETERS.NUMBER, "default_ask_parameter_0b");
+				api.setIncompleteAndAsk(PARAMETERS.NUMBER, "default_ask_parameter_0b",
+					new InterviewMetaData().setDialogTask(DialogTaskValues.NUMBERS));
 				ServiceResult result = api.buildResult();
 				return result;
 			}else if (isActionIncrease || mediaControls.equals(MediaControls.Type.volume_up.name())){

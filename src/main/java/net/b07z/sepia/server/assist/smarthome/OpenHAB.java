@@ -17,7 +17,6 @@ import net.b07z.sepia.server.assist.parameters.SmartDevice;
 import net.b07z.sepia.server.assist.server.Statistics;
 import net.b07z.sepia.server.assist.smarthome.SmartHomeDevice.StateType;
 import net.b07z.sepia.server.core.tools.Connectors;
-import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
@@ -186,7 +185,7 @@ public class OpenHAB implements SmartHomeHub {
 			}
 			if (devicesArray.isEmpty()){
 				//Fail with empty array
-				Debugger.println("Service:OpenHAB - devices array was empty!", 1);
+				Debugger.println("OpenHAB - devices array was empty!", 1);
 				return new HashMap<String, SmartHomeDevice>();
 			}
 			//Build devices map
@@ -227,14 +226,14 @@ public class OpenHAB implements SmartHomeHub {
 				
 			}catch (Exception e){
 				//Fail with faulty array
-				Debugger.println("Service:OpenHAB - devices array seems to be broken! Msg.: " + e.getMessage(), 1);
+				Debugger.println("OpenHAB - devices array seems to be broken! Msg.: " + e.getMessage(), 1);
 				Debugger.printStackTrace(e, 3);
 				return new HashMap<String, SmartHomeDevice>();
 			}
 			
 		}else{
 			//Fail with server contact error
-			Debugger.println("Service:OpenHAB - failed to get devices from server!", 1);
+			Debugger.println("OpenHAB - failed to get devices from server!", 1);
 			return null;
 		}
 	}
@@ -255,24 +254,42 @@ public class OpenHAB implements SmartHomeHub {
 		if (devices == null){
 			return null;
 		}else{
-			//filters
-			String deviceType = null;
-			String roomType = null;
-			String roomIndex = null;
-			int limit = -1;
-			if (filters != null){
-				deviceType = Converters.obj2StringOrDefault(filters.get("type"), null);
-				roomType = Converters.obj2StringOrDefault(filters.get("room"), null);
-				roomIndex = Converters.obj2StringOrDefault(filters.get("roomIndex"), null);
-				Object limitObj = filters.get("limit");
-				limit = -1;
-				if (limitObj != null){
-					limit = (int) limitObj;
+			return SmartHomeDevice.getMatchingDevices(devices, filters);
+		}
+	}
+	
+	@Override
+	public SmartHomeDevice loadDeviceData(SmartHomeDevice device){
+		long tic = System.currentTimeMillis();
+		String id = device.getId();
+		String deviceURL = device.getLink();
+		if (Is.nullOrEmpty(deviceURL) && Is.notNullOrEmpty(id)){
+			deviceURL = this.host + "/rest/items/" + id;
+		}
+		if (Is.nullOrEmpty(deviceURL)){
+			Debugger.println("OpenHAB - 'loadDeviceData' FAILED with msg.: Missing device link", 1);
+			return null;
+		}else{
+			JSONObject response = httpGET(deviceURL);
+			if (Connectors.httpSuccess(response)){
+				Statistics.addExternalApiHit("openHAB loadDevice");
+				Statistics.addExternalApiTime("openHAB loadDevice", tic);
+				SmartHomeDevice shd;
+				if (device.hasInterface()){
+					//use internal HUB config
+					shd = device;
+					addMoreFromResponse(shd, response);
+				}else{
+					//build device from result
+					shd = buildDeviceFromResponse(response);
 				}
+				return shd;
+			}else{
+				Statistics.addExternalApiHit("openHAB loadDevice ERROR");
+				Statistics.addExternalApiTime("openHAB loadDevice ERROR", tic);
+				Debugger.println("OpenHAB - 'loadDeviceData' FAILED with msg.: " + response, 1);
+				return null;
 			}
-			//get all devices with right type and optionally right room
-			List<SmartHomeDevice> matchingDevices = SmartHomeDevice.getMatchingDevices(devices, deviceType, roomType, roomIndex, limit);
-			return matchingDevices;
 		}
 	}
 	
@@ -366,8 +383,11 @@ public class OpenHAB implements SmartHomeHub {
 			}else{
 				String givenType = device.getType();
 				if (stateType != null){
+					SmartDevice.Types givenTypeEnum = givenType != null? SmartDevice.Types.valueOf(givenType) : SmartDevice.Types.unknown;
+					boolean isDeviceGroupCover = givenTypeEnum.equals(SmartDevice.Types.roller_shutter) 
+							|| givenTypeEnum.equals(SmartDevice.Types.garage_door);
 					//ROLLER SHUTTER
-					if (givenType != null && Is.typeEqual(givenType, SmartDevice.Types.roller_shutter)){
+					if (isDeviceGroupCover){
 						if (Is.typeEqualIgnoreCase(state, SmartHomeDevice.State.open)){
 							state = "UP";
 						}else if (Is.typeEqualIgnoreCase(state, SmartHomeDevice.State.closed)){
@@ -383,7 +403,7 @@ public class OpenHAB implements SmartHomeHub {
 					//TODO: improve stateType check (temp. etc)
 				}
 			}
-			//TODO: we could check mem-state here if state is e.g. SmartHomeDevice.STATE_ON
+			//TODO: we could check mem-state here if state is e.g. SmartHomeDevice.State.on/.open/.connect
 			
 			Map<String, String> headers = new HashMap<>();
 			headers.put("Content-Type", "text/plain");
@@ -407,34 +427,6 @@ public class OpenHAB implements SmartHomeHub {
 	public boolean setDeviceStateMemory(SmartHomeDevice device, String stateMemory){
 		return writeDeviceAttribute(device, SmartHomeDevice.SEPIA_TAG_MEM_STATE, stateMemory);
 	}
-
-	@Override
-	public SmartHomeDevice loadDeviceData(SmartHomeDevice device){
-		long tic = System.currentTimeMillis();
-		String id = device.getId();
-		String deviceURL = device.getLink();
-		if (Is.nullOrEmpty(deviceURL) && Is.notNullOrEmpty(id)){
-			deviceURL = this.host + "/rest/items/" + id;
-		}
-		if (Is.nullOrEmpty(deviceURL)){
-			Debugger.println("OpenHAB - 'loadDeviceData' FAILED with msg.: Missing device link", 1);
-			return null;
-		}else{
-			JSONObject response = httpGET(deviceURL);
-			if (Connectors.httpSuccess(response)){
-				Statistics.addExternalApiHit("openHAB loadDevice");
-				Statistics.addExternalApiTime("openHAB loadDevice", tic);
-				//build device from result
-				SmartHomeDevice shd = buildDeviceFromResponse(response);
-				return shd;
-			}else{
-				Statistics.addExternalApiHit("openHAB loadDevice ERROR");
-				Statistics.addExternalApiTime("openHAB loadDevice ERROR", tic);
-				Debugger.println("OpenHAB - 'loadDeviceData' FAILED with msg.: " + response, 1);
-				return null;
-			}
-		}
-	}
 	
 	/**
 	 * Build unified object for SEPIA from HUB device data.
@@ -443,7 +435,6 @@ public class OpenHAB implements SmartHomeHub {
 	 */
 	private static SmartHomeDevice buildDeviceFromResponse(JSONObject hubDevice){
 		//Build unified object for SEPIA
-		JSONArray tags = JSON.getJArray(hubDevice, "tags");
 		String name = null;
 		String type = null;
 		String room = null;
@@ -453,6 +444,13 @@ public class OpenHAB implements SmartHomeHub {
 		JSONObject setCmds = null;
 		boolean typeGuessed = false;
 		boolean namedBySepia = false;
+		
+		String originalName = JSON.getStringOrDefault(hubDevice, "name", null);	//NOTE: has to be unique
+		if (Is.nullOrEmpty(originalName)){
+			//we need the ID
+			return null;
+		}
+		JSONArray tags = JSON.getJArray(hubDevice, "tags");
 		if (tags != null){
 			//try to find self-defined SEPIA tags first
 			for (Object tagObj : tags){
@@ -480,34 +478,51 @@ public class OpenHAB implements SmartHomeHub {
 				}
 			}
 		}
-		String originalName = JSON.getStringOrDefault(hubDevice, "name", null);		//NOTE: has to be unique
-		if (Is.nullOrEmpty(originalName)){
-			//we need the ID
-			return null;
-		}
 		//smart-guess if missing sepia-specific settings
 		if (name == null){
 			//we only accept devices with name
 			name = originalName;
 		}
 		if (type == null){
-			String openHabCategory = JSON.getString(hubDevice, "category").toLowerCase();	//NOTE: we prefer category, not type
-			String openHabType = JSON.getString(hubDevice, "type").toLowerCase();
+			String openHabCategory = JSON.getStringOrDefault(hubDevice, "category", "").toLowerCase();
+			String openHabType = JSON.getStringOrDefault(hubDevice, "type", "").toLowerCase();
 			//TODO: category might not be defined
 			//TODO: 'type' can give possible set options
-			if (Is.notNullOrEmpty(openHabCategory)){
-				if (openHabCategory.matches("(.*\\s|^|,)(light.*|lamp.*)")){
-					type = SmartDevice.Types.light.name();		//LIGHT
-					typeGuessed = true;
-				}else if (openHabCategory.matches("(.*\\s|^|,)(heat.*|thermo.*)")){
-					type = SmartDevice.Types.heater.name();		//HEATER
-					typeGuessed = true;
+			if (!openHabCategory.isEmpty()){
+				if (openHabCategory.contains("light")){
+					type = SmartDevice.Types.light.name();
+				}else if (openHabCategory.contains("temperature") || openHabCategory.contains("heat")){
+					type = SmartDevice.Types.temperature_control.name();
+				}else if (openHabCategory.contains("rollershutter")){
+					type = SmartDevice.Types.roller_shutter.name();
 				}else{
-					type = openHabCategory;		//take this if we don't have a specific type yet
+					switch (openHabCategory) {
+					case "humidity":
+					case "batterylevel":
+					case "lowbattery":
+					case "carbondioxide":
+					case "energy":
+					case "gas":
+					case "oil":
+					case "water":
+					case "smoke":
+					case "pressure":
+					case "fire":
+					case "presence":
+						type = SmartDevice.Types.sensor.name();
+						break;
+					default:
+						type = openHabCategory;		//take this if we don't have a specific type yet
+						break;
+					}
 				}
-			}else if (Is.notNullOrEmpty(openHabType)){
-				if (openHabType.equals("rollershutter")){
-					type = SmartDevice.Types.roller_shutter.name();		//ROLLER SHUTTER
+				typeGuessed = true;
+			}else if (!openHabType.isEmpty()){
+				if (openHabType.equals("number:temperature")){
+					type = SmartDevice.Types.temperature_control.name();
+					typeGuessed = true;
+				}else if (openHabType.equals("rollershutter")){
+					type = SmartDevice.Types.roller_shutter.name();
 					typeGuessed = true;
 				}
 				//TODO: add more
@@ -517,11 +532,43 @@ public class OpenHAB implements SmartHomeHub {
 			room = "";
 		}
 		//create common object
-		Object stateObj = hubDevice.get("state");
-		String state = null;
-		if (stateObj != null){
-			state = stateObj.toString();
+		JSONObject meta = JSON.make(
+			SmartHomeDevice.META_ID, originalName,
+			SmartHomeDevice.META_ORIGIN, NAME,
+			SmartHomeDevice.META_TYPE_GUESSED, typeGuessed,
+			SmartHomeDevice.META_NAMED_BY_SEPIA, namedBySepia
+		);
+		SmartHomeDevice shd = new SmartHomeDevice(name, type, room, 
+				null, stateType, memoryState, null, meta);
+		//specify more
+		if (Is.notNullOrEmpty(roomIndex)){
+			shd.setRoomIndex(roomIndex);
 		}
+		if (Is.notNullOrEmpty(setCmds)){
+			shd.setCustomCommands(setCmds);
+		}
+		
+		//add rest (including state) - NOTE: we split this to apply same data for internal HUB as well
+		addMoreFromResponse(shd, hubDevice);
+		
+		return shd;
+	}
+	private static void addMoreFromResponse(SmartHomeDevice shd, JSONObject hubDevice){
+		//add URL
+		Object linkObj = hubDevice.get("link");
+		if (linkObj != null){
+			shd.setLink(linkObj.toString());
+		}
+		//TODO: we could add some stuff to meta that is only found in response (not configurable via UI/internal HUB).
+		
+		//get state
+		String state = getCommonState(shd, hubDevice);
+		shd.setState(state);
+	}
+	private static String getCommonState(SmartHomeDevice shd, JSONObject hubDevice){
+		String state = JSON.getStringOrDefault(hubDevice, "state", null);
+		String stateType = shd.getStateType();
+		String type = shd.getType();
 		//try to deduce state type if not given
 		if (Is.nullOrEmpty(stateType) && state != null){
 			stateType = SmartHomeDevice.findStateType(state);
@@ -542,24 +589,6 @@ public class OpenHAB implements SmartHomeHub {
 		}
 		//TODO: for temperature we need to check more info (temp. unit? percent? etc...)
 		//TODO: clean up stateObj properly and check special format?
-		Object linkObj = hubDevice.get("link");
-		JSONObject meta = JSON.make(
-				"id", originalName,
-				"origin", NAME,
-				"typeGuessed", typeGuessed
-		);
-		JSON.put(meta, "namedBySepia", namedBySepia);
-		//TODO: we could add some stuff to meta when we need other data from response.
-		SmartHomeDevice shd = new SmartHomeDevice(name, type, room, 
-				state, stateType, memoryState, 
-				(linkObj != null)? linkObj.toString() : null, meta);
-		//specify more
-		if (Is.notNullOrEmpty(roomIndex)){
-			shd.setRoomIndex(roomIndex);
-		}
-		if (Is.notNullOrEmpty(setCmds)){
-			shd.setCustomCommands(setCmds);
-		}
-		return shd;
+		return state;
 	}
 }

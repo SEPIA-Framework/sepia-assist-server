@@ -5,7 +5,9 @@ import net.b07z.sepia.server.assist.data.Card;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.data.Card.ElementType;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
+import net.b07z.sepia.server.assist.interviews.DialogTaskValues;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
+import net.b07z.sepia.server.assist.interviews.InterviewMetaData;
 import net.b07z.sepia.server.assist.parameters.Action;
 import net.b07z.sepia.server.assist.parameters.RadioStation;
 import net.b07z.sepia.server.assist.server.Config;
@@ -39,12 +41,13 @@ public class MusicRadioMixed implements ServiceInterface {
 		//Parameters:
 		//preferred (but optional)
 		Parameter p1 = new Parameter(PARAMETERS.RADIO_STATION, "")
+				.setDialogTaskMetaData(DialogTaskValues.MUSIC)
 				.setQuestion("music_radio_ask_0a");
 		info.addParameter(p1);
 		//optional
-		Parameter p2 = new Parameter(PARAMETERS.MUSIC_GENRE, "");			//rock, pop, etc. ...
-		Parameter p3 = new Parameter(PARAMETERS.ACTION, "");				//<on>, <off>, etc. ...
-		//Parameter p4 = new Parameter(PARAMETERS.URL, "");					//custom stream URL - this is not a parameter one can extract so we don't include it here
+		Parameter p2 = new Parameter(PARAMETERS.MUSIC_GENRE, "");	//rock, pop, etc. ...
+		Parameter p3 = new Parameter(PARAMETERS.ACTION, "");		//<on>, <off>, etc. ...
+		//Parameter p4 = new Parameter(PARAMETERS.URL, "");			//custom stream URL - this is not a parameter one can extract so we don't include it here
 		info.addParameter(p2).addParameter(p3);
 		
 		//... but either station or genre is required, if both are missing ask for station
@@ -158,7 +161,8 @@ public class MusicRadioMixed implements ServiceInterface {
 			//check if we need to ask for station
 			if (station.isEmpty() && genre.isEmpty()){
 				//ask
-				api.setIncompleteAndAsk(PARAMETERS.RADIO_STATION, radioAskStation);
+				api.setIncompleteAndAsk(PARAMETERS.RADIO_STATION, radioAskStation,
+					new InterviewMetaData().setDialogTask(DialogTaskValues.MUSIC));
 				ServiceResult result = api.buildResult();
 				return result;
 				//<----------- END------------

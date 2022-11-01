@@ -31,7 +31,8 @@ public class TtsTools {
 		male,
 		female,
 		diverse,
-		robot
+		robot,
+		undefined
 	}
 
 	/**
@@ -101,6 +102,11 @@ public class TtsTools {
 			input = input.replaceAll("\\$", " Dollar ");		//Note: does this prevent variable expansion in Linux as well?
 			input = input.replaceAll("€", " Euro ");
 			
+			input = input.replaceAll("(?i)(^|\\s)(kWh)\\b", "$1Kilowattstunden");
+			input = input.replaceAll("(^|\\s)(kW)\\b", "$1Kilowatt");
+			input = input.replaceAll("(^|\\s)(Wh)\\b", "$1Wattstunden");
+			input = input.replaceAll("(\\d )(W)\\b", "$1Watt");
+			
 			//numbers
 			input = input.replaceAll("(^|\\s)(\\d+)\\.(\\d+)(\\s|\\.$|\\.\\s)", "$1$2,$3$4");
 			input = input.replaceAll("(^|\\s)(1/2)\\b", "$1ein halb");
@@ -120,6 +126,11 @@ public class TtsTools {
 			input = input.replaceAll("(?:^|\\s)€(\\d+(\\.|,)\\d+|\\d+)(\\b)", " $1 euro ");
 			input = input.replaceAll("\\$", " dollar ");		//Note: does this prevent variable expansion in Linux as well?
 			input = input.replaceAll("€", " euro ");
+			
+			input = input.replaceAll("(?i)(^|\\s)(kWh)\\b", "$1kilowatt hours");
+			input = input.replaceAll("(^|\\s)(kW)\\b", "$1kilowatt");
+			input = input.replaceAll("(^|\\s)(Wh)\\b", "$1watt hours");
+			input = input.replaceAll("(\\d )(W)\\b", "$1watt");
 			
 			//numbers
 			input = input.replaceAll("(^|\\s)(\\d+),(\\d+)(\\s|\\.$|\\.\\s)", "$1$2.$3$4");
@@ -143,10 +154,15 @@ public class TtsTools {
 			input = input.replaceAll("%", " % ");		//Note: does this prevent variable expansion in Linux as well?
 		}
 		
-		//make sure text ends with something (useful for some TTS systems)
-		if (!input.matches(".*(!|\\?|\\.)$") && !engine.equals(EngineType.txt2pho_mbrola.name())){
+		//fix some unique quirks
+		if (engine.equals(EngineType.txt2pho_mbrola.name())){
+			//txt2pho has some issues with dots after numbers so we try to avoid this
+			//e.g.: 10 Uhr 52. -> zehn Uhr zweiundfünfzigste - Licht steht auf 70. -> 70 is not spoken at all
+			input = input.replaceFirst("(\\d)\\.$", "$1");
+		
+		//make sure text ends with something
+		}else if (!input.matches(".*(!|\\?|\\.)$")){
 			input = input + ".";
-			//NOTE: we skip this for 'txt2pho_mbrola' because e.g.: 10 Uhr 52. -> zehn Uhr zweiundfünfzigste
 		}
 		
 		input = input.replaceAll("\\s+", " ").replaceAll(" \\?$", "?").replaceAll(" \\.$", ".").trim();

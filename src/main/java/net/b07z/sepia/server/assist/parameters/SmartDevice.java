@@ -1,11 +1,14 @@
 package net.b07z.sepia.server.assist.parameters;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.json.simple.JSONObject;
 
@@ -43,14 +46,18 @@ public class SmartDevice implements ParameterHandler{
 	public static enum Types {
 		light,
 		heater,
+		air_conditioner,
+		temperature_control,
 		tv,
 		music_player,
-		fridge,
-		oven,
-		coffee_maker,
 		roller_shutter,
 		power_outlet,
 		sensor,
+		fridge,
+		oven,
+		coffee_maker,
+		garage_door,
+		fan,
 		device,
 		//no extract methods:
 		other,
@@ -65,12 +72,44 @@ public class SmartDevice implements ParameterHandler{
 		return ("<" + deviceType.name() + ">;;" + name);
 	}
 	
+	private static Map<Types, List<Types>> semanticTypeGroups = new HashMap<>();
+	static {
+		semanticTypeGroups.put(Types.temperature_control, Arrays.asList(
+			Types.temperature_control,
+			Types.heater,
+			Types.air_conditioner)
+		);
+	}
+	/**
+	 * Types can sometimes be semantically grouped if devices have similar purpose
+	 * like temperature_control that includes heaters and air conditioners. This method
+	 * returns a group if existing.
+	 * @param primaryType - the primary type that was recognized
+	 * @return List of Types including primary type
+	 */
+	public static List<Types> getSemanticTypeGroup(Types primaryType){
+		if (primaryType == null) return null;
+		return semanticTypeGroups.get(primaryType);
+	}
+	/**
+	 * Same as {@link #getSemanticTypeGroup(Types)} but returns strings.
+	 * @param primaryType - the primary type that was recognized
+	 * @return List of Types as strings including primary type
+	 */
+	public static List<String> getSemanticTypeGroupAsStrings(Types primaryType){
+		List<Types> types = getSemanticTypeGroup(primaryType);
+		if (types == null) return null;
+		return types.stream().map(t -> { return t.name(); }).collect(Collectors.toList());
+	}
+	
 	//Parameter local type names
 	public static HashMap<String, String> types_de = new HashMap<>();
 	public static HashMap<String, String> types_en = new HashMap<>();
 	static {
 		types_de.put("light", "das Licht");
 		types_de.put("heater", "die Heizung");
+		types_de.put("air_conditioner", "die Klimaanlage");
+		types_de.put("temperature_control", "die Temperatur");
 		types_de.put("tv", "der Fernseher");
 		types_de.put("music_player", "die Musikanlage");
 		types_de.put("roller_shutter", "der Rollladen");
@@ -79,6 +118,8 @@ public class SmartDevice implements ParameterHandler{
 		types_de.put("fridge", "der Kühlschrank");
 		types_de.put("oven", "der Ofen");
 		types_de.put("coffee_maker", "die Kaffeemaschine");
+		types_de.put("garage_door", "das Garagentor");
+		types_de.put("fan", "der Lüfter");
 		types_de.put("device", "das Gerät");
 		types_de.put("other", "");
 		types_de.put("hidden", "");
@@ -86,6 +127,8 @@ public class SmartDevice implements ParameterHandler{
 		
 		types_en.put("light", "the light");
 		types_en.put("heater", "the heater");
+		types_en.put("air_conditioner", "the air conditioner");
+		types_en.put("temperature_control", "the temperature");
 		types_en.put("tv", "the TV");
 		types_en.put("music_player", "the music player");
 		types_en.put("roller_shutter", "the roller shutter");
@@ -94,6 +137,8 @@ public class SmartDevice implements ParameterHandler{
 		types_en.put("fridge", "the fridge");
 		types_en.put("oven", "the oven");
 		types_en.put("coffee_maker", "the coffee maker");
+		types_en.put("garage_door", "the garage door");
+		types_en.put("fan", "the fan");
 		types_en.put("device", "the device");
 		types_en.put("other", "");
 		types_en.put("hidden", "");
@@ -121,38 +166,48 @@ public class SmartDevice implements ParameterHandler{
 		return localName;
 	}
 	
+	public static final String sensorRegEx_en = "(electricity|gas|temperature)(-| )(meter|gauge)|"
+											+ "(electricity |gas |temperature |)sensor(s|)";
 	public static final String lightRegEx_en = "light(s|)|lighting|lamp(s|)|"
 											+ "illumination|"
 											+ "brightness";
-	public static final String heaterRegEx_en = "heat(er(s|)|ing)|"
-											+ "temperature(s|)|"
-											+ "thermostat(s|)";
+	public static final String heaterRegEx_en = "heat(er(s|)|ing)|radiator(s|)|heat pump(s|)";
+	public static final String airConditionerRegEx_en = "air condition(er(s|)|ing|)( unit|)|a/c";
+	public static final String tempControlRegEx_en = "temperature(s|)( control|)|"
+											+ "thermostat(s|)|thermometer(s|)|hvac";
 	public static final String tvRegEx_en = "tv|television";
 	public static final String musicPlayerRegEx_en = "(stereo|music)( |)(player)|stereo|bluetooth(-| )(speaker|box)|speaker(s|)";
+	public static final String rollerShutterRegEx_en = "((roller|window|sun)( |-|)|)(shutter(s|)|blind(s|)|louver(s|))|jalousie(s|)";
+	public static final String powerOutletRegEx_en = "((wall|power)( |-|)|)(socket(s|)|outlet(s|))";
 	public static final String fridgeRegEx_en = "fridge|refrigerator";
 	public static final String ovenRegEx_en = "oven|stove";
 	public static final String coffeeMakerRegEx_en = "coffee (maker|brewer|machine)";
-	public static final String rollerShutterRegEx_en = "((roller|window|sun)( |-|)|)(shutter(s|)|blind(s|)|louver(s|))|jalousie(s|)";
-	public static final String powerOutletRegEx_en = "((wall|power)( |-|)|)(socket(s|)|outlet(s|))";
-	public static final String sensorRegEx_en = "sensor(s|)";
+	public static final String garageDoorRegEx_en = "garage (door|gate)";
+	public static final String fanRegEx_en = "fan|ventilator(s|)|ventilation|venting|blower(s|)";
 	public static final String genericDeviceRegEx_en = "device(s|)";
 	
+	public static final String sensorRegEx_de = "gaszaehler|stromzaehler|"
+											+ "(gas( |-|)|strom( |-|)|temperatur( |-|)|)sensor(en|s|)";
 	public static final String lightRegEx_de = "\\w*(licht(er|es|)|lampe(n|)|beleuchtung|leuchte(n|))|"
 											+ "helligkeit";
 	public static final String heaterRegEx_de = "\\w*(heiz(er|ungen|ung|koerper(s|)|luefter(s|)|strahler(s|)))|"
-											+ "\\w*(thermostat(es|s|))|"
-											+ "temperatur(regler(s|)|en|)";
+											+ "waerme( |-|)pumpe";
+	public static final String airConditionerRegEx_de = "klima(-| |)(anlage(n|)|geraet(es|e|))";
+	public static final String tempControlRegEx_de = "\\w*(thermostat(es|s|))|"
+											+ "temperatur(regler(s|)|( |)steuerung|en|)|"
+											+ "thermometer(s|)";
 	public static final String tvRegEx_de = "tv(s|)|television(s|)|fernseh(er(s|)|geraet(es|s|)|apparat(es|s|))";
 	public static final String musicPlayerRegEx_de = "(stereo|musi(k|c))( |)(anlage|player(s|))|"
 											+ "bluetooth(-| )(lautsprecher(s|)|box)|"
 											+ "\\w*(lautsprecher(s|))|"
 											+ "\\w*(boxen)";
+	public static final String rollerShutterRegEx_de = "(fenster|rol(l|))(l(a|ae)den)|jalousie(n|)|rollo(s|)|markise";
+	public static final String powerOutletRegEx_de = "(steck|strom)( |-|)dose(n|)|stromanschluss(es|)";
 	public static final String fridgeRegEx_de = "kuehlschrank(s|)";
 	public static final String ovenRegEx_de = "ofen(s|)|herd(es|s)";
 	public static final String coffeeMakerRegEx_de = "kaffeemaschine";
-	public static final String rollerShutterRegEx_de = "(fenster|rol(l|))(l(a|ae)den)|jalousie(n|)|rollo(s|)|markise";
-	public static final String powerOutletRegEx_de = "(steck|strom)( |-|)dose(n|)|stromanschluss(es|)";
-	public static final String sensorRegEx_de = "sensor(en|s|)";
+	public static final String garageDoorRegEx_de = "garagen( |-|)(tor|tuer)";
+	public static final String fanRegEx_de = "\\w*(luefter|ventilator(en|)|geblaese|(be|)lueftung)";
 	public static final String genericDeviceRegEx_de = "geraet(e|)";
 	//----------------
 	
@@ -185,34 +240,50 @@ public class SmartDevice implements ParameterHandler{
 		//German
 		if (language.matches(LANGUAGES.DE)){
 			type = NluTools.stringFindFirst(input, "("
-					+ lightRegEx_de + "|"
-					+ heaterRegEx_de + "|"
-					+ tvRegEx_de + "|"
-					+ musicPlayerRegEx_de + "|"
-					+ rollerShutterRegEx_de + "|"
-					+ powerOutletRegEx_de + "|"
-					+ sensorRegEx_de + "|"
-					+ fridgeRegEx_de + "|"
-					+ ovenRegEx_de + "|"
-					+ coffeeMakerRegEx_de + "|"
-					+ genericDeviceRegEx_de
+					+ sensorRegEx_de + "|"	//NOTE: we put this first to catch sensors like "temperature sensor"
+					+ heaterRegEx_de + "|"	//NOTE: we put this before temp. control to catch ...
+					+ airConditionerRegEx_de	//... things like "temperature of the heater"
 				+ ")");
+			if (type.isEmpty()){
+				type = NluTools.stringFindFirst(input, "("
+						+ lightRegEx_de + "|"
+						+ tempControlRegEx_de + "|"
+						+ tvRegEx_de + "|"
+						+ musicPlayerRegEx_de + "|"
+						+ rollerShutterRegEx_de + "|"
+						+ powerOutletRegEx_de + "|"
+						+ fridgeRegEx_de + "|"
+						+ ovenRegEx_de + "|"
+						+ coffeeMakerRegEx_de + "|"
+						+ garageDoorRegEx_de + "|"
+						+ fanRegEx_de + "|"
+						+ genericDeviceRegEx_de
+					+ ")");
+			}
 			
 		//English and other
 		}else{
 			type = NluTools.stringFindFirst(input, "("
-					+ lightRegEx_en + "|"
-					+ heaterRegEx_en + "|"
-					+ tvRegEx_en + "|"
-					+ musicPlayerRegEx_en + "|"
-					+ rollerShutterRegEx_en + "|"
-					+ powerOutletRegEx_en + "|"
 					+ sensorRegEx_en + "|"
-					+ fridgeRegEx_en + "|"
-					+ ovenRegEx_en + "|"
-					+ coffeeMakerRegEx_en + "|"
-					+ genericDeviceRegEx_en
+					+ heaterRegEx_en + "|"
+					+ airConditionerRegEx_en
 				+ ")");
+			if (type.isEmpty()){
+				type = NluTools.stringFindFirst(input, "("
+						+ lightRegEx_en + "|"
+						+ tempControlRegEx_en + "|"
+						+ tvRegEx_en + "|"
+						+ musicPlayerRegEx_en + "|"
+						+ rollerShutterRegEx_en + "|"
+						+ powerOutletRegEx_en + "|"
+						+ fridgeRegEx_en + "|"
+						+ ovenRegEx_en + "|"
+						+ coffeeMakerRegEx_en + "|"
+						+ garageDoorRegEx_en + "|"
+						+ fanRegEx_en + "|"
+						+ genericDeviceRegEx_en
+					+ ")");
+			}
 			
 		}
 		//System.out.println("Type: " + type); 		//debug
@@ -262,11 +333,20 @@ public class SmartDevice implements ParameterHandler{
 		final String deviceType;
 		
 		if (language.matches(LANGUAGES.DE)){
-			if (NluTools.stringContains(device, lightRegEx_de)){
+			if (NluTools.stringContains(device, sensorRegEx_de)){
+				deviceType = Types.sensor.name();
+				
+			}else if (NluTools.stringContains(device, lightRegEx_de)){
 				deviceType = Types.light.name();
 				
 			}else if (NluTools.stringContains(device, heaterRegEx_de)){
 				deviceType = Types.heater.name();
+				
+			}else if (NluTools.stringContains(device, airConditionerRegEx_de)){
+				deviceType = Types.air_conditioner.name();
+				
+			}else if (NluTools.stringContains(device, tempControlRegEx_de)){
+				deviceType = Types.temperature_control.name();
 				
 			}else if (NluTools.stringContains(device, tvRegEx_de)){
 				deviceType = Types.tv.name();
@@ -280,9 +360,6 @@ public class SmartDevice implements ParameterHandler{
 			}else if (NluTools.stringContains(device, powerOutletRegEx_de)){
 				deviceType = Types.power_outlet.name();
 				
-			}else if (NluTools.stringContains(device, sensorRegEx_de)){
-				deviceType = Types.sensor.name();
-				
 			}else if (NluTools.stringContains(device, fridgeRegEx_de)){
 				deviceType = Types.fridge.name();
 				
@@ -292,15 +369,30 @@ public class SmartDevice implements ParameterHandler{
 			}else if (NluTools.stringContains(device, coffeeMakerRegEx_de)){
 				deviceType = Types.coffee_maker.name();
 			
+			}else if (NluTools.stringContains(device, garageDoorRegEx_de)){
+				deviceType = Types.garage_door.name();
+			
+			}else if (NluTools.stringContains(device, fanRegEx_de)){
+				deviceType = Types.fan.name();
+			
 			}else{
 				deviceType = Types.device.name();
 			}
 		}else{
-			if (NluTools.stringContains(device, lightRegEx_en)){
+			if (NluTools.stringContains(device, sensorRegEx_en)){
+				deviceType = Types.sensor.name();
+				
+			}else if (NluTools.stringContains(device, lightRegEx_en)){
 				deviceType = Types.light.name();
 				
 			}else if (NluTools.stringContains(device, heaterRegEx_en)){
 				deviceType = Types.heater.name();
+				
+			}else if (NluTools.stringContains(device, airConditionerRegEx_en)){
+				deviceType = Types.air_conditioner.name();
+				
+			}else if (NluTools.stringContains(device, tempControlRegEx_en)){
+				deviceType = Types.temperature_control.name();
 				
 			}else if (NluTools.stringContains(device, tvRegEx_en)){
 				deviceType = Types.tv.name();
@@ -314,9 +406,6 @@ public class SmartDevice implements ParameterHandler{
 			}else if (NluTools.stringContains(device, powerOutletRegEx_en)){
 				deviceType = Types.power_outlet.name();
 				
-			}else if (NluTools.stringContains(device, sensorRegEx_en)){
-				deviceType = Types.sensor.name();
-				
 			}else if (NluTools.stringContains(device, fridgeRegEx_en)){
 				deviceType = Types.fridge.name();
 				
@@ -325,6 +414,12 @@ public class SmartDevice implements ParameterHandler{
 				
 			}else if (NluTools.stringContains(device, coffeeMakerRegEx_en)){
 				deviceType = Types.coffee_maker.name();
+				
+			}else if (NluTools.stringContains(device, garageDoorRegEx_en)){
+				deviceType = Types.garage_door.name();
+				
+			}else if (NluTools.stringContains(device, fanRegEx_en)){
+				deviceType = Types.fan.name();
 				
 			}else{
 				deviceType = Types.device.name();
@@ -522,7 +617,25 @@ public class SmartDevice implements ParameterHandler{
 						deviceNames.addAll(set);
 					});
 				}else{
-					deviceNames = deviceNamesByType.get(deviceType);
+					//grouped?
+					Types deviceTypeEnum;
+					try {
+						deviceTypeEnum = SmartDevice.Types.valueOf(deviceType);
+					}catch(Exception e){
+						deviceTypeEnum = SmartDevice.Types.unknown;
+					}
+					List<String> typeGroup = getSemanticTypeGroupAsStrings(deviceTypeEnum);
+					if (Is.notNullOrEmpty(typeGroup)){
+						deviceNames = new HashSet<>();
+						typeGroup.forEach(dt -> {
+							Set<String> dvn = deviceNamesByType.get(dt);
+							if (Is.notNullOrEmpty(dvn)){
+								deviceNames.addAll(dvn);
+							}
+						});
+					}else{
+						deviceNames = deviceNamesByType.get(deviceType);
+					}
 				}
 				if (Is.notNullOrEmpty(deviceNames)){
 					//System.out.println("input: " + input); 					//DEBUG

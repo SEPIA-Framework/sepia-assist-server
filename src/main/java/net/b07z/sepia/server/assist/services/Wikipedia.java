@@ -8,6 +8,7 @@ import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.interviews.AskClient;
 import net.b07z.sepia.server.assist.interviews.ConvertResult;
+import net.b07z.sepia.server.assist.interviews.InterviewMetaData;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
 import net.b07z.sepia.server.assist.tools.StringCompare;
@@ -65,7 +66,8 @@ public class Wikipedia implements ServiceInterface{
 			Debugger.println("cmd: Knowledgebase, search: " + search, 2);		//debug
 			
 			if (search == null || search.isEmpty()){
-				return AskClient.question("knowledgeB_3a", PARAMETERS.SEARCH, nluResult);
+				InterviewMetaData metaData = null;	//NOTE: we could add dialogTask 'knowledge' or similar here
+				return AskClient.question("knowledgeB_3a", PARAMETERS.SEARCH, metaData, nluResult);
 			}
 			//search = NLU_Tools.capitalizeAll(search);			//this is kind of stupid but Wiki seems to be case sensitive somehow oO
 			//search = URLEncoder.encode(search, "UTF-8");

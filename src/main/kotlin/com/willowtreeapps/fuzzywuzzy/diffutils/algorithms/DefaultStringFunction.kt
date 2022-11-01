@@ -12,7 +12,7 @@ class DefaultStringFunction : ToStringFunction<String> {
      * @param `item` Input string
      * @return The processed string
      */
-    override fun apply(item: String) = subNonAlphaNumeric(item, " ").toLowerCase().trim { it <= ' ' }
+    override fun apply(item: String) = subNonAlphaNumeric(item, " ").lowercase().trim { it <= ' ' }
 	
 	companion object {
 		

@@ -155,6 +155,7 @@ public class Start {
 		
 		//host files?
 		if (Config.hostFiles){
+			//TODO: use custom 'StaticFilesConfiguration staticHandler = new StaticFilesConfiguration();' instead?
 			staticFiles.externalLocation(Config.webServerFolder);
 			Debugger.println("Web-server is active and uses folder: " + Config.webServerFolder 
 					+ " - CORS (files): " + (Config.enableFileCORS? "*" : "same page"), 3);
@@ -177,7 +178,8 @@ public class Start {
 				"defaultAssistantUserId", Config.assistantId,
 				"privacyPolicy", Config.privacyPolicyLink
 		);
-		//common microservices API-Keys - TODO: move? or add geo-coders?
+		//common micro-services API-Keys
+		//TODO: replace or remove!
 		JSON.put(coreToolsConfig, "DeutscheBahnOpenApiKey", Config.deutscheBahnOpenApi_key);
 		ConfigDefaults.setupCoreTools(coreToolsConfig);
 		
@@ -230,6 +232,7 @@ public class Start {
 		//do something before end-point evaluation - e.g. authentication
 		before((request, response) -> {
 			//System.out.println("BEFORE TEST 1"); 		//DEBUG
+			//System.out.println("request: " + request.pathInfo()); 		//DEBUG
 		});
 		
 		//ERROR handling - TODO: improve
@@ -378,6 +381,14 @@ public class Start {
 	public static void main(String[] args) {
 		//activation timestamp
 		lastStartUNIX = System.currentTimeMillis();
+		
+		System.out.println("-----------------------------------------");
+		System.out.println("      ___    ___   ___   ___   ___       ");
+		System.out.println("     |___   |___  |___]   |   |___|      ");
+		System.out.println("     ____|. |___. |    . _|_. |   |.     ");
+		System.out.println("                                         ");
+		System.out.println("    https://sepia-framework.github.io    ");
+		System.out.println("                                         ");
 		
 		//load settings
 		try{

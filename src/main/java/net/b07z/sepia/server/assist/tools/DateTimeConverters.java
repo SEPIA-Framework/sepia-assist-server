@@ -7,6 +7,7 @@ import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
@@ -69,10 +70,12 @@ public class DateTimeConverters {
 	 * @param date_string - string with date in expected format
 	 * @param format_in - expected input format, e.g. "dd.MM.yyyy"
 	 * @param format_out - desired output format
+	 * @param language -  An ISO 639 alpha-2 or alpha-3 language code
 	 * @return date string in desired format or empty
 	 */
-	public static String convertDateFormat(String date_string, String format_in, String format_out){
+	public static String convertDateFormat(String date_string, String format_in, String format_out, String language){
 		//parse input
+		Locale loc = new Locale(language);
 		SimpleDateFormat sdf_in = new SimpleDateFormat(format_in);
 		Date date;
 		try {
@@ -81,14 +84,14 @@ public class DateTimeConverters {
 			return "";
 		}
 		//make new one
-		SimpleDateFormat sdf_out = new SimpleDateFormat(format_out);
+		SimpleDateFormat sdf_out = new SimpleDateFormat(format_out, loc);
 		return sdf_out.format(date);
 	}
 	/**
 	 * Convert input date (with given format) to ISO 8601 format: yyyy-MM-dd.
 	 */
-	public static String convertToIso8601(String date_string, String format_in){
-		return convertDateFormat(date_string, format_in, "yyyy-MM-dd");
+	public static String convertToIso8601(String date_string, String format_in, String lang){
+		return convertDateFormat(date_string, format_in, "yyyy-MM-dd", lang);
 	}
 	/**
 	 * Convert a given date to a language dependent date that can be spoken well by TTS.
@@ -98,9 +101,9 @@ public class DateTimeConverters {
 	 */
 	public static String getSpeakableDate(String dateString, String formatIn, String language){
 		if (language.equals(LANGUAGES.EN)){
-			return convertDateFormat(dateString, formatIn, "MM/dd/yyyy");
+			return convertDateFormat(dateString, formatIn, "MM/dd/yyyy", language);
 		}else{
-			return convertDateFormat(dateString, formatIn, "dd.MM.yyyy");
+			return convertDateFormat(dateString, formatIn, "dd.MM.yyyy", language);
 		}
 	}
 	/**
@@ -202,7 +205,7 @@ public class DateTimeConverters {
 	 */
 	public static String getSpeakableTime(String timeIn, String formatIn, String language){
 		if (language.equals(LANGUAGES.EN)){
-			return convertDateFormat(timeIn, formatIn, "h:mm a");
+			return convertDateFormat(timeIn, formatIn, "h:mm a", language);
 		}else{
 			if (formatIn.equals("HH:mm:ss")){
 				return timeIn.replaceFirst(":\\d\\d$", "").trim();
@@ -420,7 +423,7 @@ public class DateTimeConverters {
 	/**
 	 * Calculate the difference of two dates in default string format (Config.default_sdf). Result is a HashMap with
 	 * "dd", "hh", "mm", "ss", "ms", "total_ms" (from days to milliseconds). Second date is the reference. 
-	 * @returns HashMap or null of parsing fails 
+	 * @returns HashMap or null if parsing fails 
 	 */
 	public static HashMap<String, Long> dateDifference(String default_date1, String default_date2){
 		//parse input

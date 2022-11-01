@@ -1,11 +1,13 @@
 package net.b07z.sepia.server.assist.workers;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.HashSet;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.parameters.SportsLeague;
 import net.b07z.sepia.server.assist.parameters.SportsTeam;
 import net.b07z.sepia.server.assist.server.Statistics;
@@ -346,7 +348,9 @@ public class OpenLigaWorker implements WorkerInterface {
 	//----------------- API -------------------
 	
 	public static final String BUNDESLIGA = "bl1";
-	public static final String BUNDESLIGA_SEASON = "2021";		//TODO: update automatically after season?
+	public static final String BUNDESLIGA_SEASON = (LocalDate.now().getMonthValue() > 6?
+			LocalDate.now().getYear() : LocalDate.now().minusYears(1).getYear()) + ""; 	
+	//TODO: season is set automatically to current year 1 month before start, but server needs restart after ...
 	public static final String BUNDESLIGA_2 = "bl2";
 	public static final String DFB_POKAL = "DFB";
 	public static final String PRIMERA_DIVISION = "PD";
@@ -506,10 +510,10 @@ public class OpenLigaWorker implements WorkerInterface {
 					}
 					String summary = "";
 					if((System.currentTimeMillis() - dateUNIX) > 0){
-						summary = DateTimeConverters.convertDateFormat(date.replaceFirst("T", "_"), "yyyy-MM-dd_HH:mm:ss", "dd.MM.' - 'HH:mm'h'") 
+						summary = DateTimeConverters.convertDateFormat(date.replaceFirst("T", "_"), "yyyy-MM-dd_HH:mm:ss", "dd.MM.' - 'HH:mm'h'", LANGUAGES.DE) 
 								+ ", " + team1 + " - " + team2 + ", " + goals1 + ":" + goals2;
 					}else{
-						summary = DateTimeConverters.convertDateFormat(date.replaceFirst("T", "_"), "yyyy-MM-dd_HH:mm:ss", "dd.MM.' - 'HH:mm'h'") 
+						summary = DateTimeConverters.convertDateFormat(date.replaceFirst("T", "_"), "yyyy-MM-dd_HH:mm:ss", "dd.MM.' - 'HH:mm'h'", LANGUAGES.DE) 
 								+ ", " + team1 + " - " + team2 + ", " + "-" + ":" + "-";
 					}
 					JSON.add(matchOut, "summary", summary);
@@ -572,7 +576,7 @@ public class OpenLigaWorker implements WorkerInterface {
 					JSON.add(matchOut, "id1", ((JSONObject) matchInput.get("Team1")).get("TeamId"));
 					JSON.add(matchOut, "team2", team2);
 					JSON.add(matchOut, "id2", ((JSONObject) matchInput.get("Team2")).get("TeamId"));
-					String summary = DateTimeConverters.convertDateFormat(date.replaceFirst("T", "_"), "yyyy-MM-dd_HH:mm:ss", "dd.MM.' - 'HH:mm'h'") 
+					String summary = DateTimeConverters.convertDateFormat(date.replaceFirst("T", "_"), "yyyy-MM-dd_HH:mm:ss", "dd.MM.' - 'HH:mm'h'", LANGUAGES.DE) 
 							+ ", " + team1 + " - " + team2 + ", " + "-" + ":" + "-";
 					JSON.add(matchOut, "summary", summary);
 					
