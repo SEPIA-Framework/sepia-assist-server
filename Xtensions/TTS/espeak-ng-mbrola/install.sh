@@ -10,7 +10,11 @@ echo ""
 echo "MBROLA AGPL 3.0 license: https://github.com/numediart/MBROLA/blob/master/LICENSE"
 echo "MBROLA voices terms of use: https://github.com/numediart/MBROLA-voices/blob/master/LICENSE.md"
 echo ""
-read -p "Enter 'agree' to continue: " agreeornot
+if [ -n "$1" ] && [ $1 = "agree" ]; then
+	agreeornot="agree"
+else
+	read -p "Enter 'agree' to continue: " agreeornot
+fi
 echo ""
 if [ -n "$agreeornot" ] && [ $agreeornot = "agree" ]; then
 	echo "Ty, let's go!"
@@ -21,7 +25,7 @@ fi
 # Install MBROLA
 echo "Downloading and building MBROLA..."
 sudo apt update
-sudo apt-get install git make gcc
+sudo apt install -y git make gcc
 if [ -d "MBROLA" ]; then
 	echo "Cleaning up old MBROLA folder..."
 	rm -rf MBROLA
