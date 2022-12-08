@@ -40,11 +40,16 @@ public class Answers {
 				if (possibleServices != null){
 					answerPool = possibleServices.get(0).getAnswersPool(nluResult.language);
 				}
+				if (answerPool == null){
+					//still null!
+					//throw new RuntimeException("AnswerPool is 'null' for 'serviceCommand': " + serviceCommand); //DEBUG
+					Debugger.println("Answers - AnswerPool is 'null' for 'serviceCommand': " + serviceCommand, 1);
+				}
 				//Debugger.println("Answers - needed to reload custom service answers for cmd '" + serviceCommand 
 				//		+ "'. Check system for efficiency!", 3); 	//sometimes this cannot happen earlier
 			}
 			//found them?
-			if (answerPool.containsAnswerFor(answerKey)){
+			if (answerPool != null && answerPool.containsAnswerFor(answerKey)){
 				//found answers
 				answer = getAnswerString(answerPool.getMap(), nluResult, answerKey, wildcards);
 				
