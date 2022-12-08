@@ -10,7 +10,6 @@ import java.util.TimerTask;
 
 import org.json.simple.JSONObject;
 
-import net.b07z.sepia.server.assist.answers.DefaultReplies;
 import net.b07z.sepia.server.assist.endpoints.AccountEndpoint;
 import net.b07z.sepia.server.assist.endpoints.AssistEndpoint;
 import net.b07z.sepia.server.assist.endpoints.AuthEndpoint;
@@ -247,7 +246,6 @@ public class Start {
 		InterviewServicesMap.test();		//test if all services can be loaded
 		ParameterConfig.setup(); 			//connect parameter names to handlers and other stuff
 		ParameterConfig.test();				//test if all parameters can be loaded
-		DefaultReplies.setupDefaults(); 	//setup default question mapping for parameters and stuff
 	}
 	
 	/**

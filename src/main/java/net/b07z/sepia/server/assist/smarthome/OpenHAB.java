@@ -430,7 +430,7 @@ public class OpenHAB implements SmartHomeHub {
 	
 	/**
 	 * Build unified object for SEPIA from HUB device data.
-	 * @param hubDevice - data gotten from e.g. call to devices endpoint of HUB
+	 * @param hubDevice - data taken from e.g. a call to devices endpoint of HUB
 	 * @return
 	 */
 	private static SmartHomeDevice buildDeviceFromResponse(JSONObject hubDevice){
