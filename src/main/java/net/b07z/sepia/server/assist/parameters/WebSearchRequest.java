@@ -41,6 +41,10 @@ public class WebSearchRequest implements ParameterHandler{
 	public String extract(String input) {
 		String search = "";
 		String engine = WebSearchEngine.names;
+		
+		//common prep.
+		input = input.replaceFirst("^www($| )", "").trim();	//"www" is a shortcut for the search service
+		
 		if (language.equals(LANGUAGES.DE)){
 			if (NluTools.stringContains(input, "^" + engine)){
 				search = input.replaceFirst("^" + engine + "( suche|)\\b", "").trim();

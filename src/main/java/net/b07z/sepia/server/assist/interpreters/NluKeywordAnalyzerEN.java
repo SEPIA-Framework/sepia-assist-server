@@ -226,7 +226,7 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 		//web search
 		//TODO: optimize exceptions
 		if (NluTools.stringContains(text, "websearch|web search|search the web|search online|"
-						+ "^google|^bing|^yahoo|^duck duck|^duck duck go|^ecosia|^youtube|"
+						+ "^www|^google|^bing|^yahoo|^duck duck|^duck duck go|^ecosia|^youtube|"
 						+ "^(picture(s|)|recipe(s|)|video(s|)|movie(s|)|film(s|)|share(s|)|stock(s|)|book(s|))|"
 						+ "what is the (stock|share) (value|price)|"
 						+ "(search|find|show|look|searching|looking)( | .* )((on |)the (web|internet))|"

@@ -232,7 +232,7 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 		//web search
 		if (NluTools.stringContains(text, "suche im web|suche online|" 
 						+ "(websuche|websearch|web suche|(durchsuche|suche|schau|finde|zeig)( mir|)( mal| bitte|)( bitte| mal|)( im| das) (web|internet))|"
-						+ "^google|^bing|^yahoo|^duck duck|^duck duck go|^ecosia|^youtube|"
+						+ "^www|^google|^bing|^yahoo|^duck duck|^duck duck go|^ecosia|^youtube|"
 						+ "^(bild(ern|er|)|rezept(en|e|)|video(s|)|movie(s|)|film(en|e|)|\\w*(-|)aktie(n|)|aktien(wert|kurs)|buecher(n|)|buch)|"
 						+ "(wie|wo) (ist|steht|stehen) (der|die) (aktienkurs|aktienwert|aktie(n|)|kurs|wert) (von|vom|der)|(wie|wo) (steht|stehen) .*aktie(n|)|"
 						+ "(durchsuche|suche|schau|finde|zeig)( | .* )(im (web|internet))|"
