@@ -230,7 +230,6 @@ public class HomeAssistant implements SmartHomeHub {
 	
 	@Override
 	public SmartHomeDevice loadDeviceData(SmartHomeDevice device) {
-		long tic = System.currentTimeMillis();
 		String id = device.getId();
 		String deviceURL = device.getLink();
 		if (Is.nullOrEmpty(deviceURL) && Is.notNullOrEmpty(id)){
@@ -240,10 +239,8 @@ public class HomeAssistant implements SmartHomeHub {
 			Debugger.println("HomeAssistant - 'loadDeviceData' FAILED with msg.: Missing device link", 1);
 			return null;
 		}else{
-			JSONObject response = httpGET(deviceURL);
-			if (Connectors.httpSuccess(response)){
-				Statistics.addExternalApiHit("homeAssistant loadDevice");
-				Statistics.addExternalApiTime("homeAssistant loadDevice", tic);
+			JSONObject response = loadDeviceData(deviceURL);
+			if (response != null){
 				SmartHomeDevice shd = null;
 				if (device.hasInterface()){
 					//use given data defined via internal SEPIA HUB
@@ -256,16 +253,27 @@ public class HomeAssistant implements SmartHomeHub {
 					}
 					addMoreFromResponse(shd, response, attributes);
 				}else{
-					//build device from result
+					//build device from result (and evaluate proxy configuration if necessary)
 					shd = buildDeviceFromResponse(response);
 				}
 				return shd;
 			}else{
-				Statistics.addExternalApiHit("homeAssistant loadDevice ERROR");
-				Statistics.addExternalApiTime("homeAssistant loadDevice ERROR", tic);
-				Debugger.println("HomeAssistant - 'loadDeviceData' FAILED with msg.: " + response, 1);
 				return null;
 			}
+		}
+	}
+	private JSONObject loadDeviceData(String deviceURL){
+		long tic = System.currentTimeMillis();
+		JSONObject response = httpGET(deviceURL);
+		if (Connectors.httpSuccess(response)){
+			Statistics.addExternalApiHit("homeAssistant loadDevice");
+			Statistics.addExternalApiTime("homeAssistant loadDevice", tic);
+			return response;
+		}else{
+			Statistics.addExternalApiHit("homeAssistant loadDevice ERROR");
+			Statistics.addExternalApiTime("homeAssistant loadDevice ERROR", tic);
+			Debugger.println("HomeAssistant - 'loadDeviceData' FAILED with msg.: " + response, 1);
+			return null;
 		}
 	}
 
@@ -526,10 +534,10 @@ public class HomeAssistant implements SmartHomeHub {
 	
 	/**
 	 * Build unified object for SEPIA from HUB device data.
-	 * @param hubDevice - data gotten from e.g. call to devices endpoint of HUB
+	 * @param hubDevice - data taken from e.g. a call to devices endpoint of HUB
 	 * @return
 	 */
-	private static SmartHomeDevice buildDeviceFromResponse(JSONObject hubDevice){
+	private SmartHomeDevice buildDeviceFromResponse(JSONObject hubDevice){
 		//Home Assistant SEPIA settings
 		String haProxyEntity = null;
 		JSONObject sepiaHaSetup = null;
@@ -660,7 +668,7 @@ public class HomeAssistant implements SmartHomeHub {
 		
 		return shd;
 	}
-	private static void addMoreFromResponse(SmartHomeDevice shd, JSONObject hubDevice, JSONObject attributes){
+	private void addMoreFromResponse(SmartHomeDevice shd, JSONObject hubDevice, JSONObject attributes){
 		//add URL
 		//Object linkObj = null;	//NOTE: since read and write don't use the same URL we don't set it
 		//TODO: we could add some stuff to meta that is only found in response (not configurable via UI/internal HUB).
@@ -672,7 +680,7 @@ public class HomeAssistant implements SmartHomeHub {
 		String state = getCommonState(shd, hubDevice, attributes);
 		shd.setState(state);
 	}
-	private static String getCommonState(SmartHomeDevice shd, JSONObject hubDevice,	JSONObject attributes){
+	private String getCommonState(SmartHomeDevice shd, JSONObject hubDevice,	JSONObject attributes){
 		String state = null;
 		String deviceType = shd.getType();
 		String stateType = shd.getStateType();
@@ -687,7 +695,24 @@ public class HomeAssistant implements SmartHomeHub {
 			//use interface config?
 			JSONObject sepiaHaSetup = shd.getInterfaceConfig();
 			if (Is.notNullOrEmpty(sepiaHaSetup)){
-				state = getStateUsingConfig(new HaInterfaceConfig(sepiaHaSetup), hubDevice);
+				//in HA we usually work with proxy configurations, so we check this first
+				String haProxyOrDefaultId = shd.getInterfaceDeviceId();
+				if (Is.nullOrEmpty(haProxyOrDefaultId)){
+					//if that is not set get default ID
+					haProxyOrDefaultId = shd.getId();
+					state = getStateUsingConfig(haProxyOrDefaultId, new HaInterfaceConfig(sepiaHaSetup), hubDevice);
+				}else{
+					//we need to get new data
+					String deviceURL = this.host + "/api/states/" + haProxyOrDefaultId;
+					JSONObject actualDeviceData = loadDeviceData(deviceURL);
+					if (actualDeviceData != null){
+						state = getStateUsingConfig(haProxyOrDefaultId, new HaInterfaceConfig(sepiaHaSetup), actualDeviceData);
+						//new basic state
+						stateBasic = JSON.getStringOrDefault(actualDeviceData, "state", null);
+					}else{
+						state = null;
+					}
+				}
 				if (state == null && sepiaHaSetup.containsKey("default")){
 					//fallback to default
 					Object refState = JSON.getObject(sepiaHaSetup, new String[]{"default", "state"});
@@ -792,9 +817,10 @@ public class HomeAssistant implements SmartHomeHub {
 	}
 	
 	//state via config
-	private static String getStateUsingConfig(HaInterfaceConfig haic, JSONObject hubDevice){
-		if (haic == null) return null;
+	private static String getStateUsingConfig(String haProxyOrDefaultEntity, HaInterfaceConfig haic, JSONObject hubDevice){
+		if (haic == null || Is.nullOrEmpty(haProxyOrDefaultEntity)) return null;
 		String readExpression = Is.notNullOrEmpty(haic.readExpression)? haic.readExpression : "<state>";	//"state" is HA default
+		//System.out.println("readExpression: " + readExpression + " - id: " + haProxyOrDefaultEntity);	//DEBUG
 		return SmartHomeDevice.getStateFromJsonViaExpression(readExpression, hubDevice);
 	}
 	
