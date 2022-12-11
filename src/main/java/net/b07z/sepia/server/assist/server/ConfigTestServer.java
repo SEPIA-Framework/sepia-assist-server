@@ -2,6 +2,7 @@ package net.b07z.sepia.server.assist.server;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import net.b07z.sepia.server.assist.assistant.LOCATION;
@@ -10,6 +11,7 @@ import net.b07z.sepia.server.assist.tools.DateTimeConverters;
 import net.b07z.sepia.server.assist.users.Authenticator;
 import net.b07z.sepia.server.assist.users.ID;
 import net.b07z.sepia.server.assist.users.User;
+import net.b07z.sepia.server.core.data.CmdMap;
 import net.b07z.sepia.server.core.tools.DateTime;
 import net.b07z.sepia.server.core.tools.Is;
 import spark.Request;
@@ -40,6 +42,22 @@ public class ConfigTestServer {
 	public static void reduceDatabaseAccess(String userId){
 		ConfigServices.assistantCustomCommandsMap = new ArrayList<>();
 		ConfigServices.userCustomCommandsMaps.put(userId, new ArrayList<>());
+	}
+	
+	/**
+	 * Set the commands map for the assistant user. Useful if you used {@link #reduceDatabaseAccess(String)}.
+	 * @param commandsMap - a list of {@link CmdMap}.
+	 */
+	public static void setAssistantCustomCommandsMap(List<CmdMap> commandsMap){
+		ConfigServices.assistantCustomCommandsMap = commandsMap;
+	}
+	/**
+	 * Set the commands map for certain user ID. Useful if you used {@link #reduceDatabaseAccess(String)}.
+	 * @param userId - ID of user
+	 * @param commandsMap - a list of {@link CmdMap}.
+	 */
+	public static void setUserCustomCommandsMap(String userId, List<CmdMap> commandsMap){
+		ConfigServices.userCustomCommandsMaps.put(userId, commandsMap);
 	}
 
 	/**
@@ -84,6 +102,10 @@ public class ConfigTestServer {
 		testAccountEmails = new HashMap<>();
 		testAccountEmails.put(Config.userIdPrefix + "101", email_id1);	//TODO: fix
 		testAccountEmails.put(Config.userIdPrefix + "102", email_id2);	//TODO: fix
+	}
+	public static void setNewPrimaryFakeId(String userId){
+		testAccountIDs.put(email_id1, userId);
+		testAccountEmails.put(userId, email_id1);
 	}
 	
 	/**
@@ -136,6 +158,10 @@ public class ConfigTestServer {
 		input.user = user;
 		return input;
 	}
+	/**
+	 * Get fake user ID for (fake) email or default used inside one of the {@link #getFakeInput(String, String)} methods.
+	 * @param email - Sting or null for default
+	 */
 	public static String getFakeUserId(String email){
 		if (Is.notNullOrEmpty(email)){
 			return testAccountIDs.get(email);
