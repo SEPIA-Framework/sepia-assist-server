@@ -42,6 +42,16 @@ See the [txt2pho readme](txt2pho/README.md) for more info.
 [Larynx](https://github.com/rhasspy/larynx) is an open-source server for (experimental) high-quality, next-gen voices that is compatible with MaryTTS API and SEPIA since Larynx version 1.0.3..  
 It is pretty resource hungry but you can try and experiment with the low and medium quality settings on Raspberry Pi 4. It is recommended to use the 64bit version (aarch64 on RPi) for better performance.
 
+## Mycroft Mimic 3
+
+Mycroft's [Mimic 3](https://github.com/MycroftAI/mimic3) has some high quality voices at reasonable resource requirements. It usually runs about 2 times faster than real-time on a Raspberry Pi 4, which is ok for smaller sentences.  
+It can be used as a drop-in replacement for the Mary-TTS server. Just point your SEPIA server to the right URL.  
+NOTE: Similar to Mary-TTS you should have enough RAM to run the server if you want to use it right next to your other SEPIA components.
+
+## Coqui TTS
+
+TBD
+
 ## Acapela
 
 [Acapela](https://www.acapela-group.com/demos/) is a commercial system that generates state-of-the-art high quality voices. There is basic support for Acapela but it has NOT been tested for a long time.
