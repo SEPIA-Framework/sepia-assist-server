@@ -97,7 +97,7 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 				+ "bundesliga\\w*|champions( |-|)league|europaliga|euro( |-|)league|europa( |-|)league|premier league|primera division|la liga|"
 				+ "(serie|seria|series) a|eredivisie|ligue 1|primeira liga|sueperlig|sueper lig(a|)|(fa|dfb)(-| )(pokal|cup)|"
 				+ ".*(ergebnis(se|)|resultat(e|))|(hat|haben)\\b.* (gespielt|gewonnen|verloren|getroffen|tor)|wie (steht es|stehts) (beim|bei) |^(fussball|bundesliga|tennis)(spiel|)\\b|"
-				+ "spielstand|(wie|wann) (spielt|spielen) (?!man)")){
+				+ "spielstand|(wie|wann|gegen wen) (spielt|spielen) (?!man)")){
 			//String this_text = text;
 			possibleCMDs.add(CMD.NEWS);
 			possibleScore.add(1);	index++;

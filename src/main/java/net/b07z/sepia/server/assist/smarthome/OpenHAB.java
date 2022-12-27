@@ -55,6 +55,8 @@ public class OpenHAB implements SmartHomeHub {
 		}
 	}
 	
+	//Test curl cmd: curl -H 'Authorization: Bearer [my-token]' -X GET 'http://[openHAB-IP]:8080/rest/items'
+	
 	//HTTP call methods for HUB
 	private Map<String, String> addAuthHeader(Map<String, String> headers){
 		return Connectors.addAuthHeader(headers, this.authType, this.authData);

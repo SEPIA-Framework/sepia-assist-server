@@ -95,7 +95,7 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 		if (NluTools.stringContains(text, "news|whats new|whats up|whats going on|headline|headlines|"
 				+ "results|result|score|scores|baseball|hockey|basketball|football|tennis|golf|soccer|"
 				+ "did .* (play|score|win|winning|lost|losing)|^(baseball|football|soccer)(game|)\\b|"
-				+ "when .* (play|playing)|"
+				+ "when .* (play|playing)|who does .* play against|against whom does .* play|"
 				+ "bundesliga|champions( |-|)league|euro( |-|)league|europa( |-|)league|premier league|primera division|la liga|"
 				+ "(serie|seria|series) a|eredivisie|ligue 1|primeira liga|sueperlig|sueper lig(a|)|(fa|dfb)(-| )(pokal|cup)"
 				+ "")){
