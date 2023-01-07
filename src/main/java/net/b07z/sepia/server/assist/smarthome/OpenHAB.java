@@ -236,6 +236,9 @@ public class OpenHAB implements SmartHomeHub {
 		}else{
 			//Fail with server contact error
 			Debugger.println("OpenHAB - failed to get devices from server!", 1);
+			if (response != null && response.containsKey("error")){
+				Debugger.println("OpenHAB - Error: " + response.get("error"), 1);
+			}
 			return null;
 		}
 	}
