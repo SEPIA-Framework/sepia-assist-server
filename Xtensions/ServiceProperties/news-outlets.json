@@ -4,7 +4,7 @@
 		{ "name": "SPIEGEL Kino", "url": "https://www.spiegel.de/kultur/kino/index.rss", "name_html": "<span style='color:#950000;'><b>SPIEGEL</b> Kino</span>" },
 		{ "name": "SPIEGEL Gesundheit", "url": "https://www.spiegel.de/gesundheit/index.rss", "name_html": "<span style='color:#950000;'><b>SPIEGEL</b> Gesundheit</span>" },
 		{ "name": "SPIEGEL Start", "url": "https://www.spiegel.de/start/index.rss", "name_html": "<span style='color:#000;'><b>SPIEGEL</b> Start</span>" },
-		{ "name": "Tagesschau", "url": "https://www.tagesschau.de/xml/rss2/", "name_html": "<span style='color:#0065BE; font-family:serif;'><b>tagesschau</b>.de</span>" },
+		{ "name": "Tagesschau", "url": "https://www.tagesschau.de/infoservices/alle-meldungen-100~rss2.xml", "name_html": "<span style='color:#0065BE; font-family:serif;'><b>tagesschau</b>.de</span>" },
 		{ "name": "Süddeutsche", "url": "https://rss.sueddeutsche.de/rss/Topthemen", "name_html": "<span style='color:#000; font-family:serif'><b>Süddeutsche Zeitung</b></span>" },
 		{ "name": "FAZ", "url": "https://www.faz.net/rss/aktuell/", "name_html": "<span style='color:#000; font-family:serif'><b>Frankfurter Allgemeine</b></span>" },
 		{ "name": "Bild", "url": "https://www.bild.de/rssfeeds/vw-home/vw-home-16725562,sort=1,view=rss2.bild.xml", "name_html": "<b><span style='color:#D91918;'>Bild</span><span style='color:#000;'>.de</span></b>" },
