@@ -95,7 +95,7 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 		if (NluTools.stringContains(text, "news|whats new|whats up|whats going on|headline|headlines|"
 				+ "results|result|score|scores|baseball|hockey|basketball|football|tennis|golf|soccer|"
 				+ "did .* (play|score|win|winning|lost|losing)|^(baseball|football|soccer)(game|)\\b|"
-				+ "when .* (play|playing)|"
+				+ "when .* (play|playing)|who does .* play against|against whom does .* play|"
 				+ "bundesliga|champions( |-|)league|euro( |-|)league|europa( |-|)league|premier league|primera division|la liga|"
 				+ "(serie|seria|series) a|eredivisie|ligue 1|primeira liga|sueperlig|sueper lig(a|)|(fa|dfb)(-| )(pokal|cup)"
 				+ "")){
@@ -226,7 +226,7 @@ public class NluKeywordAnalyzerEN implements NluInterface {
 		//web search
 		//TODO: optimize exceptions
 		if (NluTools.stringContains(text, "websearch|web search|search the web|search online|"
-						+ "^google|^bing|^yahoo|^duck duck|^duck duck go|^ecosia|^youtube|"
+						+ "^www|^google|^bing|^yahoo|^duck duck|^duck duck go|^ecosia|^youtube|"
 						+ "^(picture(s|)|recipe(s|)|video(s|)|movie(s|)|film(s|)|share(s|)|stock(s|)|book(s|))|"
 						+ "what is the (stock|share) (value|price)|"
 						+ "(search|find|show|look|searching|looking)( | .* )((on |)the (web|internet))|"

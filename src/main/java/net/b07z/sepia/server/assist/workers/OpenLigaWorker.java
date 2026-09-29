@@ -347,6 +347,8 @@ public class OpenLigaWorker implements WorkerInterface {
 	
 	//----------------- API -------------------
 	
+	public static final String OPEN_LIGA_DB_API = "https://api.openligadb.de"; //old: "https://www.openligadb.de/api";
+	
 	public static final String BUNDESLIGA = "bl1";
 	public static final String BUNDESLIGA_SEASON = (LocalDate.now().getMonthValue() > 6?
 			LocalDate.now().getYear() : LocalDate.now().minusYears(1).getYear()) + ""; 	
@@ -405,7 +407,7 @@ public class OpenLigaWorker implements WorkerInterface {
 	 */
 	public static String getLastDbRefresh(String leagueTag, String matchDay){
 		String lastRefreshDate = "";
-		String url = "https://www.openligadb.de/api/getlastchangedate/" + leagueTag + "/" + matchDay;
+		String url = OPEN_LIGA_DB_API + "/getlastchangedate/" + leagueTag + "/" + matchDay;
 		try{
 			lastRefreshDate = Connectors.simpleHtmlGet(url);
 			if (lastRefreshDate.matches(".*\\d\\d\\d\\d-.*")){
@@ -427,9 +429,10 @@ public class OpenLigaWorker implements WorkerInterface {
 	 */
 	public static long getCurrentMatchDay(String leagueTag){
 		long matchDay = -1;
-		String url = "https://www.openligadb.de/api/getcurrentgroup/" + leagueTag;
+		String url = OPEN_LIGA_DB_API + "/getcurrentgroup/" + leagueTag;
 		try{
-			matchDay = (long) Connectors.simpleJsonGet(url).get("GroupOrderID");
+			JSONObject result = Connectors.simpleJsonGet(url);
+			matchDay = (long) result.get("groupOrderID");
 			if (matchDay > 0){
 				return matchDay;
 			}else{
@@ -450,7 +453,7 @@ public class OpenLigaWorker implements WorkerInterface {
 	 */
 	public static JSONArray getMatchDayData(String leagueTag, String matchDay){
 		JSONArray apiResult = null;
-		String url = "https://www.openligadb.de/api/getmatchdata/" + leagueTag + "/" + matchDay;
+		String url = OPEN_LIGA_DB_API + "/getmatchdata/" + leagueTag + "/" + matchDay;
 		try{
 			JSONObject result = Connectors.httpGET(url);
 			apiResult = (JSONArray) result.get("JSONARRAY");
@@ -462,7 +465,7 @@ public class OpenLigaWorker implements WorkerInterface {
 				for (Object o : apiResult){
 					JSONObject matchInput = (JSONObject) o;
 					JSONObject matchOut = new JSONObject();
-					String date = (String) matchInput.get("MatchDateTime"); 	//2016-12-02T20:30:00 - TODO: this HAS TO BE GMT! Is it?
+					String date = (String) matchInput.get("matchDateTime"); 	//2016-12-02T20:30:00 - TODO: this HAS TO BE GMT! Is it?
 					JSON.add(matchOut, "kickoff", date);
 					long dateUNIX = DateTimeConverters.getUnixTimeOfDateGMT(date.replaceFirst("T", "_"), "yyyy-MM-dd_HH:mm:ss");
 					if ((dateUNIX > System.currentTimeMillis()) || (System.currentTimeMillis() - dateUNIX) < (1000*60*30*5)){
@@ -472,22 +475,22 @@ public class OpenLigaWorker implements WorkerInterface {
 						}
 					}
 					JSON.add(matchOut, "kickoffUNIX", dateUNIX);
-					boolean isFinished = (boolean) matchInput.get("MatchIsFinished");
+					boolean isFinished = (boolean) matchInput.get("matchIsFinished");
 					JSON.add(matchOut, "isFinished", isFinished);
-					String team1 = (String) ((JSONObject) matchInput.get("Team1")).get("TeamName");
-					String team2 = (String) ((JSONObject) matchInput.get("Team2")).get("TeamName");
+					String team1 = (String) ((JSONObject) matchInput.get("team1")).get("teamName");
+					String team2 = (String) ((JSONObject) matchInput.get("team2")).get("teamName");
 					JSON.add(matchOut, "team1", team1);
-					JSON.add(matchOut, "id1", ((JSONObject) matchInput.get("Team1")).get("TeamId"));
+					JSON.add(matchOut, "id1", ((JSONObject) matchInput.get("team1")).get("teamId"));
 					JSON.add(matchOut, "team2", team2);
-					JSON.add(matchOut, "id2", ((JSONObject) matchInput.get("Team2")).get("TeamId"));
-					JSONArray goals = (JSONArray) matchInput.get("Goals");
+					JSON.add(matchOut, "id2", ((JSONObject) matchInput.get("team2")).get("teamId"));
+					JSONArray goals = (JSONArray) matchInput.get("goals");
 					long goals1 = 0;
 					long goals2 = 0;
 					if (goals != null && !goals.isEmpty()){
-						Object matchMinute = ((JSONObject) goals.get(goals.size()-1)).get("MatchMinute");
+						Object matchMinute = ((JSONObject) goals.get(goals.size()-1)).get("matchMinute");
 						if (matchMinute != null){
-							goals1 = (long) ((JSONObject) goals.get(goals.size()-1)).get("ScoreTeam1");
-							goals2 = (long) ((JSONObject) goals.get(goals.size()-1)).get("ScoreTeam2");
+							goals1 = (long) ((JSONObject) goals.get(goals.size()-1)).get("scoreTeam1");
+							goals2 = (long) ((JSONObject) goals.get(goals.size()-1)).get("scoreTeam2");
 						}
 					}
 					//System.out.println(team1 + " - " + team2 + " " + goals1 + ":" + goals2);
@@ -545,7 +548,7 @@ public class OpenLigaWorker implements WorkerInterface {
 	 */
 	public static JSONArray getNextMatchDayData(String leagueTag, String matchDay){
 		JSONArray apiResult = null;
-		String url = "https://www.openligadb.de/api/getmatchdata/" + leagueTag + "/" + matchDay;
+		String url = OPEN_LIGA_DB_API + "/getmatchdata/" + leagueTag + "/" + matchDay;
 		try{
 			JSONObject result = Connectors.httpGET(url);
 			apiResult = (JSONArray) result.get("JSONARRAY");
@@ -561,21 +564,21 @@ public class OpenLigaWorker implements WorkerInterface {
 				for (Object o : apiResult){
 					JSONObject matchInput = (JSONObject) o;
 					JSONObject matchOut = new JSONObject();
-					String date = (String) matchInput.get("MatchDateTime"); 	//2016-12-02T20:30:00 - TODO: this HAS TO BE GMT! Is it?
+					String date = (String) matchInput.get("matchDateTime"); 	//2016-12-02T20:30:00 - TODO: this HAS TO BE GMT! Is it?
 					JSON.add(matchOut, "kickoff", date);
 					long dateUNIX = DateTimeConverters.getUnixTimeOfDateGMT(date.replaceFirst("T", "_"), "yyyy-MM-dd_HH:mm:ss");
 					if (dateUNIX > System.currentTimeMillis()){
 						nextMatchUnixTime = Math.min(nextMatchUnixTime, dateUNIX);
 					}
 					JSON.add(matchOut, "kickoffUNIX", dateUNIX);
-					boolean isFinished = (boolean) matchInput.get("MatchIsFinished");
+					boolean isFinished = (boolean) matchInput.get("matchIsFinished");
 					JSON.add(matchOut, "isFinished", isFinished);
-					String team1 = (String) ((JSONObject) matchInput.get("Team1")).get("TeamName");
-					String team2 = (String) ((JSONObject) matchInput.get("Team2")).get("TeamName");
+					String team1 = (String) ((JSONObject) matchInput.get("team1")).get("teamName");
+					String team2 = (String) ((JSONObject) matchInput.get("team2")).get("teamName");
 					JSON.add(matchOut, "team1", team1);
-					JSON.add(matchOut, "id1", ((JSONObject) matchInput.get("Team1")).get("TeamId"));
+					JSON.add(matchOut, "id1", ((JSONObject) matchInput.get("team1")).get("teamId"));
 					JSON.add(matchOut, "team2", team2);
-					JSON.add(matchOut, "id2", ((JSONObject) matchInput.get("Team2")).get("TeamId"));
+					JSON.add(matchOut, "id2", ((JSONObject) matchInput.get("team2")).get("teamId"));
 					String summary = DateTimeConverters.convertDateFormat(date.replaceFirst("T", "_"), "yyyy-MM-dd_HH:mm:ss", "dd.MM.' - 'HH:mm'h'", LANGUAGES.DE) 
 							+ ", " + team1 + " - " + team2 + ", " + "-" + ":" + "-";
 					JSON.add(matchOut, "summary", summary);

@@ -55,6 +55,8 @@ public class OpenHAB implements SmartHomeHub {
 		}
 	}
 	
+	//Test curl cmd: curl -H 'Authorization: Bearer [my-token]' -X GET 'http://[openHAB-IP]:8080/rest/items'
+	
 	//HTTP call methods for HUB
 	private Map<String, String> addAuthHeader(Map<String, String> headers){
 		return Connectors.addAuthHeader(headers, this.authType, this.authData);
@@ -234,6 +236,9 @@ public class OpenHAB implements SmartHomeHub {
 		}else{
 			//Fail with server contact error
 			Debugger.println("OpenHAB - failed to get devices from server!", 1);
+			if (response != null && response.containsKey("error")){
+				Debugger.println("OpenHAB - Error: " + response.get("error"), 1);
+			}
 			return null;
 		}
 	}
@@ -430,7 +435,7 @@ public class OpenHAB implements SmartHomeHub {
 	
 	/**
 	 * Build unified object for SEPIA from HUB device data.
-	 * @param hubDevice - data gotten from e.g. call to devices endpoint of HUB
+	 * @param hubDevice - data taken from e.g. a call to devices endpoint of HUB
 	 * @return
 	 */
 	private static SmartHomeDevice buildDeviceFromResponse(JSONObject hubDevice){

@@ -13,6 +13,13 @@ cd $SCRIPT_FOLDER
 echo "Cloning txt2pho..."
 git clone https://github.com/GHPS/txt2pho.git build
 cd build
+if [ -x "$(command -v apt)" ]; then
+	echo "Checking packages: g++"
+	sudo apt update
+	sudo apt install -y g++
+else
+	echo "Recommended packages to build: g++"
+fi
 make clean
 make all
 mv data ../

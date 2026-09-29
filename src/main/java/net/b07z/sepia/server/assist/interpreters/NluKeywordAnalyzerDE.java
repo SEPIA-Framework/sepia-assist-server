@@ -97,7 +97,7 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 				+ "bundesliga\\w*|champions( |-|)league|europaliga|euro( |-|)league|europa( |-|)league|premier league|primera division|la liga|"
 				+ "(serie|seria|series) a|eredivisie|ligue 1|primeira liga|sueperlig|sueper lig(a|)|(fa|dfb)(-| )(pokal|cup)|"
 				+ ".*(ergebnis(se|)|resultat(e|))|(hat|haben)\\b.* (gespielt|gewonnen|verloren|getroffen|tor)|wie (steht es|stehts) (beim|bei) |^(fussball|bundesliga|tennis)(spiel|)\\b|"
-				+ "spielstand|(wie|wann) (spielt|spielen) (?!man)")){
+				+ "spielstand|(wie|wann|gegen wen) (spielt|spielen) (?!man)")){
 			//String this_text = text;
 			possibleCMDs.add(CMD.NEWS);
 			possibleScore.add(1);	index++;
@@ -232,7 +232,7 @@ public class NluKeywordAnalyzerDE implements NluInterface {
 		//web search
 		if (NluTools.stringContains(text, "suche im web|suche online|" 
 						+ "(websuche|websearch|web suche|(durchsuche|suche|schau|finde|zeig)( mir|)( mal| bitte|)( bitte| mal|)( im| das) (web|internet))|"
-						+ "^google|^bing|^yahoo|^duck duck|^duck duck go|^ecosia|^youtube|"
+						+ "^www|^google|^bing|^yahoo|^duck duck|^duck duck go|^ecosia|^youtube|"
 						+ "^(bild(ern|er|)|rezept(en|e|)|video(s|)|movie(s|)|film(en|e|)|\\w*(-|)aktie(n|)|aktien(wert|kurs)|buecher(n|)|buch)|"
 						+ "(wie|wo) (ist|steht|stehen) (der|die) (aktienkurs|aktienwert|aktie(n|)|kurs|wert) (von|vom|der)|(wie|wo) (steht|stehen) .*aktie(n|)|"
 						+ "(durchsuche|suche|schau|finde|zeig)( | .* )(im (web|internet))|"

@@ -14,6 +14,7 @@ import net.b07z.sepia.server.assist.data.Card.ElementType;
 import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
+import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.interviews.DialogTaskValues;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.interviews.InterviewMetaData;
@@ -81,9 +82,12 @@ public class MusicSearch implements ServiceInterface{
 		//optional
 		Parameter p1 = new Parameter(PARAMETERS.MUSIC_SERVICE);
 		Parameter p2 = new Parameter(PARAMETERS.MUSIC_GENRE);
-		Parameter p3 = new Parameter(PARAMETERS.MUSIC_ALBUM);
-		Parameter p4 = new Parameter(PARAMETERS.MUSIC_ARTIST);
-		Parameter p5 = new Parameter(PARAMETERS.SONG);
+		Parameter p3 = new Parameter(PARAMETERS.MUSIC_ALBUM)
+				.setDialogTaskMetaData(DialogTaskValues.MUSIC);
+		Parameter p4 = new Parameter(PARAMETERS.MUSIC_ARTIST)
+				.setDialogTaskMetaData(DialogTaskValues.MUSIC);
+		Parameter p5 = new Parameter(PARAMETERS.SONG)
+				.setDialogTaskMetaData(DialogTaskValues.MUSIC);
 		Parameter p6 = new Parameter(PARAMETERS.PLAYLIST_NAME);
 		Parameter p7 = new Parameter(PARAMETERS.DATA);
 		
@@ -163,10 +167,24 @@ public class MusicSearch implements ServiceInterface{
 		
 		boolean hasMinimalInfo = Is.notNullOrEmpty(song) || Is.notNullOrEmpty(artist) 
 				|| Is.notNullOrEmpty(album) || Is.notNullOrEmpty(playlistName) || Is.notNullOrEmpty(genre);
-		
+				
 		if (!hasMinimalInfo){
+			//build or evaluate custom select question for 1:song, 2:artist, 3:playlist
+			//TODO: this should become an actual parameter "music_type" (or something similar)
 			String customTypeSelectionParameter = "music_type";
 			JSONObject typeSelection = api.getSelectedOptionOf(customTypeSelectionParameter);
+			if (Is.nullOrEmpty(typeSelection)){
+				//quick check for music type in input
+				String textNorm = nluResult.getNormalizedInput();
+				//NOTE: we just check for DE and EN at the same time for now:
+				if (NluTools.stringContains(textNorm, "song|lied")){
+					typeSelection = JSON.make("selection", 1);
+				}else if (NluTools.stringContains(textNorm, "artist|kuenstler")){
+					typeSelection = JSON.make("selection", 2);
+				}else if (NluTools.stringContains(textNorm, "playlist")){
+					typeSelection = JSON.make("selection", 3);
+				}
+			}
 			if (Is.notNullOrEmpty(typeSelection)){
 				//System.out.println(typeSelection.toJSONString()); 		//DEBUG
 				int selection = JSON.getIntegerOrDefault(typeSelection, "selection", 0);

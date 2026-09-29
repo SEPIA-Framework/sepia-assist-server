@@ -15,6 +15,7 @@ import net.b07z.sepia.server.assist.data.Parameter;
 import net.b07z.sepia.server.assist.data.Card.ElementType;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
+import net.b07z.sepia.server.assist.interviews.DialogTaskValues;
 import net.b07z.sepia.server.assist.interviews.InterviewData;
 import net.b07z.sepia.server.assist.parameters.SearchSection;
 import net.b07z.sepia.server.assist.parameters.WebSearchEngine;
@@ -47,6 +48,7 @@ public class WebsearchBasic implements ServiceInterface{
 		commonEngines.add(WebSearchEngine.YAHOO);
 		commonEngines.add(WebSearchEngine.QWANT);
 		commonEngines.add(WebSearchEngine.ECOSIA);
+		commonEngines.add(WebSearchEngine.YOUCOM);
 		//NOTE: add only "real" web-search engines here (not specialized things like YouTube)
 	}
 	
@@ -68,6 +70,7 @@ public class WebsearchBasic implements ServiceInterface{
 		//required
 		Parameter p1 = new Parameter(PARAMETERS.WEBSEARCH_REQUEST)
 				.setRequired(true)
+				.setDialogTaskMetaData(DialogTaskValues.WEB_SEARCH)
 				.setQuestion("websearch_ask_search_0a");
 		info.addParameter(p1);
 		//optional
@@ -240,7 +243,7 @@ public class WebsearchBasic implements ServiceInterface{
 	
 	/**
 	 * Get a web-search URL depending on engine and section.
-	 * @param engine - engines as seen in corresponding parameter like "yahoo", "google", "duck duck go" and "bing"
+	 * @param engine - engines as seen in corresponding parameter like "yahoo", "google", ...
 	 * @param section - as seen in corresponding parameter like "pictures", "videos", "books", "recipes", "shares"
 	 * @param search - term to search like "pictures of Berlin"
 	 * @param searchReduced - reduced term without section like "Berlin"
@@ -308,6 +311,16 @@ public class WebsearchBasic implements ServiceInterface{
 				search = searchReduced;
 			}else if (section.equals("videos")){
 				search_url = "https://www.ecosia.org/videos?q=";
+				search = searchReduced;
+			}
+		}else if (engine.contains(WebSearchEngine.YOUCOM)){
+			engine = "You.com";
+			search_url = "https://you.com/search?fromSearchBar=true&tbm=youchat&q=";
+			if (section.equals("pictures")){
+				search_url = "https://you.com/search?fromSearchBar=true&tbm=isch&q=";
+				search = searchReduced;
+			}else if (section.equals("videos")){
+				search_url = "https://you.com/search?fromSearchBar=true&tbm=vid&q=";
 				search = searchReduced;
 			}
 		}else{

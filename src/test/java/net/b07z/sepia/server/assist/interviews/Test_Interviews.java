@@ -3,14 +3,10 @@ package net.b07z.sepia.server.assist.interviews;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.assist.answers.AnswerLoaderFile;
-import net.b07z.sepia.server.assist.answers.DefaultReplies;
 import net.b07z.sepia.server.assist.interpreters.NluInput;
 import net.b07z.sepia.server.assist.interpreters.NluInterface;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interpreters.ResponseHandler;
-import net.b07z.sepia.server.assist.interviews.AbstractInterview;
-import net.b07z.sepia.server.assist.interviews.InterviewResult;
-import net.b07z.sepia.server.assist.interviews.InterviewInterface;
 import net.b07z.sepia.server.assist.parameters.ParameterConfig;
 import net.b07z.sepia.server.assist.server.Config;
 import net.b07z.sepia.server.assist.server.ConfigTestServer;
@@ -33,7 +29,6 @@ public class Test_Interviews {
 		
 		//setup answers
 		Config.setAnswerModule(new AnswerLoaderFile()); 	//choose txt-file answers-module
-		DefaultReplies.setupDefaults(); 	//setup default question mapping for parameters and stuff
 		
 		//setup commands and parameters
 		InterviewServicesMap.load();		//services connected to interviews

@@ -35,15 +35,15 @@ public class SmartHomeDevice {
 	private String stateType;	//e.g.: STATE_TYPE_NUMBER_PERCENT
 	private String stateMemory;		//state storage for e.g. default values after restart etc.
 	private String link;		//e.g. HTTP direct URL to device
-	private String interfaceId;	//e.g. openhab, fhem
+	private String interfaceId;	//e.g. openhab, fhem, ... - NOTE: this is usually only set for internal HUB
 	//meta data required to operate the device properly:
 	private JSONObject meta;	//e.g. see below META_...
 	
 	//meta variables
 	public static final String META_SET_CMDS = "setCmds";
-	public static final String META_INTERFACE_DEVICE = "interfaceDeviceId";  //the proxy ID in remote HUB
-	public static final String META_INTERFACE_CONFIG = "interfaceConfig";
-	public static final String META_ID = "id";		//the actual ID inside main HUB
+	public static final String META_INTERFACE_DEVICE = "interfaceDeviceId"; //the proxy ID in remote HUB
+	public static final String META_INTERFACE_CONFIG = "interfaceConfig";	//custom config for remote HUB
+	public static final String META_ID = "id";		//the actual ID inside main HUB (internal or remote)
 	public static final String META_ORIGIN = "origin";
 	public static final String META_TYPE_GUESSED = "typeGuessed";
 	public static final String META_NAMED_BY_SEPIA = "namedBySepia";
@@ -203,14 +203,16 @@ public class SmartHomeDevice {
 	}
 	
 	/**
-	 * Device interface id
+	 * Get the device interface ID used to connect internal HUB device with a 
+	 * HUB configuration (openHAB, FHEM, ...) previously stored in the DB.
 	 * @return
 	 */
 	public String getInterface() {
 		return interfaceId;
 	}
 	/**
-	 * Set class variable 'interfaceId' (no write to HUB!)
+	 * Set the device interface ID used to connect internal HUB device with a 
+	 * HUB configuration (openHAB, FHEM, ...) previously stored in the DB.
 	 */
 	public void setInterface(String interfaceId) {
 		this.interfaceId = interfaceId;
@@ -397,7 +399,9 @@ public class SmartHomeDevice {
 	/**
 	 * Get the ID usually used to identify the device in the internal database or external HUB.
 	 * The method will check for 'interface' first and return 'interfaceDeviceId' if available (or null).
-	 * If no interface is defined it will return the "normal" ID (meta.id).
+	 * If no interface is defined it will return the "normal" ID (meta.id).<br>
+	 * NOTE: 'hasInterface' will only be true for internal HUB but 'interfaceDeviceId' can still be set.
+	 * In this case (e.g. for proxy devices) you need to decide yourself what ID you need.
 	 * @return
 	 */
 	public String getId(){
@@ -427,7 +431,8 @@ public class SmartHomeDevice {
 	}
 	
 	/**
-	 * Get 'interfaceDeviceId' from meta, e.g. to use it in internal HUB.
+	 * Get 'interfaceDeviceId' from meta, e.g. to use it in internal HUB.<br>
+	 * NOTE: this can be set for e.g. proxy devices even if its NOT the internal HUB.
 	 * @return ID string or null
 	 */
 	public String getInterfaceDeviceId(){
@@ -907,6 +912,7 @@ public class SmartHomeDevice {
 			//load variable value
 			String[] readPath = readVar.split("\\.");
 			Object state = JSON.getObject(data, readPath);
+			//System.out.println("state=" + state);								//DEBUG
 			//System.out.println("readExpression=" + readExpression);			//DEBUG
 			//System.out.println("readPath=" + String.join("->", readPath));	//DEBUG
 			if (state == null){
