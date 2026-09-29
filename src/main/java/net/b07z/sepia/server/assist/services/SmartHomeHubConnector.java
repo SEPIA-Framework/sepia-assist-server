@@ -36,7 +36,8 @@ import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 
 /**
- * This services uses a local smart home HUB server like openHAB or FHEM (same network as SEPIA server) to control smart home devices.
+ * This services uses a local smart home HUB server like openHAB or FHEM
+ * (same network as SEPIA server) to control smart home devices.
  * 
  * @author Florian Quirin
  *

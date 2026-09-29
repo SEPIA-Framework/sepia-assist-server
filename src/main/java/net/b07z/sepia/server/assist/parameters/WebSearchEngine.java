@@ -21,12 +21,22 @@ public class WebSearchEngine implements ParameterHandler{
 	public static final String DUCK_DUCK_GO = "duck duck go";
 	public static final String QWANT = "qwant";
 	public static final String ECOSIA = "ecosia";
+	public static final String YOUCOM = "you com";
 	//Specialized
 	public static final String YOUTUBE = "youtube";
 	
 	//-----data-----
 	
-	public static final String names = "(google|bing|duck duck go|duck duck|duckduckgo|yahoo|qwant|ecosia|youtube)";
+	public static final String names = "("
+		+ "google|"
+		+ "bing|"
+		+ "duck duck go|duck duck|duckduckgo|"
+		+ "yahoo|"
+		+ "qwant|"
+		+ "ecosia|"
+		+ "you dot com|you com|you chat|"
+		+ "youtube"
+	+ ")";
 	
 	//--------------
 
@@ -55,7 +65,9 @@ public class WebSearchEngine implements ParameterHandler{
 		String engine = NluTools.stringFindFirst(input, names);
 		found = engine;
 		if (engine.equals("duck duck") || engine.equals("duckduckgo")){
-			engine = "duck duck go";
+			engine = DUCK_DUCK_GO;
+		}else if (engine.equals("you dot com") || engine.equals("you chat")){
+			engine = YOUCOM;
 		}
 		return engine;
 	}

@@ -8,6 +8,7 @@ import net.b07z.sepia.server.assist.assistant.LANGUAGES;
 import net.b07z.sepia.server.assist.interpreters.NluResult;
 import net.b07z.sepia.server.assist.interpreters.NluTools;
 import net.b07z.sepia.server.assist.interviews.AskClient;
+import net.b07z.sepia.server.assist.interviews.DialogTaskValues;
 import net.b07z.sepia.server.assist.interviews.InterviewMetaData;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
 import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
@@ -62,11 +63,18 @@ public class DictionaryTranslateBasic implements ServiceInterface{
 		
 		//check'em
 		if (search.isEmpty()){
-			InterviewMetaData metaData = null;	//NOTE: we could add dialog_task 'translation' or something
+			InterviewMetaData metaData = new InterviewMetaData()
+				.setDialogTask(DialogTaskValues.TRANSLATION);
 			return AskClient.question("dict_translate_ask_0a", "search", metaData, nluResult);
 		}
 				
-		String supportedLanguages = "(de|en|tr|es|fr)";		//add languages here when adding more target languages
+		//add languages here when adding more target languages
+		String supportedLanguages = "("
+			+ LANGUAGES.DE + "|"
+			+ LANGUAGES.EN + "|"
+			+ LANGUAGES.TR + "|"
+			+ LANGUAGES.ES + "|"
+			+ LANGUAGES.FR + ")";
 		
 		//make answer - if more than one direct answer choose randomly
 		if (targetLang.matches(supportedLanguages)){
